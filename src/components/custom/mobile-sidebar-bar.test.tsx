@@ -64,4 +64,14 @@ describe("mobile sidebar bar", () => {
 
     expect(screen.queryByRole("dialog")).toBeNull();
   });
+
+  it("names and describes the mobile sidebar dialog", () => {
+    renderLayout();
+
+    fireEvent.click(screen.getByRole("button", { name: "sidebar.toggle" }));
+
+    const dialog = screen.getByRole("dialog", { name: "sidebar.title" });
+    expect(dialog.getAttribute("aria-describedby")).not.toBeNull();
+    expect(screen.getByText("sidebar.description").id).toBe(dialog.getAttribute("aria-describedby"));
+  });
 });
