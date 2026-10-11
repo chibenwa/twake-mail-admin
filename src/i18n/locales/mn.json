@@ -1168,6 +1168,7 @@
     "cleanupOldTasksSuccess": "Хуучин даалгаврууд (>{{days}} өдөр) цэвэрлэгдлээ",
     "errorCleanupOldTasks": "Хуучин даалгавруудыг цэвэрлэхэд алдаа гарлаа",
     "days": "өдөр",
+    "invalidCleanupDays": "0-ээс их өдрийн тоо оруулна уу",
     "cleaningUpOldTasks": "Хуучин даалгавруудыг цэвэрлэж байна",
     "runConfirm": "{{name}} даалгаврыг ажиллуулах уу?"
   },
