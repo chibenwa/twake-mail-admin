@@ -19,6 +19,8 @@ export interface SSOConfig {
   responseType: string;
   codeChallengeMethod: string;
   postLogoutRedirect: string;
+  /** Lets the OIDC client talk to a plain http provider: local demos only. */
+  allowInsecureRequests: boolean;
 }
 
 export interface AppConfig {
@@ -75,6 +77,7 @@ export function loadAppConfig(): AppConfig {
       responseType: getEnvVar('SSO_RESPONSE_TYPE')!,
       codeChallengeMethod: getEnvVar('SSO_CODE_CHALLENGE_METHOD')!,
       postLogoutRedirect: getEnvVar('SSO_POST_LOGOUT_REDIRECT')!,
+      allowInsecureRequests: getEnvVar('SSO_ALLOW_INSECURE_REQUESTS') === 'true',
     },
   };
 }
