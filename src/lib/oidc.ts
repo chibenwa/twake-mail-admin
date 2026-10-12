@@ -15,7 +15,16 @@ let cachedConfig: client.Configuration | null = null;
 
 export async function getOIDCConfig(ssoConfig: SSOConfig): Promise<client.Configuration> {
   if (!cachedConfig) {
-    cachedConfig = await client.discovery(new URL(ssoConfig.baseUrl), ssoConfig.clientId);
+    const options = ssoConfig.allowInsecureRequests
+      ? { execute: [client.allowInsecureRequests] }
+      : undefined;
+    cachedConfig = await client.discovery(
+      new URL(ssoConfig.baseUrl),
+      ssoConfig.clientId,
+      undefined,
+      undefined,
+      options,
+    );
   }
   return cachedConfig;
 }
