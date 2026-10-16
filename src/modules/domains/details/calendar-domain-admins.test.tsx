@@ -57,3 +57,51 @@ describe("CalendarDomainAdmins add admin", () => {
     await waitFor(() => expect(api.addDomainAdmin).toHaveBeenCalledWith("open-paas.org", "nobody@open-paas.org"));
   });
 });
+
+describe("CalendarDomainAdmins existing admin", () => {
+  async function typeAdmin(username: string) {
+    userCheck.status = "exists";
+    api.getDomainAdmins.mockResolvedValue(["alice@open-paas.org"]);
+    render(<CalendarDomainAdmins domain="open-paas.org" defaultOpen />);
+    await screen.findByText("alice@open-paas.org");
+    fireEvent.click(screen.getByTitle("domains.calendarAdmins.addTooltip"));
+    fireEvent.change(screen.getByPlaceholderText("domains.calendarAdmins.addPlaceholder"), {
+      target: { value: username },
+    });
+    return addButton();
+  }
+
+  it("flags a user who is already an admin and keeps Add disabled", async () => {
+    const add = await typeAdmin("alice@open-paas.org");
+
+    expect(screen.getByText("domains.calendarAdmins.alreadyAdmin")).not.toBeNull();
+    expect(screen.queryByText("common.userExists")).toBeNull();
+    expect(add.disabled).toBe(true);
+  });
+
+  it("compares admins case-insensitively and ignores surrounding spaces", async () => {
+    const add = await typeAdmin("  Alice@Open-Paas.org ");
+
+    expect(screen.getByText("domains.calendarAdmins.alreadyAdmin")).not.toBeNull();
+    expect(add.disabled).toBe(true);
+  });
+
+  it("does not send the request when Enter is pressed on an existing admin", async () => {
+    await typeAdmin("alice@open-paas.org");
+
+    fireEvent.keyDown(screen.getByPlaceholderText("domains.calendarAdmins.addPlaceholder"), { key: "Enter" });
+
+    expect(api.addDomainAdmin).not.toHaveBeenCalled();
+  });
+
+  it("adds a user who is not yet an admin", async () => {
+    const add = await typeAdmin("bob@open-paas.org");
+
+    expect(screen.queryByText("domains.calendarAdmins.alreadyAdmin")).toBeNull();
+    expect(add.disabled).toBe(false);
+
+    fireEvent.click(add);
+
+    await waitFor(() => expect(api.addDomainAdmin).toHaveBeenCalledWith("open-paas.org", "bob@open-paas.org"));
+  });
+});
