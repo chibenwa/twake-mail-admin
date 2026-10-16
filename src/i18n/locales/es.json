@@ -1008,6 +1008,7 @@
         "remove": "Quitar",
         "undoRemove": "Deshacer la eliminación",
         "alreadyShared": "Ya se comparte con este usuario",
+        "unresolved": "Usuario desconocido: su uso compartido no se puede modificar aquí",
         "isOwner": "Este es el propietario de la libreta de direcciones",
         "updated": "Uso compartido actualizado",
         "errorUpdate": "Error al actualizar el uso compartido",

@@ -1008,6 +1008,7 @@
         "remove": "Remove",
         "undoRemove": "Undo removal",
         "alreadyShared": "Already shared with this user",
+        "unresolved": "Unknown user: its sharing cannot be changed from here",
         "isOwner": "This is the owner of the address book",
         "updated": "Sharing updated",
         "errorUpdate": "Error updating sharing",

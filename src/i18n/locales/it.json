@@ -1008,6 +1008,7 @@
         "remove": "Rimuovi",
         "undoRemove": "Annulla la rimozione",
         "alreadyShared": "Già condivisa con questo utente",
+        "unresolved": "Utente sconosciuto: la sua condivisione non può essere modificata qui",
         "isOwner": "Questo è il proprietario della rubrica",
         "updated": "Condivisione aggiornata",
         "errorUpdate": "Errore durante l'aggiornamento della condivisione",

@@ -1008,6 +1008,7 @@
         "remove": "Xóa",
         "undoRemove": "Hoàn tác xóa",
         "alreadyShared": "Đã chia sẻ với người dùng này",
+        "unresolved": "Người dùng không xác định: không thể thay đổi chia sẻ của họ tại đây",
         "isOwner": "Đây là chủ sở hữu của sổ địa chỉ",
         "updated": "Đã cập nhật chia sẻ",
         "errorUpdate": "Lỗi khi cập nhật chia sẻ",
