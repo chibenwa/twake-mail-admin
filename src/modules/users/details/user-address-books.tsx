@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { Link } from "react-router";
 import { ChevronDown, ChevronRight, Contact, Plus, Minus, Pencil, Trash2, Save, Eye, EyeOff, Users, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { createUserAddressBook, deleteUserAddressBook, exportUserAddressBook, getUserAddressBookContactCount, getUserAddressBooks, importUserAddressBook, setUserAddressBookPublicRight, updateUserAddressBook, updateUserAddressBookInvitees } from "../api-client";
@@ -40,7 +41,20 @@ function addressBookId(addressBook: UserAddressBook): string {
 
 // The sharee's mirror of a shared address book has no name of its own: the
 // source one is more telling than the technical id of the mirror.
-function addressBookName(addressBook: UserAddressBook): string {
+// Every user owns the "contacts" and "collected" address books, created by the
+// DAV server: WebAdmin refuses to rename or delete them.
+const SYSTEM_ADDRESS_BOOK_IDS = ["contacts", "collected"] as const;
+type SystemAddressBookId = (typeof SYSTEM_ADDRESS_BOOK_IDS)[number];
+
+function systemAddressBookId(addressBook: UserAddressBook): SystemAddressBookId | null {
+  if (!isOwned(addressBook)) return null;
+  const id = addressBookId(addressBook);
+  return SYSTEM_ADDRESS_BOOK_IDS.find((systemId) => systemId === id) ?? null;
+}
+
+function addressBookName(addressBook: UserAddressBook, t: TFunction): string {
+  const systemId = systemAddressBookId(addressBook);
+  if (systemId) return t(`users.addressBooks.system.${systemId}`);
   return addressBook["dav:name"]?.trim()
     || parseAddressBookSource(addressBook["openpaas:source"])?.addressBookId
     || addressBookId(addressBook);
@@ -107,8 +121,9 @@ function AddressBookRow({
 }) {
   const { t } = useTranslation();
   const id = addressBookId(addressBook);
-  const name = addressBookName(addressBook);
+  const name = addressBookName(addressBook, t);
   const owned = isOwned(addressBook);
+  const system = systemAddressBookId(addressBook) !== null;
   const isPublicAb = isPublic(addressBook);
   // Bumped once an import task is over: a new key re-reads the contact counter.
   const [countKey, setCountKey] = useState(0);
@@ -118,6 +133,14 @@ function AddressBookRow({
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <p className="font-medium min-w-0 break-words">{name}</p>
+          {system && (
+            <span
+              className="px-1.5 py-0.5 rounded-sm bg-gray-100 text-xs text-gray-600"
+              title={t("users.addressBooks.system.hint")}
+            >
+              {t("users.addressBooks.system.badge")}
+            </span>
+          )}
           {permissions.count && (
             <CollectionCountBadge
               key={countKey}
@@ -186,7 +209,7 @@ function AddressBookRow({
             : <EyeOff className="w-3.5 h-3.5 text-gray-400" />}
         </button>
       )}
-      {owned && permissions.edit && (
+      {owned && !system && permissions.edit && (
         <button
           onClick={() => onEdit(addressBook)}
           className="p-1.5 rounded-md hover:bg-gray-200 transition"
@@ -195,7 +218,7 @@ function AddressBookRow({
           <Pencil className="w-3.5 h-3.5 text-blue-600" />
         </button>
       )}
-      {permissions.remove && (
+      {!system && permissions.remove && (
         <button
           onClick={() => onDelete(addressBook)}
           className="p-1.5 rounded-md hover:bg-gray-200 transition"
@@ -327,7 +350,7 @@ export default function UserAddressBooks({ username }: Props) {
   const handleDelete = async (addressBook: UserAddressBook) => {
     const confirmed = await confirm({
       header: t("users.addressBooks.deleteTitle"),
-      message: t("users.addressBooks.deleteConfirm", { name: addressBookName(addressBook) }),
+      message: t("users.addressBooks.deleteConfirm", { name: addressBookName(addressBook, t) }),
     });
     if (!confirmed) return;
     try {
@@ -442,7 +465,7 @@ export default function UserAddressBooks({ username }: Props) {
       <Dialog open={!!editAddressBook} onOpenChange={(v) => { if (!v) setEditAddressBook(null); }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("users.addressBooks.editTitle")} — {editAddressBook ? addressBookName(editAddressBook) : ""}</DialogTitle>
+            <DialogTitle>{t("users.addressBooks.editTitle")} — {editAddressBook ? addressBookName(editAddressBook, t) : ""}</DialogTitle>
           </DialogHeader>
           {editAddressBook && (
             <div className="space-y-3">
@@ -486,7 +509,7 @@ export default function UserAddressBooks({ username }: Props) {
       <Dialog open={!!publicRightAddressBook} onOpenChange={(v) => { if (!v) setPublicRightAddressBook(null); }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("users.addressBooks.publicRight.title")} — {publicRightAddressBook ? addressBookName(publicRightAddressBook) : ""}</DialogTitle>
+            <DialogTitle>{t("users.addressBooks.publicRight.title")} — {publicRightAddressBook ? addressBookName(publicRightAddressBook, t) : ""}</DialogTitle>
           </DialogHeader>
           {publicRightAddressBook && (
             <div className="space-y-3">
@@ -630,7 +653,7 @@ function InviteesModal({
     <Dialog open onOpenChange={(v) => { if (!v) onClose(); }}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{t("users.addressBooks.invitees.title")} — {addressBookName(addressBook)}</DialogTitle>
+          <DialogTitle>{t("users.addressBooks.invitees.title")} — {addressBookName(addressBook, t)}</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           <div className="space-y-1">
