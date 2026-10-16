@@ -89,3 +89,44 @@ describe("Edit registered user dialog", () => {
     expect(toast).not.toHaveBeenCalled();
   });
 });
+
+describe("registered users list: search", () => {
+  const ALICE = { id: "1", email: "alice@example.com", firstname: "Alice", lastname: "Smith" };
+  const BOB = { id: "2", email: "bob@example.com", firstname: "Bob", lastname: "Jones" };
+
+  const renderList = async () => {
+    api.getRegisteredUsers.mockResolvedValue([ALICE, BOB]);
+    render(
+      <ConfirmProvider>
+        <RegisteredUsersList />
+      </ConfirmProvider>
+    );
+    await screen.findByText("alice@example.com");
+  };
+
+  const search = (query: string) =>
+    fireEvent.change(screen.getByPlaceholderText("registeredUsers.searchPlaceholder"), { target: { value: query } });
+
+  it("lists the matching users without an empty-state message", async () => {
+    await renderList();
+    search("BOB");
+    expect(screen.getByText("bob@example.com")).not.toBeNull();
+    expect(screen.queryByText("alice@example.com")).toBeNull();
+    expect(screen.queryByText("registeredUsers.noMatch")).toBeNull();
+  });
+
+  it("tells when no registered user matches the search", async () => {
+    await renderList();
+    search("zzz");
+    expect(screen.getByText("registeredUsers.noMatch")).not.toBeNull();
+    expect(screen.queryByText("alice@example.com")).toBeNull();
+  });
+
+  it("restores the list when the search is cleared", async () => {
+    await renderList();
+    search("zzz");
+    search("");
+    expect(screen.getByText("alice@example.com")).not.toBeNull();
+    expect(screen.queryByText("registeredUsers.noMatch")).toBeNull();
+  });
+});
