@@ -1080,7 +1080,8 @@
   },
   "deleteUserDataForm": {
     "fromStep": "Tiếp tục từ bước",
-    "fromStepPlaceholder": "e.g. MailboxUserDeletionTaskStep"
+    "fromStepPlaceholder": "e.g. MailboxUserDeletionTaskStep",
+    "calendarFromStepPlaceholder": "e.g. DavCalendarDeletionTaskStep"
   },
   "restoreCriteria": {
     "addCriteria": "Thêm tiêu chí",
