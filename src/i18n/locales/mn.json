@@ -1028,6 +1028,7 @@
       "calendarUrl": "Календар",
       "selectCalendar": "Календар сонгох…",
       "durationMinutes": "Үргэлжлэх хугацаа (минут)",
+      "durationInvalid": "Минутын бүхэл тоо оруулна уу, хамгийн багадаа 1.",
       "active": "Идэвхтэй",
       "inactive": "Идэвхгүй",
       "publicId": "Нийтийн ID",
