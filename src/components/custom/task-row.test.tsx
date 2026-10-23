@@ -6,11 +6,11 @@ import TaskRow from "./task-row";
 afterEach(cleanup);
 
 describe("task row", () => {
-  it("runs the task from an outlined button without badge when safe", () => {
+  it("runs the task from a green button without badge when safe", () => {
     const onRun = vi.fn();
     render(<TaskRow title="Reindex" onRun={onRun} />);
     const button = screen.getByRole("button", { name: "common.run" });
-    expect(button.className).toContain("border");
+    expect(button.className).toContain("bg-green-700");
     expect(screen.queryByText("tasks.risk.caution")).toBeNull();
     fireEvent.click(button);
     expect(onRun).toHaveBeenCalledOnce();
@@ -19,13 +19,13 @@ describe("task row", () => {
   it("states in words that a caution task modifies data", () => {
     render(<TaskRow title="Rename user" risk="caution" onRun={() => {}} />);
     expect(screen.getByText("tasks.risk.caution")).not.toBeNull();
-    expect(screen.getByRole("button", { name: "common.run" }).className).toContain("text-amber-800");
+    expect(screen.getByRole("button", { name: "common.run" }).className).toContain("bg-orange-700");
   });
 
   it("states in words that a destructive task deletes data, on a red button", () => {
     render(<TaskRow title="Delete user data" risk="destructive" onRun={() => {}} />);
     expect(screen.getByText("tasks.risk.destructive")).not.toBeNull();
-    expect(screen.getByRole("button", { name: "common.run" }).className).toContain("bg-destructive");
+    expect(screen.getByRole("button", { name: "common.run" }).className).toContain("bg-red-600");
   });
 
   it("uses none of the low-contrast colours", () => {

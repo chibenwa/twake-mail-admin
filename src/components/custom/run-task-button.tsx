@@ -1,5 +1,5 @@
 import { forwardRef, ReactNode } from "react";
-import { Loader2, Play, Trash2, TriangleAlert } from "lucide-react";
+import { Loader2, Play, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button, ButtonProps } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -10,10 +10,15 @@ import { cn } from "@/lib/utils";
  */
 export type TaskRisk = "safe" | "caution" | "destructive";
 
-const ICONS = { safe: Play, caution: TriangleAlert, destructive: Trash2 } as const;
+const ICONS = { safe: Play, caution: Play, destructive: Trash2 } as const;
 
-// Every style keeps a text contrast of at least 4.5:1 against its background
-const CAUTION_CLASS = "border border-amber-600 bg-background text-amber-800 hover:bg-amber-50 hover:text-amber-900";
+// The colour code operators know (green, orange, red), in shades where white text keeps a
+// contrast of at least 4.5:1: green-700 5.0, orange-700 5.2, red-600 4.8
+const RISK_CLASS = {
+  safe: "bg-green-700 text-white hover:bg-green-800",
+  caution: "bg-orange-700 text-white hover:bg-orange-800",
+  destructive: "bg-red-600 text-white hover:bg-red-700",
+} as const;
 
 interface RunTaskButtonProps extends Omit<ButtonProps, "variant"> {
   risk?: TaskRisk;
@@ -28,8 +33,7 @@ export const RunTaskButton = forwardRef<HTMLButtonElement, RunTaskButtonProps>(
     return (
       <Button
         ref={ref}
-        variant={risk === "destructive" ? "destructive" : "outline"}
-        className={cn("rounded-sm shrink-0", risk === "caution" && CAUTION_CLASS, className)}
+        className={cn("rounded-sm shrink-0", RISK_CLASS[risk], className)}
         {...props}
       >
         {loading ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Icon aria-hidden="true" />}
