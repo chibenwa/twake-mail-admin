@@ -13,6 +13,8 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useDomain } from "@/modules/domain-admin/domain-context";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useTranslation } from "react-i18next";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -23,6 +25,7 @@ export default function CalendarResourceDetail() {
   const domainContext = useDomain();
   // In GLOBAL mode domain comes from the URL; in DOMAIN mode it comes from context.
   const domain = domainParam || domainContext;
+  const breadcrumbs = useBreadcrumbs();
   const { toast } = useToast();
   const confirm = useConfirm();
 
@@ -122,17 +125,20 @@ export default function CalendarResourceDetail() {
   };
 
   return (
+    <>
+    <Header
+      headerTitle={resource ? resourceDisplayName(resource) : resourceId}
+      headerSubTitle={t("domains.calendarResources.detailKind")}
+      breadcrumb={breadcrumbs.resources(domain)}
+      actions={resource && !editing && canEdit && (
+        <button onClick={startEdit}
+          className="flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition">
+          <Pencil className="w-4 h-4" />
+          {t("common.edit")}
+        </button>
+      )}
+    />
     <div className="mt-4 p-4 bg-white rounded-2">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">{t("domains.calendarResources.detailTitle", { name: resource && resourceDisplayName(resource) })}</h3>
-        {resource && !editing && canEdit && (
-          <button onClick={startEdit}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition">
-            <Pencil className="w-4 h-4" />
-            {t("common.edit")}
-          </button>
-        )}
-      </div>
 
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
@@ -243,5 +249,6 @@ export default function CalendarResourceDetail() {
         </>
       )}
     </div>
+    </>
   );
 }

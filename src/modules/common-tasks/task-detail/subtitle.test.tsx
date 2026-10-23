@@ -12,7 +12,7 @@ vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: vi.fn() }) }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => vi.fn() }));
 vi.mock("@/modules/domain-admin/domain-context", () => ({ useDomain: () => null }));
 vi.mock("@/components/custom/header", () => ({
-  default: ({ headerSubTitle }: { headerSubTitle: ReactNode }) => <h1>{headerSubTitle}</h1>,
+  default: ({ headerTitle }: { headerTitle: ReactNode }) => <h1>{headerTitle}</h1>,
 }));
 vi.mock("../api-client", () => api);
 
@@ -24,8 +24,8 @@ afterEach(async () => {
   await i18n.changeLanguage("en");
 });
 
-describe("task detail: subtitle", () => {
-  it("is translated, with the task id underlined", async () => {
+describe("task detail: title", () => {
+  it("is translated and names the task", async () => {
     await i18n.changeLanguage("fr");
     api.getTaskDetail.mockResolvedValue({ taskId: TASK_ID, status: TaskStatus.COMPLETED });
     render(
@@ -38,6 +38,5 @@ describe("task detail: subtitle", () => {
 
     const subtitle = await screen.findByRole("heading", { level: 1 });
     expect(subtitle.textContent).toBe(`Tâche ${TASK_ID}`);
-    expect(subtitle.querySelector("u")?.textContent).toBe(TASK_ID);
   });
 });

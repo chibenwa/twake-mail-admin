@@ -11,12 +11,14 @@ export default function MailRepositories() {
 
   return (
     <div className="p-4 w-fit max-w-full">
-      <Header
-        headerTitle={t("sidebar.mailRepositories")}
-        headerSubTitle={t("mailRepositories.subtitle")}
-        docuUrl={docuUrl}
-        enableBackBtn={!!id}
-      />
+      {/* A detail page heads itself with its object and a breadcrumb back here */}
+      {!id && (
+        <Header
+          headerTitle={t("sidebar.mailRepositories")}
+          headerSubTitle={t("mailRepositories.subtitle")}
+          docuUrl={docuUrl}
+        />
+      )}
       <Outlet />
     </div>
   );

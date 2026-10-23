@@ -12,19 +12,22 @@ import RateLimitsSection from "@/components/custom/rate-limits-section";
 import { getDomainRateLimits, updateDomainRateLimits } from "../api-client";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { appConfig } from "@/lib/config";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 export default function DomainDetail() {
   const { t } = useTranslation();
   const { domain } = useParams();
+  const breadcrumbs = useBreadcrumbs();
   const canUpdateRateLimits = useIsAllowed("PUT", "/domains/{domain}/ratelimits");
 
   const fetchRateLimits = useCallback(() => getDomainRateLimits(domain!), [domain]);
   const updateRateLimits = useCallback((limits: any) => updateDomainRateLimits(domain!, limits), [domain]);
 
   return (
+    <>
+    <Header headerTitle={domain} headerSubTitle={t("domains.detailKind")} breadcrumb={breadcrumbs.domains()} />
     <div className="mt-4 p-4 bg-white rounded-2">
-      <h3 className="text-lg font-semibold">{t("domains.title")}</h3>
-      <p>{t("domains.label", { domain })}</p>
 
       <DomainQuotaSection domain={domain!} />
       <DomainAliases domain={domain!} />
@@ -35,5 +38,6 @@ export default function DomainDetail() {
       <DomainJmapReport domain={domain!} />
       <DomainTasks domain={domain!} />
     </div>
+    </>
   );
 }

@@ -1,11 +1,13 @@
 import { useState, useEffect, useId } from "react";
-import { useParams, Link } from "react-router";
+import { useParams } from "react-router";
 import { ChevronDown, ChevronRight, Loader2, Paperclip, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { searchUserMails, getUserMailboxes } from "../api-client";
 import { MailSearchFilter, MailSearchResult } from "../types";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -27,6 +29,7 @@ interface SortEntry {
 
 export default function UserMessageSearch() {
   const { username } = useParams<{ username: string }>();
+  const breadcrumbs = useBreadcrumbs();
   const { t } = useTranslation();
   const idPrefix = useId();
   const canSearch = useIsAllowed("POST", "/users/{username}/mails");
@@ -130,17 +133,13 @@ export default function UserMessageSearch() {
   };
 
   return (
+    <>
+    <Header
+      headerTitle={t("users.messageSearch.title")}
+      documentTitle={`${t("users.messageSearch.title")} — ${username}`}
+      breadcrumb={breadcrumbs.user(username!)}
+    />
     <div className="mt-4 p-4 bg-white rounded-2">
-      <div className="flex items-center gap-2 mb-4">
-        <Link
-          to={`/users/user/${encodeURIComponent(username!)}`}
-          className="text-blue-500 hover:underline text-sm"
-        >
-          ← {username}
-        </Link>
-        <span className="text-gray-400">/</span>
-        <h3 className="text-lg font-semibold">{t("users.messageSearch.title")}</h3>
-      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Reason */}
@@ -460,6 +459,7 @@ export default function UserMessageSearch() {
         </div>
       )}
     </div>
+    </>
   );
 }
 

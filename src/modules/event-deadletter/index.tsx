@@ -11,12 +11,14 @@ export default function EventDeadletter() {
 
   return (
     <div className="p-4">
-      <Header
-        headerTitle={t("sidebar.eventDeadLetter")}
-        headerSubTitle={t("eventDeadletter.subtitle")}
-        docuUrl={docuUrl}
-        enableBackBtn={!!id}
-      />
+      {/* A detail page heads itself with its object and a breadcrumb back here */}
+      {!id && (
+        <Header
+          headerTitle={t("sidebar.eventDeadLetter")}
+          headerSubTitle={t("eventDeadletter.subtitle")}
+          docuUrl={docuUrl}
+        />
+      )}
       <Outlet />
     </div>
   );

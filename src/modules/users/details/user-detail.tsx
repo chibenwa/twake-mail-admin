@@ -21,6 +21,8 @@ import RateLimitsSection from "@/components/custom/rate-limits-section";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { getUserRateLimits, updateUserRateLimits, searchDeletedMessages, restoreDeletedMessages } from "../api-client";
 import { appConfig } from "@/lib/config";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 export default function UserDetail() {
   const { t } = useTranslation();
@@ -29,14 +31,15 @@ export default function UserDetail() {
   const canSearchDeleted = useIsAllowed("POST", "/deletedMessages/users/{username}/messages");
   const canRestoreDeleted = useIsAllowed("POST", "/deletedMessages/users/{username}");
 
+  const breadcrumbs = useBreadcrumbs();
   const mappingsRevision = useUserMappingsRevisionState();
   const fetchRateLimits = useCallback(() => getUserRateLimits(username!), [username]);
   const updateRateLimits = useCallback((limits: any) => updateUserRateLimits(username!, limits), [username]);
 
   return (
+    <>
+    <Header headerTitle={username} headerSubTitle={t("users.detailKind")} breadcrumb={breadcrumbs.users()} />
     <div className="mt-4 p-4 bg-white rounded-2">
-      <h3 className="text-lg font-semibold">{t("users.title")}</h3>
-      <p>{t("users.label", { username })}</p>
 
       <UserMailboxes username={username!} />
       <UserQuota username={username!} />
@@ -65,5 +68,6 @@ export default function UserDetail() {
       <UserTasks username={username!} />
       <UserChannels username={username!} />
     </div>
+    </>
   );
 }

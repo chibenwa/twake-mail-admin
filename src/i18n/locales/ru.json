@@ -80,7 +80,8 @@
     "sizeUnit": "Единица",
     "remove": "Удалить",
     "optional": "необязательно",
-    "advancedOptions": "Дополнительные параметры"
+    "advancedOptions": "Дополнительные параметры",
+    "breadcrumb": "Навигационная цепочка"
   },
   "sidebar": {
     "application": "Приложение",
@@ -108,8 +109,6 @@
     "description": "Меню навигации приложения"
   },
   "domains": {
-    "title": "Сведения о домене",
-    "label": "Домен: {{domain}}",
     "searchPlaceholder": "Поиск доменов...",
     "noMatch": "Нет доменов, соответствующих «{{query}}».",
     "newDomainPlaceholder": "Имя нового домена",
@@ -195,8 +194,6 @@
       "searchPlaceholder": "Поиск командных почтовых ящиков..."
     },
     "teamMailbox": {
-      "detailTitle": "Сведения о командном почтовом ящике",
-      "label": "Почтовый ящик: {{mailbox}}@{{domain}}",
       "members": "Участники",
       "member": "участник",
       "manager": "руководитель",
@@ -208,7 +205,8 @@
       "errorRemovingMember": "Ошибка при удалении участника",
       "noMembers": "Участников нет.",
       "removeMemberTooltip": "Удалить участника",
-      "role": "Роль"
+      "role": "Роль",
+      "detailKind": "Командный ящик"
     },
     "teamMailboxQuota": {
       "title": "Квота",
@@ -238,13 +236,13 @@
       "deleted": "Папка успешно удалена",
       "deleteTooltip": "Удалить папку",
       "empty": "Папок нет.",
-      "detailTitle": "Папка командного почтового ящика",
       "subaddressing": "Субадресация",
       "subaddressingEnabledDesc": "Письма на {{mailbox}}+{{folder}}@{{domain}} доставляются в эту папку",
       "subaddressingDisabledDesc": "Доставка с субадресацией в эту папку отключена",
       "subaddressingEnabled": "Субадресация включена",
       "subaddressingDisabled": "Субадресация отключена",
-      "errorSubaddressing": "Ошибка при обновлении субадресации"
+      "errorSubaddressing": "Ошибка при обновлении субадресации",
+      "detailKind": "Папка командного ящика"
     },
     "folderDetail": {
       "title": "Папка командного почтового ящика",
@@ -327,10 +325,7 @@
       "addTemplate": "Добавить шаблон подписи",
       "removeTemplate": "Удалить шаблон «{{language}}»"
     },
-    "calendarDetail": {
-      "title": "Сведения о домене календаря",
-      "domain": "Домен: {{domain}}"
-    },
+    "calendarDetail": {},
     "domainSettings": {
       "title": "Настройки домена",
       "useDefault": "Использовать системные значения по умолчанию",
@@ -404,7 +399,6 @@
         "updated": "Видимость обновлена",
         "errorUpdate": "Ошибка при обновлении видимости"
       },
-      "detailTitle": "Ресурс календаря — {{name}}",
       "fieldName": "Имя",
       "fieldDescription": "Описание",
       "fieldDomain": "Домен",
@@ -421,7 +415,8 @@
       "removeAdminTitle": "Удалить администратора",
       "removeAdminConfirm": "Удалить «{{email}}» из администраторов?",
       "removeAdminTooltip": "Удалить администратора",
-      "searchPlaceholder": "Поиск ресурсов..."
+      "searchPlaceholder": "Поиск ресурсов...",
+      "detailKind": "Календарь ресурса"
     },
     "teamCalendars": {
       "title": "Командные календари",
@@ -533,11 +528,10 @@
       }
     },
     "subtitleMail": "Управление доменами, зарегистрированными на почтовом сервере.",
-    "subtitleCalendar": "Управление доменами, зарегистрированными на сервере календаря."
+    "subtitleCalendar": "Управление доменами, зарегистрированными на сервере календаря.",
+    "detailKind": "Домен"
   },
   "users": {
-    "title": "Сведения о пользователе",
-    "label": "Имя пользователя: {{username}}",
     "searchPlaceholder": "Поиск пользователей по началу имени...",
     "searchHint": "Совпадение с началом имени пользователя",
     "allDomains": "Все домены",
@@ -549,7 +543,9 @@
       "register": "Зарегистрировать пользователя",
       "registerTitle": "Регистрация пользователя",
       "registerHint": "Регистрация «{{username}}» на DAV-сервере. Имя и фамилия не считываются из каталога, подтвердите их.",
-      "registered": "Пользователь «{{username}}» зарегистрирован"
+      "registered": "Пользователь «{{username}}» зарегистрирован",
+      "registeredLine": "Зарегистрированный пользователь календаря",
+      "notRegisteredLine": "Не зарегистрирован"
     },
     "aliases": {
       "title": "Псевдонимы",
@@ -1125,7 +1121,8 @@
       "ruleEnd": "Время окончания"
     },
     "subtitle": "Управление пользователями, зарегистрированными на почтовом сервере.",
-    "subtitleCalendar": "Управление пользователями, зарегистрированными на сервере календаря."
+    "subtitleCalendar": "Управление пользователями, зарегистрированными на сервере календаря.",
+    "detailKind": "Пользователь"
   },
   "mailboxCounts": {
     "totalMessages": "Всего сообщений",
@@ -1161,7 +1158,6 @@
     "hasAttachment": "Есть вложение"
   },
   "tasks": {
-    "detailSubtitle": "Задача <u>{{taskId}}</u>",
     "title": "Задачи",
     "subtitle": "Мониторинг и управление задачами сервера",
     "refresh": "Обновить",
@@ -1211,7 +1207,8 @@
     "risk": {
       "caution": "Изменяет данные",
       "destructive": "Удаляет данные"
-    }
+    },
+    "detailKind": "Задача"
   },
   "commonTasks": {
     "title": "Общие задачи",
@@ -1568,7 +1565,6 @@
     "errorDeletingEvent": "Ошибка при удалении события",
     "fetchEventError": "Ошибка при получении JSON неудавшегося события",
     "groupDetails": "Сведения о группе событий",
-    "groupId": "Группа: {{id}}",
     "loadingEvents": "Загрузка неудавшихся событий...",
     "pageInfo": "Страница {{page}} — {{limit}} событий на странице — Всего: {{size}}",
     "copiedToClipboard": "Ключ события скопирован в буфер обмена!",
@@ -1614,7 +1610,6 @@
     "colLastUpdated": "Последнее обновление",
     "colActions": "Действия",
     "copiedToClipboard": "Скопировано в буфер обмена",
-    "detailTitle": "Хранилище почты — {{path}}",
     "loadingMails": "Загрузка писем...",
     "noMails": "Письма не найдены.",
     "pageInfo": "Страница {{page}} / {{totalPages}}",
@@ -1636,7 +1631,6 @@
     "sortLastUpdated": "Последнее обновление",
     "extendedView": "Расширенный вид",
     "extendedTitle": "Расширенный вид",
-    "repositoryLabel": "Хранилище: {{id}}",
     "repositoryId": "ID хранилища",
     "mailDetailTitle": "Сведения о письме",
     "loadingMailDetails": "Загрузка сведений о письме...",
@@ -1662,7 +1656,8 @@
     "removeMailConfirm": "Удалить это письмо из хранилища?",
     "removeMailSuccess": "Письмо успешно удалено",
     "runTaskHeader": "Запустить задачу",
-    "subtitle": "Хранилища почты хранят письма вместе с контекстом их обработки, позволяя позже возобновить обработку."
+    "subtitle": "Хранилища почты хранят письма вместе с контекстом их обработки, позволяя позже возобновить обработку.",
+    "detailKind": "Хранилище писем"
   },
   "mappings": {
     "addAddress": "Добавить адресное сопоставление",

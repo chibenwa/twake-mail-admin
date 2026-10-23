@@ -5,6 +5,8 @@ import { MemoryRouter, Route, Routes } from "react-router";
 import EventListenersDetail from "./event-listener";
 import { getFailedEvents } from "../api-client";
 
+// The page header is covered by its own tests
+vi.mock("@/components/custom/header", () => ({ default: () => null }));
 vi.mock("../api-client", () => ({
   getFailedEvents: vi.fn(),
   deleteEvent: vi.fn(),

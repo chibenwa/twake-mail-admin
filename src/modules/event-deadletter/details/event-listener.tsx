@@ -12,6 +12,8 @@ import { Trash2 } from "lucide-react";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { searchAndPaginate } from "@/lib/search-pagination";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 interface EventResponse {
   [key: string]: any; // Represents the full JSON structure of the event
@@ -49,6 +51,7 @@ export default function EventListenersDetail() {
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const { id } = useParams();
+  const breadcrumbs = useBreadcrumbs();
   const confirm = useConfirm();
   const canViewJson = useIsAllowed("GET", "/events/deadLetter/groups/{group}/{insertionId}");
   const canDelete = useIsAllowed("DELETE", "/events/deadLetter/groups/{group}/{insertionId}");
@@ -102,9 +105,9 @@ export default function EventListenersDetail() {
   };
 
   return (
+    <>
+    <Header headerTitle={id} headerSubTitle={t("eventDeadletter.groupDetails")} breadcrumb={breadcrumbs.eventDeadLetter()} />
     <div className="mt-4 p-4 bg-white rounded-2">
-      <h3 className="text-lg font-semibold">{t("eventDeadletter.groupDetails")}</h3>
-      <p className="break-all">{t("eventDeadletter.groupId", { id })}</p>
 
       {isLoading && <p>{t("eventDeadletter.loadingEvents")}</p>}
       {error && <p className="text-red-500">{t("common.errorPrefix", { message: error })}</p>}
@@ -179,5 +182,6 @@ export default function EventListenersDetail() {
         </div>
       )}
     </div>
+    </>
   );
 }

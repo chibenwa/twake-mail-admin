@@ -25,6 +25,8 @@ import { PaginationControls } from "@/components/custom/pagination-controls";
 import { currentLocale } from "@/i18n/locale";
 import { formatByteSize } from "@/i18n/format-size";
 import { EXTENDED_PAGE_LIMIT } from "./page-limits";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 const PAGE_LIMIT = EXTENDED_PAGE_LIMIT;
 
@@ -65,6 +67,7 @@ export default function MailRepositoryExtended() {
   const toastTaskCreated = useTaskCreatedToast();
   const confirm = useConfirm();
   const { id } = useParams();
+  const breadcrumbs = useBreadcrumbs();
   const [searchParams, setSearchParams] = useSearchParams();
   const canViewMail = useIsAllowed("GET", "/mailRepositories/{encodedPath}/mails/{mailKey}");
   const canPatchMail = useIsAllowed("PATCH", "/mailRepositories/{encodedPath}/mails/{mailKey}");
@@ -324,9 +327,13 @@ export default function MailRepositoryExtended() {
   ];
 
   return (
+    <>
+    <Header
+      headerTitle={t("mailRepositories.extendedTitle")}
+      documentTitle={`${t("mailRepositories.extendedTitle")} — ${id}`}
+      breadcrumb={[...breadcrumbs.mailRepositories(), { label: id!, to: `/mail-repositories/repository/${encodeURIComponent(id!)}` }]}
+    />
     <div className="mt-4 p-4 bg-white rounded-2">
-      <h3 className="text-lg font-semibold">{t("mailRepositories.extendedTitle")}</h3>
-      <p className="text-sm text-gray-500 mb-4">{t("mailRepositories.repositoryLabel", { id })}</p>
 
       <MailFiltersPanel filters={activeFilters} onApply={handleApplyFilters} />
 
@@ -472,5 +479,6 @@ export default function MailRepositoryExtended() {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   );
 }

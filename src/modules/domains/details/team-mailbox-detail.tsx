@@ -15,12 +15,15 @@ import TeamMailboxFolders from "./team-mailbox-folders";
 import TeamMailboxQuota from "./team-mailbox-quota";
 import TeamMailboxExtraSenders from "./team-mailbox-extra-senders";
 import UserDeletedMessageVault from "@/modules/users/details/user-deleted-message-vault";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
 export default function TeamMailboxDetail() {
   const { t } = useTranslation();
   const { domain, mailbox } = useParams();
+  const breadcrumbs = useBreadcrumbs();
   const { toast } = useToast();
   const confirm = useConfirm();
   const canAddMember = useIsAllowed("PUT", "/domains/{domain}/team-mailboxes/{mailbox}/members/{username}");
@@ -99,9 +102,9 @@ export default function TeamMailboxDetail() {
   };
 
   return (
+    <>
+    <Header headerTitle={`${mailbox}@${domain}`} headerSubTitle={t("domains.teamMailbox.detailKind")} breadcrumb={breadcrumbs.teamMailboxes(domain!)} />
     <div className="mt-4 p-4 bg-white rounded-2">
-      <h3 className="text-lg font-semibold">{t("domains.teamMailbox.detailTitle")}</h3>
-      <p>{t("domains.teamMailbox.label", { mailbox, domain })}</p>
 
       <div className="mt-6">
         <button
@@ -225,5 +228,6 @@ export default function TeamMailboxDetail() {
         />
       )}
     </div>
+    </>
   );
 }

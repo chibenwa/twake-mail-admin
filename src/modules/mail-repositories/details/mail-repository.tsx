@@ -20,6 +20,8 @@ import MailFiltersPanel, { MailFilters } from "./mail-filters-panel";
 import { BASIC_PAGE_LIMIT, extendedPageOf } from "./page-limits";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useTranslation } from "react-i18next";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 // Define the types for the expected responses
 interface JsonMailResponse {
@@ -84,6 +86,7 @@ export default function MailRepositoryDetail() {
   const toastTaskCreated = useTaskCreatedToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const { id } = useParams();
+  const breadcrumbs = useBreadcrumbs();
   const confirm = useConfirm();
   const canViewMail = useIsAllowed("GET", "/mailRepositories/{encodedPath}/mails/{mailKey}");
   const canPatchMail = useIsAllowed("PATCH", "/mailRepositories/{encodedPath}/mails/{mailKey}");
@@ -273,12 +276,10 @@ export default function MailRepositoryDetail() {
   })();
 
   return (
+    <>
+    <Header headerTitle={id} headerSubTitle={t("mailRepositories.detailKind")} breadcrumb={breadcrumbs.mailRepositories()} />
     <div className="mt-4 p-4 bg-white rounded-2">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-semibold">{t("mailRepositories.detailTitle", { path: id })}</h3>
-          <p>{id}</p>
-        </div>
+      <div className="flex items-center justify-end mb-4">
         <a
           href={extendedHref}
           className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-sm"
@@ -421,5 +422,6 @@ export default function MailRepositoryDetail() {
         </div>
       )}
     </div>
+    </>
   );
 }

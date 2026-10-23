@@ -11,12 +11,14 @@ export default function UnsentMails() {
 
   return (
     <div className="p-4">
-      <Header
-        headerTitle={t("sidebar.unsentMails")}
-        headerSubTitle={t("unsentMails.subtitle")}
-        docuUrl={docuUrl}
-        enableBackBtn={!!id}
-      />
+      {/* A detail page heads itself with its object and a breadcrumb back here */}
+      {!id && (
+        <Header
+          headerTitle={t("sidebar.unsentMails")}
+          headerSubTitle={t("unsentMails.subtitle")}
+          docuUrl={docuUrl}
+        />
+      )}
       <Outlet />
     </div>
   );

@@ -16,6 +16,8 @@ import CalendarUserTasks, { CalendarUserCounts } from "./calendar-user-tasks";
 import UserCalendars from "./user-calendars";
 import UserBookingLinks from "./user-booking-links";
 import UserAddressBooks from "./user-address-books";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 function UnregisteredUser({ username, onRegistered }: { username: string; onRegistered: () => void }) {
   const { t } = useTranslation();
@@ -75,9 +77,16 @@ export default function CalendarUserDetail() {
   // The registration state is unknown while the list loads, and stays unknown when it cannot be
   // read: in that case the details are rendered as-is, letting each panel report its own errors.
   const pending = canReadRegisteredUsers && registeredUsers === null && !error;
-  const isRegistered =
-    registeredUsers === null ||
-    registeredUsers.some((u) => (u.email ?? "").toLowerCase() === username!.toLowerCase());
+  const registeredUser = registeredUsers?.find((u) => (u.email ?? "").toLowerCase() === username!.toLowerCase());
+  const isRegistered = registeredUsers === null || !!registeredUser;
+  const breadcrumbs = useBreadcrumbs();
+  // Who the user is and whether they have calendars, from the record the page already loads
+  const fullName = [registeredUser?.firstname, registeredUser?.lastname].filter(Boolean).join(" ");
+  const status = pending || registeredUsers === null
+    ? undefined
+    : registeredUser
+      ? [fullName, t("users.registration.registeredLine")].filter(Boolean).join(" · ")
+      : t("users.registration.notRegisteredLine");
   // The booking links show the name of their calendar: they re-read the calendars once the
   // Calendars section changed them.
   const [calendarsVersion, setCalendarsVersion] = useState(0);
@@ -87,9 +96,9 @@ export default function CalendarUserDetail() {
   const onBookingLinksCount = useCallback((bookingLinks: number) => setCounts((c) => ({ ...c, bookingLinks })), []);
 
   return (
+    <>
+    <Header headerTitle={username} headerSubTitle={status ?? t("users.detailKind")} breadcrumb={breadcrumbs.users()} />
     <div className="mt-4 p-4 bg-white rounded-2">
-      <h3 className="text-lg font-semibold">{t("users.title")}</h3>
-      <p>{t("users.label", { username })}</p>
 
       {pending && <div className="h-[58px] mt-4 rounded-2 animate-pulse bg-gray-200" />}
 
@@ -106,5 +115,6 @@ export default function CalendarUserDetail() {
         </>
       )}
     </div>
+    </>
   );
 }

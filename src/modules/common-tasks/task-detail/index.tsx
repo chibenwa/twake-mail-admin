@@ -1,7 +1,7 @@
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { useCallback } from "react";
 import { useParams } from "react-router";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { cancelTask, getTaskDetail } from "../api-client";
 import { useDomain } from "@/modules/domain-admin/domain-context";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { TaskStatus } from "../types";
 import Header from "@/components/custom/header";
 import ErrorDisplayer from "@/components/custom/error-displayer";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 // Only a task that is still waiting or running can be cancelled.
 const CANCELLABLE_STATUSES: ReadonlySet<TaskStatus> = new Set([TaskStatus.WAITING, TaskStatus.IN_PROGRESS]);
@@ -20,6 +21,7 @@ const CANCELLABLE_STATUSES: ReadonlySet<TaskStatus> = new Set([TaskStatus.WAITIN
 export default function TaskDetail() {
   const { t } = useTranslation();
   const { id } = useParams();
+  const breadcrumbs = useBreadcrumbs();
   const { toast } = useToast();
   const confirm = useConfirm();
   const domain = useDomain() || undefined;
@@ -59,9 +61,10 @@ export default function TaskDetail() {
     <div className="p-4 relative">
       <div className="flex items-center mb-4">
         <Header
-          headerSubTitle={<span><Trans i18nKey="tasks.detailSubtitle" values={{ taskId: id }} components={{ u: <u /> }} /></span>}
+          headerTitle={t("common.taskLink", { taskId: id })}
+          headerSubTitle={t("tasks.detailKind")}
           docuUrl="https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_getting_a_task_details"
-          enableBackBtn={true}
+          breadcrumb={breadcrumbs.tasks()}
         />
 
         <TooltipProvider>

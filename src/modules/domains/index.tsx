@@ -14,12 +14,14 @@ export default function Domains() {
 
   return (
     <div className="p-4 w-fit max-w-full">
-      <Header
-        headerTitle={t("sidebar.domains")}
-        headerSubTitle={t(subtitleKey)}
-        docuUrl={appConfig.application === 'CALENDAR' ? CALENDAR_WEBADMIN_DOC_URL : mailDocuUrl}
-        enableBackBtn={!!domain}
-      />
+      {/* A detail page heads itself with its object and a breadcrumb back here */}
+      {!domain && (
+        <Header
+          headerTitle={t("sidebar.domains")}
+          headerSubTitle={t(subtitleKey)}
+          docuUrl={appConfig.application === 'CALENDAR' ? CALENDAR_WEBADMIN_DOC_URL : mailDocuUrl}
+        />
+      )}
       <Outlet />
     </div>
   );

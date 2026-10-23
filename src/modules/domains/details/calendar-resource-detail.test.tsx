@@ -8,7 +8,10 @@ const api = vi.hoisted(() => ({
   updateResource: vi.fn(),
 }));
 
-vi.mock("react-router", () => ({ useParams: () => ({ domain: "open-paas.org", resourceId: "room-2" }) }));
+vi.mock("react-router", () => ({
+  useParams: () => ({ domain: "open-paas.org", resourceId: "room-2" }),
+  Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
+}));
 vi.mock("@/modules/domain-admin/domain-context", () => ({ useDomain: () => undefined }));
 vi.mock("@/lib/proxy-resolver-context", () => ({ useIsAllowed: () => true }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => async () => true }));

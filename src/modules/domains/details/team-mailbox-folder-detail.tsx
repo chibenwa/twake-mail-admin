@@ -7,10 +7,13 @@ import { getTeamMailboxFolderSubaddressing, setTeamMailboxFolderSubaddressing } 
 import { useToast } from "@/hooks/use-toast";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import TeamMailboxFolderExtraAcl from "./team-mailbox-folder-extra-acl";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 export default function TeamMailboxFolderDetail() {
   const { t } = useTranslation();
   const { domain, mailbox, folder } = useParams();
+  const breadcrumbs = useBreadcrumbs();
   const { toast } = useToast();
   const idPrefix = useId();
   const canToggleSubaddressing = useIsAllowed("PUT", "/domains/{domain}/team-mailboxes/{mailbox}/mailboxes/{folderName}/subaddressing");
@@ -37,9 +40,9 @@ export default function TeamMailboxFolderDetail() {
   };
 
   return (
+    <>
+    <Header headerTitle={folder} headerSubTitle={t("domains.folders.detailKind")} breadcrumb={breadcrumbs.teamMailbox(domain!, mailbox!)} />
     <div className="mt-4 p-4 bg-white rounded-2">
-      <h3 className="text-lg font-semibold">{t("domains.folders.detailTitle")}</h3>
-      <p className="text-gray-500 text-sm">{folder} — {mailbox}@{domain}</p>
 
       <div className="mt-6">
         {isLoading && (
@@ -87,5 +90,6 @@ export default function TeamMailboxFolderDetail() {
       </div>
       <TeamMailboxFolderExtraAcl domain={domain!} mailbox={mailbox!} folder={folder!} />
     </div>
+    </>
   );
 }

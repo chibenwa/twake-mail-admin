@@ -80,7 +80,8 @@
     "sizeUnit": "Unit",
     "remove": "Remove",
     "optional": "optional",
-    "advancedOptions": "Advanced options"
+    "advancedOptions": "Advanced options",
+    "breadcrumb": "Breadcrumb"
   },
   "sidebar": {
     "application": "Application",
@@ -108,8 +109,6 @@
     "description": "Application navigation menu"
   },
   "domains": {
-    "title": "Domain Details",
-    "label": "Domain: {{domain}}",
     "searchPlaceholder": "Search domains...",
     "noMatch": "No domain matches \"{{query}}\".",
     "newDomainPlaceholder": "New domain name",
@@ -195,8 +194,6 @@
       "searchPlaceholder": "Search team mailboxes..."
     },
     "teamMailbox": {
-      "detailTitle": "Team Mailbox Details",
-      "label": "Mailbox: {{mailbox}}@{{domain}}",
       "members": "Members",
       "member": "member",
       "manager": "manager",
@@ -208,7 +205,8 @@
       "errorRemovingMember": "Error removing member",
       "noMembers": "No members.",
       "removeMemberTooltip": "Remove member",
-      "role": "Role"
+      "role": "Role",
+      "detailKind": "Team mailbox"
     },
     "teamMailboxQuota": {
       "title": "Quota",
@@ -238,13 +236,13 @@
       "deleted": "Folder deleted successfully",
       "deleteTooltip": "Delete folder",
       "empty": "No folders.",
-      "detailTitle": "Team Mailbox Folder",
       "subaddressing": "Sub-addressing",
       "subaddressingEnabledDesc": "Emails to {{mailbox}}+{{folder}}@{{domain}} are delivered to this folder",
       "subaddressingDisabledDesc": "Sub-addressing delivery to this folder is disabled",
       "subaddressingEnabled": "Sub-addressing enabled",
       "subaddressingDisabled": "Sub-addressing disabled",
-      "errorSubaddressing": "Error updating sub-addressing"
+      "errorSubaddressing": "Error updating sub-addressing",
+      "detailKind": "Team mailbox folder"
     },
     "folderDetail": {
       "title": "Team Mailbox Folder",
@@ -327,10 +325,7 @@
       "addTemplate": "Add signature template",
       "removeTemplate": "Remove template \"{{language}}\""
     },
-    "calendarDetail": {
-      "title": "Calendar Domain Details",
-      "domain": "Domain: {{domain}}"
-    },
+    "calendarDetail": {},
     "domainSettings": {
       "title": "Domain settings",
       "useDefault": "Use system default",
@@ -404,7 +399,6 @@
         "updated": "Visibility updated",
         "errorUpdate": "Error updating visibility"
       },
-      "detailTitle": "Calendar Resource — {{name}}",
       "fieldName": "Name",
       "fieldDescription": "Description",
       "fieldDomain": "Domain",
@@ -421,7 +415,8 @@
       "removeAdminTitle": "Remove Administrator",
       "removeAdminConfirm": "Remove \"{{email}}\" from administrators?",
       "removeAdminTooltip": "Remove administrator",
-      "searchPlaceholder": "Search resources..."
+      "searchPlaceholder": "Search resources...",
+      "detailKind": "Resource calendar"
     },
     "teamCalendars": {
       "title": "Team Calendars",
@@ -533,11 +528,10 @@
       }
     },
     "subtitleMail": "Manage domains registered on the mail server.",
-    "subtitleCalendar": "Manage domains registered on the calendar server."
+    "subtitleCalendar": "Manage domains registered on the calendar server.",
+    "detailKind": "Domain"
   },
   "users": {
-    "title": "User Details",
-    "label": "Username: {{username}}",
     "searchPlaceholder": "Search users by name prefix...",
     "searchHint": "Matches the beginning of the username",
     "allDomains": "All domains",
@@ -549,7 +543,9 @@
       "register": "Register this user",
       "registerTitle": "Register user",
       "registerHint": "Registering \"{{username}}\" on the DAV server. Firstname and lastname are not read from the directory, please confirm them.",
-      "registered": "User \"{{username}}\" registered"
+      "registered": "User \"{{username}}\" registered",
+      "registeredLine": "Registered calendar user",
+      "notRegisteredLine": "Not registered"
     },
     "aliases": {
       "title": "Aliases",
@@ -1123,7 +1119,8 @@
       "ruleEnd": "End time"
     },
     "subtitle": "Manage users registered on the mail server.",
-    "subtitleCalendar": "Manage users registered on the calendar server."
+    "subtitleCalendar": "Manage users registered on the calendar server.",
+    "detailKind": "User"
   },
   "mailboxCounts": {
     "totalMessages": "Total messages",
@@ -1159,7 +1156,6 @@
     "hasAttachment": "Has attachment"
   },
   "tasks": {
-    "detailSubtitle": "Task <u>{{taskId}}</u>",
     "title": "Tasks",
     "subtitle": "Monitor and manage server tasks",
     "refresh": "Refresh",
@@ -1209,7 +1205,8 @@
     "risk": {
       "caution": "Modifies data",
       "destructive": "Deletes data"
-    }
+    },
+    "detailKind": "Task"
   },
   "commonTasks": {
     "title": "Common Tasks",
@@ -1566,7 +1563,6 @@
     "errorDeletingEvent": "Error deleting event",
     "fetchEventError": "Error fetching failed event JSON",
     "groupDetails": "Event Group Details",
-    "groupId": "Group: {{id}}",
     "loadingEvents": "Loading failed events...",
     "pageInfo": "Page {{page}} — {{limit}} events per page — Total: {{size}}",
     "copiedToClipboard": "Event key copied to clipboard!",
@@ -1612,7 +1608,6 @@
     "colLastUpdated": "Last Updated",
     "colActions": "Actions",
     "copiedToClipboard": "Copied to clipboard",
-    "detailTitle": "Mail Repository — {{path}}",
     "loadingMails": "Loading emails...",
     "noMails": "No emails found.",
     "pageInfo": "Page {{page}} / {{totalPages}}",
@@ -1634,7 +1629,6 @@
     "sortLastUpdated": "Last Updated",
     "extendedView": "Extended view",
     "extendedTitle": "Extended View",
-    "repositoryLabel": "Repository: {{id}}",
     "repositoryId": "Repository ID",
     "mailDetailTitle": "Email Details",
     "loadingMailDetails": "Loading email details...",
@@ -1660,7 +1654,8 @@
     "removeMailConfirm": "Remove this email from the repository?",
     "removeMailSuccess": "Email removed successfully",
     "runTaskHeader": "Run Task",
-    "subtitle": "Mail repositories store emails along with their processing context, allowing to later resume the mail processing."
+    "subtitle": "Mail repositories store emails along with their processing context, allowing to later resume the mail processing.",
+    "detailKind": "Mail repository"
   },
   "mappings": {
     "addAddress": "Add Address Mapping",

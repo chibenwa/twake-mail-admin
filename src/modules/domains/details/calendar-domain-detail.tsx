@@ -6,15 +6,18 @@ import CalendarDomainSettings from "./calendar-domain-settings";
 import CalendarDomainTasks from "./calendar-domain-tasks";
 import DomainAddressBookCounts from "./domain-address-book-counts";
 import { useTranslation } from "react-i18next";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 export default function CalendarDomainDetail() {
   const { t } = useTranslation();
   const { domain } = useParams();
+  const breadcrumbs = useBreadcrumbs();
 
   return (
+    <>
+    <Header headerTitle={domain} headerSubTitle={t("domains.detailKind")} breadcrumb={breadcrumbs.domains()} />
     <div className="mt-4 p-4 bg-white rounded-2">
-      <h3 className="text-lg font-semibold">{t("domains.calendarDetail.title")}</h3>
-      <p>{t("domains.calendarDetail.domain", { domain })}</p>
 
       <CalendarDomainAdmins domain={domain!} />
       <CalendarDomainResources domain={domain!} />
@@ -23,5 +26,6 @@ export default function CalendarDomainDetail() {
       <DomainAddressBookCounts domain={domain!} />
       <CalendarDomainTasks domain={domain!} />
     </div>
+    </>
   );
 }

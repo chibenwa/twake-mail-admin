@@ -80,7 +80,8 @@
     "sizeUnit": "Einheit",
     "remove": "Entfernen",
     "optional": "optional",
-    "advancedOptions": "Erweiterte Optionen"
+    "advancedOptions": "Erweiterte Optionen",
+    "breadcrumb": "Brotkrumennavigation"
   },
   "sidebar": {
     "application": "Anwendung",
@@ -108,8 +109,6 @@
     "description": "Navigationsmenü der Anwendung"
   },
   "domains": {
-    "title": "Domain-Details",
-    "label": "Domain: {{domain}}",
     "searchPlaceholder": "Domains suchen...",
     "noMatch": "Keine Domain entspricht „{{query}}“.",
     "newDomainPlaceholder": "Neuer Domainname",
@@ -195,8 +194,6 @@
       "searchPlaceholder": "Team-Postfächer suchen..."
     },
     "teamMailbox": {
-      "detailTitle": "Team-Postfach-Details",
-      "label": "Postfach: {{mailbox}}@{{domain}}",
       "members": "Mitglieder",
       "member": "Mitglied",
       "manager": "Verwalter",
@@ -208,7 +205,8 @@
       "errorRemovingMember": "Fehler beim Entfernen des Mitglieds",
       "noMembers": "Keine Mitglieder.",
       "removeMemberTooltip": "Mitglied entfernen",
-      "role": "Rolle"
+      "role": "Rolle",
+      "detailKind": "Team-Postfach"
     },
     "teamMailboxQuota": {
       "title": "Kontingent",
@@ -238,13 +236,13 @@
       "deleted": "Ordner erfolgreich gelöscht",
       "deleteTooltip": "Ordner löschen",
       "empty": "Keine Ordner.",
-      "detailTitle": "Team-Postfach-Ordner",
       "subaddressing": "Subadressierung",
       "subaddressingEnabledDesc": "E-Mails an {{mailbox}}+{{folder}}@{{domain}} werden in diesen Ordner zugestellt",
       "subaddressingDisabledDesc": "Die Zustellung per Subadressierung in diesen Ordner ist deaktiviert",
       "subaddressingEnabled": "Subadressierung aktiviert",
       "subaddressingDisabled": "Subadressierung deaktiviert",
-      "errorSubaddressing": "Fehler beim Aktualisieren der Subadressierung"
+      "errorSubaddressing": "Fehler beim Aktualisieren der Subadressierung",
+      "detailKind": "Ordner des Team-Postfachs"
     },
     "folderDetail": {
       "title": "Team-Postfach-Ordner",
@@ -327,10 +325,7 @@
       "addTemplate": "Signaturvorlage hinzufügen",
       "removeTemplate": "Vorlage „{{language}}“ entfernen"
     },
-    "calendarDetail": {
-      "title": "Details der Kalender-Domain",
-      "domain": "Domain: {{domain}}"
-    },
+    "calendarDetail": {},
     "domainSettings": {
       "title": "Domain-Einstellungen",
       "useDefault": "Systemstandard verwenden",
@@ -404,7 +399,6 @@
         "updated": "Sichtbarkeit aktualisiert",
         "errorUpdate": "Fehler beim Aktualisieren der Sichtbarkeit"
       },
-      "detailTitle": "Kalenderressource — {{name}}",
       "fieldName": "Name",
       "fieldDescription": "Beschreibung",
       "fieldDomain": "Domain",
@@ -421,7 +415,8 @@
       "removeAdminTitle": "Administrator entfernen",
       "removeAdminConfirm": "„{{email}}“ aus den Administratoren entfernen?",
       "removeAdminTooltip": "Administrator entfernen",
-      "searchPlaceholder": "Ressourcen suchen..."
+      "searchPlaceholder": "Ressourcen suchen...",
+      "detailKind": "Ressourcenkalender"
     },
     "teamCalendars": {
       "title": "Teamkalender",
@@ -533,11 +528,10 @@
       }
     },
     "subtitleMail": "Auf dem Mailserver registrierte Domains verwalten.",
-    "subtitleCalendar": "Auf dem Kalenderserver registrierte Domains verwalten."
+    "subtitleCalendar": "Auf dem Kalenderserver registrierte Domains verwalten.",
+    "detailKind": "Domäne"
   },
   "users": {
-    "title": "Benutzerdetails",
-    "label": "Benutzername: {{username}}",
     "searchPlaceholder": "Benutzer nach Namensanfang suchen...",
     "searchHint": "Sucht nach dem Anfang des Benutzernamens",
     "allDomains": "Alle Domains",
@@ -549,7 +543,9 @@
       "register": "Diesen Benutzer registrieren",
       "registerTitle": "Benutzer registrieren",
       "registerHint": "„{{username}}“ wird auf dem DAV-Server registriert. Vor- und Nachname werden nicht aus dem Verzeichnis gelesen, bitte bestätigen Sie sie.",
-      "registered": "Benutzer „{{username}}“ registriert"
+      "registered": "Benutzer „{{username}}“ registriert",
+      "registeredLine": "Registrierter Kalenderbenutzer",
+      "notRegisteredLine": "Nicht registriert"
     },
     "aliases": {
       "title": "Aliasse",
@@ -1123,7 +1119,8 @@
       "ruleEnd": "Endzeit"
     },
     "subtitle": "Auf dem Mailserver registrierte Benutzer verwalten.",
-    "subtitleCalendar": "Auf dem Kalenderserver registrierte Benutzer verwalten."
+    "subtitleCalendar": "Auf dem Kalenderserver registrierte Benutzer verwalten.",
+    "detailKind": "Benutzer"
   },
   "mailboxCounts": {
     "totalMessages": "Nachrichten insgesamt",
@@ -1159,7 +1156,6 @@
     "hasAttachment": "Mit Anhang"
   },
   "tasks": {
-    "detailSubtitle": "Aufgabe <u>{{taskId}}</u>",
     "title": "Aufgaben",
     "subtitle": "Serveraufgaben überwachen und verwalten",
     "refresh": "Aktualisieren",
@@ -1209,7 +1205,8 @@
     "risk": {
       "caution": "Ändert Daten",
       "destructive": "Löscht Daten"
-    }
+    },
+    "detailKind": "Aufgabe"
   },
   "commonTasks": {
     "title": "Allgemeine Aufgaben",
@@ -1566,7 +1563,6 @@
     "errorDeletingEvent": "Fehler beim Löschen des Ereignisses",
     "fetchEventError": "Fehler beim Abrufen des JSON des fehlgeschlagenen Ereignisses",
     "groupDetails": "Details der Ereignisgruppe",
-    "groupId": "Gruppe: {{id}}",
     "loadingEvents": "Fehlgeschlagene Ereignisse werden geladen...",
     "pageInfo": "Seite {{page}} — {{limit}} Ereignisse pro Seite — Gesamt: {{size}}",
     "copiedToClipboard": "Ereignisschlüssel in die Zwischenablage kopiert!",
@@ -1612,7 +1608,6 @@
     "colLastUpdated": "Zuletzt aktualisiert",
     "colActions": "Aktionen",
     "copiedToClipboard": "In die Zwischenablage kopiert",
-    "detailTitle": "Mail-Repository — {{path}}",
     "loadingMails": "E-Mails werden geladen...",
     "noMails": "Keine E-Mails gefunden.",
     "pageInfo": "Seite {{page}} / {{totalPages}}",
@@ -1634,7 +1629,6 @@
     "sortLastUpdated": "Zuletzt aktualisiert",
     "extendedView": "Erweiterte Ansicht",
     "extendedTitle": "Erweiterte Ansicht",
-    "repositoryLabel": "Repository: {{id}}",
     "repositoryId": "Repository-ID",
     "mailDetailTitle": "E-Mail-Details",
     "loadingMailDetails": "E-Mail-Details werden geladen...",
@@ -1660,7 +1654,8 @@
     "removeMailConfirm": "Diese E-Mail aus dem Repository entfernen?",
     "removeMailSuccess": "E-Mail erfolgreich entfernt",
     "runTaskHeader": "Aufgabe ausführen",
-    "subtitle": "Mail-Repositorys speichern E-Mails zusammen mit ihrem Verarbeitungskontext, sodass die Verarbeitung später fortgesetzt werden kann."
+    "subtitle": "Mail-Repositorys speichern E-Mails zusammen mit ihrem Verarbeitungskontext, sodass die Verarbeitung später fortgesetzt werden kann.",
+    "detailKind": "Mail-Repository"
   },
   "mappings": {
     "addAddress": "Adresszuordnung hinzufügen",

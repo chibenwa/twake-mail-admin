@@ -1,29 +1,41 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import Header from "./header";
 
-function renderHeader(enableBackBtn: boolean) {
-  render(
-    <MemoryRouter>
-      <Header headerTitle="Title" docuUrl="https://example.com" enableBackBtn={enableBackBtn} />
-    </MemoryRouter>
-  );
-}
+vi.mock("@/lib/config", () => ({ appConfig: { application: "CALENDAR", mode: "GLOBAL", sso: null } }));
+
+import Header from "./header";
 
 afterEach(cleanup);
 
 describe("header", () => {
-  it("gives the back button an accessible name and a tooltip", () => {
-    renderHeader(true);
-    const back = screen.getByRole("button", { name: "common.back" });
-    expect(back.getAttribute("title")).toBe("common.back");
+  it("renders the title as the h1 of the page", () => {
+    render(<MemoryRouter><Header headerTitle="Title" docuUrl="" /></MemoryRouter>);
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Title");
   });
 
-  it("renders no back button when disabled", () => {
-    renderHeader(false);
-    expect(screen.queryByRole("button")).toBeNull();
+  it("names the browser tab after the title", () => {
+    render(<MemoryRouter><Header headerTitle="alice@example.com" /></MemoryRouter>);
+    expect(document.title).toBe("alice@example.com — Twake Calendar Admin");
+  });
+
+  it("leads back to the list through a breadcrumb", () => {
+    render(
+      <MemoryRouter>
+        <Header headerTitle="sales@example.com" breadcrumb={[{ label: "Domains", to: "/domains" }, { label: "example.com", to: "/domains/domain/example.com" }]} />
+      </MemoryRouter>
+    );
+    const nav = screen.getByRole("navigation", { name: "common.breadcrumb" });
+    expect(Array.from(nav.querySelectorAll("a")).map((a) => [a.textContent, a.getAttribute("href")])).toEqual([
+      ["Domains", "/domains"],
+      ["example.com", "/domains/domain/example.com"],
+    ]);
+  });
+
+  it("renders no breadcrumb on a list page", () => {
+    render(<MemoryRouter><Header headerTitle="Title" /></MemoryRouter>);
+    expect(screen.queryByRole("navigation")).toBeNull();
   });
 
   it("links the subtitle to the documentation", () => {

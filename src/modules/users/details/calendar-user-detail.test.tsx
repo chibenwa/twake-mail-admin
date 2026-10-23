@@ -83,3 +83,31 @@ describe("Register user dialog", () => {
     expect(toast).not.toHaveBeenCalled();
   });
 });
+
+describe("calendar user page header", () => {
+  const renderPage = () => render(
+    <MemoryRouter initialEntries={[`/users/${USERNAME}`]}>
+      <ConfirmProvider>
+        <Routes>
+          <Route path="/users/:username" element={<CalendarUserDetail />} />
+        </Routes>
+      </ConfirmProvider>
+    </MemoryRouter>
+  );
+
+  it("heads the page with the user, their name and registration, under a breadcrumb to Users", async () => {
+    api.getRegisteredUsers.mockResolvedValue([{ id: "1", email: USERNAME, firstname: "Emma", lastname: "Martin" }]);
+    renderPage();
+
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(USERNAME);
+    expect(await screen.findByText("Emma Martin · users.registration.registeredLine")).not.toBeNull();
+    expect(screen.getByRole("link", { name: "sidebar.users" }).getAttribute("href")).toBe("/users");
+  });
+
+  it("says when the user is not registered", async () => {
+    renderPage();
+
+    expect(await screen.findByText("users.registration.notRegisteredLine")).not.toBeNull();
+    expect(screen.getByText("users.registration.notRegistered")).not.toBeNull();
+  });
+});

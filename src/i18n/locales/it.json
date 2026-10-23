@@ -80,7 +80,8 @@
     "sizeUnit": "Unità",
     "remove": "Rimuovi",
     "optional": "facoltativo",
-    "advancedOptions": "Opzioni avanzate"
+    "advancedOptions": "Opzioni avanzate",
+    "breadcrumb": "Percorso di navigazione"
   },
   "sidebar": {
     "application": "Applicazione",
@@ -108,8 +109,6 @@
     "description": "Menu di navigazione dell'applicazione"
   },
   "domains": {
-    "title": "Dettagli del dominio",
-    "label": "Dominio: {{domain}}",
     "searchPlaceholder": "Cerca domini...",
     "noMatch": "Nessun dominio corrisponde a «{{query}}».",
     "newDomainPlaceholder": "Nome del nuovo dominio",
@@ -195,8 +194,6 @@
       "searchPlaceholder": "Cerca caselle condivise..."
     },
     "teamMailbox": {
-      "detailTitle": "Dettagli della casella condivisa",
-      "label": "Casella: {{mailbox}}@{{domain}}",
       "members": "Membri",
       "member": "membro",
       "manager": "gestore",
@@ -208,7 +205,8 @@
       "errorRemovingMember": "Errore durante la rimozione del membro",
       "noMembers": "Nessun membro.",
       "removeMemberTooltip": "Rimuovi membro",
-      "role": "Ruolo"
+      "role": "Ruolo",
+      "detailKind": "Casella di team"
     },
     "teamMailboxQuota": {
       "title": "Quota",
@@ -238,13 +236,13 @@
       "deleted": "Cartella eliminata correttamente",
       "deleteTooltip": "Elimina cartella",
       "empty": "Nessuna cartella.",
-      "detailTitle": "Cartella della casella condivisa",
       "subaddressing": "Sottoindirizzamento",
       "subaddressingEnabledDesc": "Le email inviate a {{mailbox}}+{{folder}}@{{domain}} vengono recapitate in questa cartella",
       "subaddressingDisabledDesc": "Il recapito tramite sottoindirizzamento in questa cartella è disattivato",
       "subaddressingEnabled": "Sottoindirizzamento attivato",
       "subaddressingDisabled": "Sottoindirizzamento disattivato",
-      "errorSubaddressing": "Errore durante l'aggiornamento del sottoindirizzamento"
+      "errorSubaddressing": "Errore durante l'aggiornamento del sottoindirizzamento",
+      "detailKind": "Cartella della casella di team"
     },
     "folderDetail": {
       "title": "Cartella della casella condivisa",
@@ -327,10 +325,7 @@
       "addTemplate": "Aggiungi modello di firma",
       "removeTemplate": "Rimuovi il modello «{{language}}»"
     },
-    "calendarDetail": {
-      "title": "Dettagli del dominio del calendario",
-      "domain": "Dominio: {{domain}}"
-    },
+    "calendarDetail": {},
     "domainSettings": {
       "title": "Impostazioni del dominio",
       "useDefault": "Usa il valore predefinito di sistema",
@@ -404,7 +399,6 @@
         "updated": "Visibilità aggiornata",
         "errorUpdate": "Errore durante l'aggiornamento della visibilità"
       },
-      "detailTitle": "Risorsa del calendario — {{name}}",
       "fieldName": "Nome",
       "fieldDescription": "Descrizione",
       "fieldDomain": "Dominio",
@@ -421,7 +415,8 @@
       "removeAdminTitle": "Rimuovi amministratore",
       "removeAdminConfirm": "Rimuovere «{{email}}» dagli amministratori?",
       "removeAdminTooltip": "Rimuovi amministratore",
-      "searchPlaceholder": "Cerca risorse..."
+      "searchPlaceholder": "Cerca risorse...",
+      "detailKind": "Calendario della risorsa"
     },
     "teamCalendars": {
       "title": "Calendari del team",
@@ -533,11 +528,10 @@
       }
     },
     "subtitleMail": "Gestisci i domini registrati sul server di posta.",
-    "subtitleCalendar": "Gestisci i domini registrati sul server del calendario."
+    "subtitleCalendar": "Gestisci i domini registrati sul server del calendario.",
+    "detailKind": "Dominio"
   },
   "users": {
-    "title": "Dettagli dell'utente",
-    "label": "Nome utente: {{username}}",
     "searchPlaceholder": "Cerca utenti per inizio del nome...",
     "searchHint": "Corrisponde all'inizio del nome utente",
     "allDomains": "Tutti i domini",
@@ -549,7 +543,9 @@
       "register": "Registra questo utente",
       "registerTitle": "Registra utente",
       "registerHint": "Registrazione di «{{username}}» sul server DAV. Nome e cognome non vengono letti dalla directory: confermali.",
-      "registered": "Utente «{{username}}» registrato"
+      "registered": "Utente «{{username}}» registrato",
+      "registeredLine": "Utente calendario registrato",
+      "notRegisteredLine": "Non registrato"
     },
     "aliases": {
       "title": "Alias",
@@ -1123,7 +1119,8 @@
       "ruleEnd": "Ora di fine"
     },
     "subtitle": "Gestisci gli utenti registrati sul server di posta.",
-    "subtitleCalendar": "Gestisci gli utenti registrati sul server del calendario."
+    "subtitleCalendar": "Gestisci gli utenti registrati sul server del calendario.",
+    "detailKind": "Utente"
   },
   "mailboxCounts": {
     "totalMessages": "Messaggi totali",
@@ -1159,7 +1156,6 @@
     "hasAttachment": "Con allegato"
   },
   "tasks": {
-    "detailSubtitle": "Attività <u>{{taskId}}</u>",
     "title": "Attività",
     "subtitle": "Monitora e gestisci le attività del server",
     "refresh": "Aggiorna",
@@ -1209,7 +1205,8 @@
     "risk": {
       "caution": "Modifica dati",
       "destructive": "Elimina dati"
-    }
+    },
+    "detailKind": "Attività"
   },
   "commonTasks": {
     "title": "Attività comuni",
@@ -1566,7 +1563,6 @@
     "errorDeletingEvent": "Errore durante l'eliminazione dell'evento",
     "fetchEventError": "Errore durante il recupero del JSON dell'evento non riuscito",
     "groupDetails": "Dettagli del gruppo di eventi",
-    "groupId": "Gruppo: {{id}}",
     "loadingEvents": "Caricamento degli eventi non riusciti...",
     "pageInfo": "Pagina {{page}} — {{limit}} eventi per pagina — Totale: {{size}}",
     "copiedToClipboard": "Chiave dell'evento copiata negli appunti!",
@@ -1612,7 +1608,6 @@
     "colLastUpdated": "Ultimo aggiornamento",
     "colActions": "Azioni",
     "copiedToClipboard": "Copiato negli appunti",
-    "detailTitle": "Repository di posta — {{path}}",
     "loadingMails": "Caricamento delle email...",
     "noMails": "Nessuna email trovata.",
     "pageInfo": "Pagina {{page}} / {{totalPages}}",
@@ -1634,7 +1629,6 @@
     "sortLastUpdated": "Ultimo aggiornamento",
     "extendedView": "Vista estesa",
     "extendedTitle": "Vista estesa",
-    "repositoryLabel": "Repository: {{id}}",
     "repositoryId": "ID del repository",
     "mailDetailTitle": "Dettagli dell'email",
     "loadingMailDetails": "Caricamento dei dettagli dell'email...",
@@ -1660,7 +1654,8 @@
     "removeMailConfirm": "Rimuovere questa email dal repository?",
     "removeMailSuccess": "Email rimossa correttamente",
     "runTaskHeader": "Esegui attività",
-    "subtitle": "I repository di posta conservano le email insieme al loro contesto di elaborazione, consentendo di riprenderne l'elaborazione in seguito."
+    "subtitle": "I repository di posta conservano le email insieme al loro contesto di elaborazione, consentendo di riprenderne l'elaborazione in seguito.",
+    "detailKind": "Repository di posta"
   },
   "mappings": {
     "addAddress": "Aggiungi mappatura di indirizzo",

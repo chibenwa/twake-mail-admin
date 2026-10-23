@@ -14,12 +14,14 @@ export default function Users() {
 
   return (
     <div className="p-4 w-fit max-w-full">
-      <Header
-        headerTitle={t("sidebar.users")}
-        headerSubTitle={t(subtitleKey)}
-        docuUrl={appConfig.application === 'CALENDAR' ? calendarWebadminDoc("user-calendar-management-routes") : mailDocuUrl}
-        enableBackBtn={!!username}
-      />
+      {/* A detail page heads itself with its object and a breadcrumb back here */}
+      {!username && (
+        <Header
+          headerTitle={t("sidebar.users")}
+          headerSubTitle={t(subtitleKey)}
+          docuUrl={appConfig.application === 'CALENDAR' ? calendarWebadminDoc("user-calendar-management-routes") : mailDocuUrl}
+        />
+      )}
       <Outlet />
     </div>
   );

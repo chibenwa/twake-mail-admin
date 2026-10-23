@@ -16,6 +16,8 @@ const mocks = vi.hoisted(() => ({
   },
 }));
 
+// The page header is covered by its own tests
+vi.mock("@/components/custom/header", () => ({ default: () => null }));
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key),

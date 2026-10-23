@@ -10,12 +10,15 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { getUnsentMail, deleteUnsentMail, resendUnsentMail, downloadUnsentMail } from "../api-client";
 import type { UnsentMail } from "../types";
 import { currentLocale } from "@/i18n/locale";
+import Header from "@/components/custom/header";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 export default function UnsentMailDetail() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const confirm = useConfirm();
   const { id } = useParams();
+  const breadcrumbs = useBreadcrumbs();
   const canResend = useIsAllowed("POST", "/unsentMails/{id}");
   const canDelete = useIsAllowed("DELETE", "/unsentMails/{id}");
 
@@ -65,17 +68,16 @@ export default function UnsentMailDetail() {
     }
   };
 
-  if (isLoading) return <p className="mt-4 text-gray-500">{t("common.loading")}</p>;
-  if (error) return <p className="mt-4 text-red-500">{error}</p>;
-  if (!mail) return null;
+  const header = <Header headerTitle={id} headerSubTitle={t("unsentMails.detailTitle")} breadcrumb={breadcrumbs.unsentMails()} />;
+  if (isLoading) return <>{header}<p className="mt-4 text-gray-500">{t("common.loading")}</p></>;
+  if (error) return <>{header}<p className="mt-4 text-red-500">{error}</p></>;
+  if (!mail) return header;
 
   return (
+    <>
+    {header}
     <div className="mt-4 p-4 bg-white rounded-2">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-lg font-semibold">{t("unsentMails.detailTitle")}</h3>
-          <p className="text-sm text-gray-500 mt-1">{mail.id}</p>
-        </div>
+      <div className="flex justify-end items-start mb-4">
         <div className="flex gap-2">
           {canResend && (
             <button
@@ -163,5 +165,6 @@ export default function UnsentMailDetail() {
         )}
       </div>
     </div>
+    </>
   );
 }

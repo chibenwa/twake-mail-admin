@@ -80,7 +80,8 @@
     "sizeUnit": "Нэгж",
     "remove": "Хасах",
     "optional": "заавал биш",
-    "advancedOptions": "Нэмэлт сонголтууд"
+    "advancedOptions": "Нэмэлт сонголтууд",
+    "breadcrumb": "Замчлал"
   },
   "sidebar": {
     "application": "Програм",
@@ -108,8 +109,6 @@
     "description": "Програмын навигацийн цэс"
   },
   "domains": {
-    "title": "Домэйны дэлгэрэнгүй",
-    "label": "Домэйн: {{domain}}",
     "searchPlaceholder": "Домэйн хайх...",
     "noMatch": "\"{{query}}\"-д тохирох домэйн алга.",
     "newDomainPlaceholder": "Шинэ домэйны нэр",
@@ -195,8 +194,6 @@
       "searchPlaceholder": "Багийн шуудангийн хайрцаг хайх..."
     },
     "teamMailbox": {
-      "detailTitle": "Багийн шуудангийн хайрцгийн дэлгэрэнгүй",
-      "label": "Шуудангийн хайрцаг: {{mailbox}}@{{domain}}",
       "members": "Гишүүд",
       "member": "гишүүн",
       "manager": "менежер",
@@ -208,7 +205,8 @@
       "errorRemovingMember": "Гишүүн устгахад алдаа гарлаа",
       "noMembers": "Гишүүн байхгүй.",
       "removeMemberTooltip": "Гишүүн устгах",
-      "role": "Үүрэг"
+      "role": "Үүрэг",
+      "detailKind": "Багийн шуудангийн хайрцаг"
     },
     "teamMailboxQuota": {
       "title": "Квота",
@@ -238,13 +236,13 @@
       "deleted": "Хавтас амжилттай устгагдлаа",
       "deleteTooltip": "Хавтас устгах",
       "empty": "Хавтас байхгүй.",
-      "detailTitle": "Багийн шуудангийн хайрцгийн хавтас",
       "subaddressing": "Дэд хаяглалт",
       "subaddressingEnabledDesc": "{{mailbox}}+{{folder}}@{{domain}} руу илгээсэн захидал энэ хавтсанд хүргэгдэнэ",
       "subaddressingDisabledDesc": "Энэ хавтсанд дэд хаяглалтаар хүргэх нь идэвхгүй болсон",
       "subaddressingEnabled": "Дэд хаяглалт идэвхжсэн",
       "subaddressingDisabled": "Дэд хаяглалт идэвхгүй болсон",
-      "errorSubaddressing": "Дэд хаяглалтыг шинэчлэхэд алдаа гарлаа"
+      "errorSubaddressing": "Дэд хаяглалтыг шинэчлэхэд алдаа гарлаа",
+      "detailKind": "Багийн шуудангийн хавтас"
     },
     "folderDetail": {
       "title": "Багийн шуудангийн хайрцгийн хавтас",
@@ -327,10 +325,7 @@
       "addTemplate": "Гарын үсгийн загвар нэмэх",
       "removeTemplate": "\"{{language}}\" загварыг устгах"
     },
-    "calendarDetail": {
-      "title": "Календарийн домэйны дэлгэрэнгүй",
-      "domain": "Домэйн: {{domain}}"
-    },
+    "calendarDetail": {},
     "domainSettings": {
       "title": "Домэйны тохиргоо",
       "useDefault": "Системийн өгөгдмөлийг ашиглах",
@@ -404,7 +399,6 @@
         "updated": "Харагдац шинэчлэгдлээ",
         "errorUpdate": "Харагдац шинэчлэхэд алдаа гарлаа"
       },
-      "detailTitle": "Календарийн нөөц — {{name}}",
       "fieldName": "Нэр",
       "fieldDescription": "Тайлбар",
       "fieldDomain": "Домэйн",
@@ -421,7 +415,8 @@
       "removeAdminTitle": "Администратор устгах",
       "removeAdminConfirm": "«{{email}}»-г администраторуудаас устгах уу?",
       "removeAdminTooltip": "Администратор устгах",
-      "searchPlaceholder": "Нөөц хайх..."
+      "searchPlaceholder": "Нөөц хайх...",
+      "detailKind": "Нөөцийн хуанли"
     },
     "teamCalendars": {
       "title": "Багийн календарь",
@@ -533,11 +528,10 @@
       }
     },
     "subtitleMail": "Шуудангийн сервер дээр бүртгэгдсэн домэйнуудыг удирдах.",
-    "subtitleCalendar": "Календарийн сервер дээр бүртгэгдсэн домэйнуудыг удирдах."
+    "subtitleCalendar": "Календарийн сервер дээр бүртгэгдсэн домэйнуудыг удирдах.",
+    "detailKind": "Домэйн"
   },
   "users": {
-    "title": "Хэрэглэгчийн дэлгэрэнгүй",
-    "label": "Хэрэглэгчийн нэр: {{username}}",
     "searchPlaceholder": "Хэрэглэгчийг нэрийн эхлэлээр хайх...",
     "searchHint": "Хэрэглэгчийн нэрийн эхлэлтэй тааруулна",
     "allDomains": "Бүх домэйн",
@@ -549,7 +543,9 @@
       "register": "Энэ хэрэглэгчийг бүртгэх",
       "registerTitle": "Хэрэглэгч бүртгэх",
       "registerHint": "\"{{username}}\"-г DAV сервер дээр бүртгэж байна. Нэр, овгийг лавлахаас уншдаггүй тул баталгаажуулна уу.",
-      "registered": "\"{{username}}\" хэрэглэгч бүртгэгдлээ"
+      "registered": "\"{{username}}\" хэрэглэгч бүртгэгдлээ",
+      "registeredLine": "Бүртгэлтэй хуанлийн хэрэглэгч",
+      "notRegisteredLine": "Бүртгэгдээгүй"
     },
     "aliases": {
       "title": "Өөр нэрс",
@@ -1123,7 +1119,8 @@
       "ruleEnd": "Дуусах цаг"
     },
     "subtitle": "Шуудангийн сервер дээр бүртгэгдсэн хэрэглэгчдийг удирдах.",
-    "subtitleCalendar": "Календарийн сервер дээр бүртгэгдсэн хэрэглэгчдийг удирдах."
+    "subtitleCalendar": "Календарийн сервер дээр бүртгэгдсэн хэрэглэгчдийг удирдах.",
+    "detailKind": "Хэрэглэгч"
   },
   "mailboxCounts": {
     "totalMessages": "Нийт захидал",
@@ -1159,7 +1156,6 @@
     "hasAttachment": "Хавсралттай"
   },
   "tasks": {
-    "detailSubtitle": "Даалгавар <u>{{taskId}}</u>",
     "title": "Даалгаврууд",
     "subtitle": "Серверийн даалгавруудыг хянах, удирдах",
     "refresh": "Шинэчлэх",
@@ -1209,7 +1205,8 @@
     "risk": {
       "caution": "Өгөгдөл өөрчилнө",
       "destructive": "Өгөгдөл устгана"
-    }
+    },
+    "detailKind": "Даалгавар"
   },
   "commonTasks": {
     "title": "Нийтлэг даалгаврууд",
@@ -1566,7 +1563,6 @@
     "errorDeletingEvent": "Үйл явдал устгахад алдаа гарлаа",
     "fetchEventError": "Амжилтгүй болсон үйл явдлын JSON-г татахад алдаа гарлаа",
     "groupDetails": "Үйл явдлын бүлгийн дэлгэрэнгүй",
-    "groupId": "Бүлэг: {{id}}",
     "loadingEvents": "Амжилтгүй болсон үйл явдлуудыг ачааллаж байна...",
     "pageInfo": "Хуудас {{page}} — хуудсанд {{limit}} үйл явдал — Нийт: {{size}}",
     "copiedToClipboard": "Үйл явдлын түлхүүр санах ойд хуулагдлаа!",
@@ -1612,7 +1608,6 @@
     "colLastUpdated": "Сүүлд шинэчилсэн",
     "colActions": "Үйлдлүүд",
     "copiedToClipboard": "Санах ойд хуулагдлаа",
-    "detailTitle": "Шуудангийн агуулах — {{path}}",
     "loadingMails": "И-мэйлүүдийг ачааллаж байна...",
     "noMails": "И-мэйл олдсонгүй.",
     "pageInfo": "Хуудас {{page}} / {{totalPages}}",
@@ -1634,7 +1629,6 @@
     "sortLastUpdated": "Сүүлд шинэчилсэн",
     "extendedView": "Өргөтгөсөн харагдац",
     "extendedTitle": "Өргөтгөсөн харагдац",
-    "repositoryLabel": "Агуулах: {{id}}",
     "repositoryId": "Агуулахын ID",
     "mailDetailTitle": "И-мэйлийн дэлгэрэнгүй",
     "loadingMailDetails": "И-мэйлийн дэлгэрэнгүйг ачааллаж байна...",
@@ -1660,7 +1654,8 @@
     "removeMailConfirm": "Энэ и-мэйлийг агуулахаас устгах уу?",
     "removeMailSuccess": "И-мэйл амжилттай устгагдлаа",
     "runTaskHeader": "Даалгавар ажиллуулах",
-    "subtitle": "Шуудангийн агуулах нь и-мэйлүүдийг боловсруулалтын контексттэй нь хадгалдаг бөгөөд дараа нь захидал боловсруулалтыг үргэлжлүүлэх боломжийг олгоно."
+    "subtitle": "Шуудангийн агуулах нь и-мэйлүүдийг боловсруулалтын контексттэй нь хадгалдаг бөгөөд дараа нь захидал боловсруулалтыг үргэлжлүүлэх боломжийг олгоно.",
+    "detailKind": "Захидлын агуулах"
   },
   "mappings": {
     "addAddress": "Хаягийн зураглал нэмэх",

@@ -80,7 +80,8 @@
     "sizeUnit": "Đơn vị",
     "remove": "Gỡ bỏ",
     "optional": "không bắt buộc",
-    "advancedOptions": "Tùy chọn nâng cao"
+    "advancedOptions": "Tùy chọn nâng cao",
+    "breadcrumb": "Đường dẫn"
   },
   "sidebar": {
     "application": "Ứng dụng",
@@ -108,8 +109,6 @@
     "description": "Menu điều hướng của ứng dụng"
   },
   "domains": {
-    "title": "Chi tiết tên miền",
-    "label": "Tên miền: {{domain}}",
     "searchPlaceholder": "Tìm tên miền...",
     "noMatch": "Không có tên miền nào khớp với \"{{query}}\".",
     "newDomainPlaceholder": "Tên miền mới",
@@ -195,8 +194,6 @@
       "searchPlaceholder": "Tìm hộp thư nhóm..."
     },
     "teamMailbox": {
-      "detailTitle": "Chi tiết hộp thư nhóm",
-      "label": "Hộp thư: {{mailbox}}@{{domain}}",
       "members": "Thành viên",
       "member": "thành viên",
       "manager": "quản lý",
@@ -208,7 +205,8 @@
       "errorRemovingMember": "Lỗi khi xóa thành viên",
       "noMembers": "Không có thành viên.",
       "removeMemberTooltip": "Xóa thành viên",
-      "role": "Vai trò"
+      "role": "Vai trò",
+      "detailKind": "Hộp thư nhóm"
     },
     "teamMailboxQuota": {
       "title": "Hạn ngạch",
@@ -238,13 +236,13 @@
       "deleted": "Đã xóa thư mục thành công",
       "deleteTooltip": "Xóa thư mục",
       "empty": "Không có thư mục.",
-      "detailTitle": "Thư mục hộp thư nhóm",
       "subaddressing": "Địa chỉ phụ",
       "subaddressingEnabledDesc": "Thư gửi đến {{mailbox}}+{{folder}}@{{domain}} sẽ được chuyển vào thư mục này",
       "subaddressingDisabledDesc": "Đã tắt việc chuyển thư qua địa chỉ phụ vào thư mục này",
       "subaddressingEnabled": "Đã bật địa chỉ phụ",
       "subaddressingDisabled": "Đã tắt địa chỉ phụ",
-      "errorSubaddressing": "Lỗi khi cập nhật địa chỉ phụ"
+      "errorSubaddressing": "Lỗi khi cập nhật địa chỉ phụ",
+      "detailKind": "Thư mục hộp thư nhóm"
     },
     "folderDetail": {
       "title": "Thư mục hộp thư nhóm",
@@ -327,10 +325,7 @@
       "addTemplate": "Thêm mẫu chữ ký",
       "removeTemplate": "Xóa mẫu \"{{language}}\""
     },
-    "calendarDetail": {
-      "title": "Chi tiết tên miền Lịch",
-      "domain": "Tên miền: {{domain}}"
-    },
+    "calendarDetail": {},
     "domainSettings": {
       "title": "Cài đặt tên miền",
       "useDefault": "Dùng mặc định hệ thống",
@@ -404,7 +399,6 @@
         "updated": "Đã cập nhật mức hiển thị",
         "errorUpdate": "Lỗi khi cập nhật mức hiển thị"
       },
-      "detailTitle": "Tài nguyên lịch — {{name}}",
       "fieldName": "Tên",
       "fieldDescription": "Mô tả",
       "fieldDomain": "Tên miền",
@@ -421,7 +415,8 @@
       "removeAdminTitle": "Xóa quản trị viên",
       "removeAdminConfirm": "Xóa \"{{email}}\" khỏi danh sách quản trị viên?",
       "removeAdminTooltip": "Xóa quản trị viên",
-      "searchPlaceholder": "Tìm tài nguyên..."
+      "searchPlaceholder": "Tìm tài nguyên...",
+      "detailKind": "Lịch tài nguyên"
     },
     "teamCalendars": {
       "title": "Lịch nhóm",
@@ -533,11 +528,10 @@
       }
     },
     "subtitleMail": "Quản lý các tên miền đã đăng ký trên máy chủ thư.",
-    "subtitleCalendar": "Quản lý các tên miền đã đăng ký trên máy chủ lịch."
+    "subtitleCalendar": "Quản lý các tên miền đã đăng ký trên máy chủ lịch.",
+    "detailKind": "Miền"
   },
   "users": {
-    "title": "Chi tiết người dùng",
-    "label": "Tên người dùng: {{username}}",
     "searchPlaceholder": "Tìm người dùng theo phần đầu tên...",
     "searchHint": "Khớp với phần đầu của tên người dùng",
     "allDomains": "Tất cả tên miền",
@@ -549,7 +543,9 @@
       "register": "Đăng ký người dùng này",
       "registerTitle": "Đăng ký người dùng",
       "registerHint": "Đăng ký \"{{username}}\" trên máy chủ DAV. Họ và tên không được đọc từ thư mục, vui lòng xác nhận.",
-      "registered": "Đã đăng ký người dùng \"{{username}}\""
+      "registered": "Đã đăng ký người dùng \"{{username}}\"",
+      "registeredLine": "Người dùng lịch đã đăng ký",
+      "notRegisteredLine": "Chưa đăng ký"
     },
     "aliases": {
       "title": "Bí danh",
@@ -1122,7 +1118,8 @@
       "ruleEnd": "Giờ kết thúc"
     },
     "subtitle": "Quản lý người dùng đã đăng ký trên máy chủ thư.",
-    "subtitleCalendar": "Quản lý người dùng đã đăng ký trên máy chủ lịch."
+    "subtitleCalendar": "Quản lý người dùng đã đăng ký trên máy chủ lịch.",
+    "detailKind": "Người dùng"
   },
   "mailboxCounts": {
     "totalMessages": "Tổng số thư",
@@ -1158,7 +1155,6 @@
     "hasAttachment": "Có tệp đính kèm"
   },
   "tasks": {
-    "detailSubtitle": "Tác vụ <u>{{taskId}}</u>",
     "title": "Tác vụ",
     "subtitle": "Giám sát và quản lý tác vụ máy chủ",
     "refresh": "Làm mới",
@@ -1208,7 +1204,8 @@
     "risk": {
       "caution": "Thay đổi dữ liệu",
       "destructive": "Xóa dữ liệu"
-    }
+    },
+    "detailKind": "Tác vụ"
   },
   "commonTasks": {
     "title": "Tác vụ chung",
@@ -1565,7 +1562,6 @@
     "errorDeletingEvent": "Lỗi khi xóa sự kiện",
     "fetchEventError": "Lỗi khi lấy JSON của sự kiện thất bại",
     "groupDetails": "Chi tiết nhóm sự kiện",
-    "groupId": "Nhóm: {{id}}",
     "loadingEvents": "Đang tải các sự kiện thất bại...",
     "pageInfo": "Trang {{page}} — {{limit}} sự kiện mỗi trang — Tổng: {{size}}",
     "copiedToClipboard": "Đã sao chép khóa sự kiện vào bộ nhớ tạm!",
@@ -1611,7 +1607,6 @@
     "colLastUpdated": "Cập nhật lần cuối",
     "colActions": "Hành động",
     "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm",
-    "detailTitle": "Kho lưu trữ thư — {{path}}",
     "loadingMails": "Đang tải email...",
     "noMails": "Không tìm thấy email.",
     "pageInfo": "Trang {{page}} / {{totalPages}}",
@@ -1633,7 +1628,6 @@
     "sortLastUpdated": "Cập nhật lần cuối",
     "extendedView": "Chế độ xem mở rộng",
     "extendedTitle": "Chế độ xem mở rộng",
-    "repositoryLabel": "Kho: {{id}}",
     "repositoryId": "ID kho",
     "mailDetailTitle": "Chi tiết email",
     "loadingMailDetails": "Đang tải chi tiết email...",
@@ -1659,7 +1653,8 @@
     "removeMailConfirm": "Xóa email này khỏi kho?",
     "removeMailSuccess": "Đã xóa email thành công",
     "runTaskHeader": "Chạy tác vụ",
-    "subtitle": "Kho lưu trữ thư lưu các email cùng với bối cảnh xử lý của chúng, cho phép tiếp tục xử lý thư sau này."
+    "subtitle": "Kho lưu trữ thư lưu các email cùng với bối cảnh xử lý của chúng, cho phép tiếp tục xử lý thư sau này.",
+    "detailKind": "Kho thư"
   },
   "mappings": {
     "addAddress": "Thêm ánh xạ địa chỉ",
