@@ -608,7 +608,6 @@
       "searchPlaceholder": "Rechercher des boîtes…",
       "createTooltip": "Créer une boîte",
       "namePlaceholder": "Nom de la boîte (utiliser . pour l'imbrication, ex. INBOX.travail)",
-      "errorCreating": "Erreur lors de la création de la boîte",
       "created": "Boîte créée avec succès",
       "deleteTitle": "Supprimer la boîte",
       "deleteConfirm": "Supprimer la boîte « {{mailboxName}} » et tous ses enfants ?",

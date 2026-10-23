@@ -608,7 +608,6 @@
       "searchPlaceholder": "Buscar buzones...",
       "createTooltip": "Crear buzón",
       "namePlaceholder": "Nombre del nuevo buzón (use . para anidar, p. ej. INBOX.work)",
-      "errorCreating": "Error al crear el buzón",
       "created": "Buzón creado correctamente",
       "deleteTitle": "Eliminar buzón",
       "deleteConfirm": "¿Seguro que desea eliminar el buzón «{{mailboxName}}» y todos sus buzones secundarios?",

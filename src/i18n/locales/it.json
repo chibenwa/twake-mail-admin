@@ -608,7 +608,6 @@
       "searchPlaceholder": "Cerca caselle di posta...",
       "createTooltip": "Crea casella di posta",
       "namePlaceholder": "Nome della nuova casella (usa . per annidare, ad es. INBOX.work)",
-      "errorCreating": "Errore durante la creazione della casella di posta",
       "created": "Casella di posta creata correttamente",
       "deleteTitle": "Elimina casella di posta",
       "deleteConfirm": "Vuoi davvero eliminare la casella «{{mailboxName}}» e tutte le sue sottocaselle?",

@@ -15,6 +15,7 @@ import { PaginationControls } from "@/components/custom/pagination-controls";
 import { currentLocale } from "@/i18n/locale";
 import { formatMailboxCreationDate } from "./mailbox-creation-date";
 import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -57,7 +58,7 @@ export default function UserMailboxes({ username }: Props) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [newMailbox, setNewMailbox] = useState("");
-  const [showCreateInput, setShowCreateInput] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   const filtered = useMemo(() => {
     if (!mailboxes) return [];
@@ -82,21 +83,12 @@ export default function UserMailboxes({ username }: Props) {
     setPage(newPage);
   };
 
+  // A refusal throws: the modal shows it and keeps the typed name
   const handleCreate = async () => {
-    const name = newMailbox.trim();
-    if (!name) return;
-    try {
-      await createUserMailbox(username, name);
-      toast({ title: t("users.mailboxes.created") });
-      setNewMailbox("");
-      setShowCreateInput(false);
-      await refresh();
-    } catch (err) {
-      toast({
-        title: t("users.mailboxes.errorCreating"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    }
+    await createUserMailbox(username, newMailbox.trim());
+    toast({ title: t("users.mailboxes.created") });
+    setNewMailbox("");
+    await refresh();
   };
 
   const handleDelete = async (mailboxName: string) => {
@@ -162,7 +154,8 @@ export default function UserMailboxes({ username }: Props) {
         </Link>
         {canCreate && (
           <button
-            onClick={() => { if (!open) { setOpen(true); setShowCreateInput(true); } else setShowCreateInput(!showCreateInput); }}
+            type="button"
+            onClick={() => { setOpen(true); setShowCreateDialog(true); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("users.mailboxes.createTooltip")}
           >
@@ -171,29 +164,27 @@ export default function UserMailboxes({ username }: Props) {
         )}
       </div>
 
+      <FormDialog
+        open={showCreateDialog}
+        onClose={() => setShowCreateDialog(false)}
+        title={t("users.mailboxes.createTooltip")}
+        submitLabel={t("common.create")}
+        submitDisabled={!newMailbox.trim()}
+        onSubmit={handleCreate}
+      >
+        <input
+          type="text"
+          autoFocus
+          value={newMailbox}
+          onChange={(e) => setNewMailbox(e.target.value)}
+          aria-label={t("users.mailboxes.createTooltip")}
+          placeholder={t("users.mailboxes.namePlaceholder")}
+          className={FIELD_CLASS}
+        />
+      </FormDialog>
+
       {open && (
         <div id={openContentId} className="mt-2">
-          {showCreateInput && (
-            <div className="flex gap-2 mt-2 mb-2">
-              <input
-                autoFocus
-                type="text"
-                value={newMailbox}
-                onChange={(e) => setNewMailbox(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-                placeholder={t("users.mailboxes.namePlaceholder")}
-                className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                onClick={handleCreate}
-                disabled={!newMailbox.trim()}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {t("common.create")}
-              </button>
-            </div>
-          )}
-
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />

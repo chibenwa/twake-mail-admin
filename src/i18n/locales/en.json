@@ -608,7 +608,6 @@
       "searchPlaceholder": "Search mailboxes...",
       "createTooltip": "Create mailbox",
       "namePlaceholder": "New mailbox name (use . for nesting, e.g. INBOX.work)",
-      "errorCreating": "Error creating mailbox",
       "created": "Mailbox created successfully",
       "deleteTitle": "Delete Mailbox",
       "deleteConfirm": "Are you sure you want to delete mailbox \"{{mailboxName}}\" and all its children?",

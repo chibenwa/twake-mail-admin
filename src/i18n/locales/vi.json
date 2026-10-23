@@ -607,7 +607,6 @@
       "searchPlaceholder": "Tìm hộp thư...",
       "createTooltip": "Tạo hộp thư",
       "namePlaceholder": "Tên hộp thư mới (dùng . để lồng cấp, vd INBOX.work)",
-      "errorCreating": "Lỗi khi tạo hộp thư",
       "created": "Đã tạo hộp thư thành công",
       "deleteTitle": "Xóa hộp thư",
       "deleteConfirm": "Bạn có chắc muốn xóa hộp thư \"{{mailboxName}}\" và tất cả hộp thư con của nó?",

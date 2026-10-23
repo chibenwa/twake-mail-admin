@@ -608,7 +608,6 @@
       "searchPlaceholder": "Postfächer suchen...",
       "createTooltip": "Postfach erstellen",
       "namePlaceholder": "Neuer Postfachname (. für Unterordner, z. B. INBOX.work)",
-      "errorCreating": "Fehler beim Erstellen des Postfachs",
       "created": "Postfach erfolgreich erstellt",
       "deleteTitle": "Postfach löschen",
       "deleteConfirm": "Möchten Sie das Postfach „{{mailboxName}}“ und alle untergeordneten Postfächer wirklich löschen?",
