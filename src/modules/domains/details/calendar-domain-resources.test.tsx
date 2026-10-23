@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import type { Resource } from "../types";
 
 const api = vi.hoisted(() => ({
@@ -59,7 +59,7 @@ describe("CalendarDomainResources", () => {
 
     fireEvent.click(await screen.findByTitle("domains.calendarResources.addTooltip"));
 
-    expect(screen.getByRole("textbox", { name: "domains.calendarResources.namePlaceholder" })).toBeTruthy();
+    expect(screen.getByRole("textbox", { name: "domains.calendarResources.fieldName *" })).toBeTruthy();
     expect(screen.getByRole("textbox", { name: "domains.calendarResources.fieldDescription" })).toBeTruthy();
     expect(screen.getByRole("textbox", { name: "domains.calendarResources.creatorLabel *" })).toBeTruthy();
     expect(screen.getByRole("textbox", { name: "domains.calendarResources.administratorsLabel" })).toBeTruthy();
@@ -79,6 +79,42 @@ describe("CalendarDomainResources: phone layout", () => {
   });
 });
 
+describe("CalendarDomainResources creation modal", () => {
+  const fillAndCreate = async () => {
+    userStatus.byUser = { "alice@open-paas.org": "exists" };
+    fireEvent.click(await screen.findByTitle("domains.calendarResources.addTooltip"));
+    const dialog = await screen.findByRole("dialog", { name: "domains.calendarResources.newTitle" });
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "domains.calendarResources.fieldName *" }), { target: { value: "Room" } });
+    fireEvent.change(within(dialog).getByLabelText(/domains.calendarResources.creatorLabel/), { target: { value: "alice@open-paas.org" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "common.create" }));
+    return dialog;
+  };
+
+  it("opens the closed section and a modal from the +, then creates the resource and closes", async () => {
+    api.getResources.mockResolvedValue([]);
+    api.createResource.mockResolvedValue(undefined);
+    render(<CalendarDomainResources domain="open-paas.org" />);
+
+    await fillAndCreate();
+
+    await vi.waitFor(() => expect(api.createResource).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "Room", domain: "open-paas.org", creator: "alice@open-paas.org" }),
+    ));
+    await vi.waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(screen.getByPlaceholderText("domains.calendarResources.searchPlaceholder")).toBeTruthy();
+  });
+
+  it("keeps the modal open with the typed values and shows the refusal in it", async () => {
+    api.getResources.mockResolvedValue([]);
+    api.createResource.mockRejectedValue(new Error("Resource already exists"));
+    render(<CalendarDomainResources domain="open-paas.org" defaultOpen />);
+
+    const dialog = await fillAndCreate();
+
+    expect((await within(dialog).findByRole("alert")).textContent).toContain("Resource already exists");
+    expect(within(dialog).getByRole("textbox", { name: "domains.calendarResources.fieldName *" })).toHaveProperty("value", "Room");
+  });
+});
 
 describe("CalendarDomainResources creation: a typed administrator is never dropped", () => {
   const fill = async (admin: string) => {
@@ -87,7 +123,7 @@ describe("CalendarDomainResources creation: a typed administrator is never dropp
     userStatus.byUser = { "alice@open-paas.org": "exists", "bob@open-paas.org": "exists", "nobody@open-paas.org": "not_found" };
     render(<CalendarDomainResources domain="open-paas.org" defaultOpen />);
     fireEvent.click(await screen.findByTitle("domains.calendarResources.addTooltip"));
-    fireEvent.change(screen.getByRole("textbox", { name: "domains.calendarResources.namePlaceholder" }), { target: { value: "Room" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "domains.calendarResources.fieldName *" }), { target: { value: "Room" } });
     fireEvent.change(screen.getByLabelText(/domains.calendarResources.creatorLabel/), { target: { value: "alice@open-paas.org" } });
     fireEvent.change(screen.getByLabelText("domains.calendarResources.administratorsLabel"), { target: { value: admin } });
   };
