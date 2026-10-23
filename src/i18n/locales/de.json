@@ -645,7 +645,6 @@
       "title": "Delegierte Benutzer",
       "description": "Die hier aufgeführten Benutzer können per Delegierung auf die Daten von {{username}} zugreifen.",
       "placeholder": "user@domain.tld",
-      "errorAdding": "Fehler beim Hinzufügen des delegierten Benutzers",
       "added": "Delegierter Benutzer hinzugefügt",
       "removeTitle": "Delegierten Benutzer entfernen",
       "removeConfirm": "Delegierung von „{{delegatedUser}}“ für {{username}} entfernen?",

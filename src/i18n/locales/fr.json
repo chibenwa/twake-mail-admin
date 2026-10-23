@@ -645,7 +645,6 @@
       "title": "Utilisateurs délégués",
       "description": "Les utilisateurs listés ici peuvent accéder aux données de {{username}} par délégation.",
       "placeholder": "utilisateur@domaine.tld",
-      "errorAdding": "Erreur lors de l'ajout de l'utilisateur délégué",
       "added": "Utilisateur délégué ajouté",
       "removeTitle": "Retirer l'utilisateur délégué",
       "removeConfirm": "Retirer la délégation de « {{delegatedUser}} » pour {{username}} ?",

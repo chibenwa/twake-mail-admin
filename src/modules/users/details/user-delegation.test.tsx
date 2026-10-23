@@ -33,12 +33,12 @@ const ALICE = "alice@example.com";
 const typeDelegatedUser = async (user: string, status: UserExistsStatus) => {
   mocks.userStatus.mockReturnValue(status);
   render(<UserDelegation username={BOB} />);
-  fireEvent.click(screen.getByText("users.delegation.title"));
-  fireEvent.click(await screen.findByTitle("users.delegation.addTooltip"));
-  fireEvent.change(screen.getByPlaceholderText("users.delegation.placeholder"), { target: { value: user } });
+  fireEvent.click(screen.getByTitle("users.delegation.addTooltip"));
+  fireEvent.change(await screen.findByPlaceholderText("users.delegation.placeholder"), { target: { value: user } });
 };
 
-const addButton = () => screen.getByText("common.add") as HTMLButtonElement;
+const addButton = () => screen.getByRole("button", { name: "common.add" }) as HTMLButtonElement;
+const field = () => screen.getByPlaceholderText("users.delegation.placeholder") as HTMLInputElement;
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -49,12 +49,28 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("user delegation: add a delegated user", () => {
-  it("adds an existing user without confirmation", async () => {
+  it("opens the section and a modal from the +, and adds an existing user without confirmation", async () => {
     await typeDelegatedUser(ALICE, "exists");
+
+    const dialog = screen.getByRole("dialog");
+    expect(screen.getByText("users.delegation.title").closest("button")?.getAttribute("aria-expanded")).toBe("true");
+    expect(screen.getByText("common.userExists")).toBeTruthy();
     fireEvent.click(addButton());
 
     await waitFor(() => expect(mocks.api.addDelegatedUser).toHaveBeenCalledWith(BOB, ALICE));
     expect(mocks.confirm).not.toHaveBeenCalled();
+    await waitFor(() => expect(dialog.isConnected).toBe(false));
+    expect(mocks.toast).toHaveBeenCalledWith({ title: "users.delegation.added" });
+  });
+
+  it("keeps the modal open with the typed user when the delegation is refused", async () => {
+    mocks.api.addDelegatedUser.mockRejectedValue(new Error("Forbidden"));
+    await typeDelegatedUser(ALICE, "exists");
+    fireEvent.click(addButton());
+
+    expect(await screen.findByRole("alert")).toBeTruthy();
+    expect(field().value).toBe(ALICE);
+    expect(mocks.toast).not.toHaveBeenCalled();
   });
 
   it("refuses to delegate the user to themself", async () => {
@@ -62,7 +78,7 @@ describe("user delegation: add a delegated user", () => {
 
     expect(screen.getByText("users.delegation.selfDelegation")).toBeTruthy();
     expect(addButton().disabled).toBe(true);
-    fireEvent.keyDown(screen.getByPlaceholderText("users.delegation.placeholder"), { key: "Enter" });
+    fireEvent.submit(field().closest("form")!);
     expect(mocks.api.addDelegatedUser).not.toHaveBeenCalled();
   });
 
@@ -88,5 +104,8 @@ describe("user delegation: add a delegated user", () => {
 
     await waitFor(() => expect(mocks.confirm).toHaveBeenCalled());
     expect(mocks.api.addDelegatedUser).not.toHaveBeenCalled();
+    await waitFor(() => expect(addButton().disabled).toBe(false));
+    expect(screen.getByRole("dialog")).toBeTruthy();
+    expect(field().value).toBe("ghost@example.com");
   });
 });

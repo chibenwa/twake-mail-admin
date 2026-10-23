@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -9,6 +9,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useCheckUserExists } from "@/hooks/use-check-user-exists";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 
 interface Props {
   username: string;
@@ -32,9 +33,12 @@ export default function UserDelegation({ username }: Props) {
 
   const [open, setOpen, openContentId] = useSectionOpen("delegation");
   const [newUser, setNewUser] = useState("");
-  const [showCreateInput, setShowCreateInput] = useState(false);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  // Set when the unknown user is declined: the modal then stays open with the typed user
+  const keepAddDialog = useRef(false);
   const delegatedUserStatus = useCheckUserExists(newUser);
   const isSelfDelegation = newUser.trim().toLowerCase() === username.toLowerCase();
+  const showUserStatus = !!newUser.trim() && !isSelfDelegation;
   const canSubmit =
     !!newUser.trim() && !isSelfDelegation && delegatedUserStatus !== "checking" && delegatedUserStatus !== "invalid";
 
@@ -51,22 +55,22 @@ export default function UserDelegation({ username }: Props) {
       message: t("users.delegation.unknownUserConfirm", { delegatedUser: user }),
     });
 
+  // A refusal throws: the modal shows it and keeps the typed user
   const handleAdd = async () => {
-    if (!canSubmit) return;
     const user = newUser.trim();
-    if (delegatedUserStatus === "not_found" && !(await confirmUnknownUser(user))) return;
-    try {
-      await addDelegatedUser(username, user);
-      toast({ title: t("users.delegation.added") });
-      setNewUser("");
-      setShowCreateInput(false);
-      await refresh();
-    } catch (err) {
-      toast({
-        title: t("users.delegation.errorAdding"),
-        description: <ErrorDisplayer error={err} />,
-      });
+    if (delegatedUserStatus === "not_found" && !(await confirmUnknownUser(user))) {
+      keepAddDialog.current = true;
+      return;
     }
+    await addDelegatedUser(username, user);
+    toast({ title: t("users.delegation.added") });
+    setNewUser("");
+    await refresh();
+  };
+
+  const closeAddDialog = () => {
+    if (keepAddDialog.current) keepAddDialog.current = false;
+    else setShowAddDialog(false);
   };
 
   const handleRemove = async (delegatedUser: string) => {
@@ -102,7 +106,8 @@ export default function UserDelegation({ username }: Props) {
         </SectionToggle>
         {canAdd && (
           <button
-            onClick={() => { if (!open) { setOpen(true); setShowCreateInput(true); } else setShowCreateInput(!showCreateInput); }}
+            type="button"
+            onClick={() => { setOpen(true); setShowAddDialog(true); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("users.delegation.addTooltip")}
           >
@@ -111,57 +116,38 @@ export default function UserDelegation({ username }: Props) {
         )}
       </div>
 
+      <FormDialog
+        open={showAddDialog}
+        onClose={closeAddDialog}
+        title={t("users.delegation.addTooltip")}
+        submitLabel={t("common.add")}
+        submitDisabled={!canSubmit}
+        onSubmit={handleAdd}
+      >
+        <div>
+          <input
+            type="text"
+            autoFocus
+            value={newUser}
+            onChange={(e) => setNewUser(e.target.value)}
+            aria-label={t("users.delegation.addTooltip")}
+            placeholder={t("users.delegation.placeholder")}
+            className={FIELD_CLASS}
+          />
+          {/* Reserved height: the status appearing does not resize the modal */}
+          <p className="h-4 mt-1 text-xs">
+            {isSelfDelegation && <span className="text-red-600">{t("users.delegation.selfDelegation")}</span>}
+            {showUserStatus && delegatedUserStatus === "checking" && <span className="text-gray-400">{t("common.checking")}</span>}
+            {showUserStatus && delegatedUserStatus === "exists" && <span className="text-green-700">{t("common.userExists")}</span>}
+            {showUserStatus && delegatedUserStatus === "not_found" && <span className="text-orange-600">{t("common.userNotFound")}</span>}
+            {showUserStatus && delegatedUserStatus === "invalid" && <span className="text-red-600">{t("common.invalidUsername")}</span>}
+          </p>
+        </div>
+      </FormDialog>
+
       {open && (
         <div id={openContentId} className="mt-2">
           <p className="text-sm text-gray-500 mb-2">{t("users.delegation.description", { username })}</p>
-          {showCreateInput && (
-            <div className="flex gap-2 mt-2 mb-2">
-              <input
-                autoFocus
-                type="text"
-                value={newUser}
-                onChange={(e) => setNewUser(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-                placeholder={t("users.delegation.placeholder")}
-                className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-              />
-              {isSelfDelegation && (
-                <span className="flex items-center gap-1 text-xs text-red-600 whitespace-nowrap">
-                  <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
-                  {t("users.delegation.selfDelegation")}
-                </span>
-              )}
-              {!isSelfDelegation && delegatedUserStatus === "checking" && (
-                <span className="flex items-center text-xs text-gray-400 whitespace-nowrap">{t("common.checking")}</span>
-              )}
-              {!isSelfDelegation && delegatedUserStatus === "exists" && (
-                <span className="flex items-center gap-1 text-xs text-green-600 whitespace-nowrap">
-                  <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
-                  {t("common.userExists")}
-                </span>
-              )}
-              {delegatedUserStatus === "not_found" && (
-                <span className="flex items-center gap-1 text-xs text-orange-500 whitespace-nowrap">
-                  <span className="inline-block w-2 h-2 rounded-full bg-orange-400" />
-                  {t("common.userNotFound")}
-                </span>
-              )}
-              {delegatedUserStatus === "invalid" && (
-                <span className="flex items-center gap-1 text-xs text-red-600 whitespace-nowrap">
-                  <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
-                  {t("common.invalidUsername")}
-                </span>
-              )}
-              <button
-                onClick={handleAdd}
-                disabled={!canSubmit}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {t("common.add")}
-              </button>
-            </div>
-          )}
-
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />

@@ -645,7 +645,6 @@
       "title": "Utenti delegati",
       "description": "Gli utenti elencati qui possono accedere ai dati di {{username}} tramite delega.",
       "placeholder": "utente@dominio.tld",
-      "errorAdding": "Errore durante l'aggiunta dell'utente delegato",
       "added": "Utente delegato aggiunto",
       "removeTitle": "Rimuovi utente delegato",
       "removeConfirm": "Rimuovere la delega di «{{delegatedUser}}» su {{username}}?",
