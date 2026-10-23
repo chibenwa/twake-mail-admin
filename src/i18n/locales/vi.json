@@ -1718,7 +1718,6 @@
     "addRegex": "Thêm ánh xạ biểu thức chính quy",
     "sourcePlaceholder": "Nguồn (vd. user@domain.com)",
     "destinationPlaceholder": "Đích (vd. alias@domain.com)",
-    "creating": "Đang tạo...",
     "mappingSourcePlaceholder": "Nguồn ánh xạ (vd. user@domain.com)",
     "regexPlaceholder": "Biểu thức chính quy (vd. user@.*:intern@domain.com)",
     "searchPlaceholder": "Tìm theo nguồn, loại hoặc đích...",

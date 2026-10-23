@@ -1724,7 +1724,6 @@
     "addRegex": "Добавить регулярное сопоставление",
     "sourcePlaceholder": "Источник (напр. user@domain.com)",
     "destinationPlaceholder": "Назначение (напр. alias@domain.com)",
-    "creating": "Создание...",
     "mappingSourcePlaceholder": "Источник сопоставления (напр. user@domain.com)",
     "regexPlaceholder": "Регулярное выражение (напр. user@.*:intern@domain.com)",
     "searchPlaceholder": "Поиск по источнику, типу или назначению...",

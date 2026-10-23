@@ -1720,7 +1720,6 @@
     "addRegex": "Add Regex Mapping",
     "sourcePlaceholder": "Source (e.g. user@domain.com)",
     "destinationPlaceholder": "Destination (e.g. alias@domain.com)",
-    "creating": "Creating...",
     "mappingSourcePlaceholder": "Mapping source (e.g. user@domain.com)",
     "regexPlaceholder": "Regex (e.g. user@.*:intern@domain.com)",
     "searchPlaceholder": "Search by source, type or destination...",

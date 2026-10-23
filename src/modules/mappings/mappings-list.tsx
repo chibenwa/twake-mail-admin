@@ -1,14 +1,11 @@
 import { useFetchData } from "@/hooks/use-fetch-data";
 import {
   getMappings,
-  createAddressMapping,
   deleteAddressMapping,
   deleteAliasMapping,
   deleteForwardMapping,
   deleteGroupMapping,
   deleteDomainMapping,
-  createDomainMapping,
-  createRegexMapping,
   deleteRegexMapping,
 } from "./api-client";
 import { GetMappingsResponseType, FlatMapping } from "./types";
@@ -21,6 +18,9 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import { appConfig } from "@/lib/config";
+import { Button } from "@/components/ui/button";
+import ListToolbar from "@/components/custom/list-toolbar";
+import CreateMappingDialog, { MappingKind } from "./create-mapping-dialog";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -48,21 +48,10 @@ export default function MappingsList() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  const [showCreate, setShowCreate] = useState(false);
-  const [source, setSource] = useState("");
-  const [destination, setDestination] = useState("");
-  const [creating, setCreating] = useState(false);
 
-  const [showCreateRegex, setShowCreateRegex] = useState(false);
-  const [regexSource, setRegexSource] = useState("");
-  const [regexValue, setRegexValue] = useState("");
-  const [creatingRegex, setCreatingRegex] = useState(false);
 
-  const [showCreateDomain, setShowCreateDomain] = useState(false);
-  const [domainSource, setDomainSource] = useState("");
-  const [domainDestination, setDomainDestination] = useState("");
-  const [creatingDomain, setCreatingDomain] = useState(false);
   const [deletingPage, setDeletingPage] = useState(false);
+  const [creatingKind, setCreatingKind] = useState<MappingKind | null>(null);
   const { toast } = useToast();
   const confirm = useConfirm();
 
@@ -159,72 +148,6 @@ export default function MappingsList() {
     }
   };
 
-  const handleCreateRegex = async () => {
-    const src = regexSource.trim();
-    const regex = regexValue.trim();
-    if (!src || !regex) return;
-    setCreatingRegex(true);
-    try {
-      await createRegexMapping(src, regex);
-      toast({ title: t("mappings.regexCreated") });
-      setRegexSource("");
-      setRegexValue("");
-      setShowCreateRegex(false);
-      await refresh();
-    } catch (err) {
-      toast({
-        title: t("mappings.errorCreatingRegex"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    } finally {
-      setCreatingRegex(false);
-    }
-  };
-
-  const handleCreateDomain = async () => {
-    const src = domainSource.trim();
-    const dest = domainDestination.trim();
-    if (!src || !dest) return;
-    setCreatingDomain(true);
-    try {
-      await createDomainMapping(src, dest);
-      toast({ title: t("mappings.domainCreated") });
-      setDomainSource("");
-      setDomainDestination("");
-      setShowCreateDomain(false);
-      await refresh();
-    } catch (err) {
-      toast({
-        title: t("mappings.errorCreatingDomain"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    } finally {
-      setCreatingDomain(false);
-    }
-  };
-
-  const handleCreate = async () => {
-    const src = source.trim();
-    const dest = destination.trim();
-    if (!src || !dest) return;
-    setCreating(true);
-    try {
-      await createAddressMapping(src, dest);
-      toast({ title: t("mappings.addressCreated") });
-      setSource("");
-      setDestination("");
-      setShowCreate(false);
-      await refresh();
-    } catch (err) {
-      toast({
-        title: t("mappings.errorCreatingAddress"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    } finally {
-      setCreating(false);
-    }
-  };
-
   const flatMappings = useMemo<FlatMapping[]>(() => {
     if (!mappingsResult) return [];
     const rows: FlatMapping[] = [];
@@ -271,165 +194,40 @@ export default function MappingsList() {
 
   return (
     <div>
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <ListToolbar search={search} onSearch={(value) => { setSearch(value); setPage(1); }} placeholder={t("mappings.searchPlaceholder")}>
         {canAddAddress && (
-          <button
-            onClick={() => { setShowCreate(!showCreate); setShowCreateRegex(false); setShowCreateDomain(false); }}
-            className="flex items-center gap-1 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-sm"
-          >
-            <Plus className="w-4 h-4" />
+          <Button variant="outline" onClick={() => setCreatingKind("address")}>
+            <Plus className="w-4 h-4" aria-hidden="true" />
             {t("mappings.addAddress")}
-          </button>
+          </Button>
         )}
         {canAddRegex && (
-          <button
-            onClick={() => { setShowCreateRegex(!showCreateRegex); setShowCreate(false); setShowCreateDomain(false); }}
-            className="flex items-center gap-1 px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition text-sm"
-          >
-            <Plus className="w-4 h-4" />
+          <Button variant="outline" onClick={() => setCreatingKind("regex")}>
+            <Plus className="w-4 h-4" aria-hidden="true" />
             {t("mappings.addRegex")}
-          </button>
+          </Button>
         )}
         {canAddDomain && (
-          <button
-            onClick={() => { setShowCreateDomain(!showCreateDomain); setShowCreate(false); setShowCreateRegex(false); }}
-            className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
-          >
-            <Plus className="w-4 h-4" />
+          <Button variant="outline" onClick={() => setCreatingKind("domain")}>
+            <Plus className="w-4 h-4" aria-hidden="true" />
             {t("mappings.addDomain")}
-          </button>
+          </Button>
         )}
         {deletablePageMappings.length > 0 && (
-          <button
+          <Button
+            variant="outline"
             onClick={handleDeletePage}
             disabled={deletingPage}
-            className="ml-auto flex items-center gap-1 px-4 py-2 border border-red-500 text-red-500 rounded-md hover:bg-red-50 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-4 h-4" aria-hidden="true" />
             {deletingPage
               ? t("mappings.removingPage")
               : t("mappings.removePage", { total: deletablePageMappings.length })}
-          </button>
+          </Button>
         )}
-      </div>
-
-      {showCreate && (
-        <div className="mt-3 p-4 border rounded-md bg-gray-50 flex flex-col gap-3">
-          <div className="flex items-center gap-3">
-            <input
-              autoFocus
-              type="text"
-              value={source}
-              onChange={(e) => setSource(e.target.value)}
-              placeholder={t("mappings.sourcePlaceholder")}
-              className="flex-1 min-w-0 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-            />
-            <span className="text-gray-400 text-sm">→</span>
-            <input
-              type="text"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-              placeholder={t("mappings.destinationPlaceholder")}
-              className="flex-1 min-w-0 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleCreate}
-              disabled={creating || !source.trim() || !destination.trim()}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {creating ? t("mappings.creating") : t("common.create")}
-            </button>
-            <button
-              onClick={() => { setShowCreate(false); setSource(""); setDestination(""); }}
-              className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition text-sm"
-            >
-              {t("common.cancel")}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showCreateRegex && (
-        <div className="mt-3 p-4 border rounded-md bg-gray-50 flex flex-col gap-3">
-          <div className="flex items-center gap-3">
-            <input
-              autoFocus
-              type="text"
-              value={regexSource}
-              onChange={(e) => setRegexSource(e.target.value)}
-              placeholder={t("mappings.mappingSourcePlaceholder")}
-              className="flex-1 min-w-0 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-            />
-            <span className="text-gray-400 text-sm">→</span>
-            <input
-              type="text"
-              value={regexValue}
-              onChange={(e) => setRegexValue(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreateRegex()}
-              placeholder={t("mappings.regexPlaceholder")}
-              className="flex-1 min-w-0 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleCreateRegex}
-              disabled={creatingRegex || !regexSource.trim() || !regexValue.trim()}
-              className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {creatingRegex ? t("mappings.creating") : t("common.create")}
-            </button>
-            <button
-              onClick={() => { setShowCreateRegex(false); setRegexSource(""); setRegexValue(""); }}
-              className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition text-sm"
-            >
-              {t("common.cancel")}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showCreateDomain && (
-        <div className="mt-3 p-4 border rounded-md bg-gray-50 flex flex-col gap-3">
-          <div className="flex items-center gap-3">
-            <input
-              autoFocus
-              type="text"
-              value={domainSource}
-              onChange={(e) => setDomainSource(e.target.value)}
-              placeholder={t("mappings.domainSourcePlaceholder")}
-              className="flex-1 min-w-0 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-green-600"
-            />
-            <span className="text-gray-400 text-sm">→</span>
-            <input
-              type="text"
-              value={domainDestination}
-              onChange={(e) => setDomainDestination(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreateDomain()}
-              placeholder={t("mappings.domainDestinationPlaceholder")}
-              className="flex-1 min-w-0 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-green-600"
-            />
-          </div>
-          <p className="text-xs text-gray-500">{t("mappings.domainHint")}</p>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleCreateDomain}
-              disabled={creatingDomain || !domainSource.trim() || !domainDestination.trim()}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {creatingDomain ? t("mappings.creating") : t("common.create")}
-            </button>
-            <button
-              onClick={() => { setShowCreateDomain(false); setDomainSource(""); setDomainDestination(""); }}
-              className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition text-sm"
-            >
-              {t("common.cancel")}
-            </button>
-          </div>
-        </div>
-      )}
+      </ListToolbar>
+      <CreateMappingDialog kind={creatingKind} onClose={() => setCreatingKind(null)} onCreated={refresh} />
 
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
@@ -439,13 +237,6 @@ export default function MappingsList() {
         </div>
       )}
       {error && <p className="text-red-500 mt-4">{t("common.errorPrefix", { message: error })}</p>}
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-        placeholder={t("mappings.searchPlaceholder")}
-        className="mt-4 w-full px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-      />
       {filteredMappings.length > 0 && (
         <PaginationControls
           onFirst={() => goToPage(1)}

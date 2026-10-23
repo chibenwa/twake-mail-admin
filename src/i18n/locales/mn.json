@@ -1720,7 +1720,6 @@
     "addRegex": "Regex зураглал нэмэх",
     "sourcePlaceholder": "Эх (жнь user@domain.com)",
     "destinationPlaceholder": "Хүрэх газар (жнь alias@domain.com)",
-    "creating": "Үүсгэж байна...",
     "mappingSourcePlaceholder": "Зураглалын эх (жнь user@domain.com)",
     "regexPlaceholder": "Regex (жнь user@.*:intern@domain.com)",
     "searchPlaceholder": "Эх, төрөл эсвэл хүрэх газраар хайх...",

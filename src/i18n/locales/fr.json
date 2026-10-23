@@ -1720,7 +1720,6 @@
     "addRegex": "Ajouter une réécriture d'adresse par regex",
     "sourcePlaceholder": "Source (ex. utilisateur@domaine.com)",
     "destinationPlaceholder": "Destination (ex. alias@domaine.com)",
-    "creating": "Création…",
     "mappingSourcePlaceholder": "Source (ex. utilisateur@domaine.com)",
     "regexPlaceholder": "Regex (ex. utilisateur@.*:intern@domaine.com)",
     "searchPlaceholder": "Rechercher par source, type ou destination…",

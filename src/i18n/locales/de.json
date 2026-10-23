@@ -1720,7 +1720,6 @@
     "addRegex": "Regex-Zuordnung hinzufügen",
     "sourcePlaceholder": "Quelle (z. B. user@domain.com)",
     "destinationPlaceholder": "Ziel (z. B. alias@domain.com)",
-    "creating": "Wird erstellt...",
     "mappingSourcePlaceholder": "Zuordnungsquelle (z. B. user@domain.com)",
     "regexPlaceholder": "Regex (z. B. user@.*:intern@domain.com)",
     "searchPlaceholder": "Nach Quelle, Typ oder Ziel suchen...",

@@ -1720,7 +1720,6 @@
     "addRegex": "Añadir asignación por expresión regular",
     "sourcePlaceholder": "Origen (p. ej. user@domain.com)",
     "destinationPlaceholder": "Destino (p. ej. alias@domain.com)",
-    "creating": "Creando...",
     "mappingSourcePlaceholder": "Origen de la asignación (p. ej. user@domain.com)",
     "regexPlaceholder": "Expresión regular (p. ej. user@.*:intern@domain.com)",
     "searchPlaceholder": "Buscar por origen, tipo o destino...",
