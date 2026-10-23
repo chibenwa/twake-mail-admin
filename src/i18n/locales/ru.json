@@ -888,7 +888,7 @@
       "renameTitle": "Переименовать пользователя",
       "errorRename": "Ошибка при переименовании пользователя",
       "deleteData": "Удалить данные пользователя",
-      "deleteDataTitle": "Удалить данные пользователя",
+      "deleteDataTitle": "Удалить все данные {{username}}",
       "errorDeleteData": "Ошибка при удалении данных пользователя",
       "tierData": "Распределить данные пользователя по уровням",
       "tierDataTitle": "Распределить данные пользователя по уровням",
@@ -897,7 +897,12 @@
       "errorTierData": "Ошибка при выполнении задачи распределения по уровням",
       "provisionTemplates": "Подготовить шаблоны",
       "provisionTemplatesTitle": "Подготовить шаблоны",
-      "errorProvisionTemplates": "Ошибка при подготовке шаблонов"
+      "errorProvisionTemplates": "Ошибка при подготовке шаблонов",
+      "deleteDataCounts": {
+        "calendars": "Календари: {{count}}",
+        "addressBooks": "Адресные книги: {{count}}",
+        "bookingLinks": "Ссылки для бронирования: {{count}}"
+      }
     },
     "calendarTasks": {
       "title": "Задачи",
@@ -1119,7 +1124,9 @@
   "deleteUserDataForm": {
     "fromStep": "Возобновить с шага",
     "fromStepPlaceholder": "e.g. MailboxUserDeletionTaskStep",
-    "calendarFromStepPlaceholder": "e.g. DavCalendarDeletionTaskStep"
+    "calendarFromStepPlaceholder": "e.g. DavCalendarDeletionTaskStep",
+    "advanced": "Дополнительно: возобновить прерванное удаление",
+    "fromStepHelp": "Только чтобы возобновить прерванное удаление: скопируйте имя шага из завершившейся ошибкой задачи."
   },
   "restoreCriteria": {
     "addCriteria": "Добавить критерий",
@@ -1732,7 +1739,11 @@
       "deleteMailbox": "«{{mailbox}}», его подпапки и все письма будут удалены безвозвратно.",
       "clearMailbox": "Все письма в «{{mailbox}}» будут удалены безвозвратно; папка сохранится.",
       "clearRepository": "{{count}} писем в {{path}} будут удалены безвозвратно и больше не смогут быть обработаны повторно.",
-      "clearGroup": "События удаляются без повторной доставки: то, что они должны были обновить, останется устаревшим."
-    }
+      "clearGroup": "События удаляются без повторной доставки: то, что они должны были обновить, останется устаревшим.",
+      "deleteCalendarUserData": "Все календари, события, адресные книги, контакты и ссылки для бронирования этого пользователя будут удалены. Это действие необратимо.",
+      "clearDomainMembersContacts": "Адресная книга «Участники домена» каждого домена, кроме пропущенных, будет очищена. Это действие необратимо."
+    },
+    "deleteData": "Удалить данные",
+    "deleteWord": "УДАЛИТЬ"
   }
 }

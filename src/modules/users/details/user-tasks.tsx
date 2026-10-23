@@ -285,7 +285,7 @@ export default function UserTasks({ username }: Props) {
     let currentFromStep = "";
 
     await confirm({
-      header: t("users.tasks.deleteDataTitle"),
+      header: t("users.tasks.deleteDataTitle", { username }),
       destructive: true,
       confirmLabel: t("confirm.deleteUserData"),
       consequence: t("confirm.consequence.deleteUserData", { user: username }),
@@ -294,7 +294,7 @@ export default function UserTasks({ username }: Props) {
       message: (
         <FormTaskContent
           initialValues={currentFromStep}
-          renderForm={(onChange) => <DeleteUserDataForm username={username} onChange={onChange} />}
+          renderForm={(onChange) => <DeleteUserDataForm onChange={onChange} />}
           buildCommand={(fromStep) => deleteUserDataCommand(username, fromStep)}
           onChange={(value) => { currentFromStep = value; }}
         />

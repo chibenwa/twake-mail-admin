@@ -888,7 +888,7 @@
       "renameTitle": "Rename User",
       "errorRename": "Error renaming user",
       "deleteData": "Delete user data",
-      "deleteDataTitle": "Delete User Data",
+      "deleteDataTitle": "Delete all data of {{username}}",
       "errorDeleteData": "Error deleting user data",
       "tierData": "Tier user data",
       "tierDataTitle": "Tier user data",
@@ -897,7 +897,12 @@
       "errorTierData": "Error running tiering task",
       "provisionTemplates": "Provision templates",
       "provisionTemplatesTitle": "Provision templates",
-      "errorProvisionTemplates": "Error provisioning templates"
+      "errorProvisionTemplates": "Error provisioning templates",
+      "deleteDataCounts": {
+        "calendars": "Calendars: {{count}}",
+        "addressBooks": "Address books: {{count}}",
+        "bookingLinks": "Booking links: {{count}}"
+      }
     },
     "calendarTasks": {
       "title": "Tasks",
@@ -1117,7 +1122,9 @@
   "deleteUserDataForm": {
     "fromStep": "Resume from step",
     "fromStepPlaceholder": "e.g. MailboxUserDeletionTaskStep",
-    "calendarFromStepPlaceholder": "e.g. DavCalendarDeletionTaskStep"
+    "calendarFromStepPlaceholder": "e.g. DavCalendarDeletionTaskStep",
+    "advanced": "Advanced: resume an interrupted deletion",
+    "fromStepHelp": "Only to resume a deletion that failed midway: copy the step name from the failed task."
   },
   "restoreCriteria": {
     "addCriteria": "Add criterion",
@@ -1730,7 +1737,11 @@
       "deleteMailbox": "\"{{mailbox}}\", its sub-folders and all their messages are permanently deleted.",
       "clearMailbox": "All messages of \"{{mailbox}}\" are permanently deleted; the folder is kept.",
       "clearRepository": "The {{count}} mails stored in {{path}} are permanently deleted and can no longer be reprocessed.",
-      "clearGroup": "The dead-lettered events are deleted without being redelivered: what they would have updated stays out of date."
-    }
+      "clearGroup": "The dead-lettered events are deleted without being redelivered: what they would have updated stays out of date.",
+      "deleteCalendarUserData": "Every calendar, event, address book, contact and booking link of this user will be deleted. This cannot be undone.",
+      "clearDomainMembersContacts": "The \"Domain members\" address book of every domain, except the skipped ones, is emptied. This cannot be undone."
+    },
+    "deleteData": "Delete data",
+    "deleteWord": "DELETE"
   }
 }

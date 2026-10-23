@@ -1,4 +1,4 @@
-import { useCallback, useId, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { ChevronDown, ChevronRight, Plus, Minus, Copy, Pencil, Trash2, RefreshCw, Loader2, Save, CalendarX } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -23,6 +23,8 @@ interface Props {
   username: string;
   // Changes whenever the Calendars section of the page creates, renames or deletes a calendar.
   calendarsVersion?: number;
+  // Reports how many booking links are listed, e.g. for the summary of the data a deletion loses.
+  onCount?: (count: number) => void;
 }
 
 const DAYS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"] as const;
@@ -411,7 +413,7 @@ const EMPTY_CREATE: CreateBookingLinkPayload = {
   color: DEFAULT_COLOR,
 };
 
-export default function UserBookingLinks({ username, calendarsVersion }: Props) {
+export default function UserBookingLinks({ username, calendarsVersion, onCount }: Props) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const toastTaskCreated = useTaskCreatedToast();
@@ -476,6 +478,9 @@ export default function UserBookingLinks({ username, calendarsVersion }: Props) 
   if (!canView) return null;
 
   const links = data ?? [];
+  useEffect(() => {
+    if (data) onCount?.(links.length);
+  }, [data, onCount, links.length]);
   const createDurationMinutes = parseDurationMinutes(createDuration);
   const editDurationMinutes = parseDurationMinutes(editDuration);
 

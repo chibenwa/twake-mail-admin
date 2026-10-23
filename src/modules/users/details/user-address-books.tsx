@@ -1,4 +1,4 @@
-import { useCallback, useId, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { Link } from "react-router";
 import { ChevronDown, ChevronRight, Contact, Plus, Minus, Pencil, Trash2, Save, Eye, EyeOff, Users, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -24,6 +24,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 interface Props {
   username: string;
+  // Reports how many address books are listed, e.g. for the summary of the data a deletion loses.
+  onCount?: (count: number) => void;
 }
 
 const EMPTY_CREATE: CreateUserAddressBookPayload = {
@@ -240,7 +242,7 @@ function AddressBookRow({
   );
 }
 
-export default function UserAddressBooks({ username }: Props) {
+export default function UserAddressBooks({ username, onCount }: Props) {
   const { t } = useTranslation();
   const idPrefix = useId();
   const { toast } = useToast();
@@ -288,6 +290,9 @@ export default function UserAddressBooks({ username }: Props) {
   if (!canView) return null;
 
   const addressBooks = data?._embedded?.["dav:addressbook"] ?? [];
+  useEffect(() => {
+    if (data) onCount?.(addressBooks.length);
+  }, [data, onCount, addressBooks.length]);
   const rowKeys = addressBookKeys(addressBooks);
 
   const handleCreate = async () => {

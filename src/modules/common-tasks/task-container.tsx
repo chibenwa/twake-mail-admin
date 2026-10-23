@@ -9,7 +9,7 @@ import ConfirmTaskContent from "./components/confirm-task-content";
 import { defaultCommand } from "./components/command-preview";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 
-export default function TaskContainer({ nameKey, taskKey, mode, command, doc, params, allowanceCheck, danger }: TaskProps) {
+export default function TaskContainer({ nameKey, taskKey, mode, command, doc, params, allowanceCheck, danger, consequenceKey, typeToConfirmKey }: TaskProps) {
   const { t } = useTranslation();
   const name = t(nameKey);
   const toastTaskCreated = useTaskCreatedToast();
@@ -23,6 +23,12 @@ export default function TaskContainer({ nameKey, taskKey, mode, command, doc, pa
     const additionParams: any = {};
     await confirm({
       header: t("common.run"),
+      ...(danger && {
+        destructive: true,
+        confirmLabel: t("confirm.deleteData"),
+        consequence: consequenceKey && t(consequenceKey),
+        typeToConfirm: typeToConfirmKey && t(typeToConfirmKey),
+      }),
       message: (
         <ConfirmTaskContent
           message={<p>{t("commonTasks.runConfirm", { name })}</p>}

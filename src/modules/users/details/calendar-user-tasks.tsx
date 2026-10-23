@@ -24,11 +24,21 @@ const REPUBLISH_CONTACTS_PARAMS: TaskParam[] = [
   { key: "contactsPerSecond", defaultValue: "100", type: "input" },
 ];
 
-interface Props {
-  username: string;
+// What the page lists of the user, for the summary of what a data deletion loses; unknown until loaded.
+export interface CalendarUserCounts {
+  calendars?: number;
+  addressBooks?: number;
+  bookingLinks?: number;
 }
 
-export default function CalendarUserTasks({ username }: Props) {
+interface Props {
+  username: string;
+  counts?: CalendarUserCounts;
+}
+
+const countText = (count: number | undefined) => (count === undefined ? "—" : String(count));
+
+export default function CalendarUserTasks({ username, counts = {} }: Props) {
   const { t } = useTranslation();
   const toastTaskCreated = useTaskCreatedToast();
   const confirm = useConfirm();
@@ -42,12 +52,23 @@ export default function CalendarUserTasks({ username }: Props) {
     let currentFromStep = "";
 
     await confirm({
-      header: t("users.tasks.deleteDataTitle"),
+      header: t("users.tasks.deleteDataTitle", { username }),
       destructive: true,
-      confirmLabel: t("common.delete"),
+      confirmLabel: t("confirm.deleteUserData"),
+      consequence: (
+        <>
+          <ul className="list-disc ml-4">
+            <li>{t("users.tasks.deleteDataCounts.calendars", { count: countText(counts.calendars) })}</li>
+            <li>{t("users.tasks.deleteDataCounts.addressBooks", { count: countText(counts.addressBooks) })}</li>
+            <li>{t("users.tasks.deleteDataCounts.bookingLinks", { count: countText(counts.bookingLinks) })}</li>
+          </ul>
+          <p className="mt-2">{t("confirm.consequence.deleteCalendarUserData")}</p>
+        </>
+      ),
+      typeToConfirm: username,
+      typeToConfirmIgnoreCase: true,
       message: (
         <DeleteUserDataForm
-          username={username}
           onChange={(value) => { currentFromStep = value; }}
           fromStepPlaceholderKey="deleteUserDataForm.calendarFromStepPlaceholder"
         />

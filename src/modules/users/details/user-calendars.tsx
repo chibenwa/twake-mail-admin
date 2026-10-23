@@ -1,4 +1,4 @@
-import { useCallback, useId, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { Link } from "react-router";
 import { CalendarDays, ChevronDown, ChevronRight, Plus, Minus, Pencil, Trash2, Save, Eye, EyeOff, Users, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -24,6 +24,8 @@ interface Props {
   username: string;
   // Called once a calendar was created, renamed or deleted, for the other sections listing them.
   onCalendarsChanged?: () => void;
+  // Reports how many calendars are listed, e.g. for the summary of the data a deletion loses.
+  onCount?: (count: number) => void;
 }
 
 type CalendarCategory = "owner" | "delegated" | "subscription" | "resource";
@@ -292,7 +294,7 @@ function CalendarColorField({ value, onChange }: { value: string | undefined; on
   );
 }
 
-export default function UserCalendars({ username, onCalendarsChanged }: Props) {
+export default function UserCalendars({ username, onCalendarsChanged, onCount }: Props) {
   const { t } = useTranslation();
   const idPrefix = useId();
   const { toast } = useToast();
@@ -340,6 +342,9 @@ export default function UserCalendars({ username, onCalendarsChanged }: Props) {
   if (!canView) return null;
 
   const calendars = data?._embedded?.["dav:calendar"] ?? [];
+  useEffect(() => {
+    if (data) onCount?.(calendars.length);
+  }, [data, onCount, calendars.length]);
   const ownerEmails = buildOwnerEmailMap(calendars, registeredUsers);
   const grouped = CATEGORY_ORDER.map((category) => ({
     category,

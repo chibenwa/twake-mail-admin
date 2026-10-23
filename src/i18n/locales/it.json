@@ -888,7 +888,7 @@
       "renameTitle": "Rinomina utente",
       "errorRename": "Errore durante la ridenominazione dell'utente",
       "deleteData": "Elimina i dati dell'utente",
-      "deleteDataTitle": "Elimina i dati dell'utente",
+      "deleteDataTitle": "Elimina tutti i dati di {{username}}",
       "errorDeleteData": "Errore durante l'eliminazione dei dati dell'utente",
       "tierData": "Archivia i dati dell'utente su più livelli",
       "tierDataTitle": "Archivia i dati dell'utente su più livelli",
@@ -897,7 +897,12 @@
       "errorTierData": "Errore durante l'esecuzione dell'archiviazione su più livelli",
       "provisionTemplates": "Distribuisci i modelli",
       "provisionTemplatesTitle": "Distribuisci i modelli",
-      "errorProvisionTemplates": "Errore durante la distribuzione dei modelli"
+      "errorProvisionTemplates": "Errore durante la distribuzione dei modelli",
+      "deleteDataCounts": {
+        "calendars": "Calendari: {{count}}",
+        "addressBooks": "Rubriche: {{count}}",
+        "bookingLinks": "Link di prenotazione: {{count}}"
+      }
     },
     "calendarTasks": {
       "title": "Attività",
@@ -1117,7 +1122,9 @@
   "deleteUserDataForm": {
     "fromStep": "Riprendi dal passaggio",
     "fromStepPlaceholder": "ad es. MailboxUserDeletionTaskStep",
-    "calendarFromStepPlaceholder": "ad es. DavCalendarDeletionTaskStep"
+    "calendarFromStepPlaceholder": "ad es. DavCalendarDeletionTaskStep",
+    "advanced": "Avanzate: riprendi un'eliminazione interrotta",
+    "fromStepHelp": "Solo per riprendere un'eliminazione interrotta: copia il nome del passo dall'attività fallita."
   },
   "restoreCriteria": {
     "addCriteria": "Aggiungi criterio",
@@ -1730,7 +1737,11 @@
       "deleteMailbox": "«{{mailbox}}», le sottocartelle e tutti i messaggi vengono eliminati definitivamente.",
       "clearMailbox": "Tutti i messaggi di «{{mailbox}}» vengono eliminati definitivamente; la cartella resta.",
       "clearRepository": "Le {{count}} email di {{path}} vengono eliminate definitivamente e non potranno più essere rielaborate.",
-      "clearGroup": "Gli eventi vengono eliminati senza essere riconsegnati: ciò che dovevano aggiornare resta obsoleto."
-    }
+      "clearGroup": "Gli eventi vengono eliminati senza essere riconsegnati: ciò che dovevano aggiornare resta obsoleto.",
+      "deleteCalendarUserData": "Tutti i calendari, eventi, rubriche, contatti e link di prenotazione di questo utente verranno eliminati. Operazione irreversibile.",
+      "clearDomainMembersContacts": "La rubrica «Membri del dominio» di ogni dominio, tranne quelli esclusi, viene svuotata. Operazione irreversibile."
+    },
+    "deleteData": "Elimina dati",
+    "deleteWord": "ELIMINA"
   }
 }

@@ -888,7 +888,7 @@
       "renameTitle": "Renommer l'utilisateur",
       "errorRename": "Erreur lors du renommage",
       "deleteData": "Supprimer les données de l'utilisateur",
-      "deleteDataTitle": "Supprimer les données utilisateur",
+      "deleteDataTitle": "Supprimer toutes les données de {{username}}",
       "errorDeleteData": "Erreur lors de la suppression des données",
       "tierData": "Hiérarchiser les données utilisateur",
       "tierDataTitle": "Hiérarchiser les données utilisateur",
@@ -897,7 +897,12 @@
       "errorTierData": "Erreur lors de l'exécution de la tâche",
       "provisionTemplates": "Provisionner les modèles",
       "provisionTemplatesTitle": "Provisionner les modèles",
-      "errorProvisionTemplates": "Erreur lors du provisionnement des modèles"
+      "errorProvisionTemplates": "Erreur lors du provisionnement des modèles",
+      "deleteDataCounts": {
+        "calendars": "Calendriers : {{count}}",
+        "addressBooks": "Carnets d'adresses : {{count}}",
+        "bookingLinks": "Liens de réservation : {{count}}"
+      }
     },
     "calendarTasks": {
       "title": "Tâches",
@@ -1117,7 +1122,9 @@
   "deleteUserDataForm": {
     "fromStep": "Reprendre depuis l'étape",
     "fromStepPlaceholder": "ex. MailboxUserDeletionTaskStep",
-    "calendarFromStepPlaceholder": "ex. DavCalendarDeletionTaskStep"
+    "calendarFromStepPlaceholder": "ex. DavCalendarDeletionTaskStep",
+    "advanced": "Avancé : reprendre une suppression interrompue",
+    "fromStepHelp": "Uniquement pour reprendre une suppression interrompue : copiez le nom de l'étape depuis la tâche en échec."
   },
   "restoreCriteria": {
     "addCriteria": "Ajouter un critère",
@@ -1730,7 +1737,11 @@
       "deleteMailbox": "« {{mailbox}} », ses sous-dossiers et tous leurs messages sont définitivement supprimés.",
       "clearMailbox": "Tous les messages de « {{mailbox}} » sont définitivement supprimés ; le dossier est conservé.",
       "clearRepository": "Les {{count}} mails stockés dans {{path}} sont définitivement supprimés et ne pourront plus être retraités.",
-      "clearGroup": "Les événements en échec sont supprimés sans être rejoués : ce qu'ils devaient mettre à jour reste obsolète."
-    }
+      "clearGroup": "Les événements en échec sont supprimés sans être rejoués : ce qu'ils devaient mettre à jour reste obsolète.",
+      "deleteCalendarUserData": "Tous les calendriers, événements, carnets d'adresses, contacts et liens de réservation de cet utilisateur seront supprimés. Action irréversible.",
+      "clearDomainMembersContacts": "Le carnet « Membres du domaine » de chaque domaine, hors domaines ignorés, est vidé. Action irréversible."
+    },
+    "deleteData": "Supprimer les données",
+    "deleteWord": "SUPPRIMER"
   }
 }

@@ -888,7 +888,7 @@
       "renameTitle": "Хэрэглэгчийн нэр өөрчлөх",
       "errorRename": "Хэрэглэгчийн нэр өөрчлөхөд алдаа гарлаа",
       "deleteData": "Хэрэглэгчийн өгөгдөл устгах",
-      "deleteDataTitle": "Хэрэглэгчийн өгөгдөл устгах",
+      "deleteDataTitle": "{{username}}-ийн бүх өгөгдлийг устгах",
       "errorDeleteData": "Хэрэглэгчийн өгөгдөл устгахад алдаа гарлаа",
       "tierData": "Хэрэглэгчийн өгөгдлийг түвшинд хуваах",
       "tierDataTitle": "Хэрэглэгчийн өгөгдлийг түвшинд хуваах",
@@ -897,7 +897,12 @@
       "errorTierData": "Түвшинд хуваах даалгавар ажиллуулахад алдаа гарлаа",
       "provisionTemplates": "Загвар нийлүүлэх",
       "provisionTemplatesTitle": "Загвар нийлүүлэх",
-      "errorProvisionTemplates": "Загвар нийлүүлэхэд алдаа гарлаа"
+      "errorProvisionTemplates": "Загвар нийлүүлэхэд алдаа гарлаа",
+      "deleteDataCounts": {
+        "calendars": "Хуанли: {{count}}",
+        "addressBooks": "Хаягийн дэвтэр: {{count}}",
+        "bookingLinks": "Захиалгын холбоос: {{count}}"
+      }
     },
     "calendarTasks": {
       "title": "Даалгаврууд",
@@ -1117,7 +1122,9 @@
   "deleteUserDataForm": {
     "fromStep": "Алхамаас үргэлжлүүлэх",
     "fromStepPlaceholder": "e.g. MailboxUserDeletionTaskStep",
-    "calendarFromStepPlaceholder": "e.g. DavCalendarDeletionTaskStep"
+    "calendarFromStepPlaceholder": "e.g. DavCalendarDeletionTaskStep",
+    "advanced": "Нэмэлт: тасалдсан устгалыг үргэлжлүүлэх",
+    "fromStepHelp": "Зөвхөн дундаа зогссон устгалыг үргэлжлүүлэхэд: алдаатай даалгавраас алхамын нэрийг хуулна уу."
   },
   "restoreCriteria": {
     "addCriteria": "Шалгуур нэмэх",
@@ -1730,7 +1737,11 @@
       "deleteMailbox": "\"{{mailbox}}\", дэд хавтас, бүх захидал бүрмөсөн устна.",
       "clearMailbox": "\"{{mailbox}}\"-ийн бүх захидал бүрмөсөн устна; хавтас хадгалагдана.",
       "clearRepository": "{{path}}-д хадгалсан {{count}} захидал бүрмөсөн устаж, дахин боловсруулах боломжгүй болно.",
-      "clearGroup": "Үйл явдлууд дахин хүргэгдэлгүй устна: шинэчлэх ёстой зүйлс хуучирсан хэвээр үлдэнэ."
-    }
+      "clearGroup": "Үйл явдлууд дахин хүргэгдэлгүй устна: шинэчлэх ёстой зүйлс хуучирсан хэвээр үлдэнэ.",
+      "deleteCalendarUserData": "Энэ хэрэглэгчийн бүх хуанли, үйл явдал, хаягийн дэвтэр, харилцагч, захиалгын холбоос устна. Буцаах боломжгүй.",
+      "clearDomainMembersContacts": "Алгассанаас бусад домэйн бүрийн \"Домэйны гишүүд\" хаягийн дэвтэр хоослогдоно. Буцаах боломжгүй."
+    },
+    "deleteData": "Өгөгдөл устгах",
+    "deleteWord": "УСТГАХ"
   }
 }

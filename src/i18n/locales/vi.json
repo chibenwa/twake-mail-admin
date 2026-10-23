@@ -888,7 +888,7 @@
       "renameTitle": "Đổi tên người dùng",
       "errorRename": "Lỗi khi đổi tên người dùng",
       "deleteData": "Xóa dữ liệu người dùng",
-      "deleteDataTitle": "Xóa dữ liệu người dùng",
+      "deleteDataTitle": "Xóa toàn bộ dữ liệu của {{username}}",
       "errorDeleteData": "Lỗi khi xóa dữ liệu người dùng",
       "tierData": "Phân tầng dữ liệu người dùng",
       "tierDataTitle": "Phân tầng dữ liệu người dùng",
@@ -897,7 +897,12 @@
       "errorTierData": "Lỗi khi chạy tác vụ phân tầng",
       "provisionTemplates": "Cung cấp mẫu",
       "provisionTemplatesTitle": "Cung cấp mẫu",
-      "errorProvisionTemplates": "Lỗi khi cung cấp mẫu"
+      "errorProvisionTemplates": "Lỗi khi cung cấp mẫu",
+      "deleteDataCounts": {
+        "calendars": "Lịch: {{count}}",
+        "addressBooks": "Sổ địa chỉ: {{count}}",
+        "bookingLinks": "Liên kết đặt lịch: {{count}}"
+      }
     },
     "calendarTasks": {
       "title": "Tác vụ",
@@ -1116,7 +1121,9 @@
   "deleteUserDataForm": {
     "fromStep": "Tiếp tục từ bước",
     "fromStepPlaceholder": "e.g. MailboxUserDeletionTaskStep",
-    "calendarFromStepPlaceholder": "e.g. DavCalendarDeletionTaskStep"
+    "calendarFromStepPlaceholder": "e.g. DavCalendarDeletionTaskStep",
+    "advanced": "Nâng cao: tiếp tục lần xóa bị gián đoạn",
+    "fromStepHelp": "Chỉ dùng để tiếp tục lần xóa bị lỗi giữa chừng: sao chép tên bước từ tác vụ bị lỗi."
   },
   "restoreCriteria": {
     "addCriteria": "Thêm tiêu chí",
@@ -1729,7 +1736,11 @@
       "deleteMailbox": "\"{{mailbox}}\", các thư mục con và toàn bộ thư sẽ bị xóa vĩnh viễn.",
       "clearMailbox": "Mọi thư trong \"{{mailbox}}\" sẽ bị xóa vĩnh viễn; thư mục được giữ.",
       "clearRepository": "{{count}} thư trong {{path}} sẽ bị xóa vĩnh viễn và không thể xử lý lại.",
-      "clearGroup": "Các sự kiện bị xóa mà không được gửi lại: những gì chúng cần cập nhật sẽ vẫn lỗi thời."
-    }
+      "clearGroup": "Các sự kiện bị xóa mà không được gửi lại: những gì chúng cần cập nhật sẽ vẫn lỗi thời.",
+      "deleteCalendarUserData": "Mọi lịch, sự kiện, sổ địa chỉ, liên hệ và liên kết đặt lịch của người dùng này sẽ bị xóa. Không thể hoàn tác.",
+      "clearDomainMembersContacts": "Sổ địa chỉ \"Thành viên miền\" của mọi miền, trừ các miền bỏ qua, sẽ bị làm trống. Không thể hoàn tác."
+    },
+    "deleteData": "Xóa dữ liệu",
+    "deleteWord": "XÓA"
   }
 }

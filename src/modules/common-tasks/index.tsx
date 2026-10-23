@@ -228,6 +228,8 @@ const CALENDAR_TASKS: TaskProps[] = [
     ],
     doc: calendarWebadminDoc('delete-domain-members-contacts'),
     danger: true,
+    consequenceKey: 'confirm.consequence.clearDomainMembersContacts',
+    typeToConfirmKey: 'confirm.deleteWord',
   },
 ];
 

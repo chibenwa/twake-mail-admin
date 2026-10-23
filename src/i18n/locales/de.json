@@ -888,7 +888,7 @@
       "renameTitle": "Benutzer umbenennen",
       "errorRename": "Fehler beim Umbenennen des Benutzers",
       "deleteData": "Benutzerdaten löschen",
-      "deleteDataTitle": "Benutzerdaten löschen",
+      "deleteDataTitle": "Alle Daten von {{username}} löschen",
       "errorDeleteData": "Fehler beim Löschen der Benutzerdaten",
       "tierData": "Benutzerdaten auslagern",
       "tierDataTitle": "Benutzerdaten auslagern",
@@ -897,7 +897,12 @@
       "errorTierData": "Fehler beim Ausführen der Auslagerung",
       "provisionTemplates": "Vorlagen bereitstellen",
       "provisionTemplatesTitle": "Vorlagen bereitstellen",
-      "errorProvisionTemplates": "Fehler beim Bereitstellen der Vorlagen"
+      "errorProvisionTemplates": "Fehler beim Bereitstellen der Vorlagen",
+      "deleteDataCounts": {
+        "calendars": "Kalender: {{count}}",
+        "addressBooks": "Adressbücher: {{count}}",
+        "bookingLinks": "Buchungslinks: {{count}}"
+      }
     },
     "calendarTasks": {
       "title": "Aufgaben",
@@ -1117,7 +1122,9 @@
   "deleteUserDataForm": {
     "fromStep": "Ab Schritt fortsetzen",
     "fromStepPlaceholder": "z. B. MailboxUserDeletionTaskStep",
-    "calendarFromStepPlaceholder": "z. B. DavCalendarDeletionTaskStep"
+    "calendarFromStepPlaceholder": "z. B. DavCalendarDeletionTaskStep",
+    "advanced": "Erweitert: unterbrochene Löschung fortsetzen",
+    "fromStepHelp": "Nur um eine abgebrochene Löschung fortzusetzen: Kopieren Sie den Schrittnamen aus der fehlgeschlagenen Aufgabe."
   },
   "restoreCriteria": {
     "addCriteria": "Kriterium hinzufügen",
@@ -1730,7 +1737,11 @@
       "deleteMailbox": "„{{mailbox}}“, seine Unterordner und alle Nachrichten werden endgültig gelöscht.",
       "clearMailbox": "Alle Nachrichten in „{{mailbox}}“ werden endgültig gelöscht; der Ordner bleibt.",
       "clearRepository": "Die {{count}} in {{path}} gespeicherten Mails werden endgültig gelöscht und können nicht mehr erneut verarbeitet werden.",
-      "clearGroup": "Die Ereignisse werden gelöscht, ohne erneut zugestellt zu werden: Was sie aktualisieren sollten, bleibt veraltet."
-    }
+      "clearGroup": "Die Ereignisse werden gelöscht, ohne erneut zugestellt zu werden: Was sie aktualisieren sollten, bleibt veraltet.",
+      "deleteCalendarUserData": "Alle Kalender, Termine, Adressbücher, Kontakte und Buchungslinks dieses Benutzers werden gelöscht. Dies kann nicht rückgängig gemacht werden.",
+      "clearDomainMembersContacts": "Das Adressbuch „Domänenmitglieder“ jeder Domäne, außer den übersprungenen, wird geleert. Dies kann nicht rückgängig gemacht werden."
+    },
+    "deleteData": "Daten löschen",
+    "deleteWord": "LÖSCHEN"
   }
 }

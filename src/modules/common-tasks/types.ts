@@ -70,6 +70,9 @@ export type TaskProps = {
   params?: TaskParam[];
   allowanceCheck?: { verb: import("@/lib/proxy-resolver").HttpVerb; pattern: string };
   danger?: boolean;
+  // Irreversible task: what it deletes, and the word to type before it can run.
+  consequenceKey?: string;
+  typeToConfirmKey?: string;
 }
 
 export enum TaskStatus {

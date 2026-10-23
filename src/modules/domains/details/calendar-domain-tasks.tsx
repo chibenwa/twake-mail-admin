@@ -37,7 +37,9 @@ export default function CalendarDomainTasks({ domain, defaultOpen = false }: Pro
     const confirmed = await confirm({
       header: t("domains.tasks.deleteAllDataTitle"),
       destructive: true,
-      confirmLabel: t("common.delete"),
+      confirmLabel: t("confirm.deleteData"),
+      typeToConfirm: domain,
+      typeToConfirmIgnoreCase: true,
       message: t("domains.tasks.deleteAllDataConfirm", { domain }),
     });
     if (!confirmed) return;
