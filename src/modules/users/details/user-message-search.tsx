@@ -8,6 +8,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
+import { PaginationControls } from "@/components/custom/pagination-controls";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -366,13 +367,13 @@ export default function UserMessageSearch() {
       {results !== null && !isLoading && (
         <div className="mt-6">
           <PaginationControls
-            page={page}
-            offset={offset}
-            limit={PAGE_LIMIT}
-            hasMore={hasMore}
+            onFirst={() => doSearch(0)}
             onPrev={() => doSearch(offset - PAGE_LIMIT)}
             onNext={() => doSearch(offset + PAGE_LIMIT)}
-            count={results.length}
+            disabledPrev={offset === 0}
+            disabledNext={!hasMore}
+            label={`${t("common.pageOf", { page, count: results.length })}${hasMore ? "+" : ""}`}
+            total={results.length}
           />
 
           {results.length === 0 ? (
@@ -447,13 +448,13 @@ export default function UserMessageSearch() {
           {results.length > 0 && (
             <div className="mt-4">
               <PaginationControls
-                page={page}
-                offset={offset}
-                limit={PAGE_LIMIT}
-                hasMore={hasMore}
+                onFirst={() => doSearch(0)}
                 onPrev={() => doSearch(offset - PAGE_LIMIT)}
                 onNext={() => doSearch(offset + PAGE_LIMIT)}
-                count={results.length}
+                disabledPrev={offset === 0}
+                disabledNext={!hasMore}
+                label={`${t("common.pageOf", { page, count: results.length })}${hasMore ? "+" : ""}`}
+                total={results.length}
               />
             </div>
           )}
@@ -464,37 +465,3 @@ export default function UserMessageSearch() {
   );
 }
 
-interface PaginationControlsProps {
-  page: number;
-  offset: number;
-  limit: number;
-  hasMore: boolean;
-  onPrev: () => void;
-  onNext: () => void;
-  count: number;
-}
-
-function PaginationControls({ page, offset, hasMore, onPrev, onNext, count }: PaginationControlsProps) {
-  const { t } = useTranslation();
-  return (
-    <div className="flex items-center justify-between">
-      <button
-        onClick={onPrev}
-        disabled={offset === 0}
-        className="px-4 py-2 bg-gray-200 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {t("common.previous")}
-      </button>
-      <span className="text-sm text-gray-600">
-        {t("common.pageOf", { page, count })}{hasMore ? "+" : ""}
-      </span>
-      <button
-        onClick={onNext}
-        disabled={!hasMore}
-        className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {t("common.next")}
-      </button>
-    </div>
-  );
-}

@@ -142,6 +142,7 @@ export default function DomainsList() {
           disabledPrev={page <= 1}
           disabledNext={page >= totalPages}
           label={t("common.page", { page, totalPages, total: filtered.length })}
+          total={filtered.length}
         />
       )}
       <div>

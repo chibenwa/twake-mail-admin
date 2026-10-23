@@ -11,13 +11,23 @@ interface PaginationControlsProps {
   disabledPrev: boolean;
   disabledNext: boolean;
   label: ReactNode;
+  // Number of items, shown alone when everything fits on one page
+  total?: number;
 }
 
 export function PaginationControls({
   onFirst, onPrev, onNext, onLast,
-  disabledPrev, disabledNext, label,
+  disabledPrev, disabledNext, label, total,
 }: PaginationControlsProps) {
   const { t } = useTranslation();
+  // Nothing to page through: no controls above the content, only what the list holds
+  if (disabledPrev && disabledNext) {
+    return (
+      <p className="mt-6 text-sm text-muted-foreground">
+        {total !== undefined ? t("common.totalOnly", { count: total }) : label}
+      </p>
+    );
+  }
   return (
     <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -32,12 +42,12 @@ export function PaginationControls({
       </div>
       <span className="text-sm text-muted-foreground font-medium">{label}</span>
       <div className="flex flex-wrap items-center gap-2">
-        <Button size="sm" onClick={onNext} disabled={disabledNext}>
+        <Button variant="outline" size="sm" onClick={onNext} disabled={disabledNext}>
           {t("common.next")}
           <ChevronRight className="w-4 h-4" />
         </Button>
         {onLast && (
-          <Button size="sm" onClick={onLast} disabled={disabledNext}>
+          <Button variant="outline" size="sm" onClick={onLast} disabled={disabledNext}>
             {t("common.last")}
             <ChevronLast className="w-4 h-4" />
           </Button>

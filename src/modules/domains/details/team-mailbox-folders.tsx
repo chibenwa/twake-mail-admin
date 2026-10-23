@@ -159,6 +159,7 @@ export default function TeamMailboxFolders({ domain, mailbox }: Props) {
                   disabledPrev={page <= 1}
                   disabledNext={page >= totalPages}
                   label={t("common.page", { page, totalPages, total: sorted.length })}
+                  total={sorted.length}
                 />
               )}
 

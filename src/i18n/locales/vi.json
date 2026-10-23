@@ -92,7 +92,8 @@
     "discardTitle": "Bỏ các thay đổi?",
     "discardMessage": "{{count}} thay đổi sẽ không được lưu.",
     "discard": "Bỏ",
-    "keepEditing": "Tiếp tục chỉnh sửa"
+    "keepEditing": "Tiếp tục chỉnh sửa",
+    "totalOnly": "Tổng: {{count}}"
   },
   "sidebar": {
     "application": "Ứng dụng",

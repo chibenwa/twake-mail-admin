@@ -12,6 +12,7 @@ import { formatByteSize } from "@/i18n/format-size";
 import { formatPercent } from "@/i18n/format-percent";
 import { toErrorMessage } from "./error-message";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { PaginationControls } from "@/components/custom/pagination-controls";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -268,25 +269,15 @@ export default function ExploreUserQuota({ domain }: Props) {
                     </div>
 
                     {/* Pagination */}
-                    <div className="mt-3 flex justify-between items-center">
-                      <button
-                        onClick={() => fetchUsers(page - 1)}
-                        disabled={page <= 1 || loading}
-                        className="px-3 py-1.5 bg-gray-200 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {t("common.previous")}
-                      </button>
-                      <span className="text-xs text-gray-500">
-                        {t("exploreQuota.page", { page, count: results.length })}
-                      </span>
-                      <button
-                        onClick={() => fetchUsers(page + 1)}
-                        disabled={!hasMore || loading}
-                        className="px-3 py-1.5 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {t("common.next")}
-                      </button>
-                    </div>
+                    <PaginationControls
+                      onFirst={() => fetchUsers(1)}
+                      onPrev={() => fetchUsers(page - 1)}
+                      onNext={() => fetchUsers(page + 1)}
+                      disabledPrev={page <= 1}
+                      disabledNext={!hasMore}
+                      label={t("exploreQuota.page", { page, count: results.length })}
+                      total={results.length}
+                    />
                   </>
                 )}
               </div>

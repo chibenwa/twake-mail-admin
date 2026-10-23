@@ -12,6 +12,7 @@ import { RunTaskResponse } from "@/modules/common-tasks/types";
 import { currentLocale } from "@/i18n/locale";
 import { formatByteSize } from "@/i18n/format-size";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { PaginationControls } from "@/components/custom/pagination-controls";
 
 const PAGE_SIZE = 10;
 
@@ -255,27 +256,16 @@ export default function UserDeletedMessageVault({ label, onSearch, onRestore, ca
               </div>
 
               {totalPages > 1 && (
-                <div className="flex items-center gap-2 pt-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                  >
-                    {t("common.previous")}
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    {page} / {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                  >
-                    {t("common.next")}
-                  </Button>
-                </div>
+                <PaginationControls
+                  onFirst={() => setPage(1)}
+                  onPrev={() => setPage((p) => Math.max(1, p - 1))}
+                  onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  onLast={() => setPage(totalPages)}
+                  disabledPrev={page === 1}
+                  disabledNext={page === totalPages}
+                  label={t("common.page", { page, totalPages, total: results!.length })}
+                  total={results!.length}
+                />
               )}
             </div>
           )}

@@ -26,7 +26,8 @@ function MailboxCreationDate({ mailboxId }: { mailboxId: string }) {
   const { t } = useTranslation();
   const creationDate = formatMailboxCreationDate(mailboxId, currentLocale());
   if (!creationDate) return null;
-  return <span className="ml-2">— {t("users.mailboxes.creationDate")} {creationDate}</span>;
+  // Wraps as a whole after the id, never inside "Creation"
+  return <span className="inline-block ml-2 break-normal">— {t("users.mailboxes.creationDate")} {creationDate}</span>;
 }
 
 export default function UserMailboxes({ username }: Props) {
@@ -223,6 +224,7 @@ export default function UserMailboxes({ username }: Props) {
                   disabledPrev={page <= 1}
                   disabledNext={page >= totalPages}
                   label={t("common.page", { page, totalPages, total: filtered.length })}
+                  total={filtered.length}
                 />
               )}
 
@@ -240,7 +242,7 @@ export default function UserMailboxes({ username }: Props) {
                         {mailbox.mailboxName}
                       </h4>
                       <p className="text-xs text-gray-400 mt-1 ml-6">
-                        {mailbox.mailboxId}
+                        <span className="break-all">{mailbox.mailboxId}</span>
                         <MailboxCreationDate mailboxId={mailbox.mailboxId} />
                       </p>
                     </div>

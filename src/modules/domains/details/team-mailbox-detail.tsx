@@ -181,6 +181,7 @@ export default function TeamMailboxDetail() {
             disabledPrev={page <= 1}
             disabledNext={page >= totalPages}
             label={t("common.page", { page, totalPages, total: sorted.length })}
+            total={sorted.length}
           />
         )}
 

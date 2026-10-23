@@ -233,6 +233,7 @@ export default function ChannelGrid({
           label={isControlled
             ? t("common.pageSimple", { page })
             : t("common.page", { page, totalPages, total: sorted.length })}
+          total={isControlled ? undefined : sorted.length}
         />
       )}
 

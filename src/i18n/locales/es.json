@@ -93,7 +93,8 @@
     "discardTitle": "¿Descartar los cambios?",
     "discardMessage": "{{count}} cambio(s) no se guardarán.",
     "discard": "Descartar",
-    "keepEditing": "Seguir editando"
+    "keepEditing": "Seguir editando",
+    "totalOnly": "Total: {{count}}"
   },
   "sidebar": {
     "application": "Aplicación",

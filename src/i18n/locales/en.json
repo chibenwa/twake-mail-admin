@@ -93,7 +93,8 @@
     "discardTitle": "Discard changes?",
     "discardMessage": "{{count}} change(s) will not be saved.",
     "discard": "Discard",
-    "keepEditing": "Keep editing"
+    "keepEditing": "Keep editing",
+    "totalOnly": "Total: {{count}}"
   },
   "sidebar": {
     "application": "Application",

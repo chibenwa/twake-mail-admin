@@ -15,6 +15,7 @@ import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useTranslation } from "react-i18next";
 import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
+import { PaginationControls } from "@/components/custom/pagination-controls";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -216,17 +217,16 @@ export default function CalendarResourceDetail() {
           )}
 
             {admins.length > PAGE_LIMIT && (
-              <div className="mt-2 flex justify-between items-center">
-                <button onClick={() => goToPage(1)} disabled={page <= 1}
-                  className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">{t("common.first")}</button>
-                <button onClick={() => goToPage(page - 1)} disabled={page <= 1}
-                  className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">{t("common.previous")}</button>
-                <span className="text-sm font-medium text-center">{t("common.page", { page, totalPages, total: admins.length })}</span>
-                <button onClick={() => goToPage(page + 1)} disabled={page >= totalPages}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">{t("common.next")}</button>
-                <button onClick={() => goToPage(totalPages)} disabled={page >= totalPages}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">{t("common.last")}</button>
-              </div>
+              <PaginationControls
+                onFirst={() => goToPage(1)}
+                onPrev={() => goToPage(page - 1)}
+                onNext={() => goToPage(page + 1)}
+                onLast={() => goToPage(totalPages)}
+                disabledPrev={page <= 1}
+                disabledNext={page >= totalPages}
+                label={t("common.page", { page, totalPages, total: admins.length })}
+                total={admins.length}
+              />
             )}
 
             <div>

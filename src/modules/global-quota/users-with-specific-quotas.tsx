@@ -75,6 +75,7 @@ export default function UsersWithSpecificQuotas({ formatCount, formatSize }: Use
               disabledPrev={currentPage <= 1}
               disabledNext={currentPage >= totalPages}
               label={t("common.page", { page: currentPage, totalPages, total: users.length })}
+              total={users.length}
             />
           )}
         </>

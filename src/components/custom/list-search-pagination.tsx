@@ -34,6 +34,7 @@ export function ListSearchPagination({
           disabledPrev={page <= 1}
           disabledNext={page >= totalPages}
           label={t("common.page", { page, totalPages, total })}
+          total={total}
         />
       )}
     </div>

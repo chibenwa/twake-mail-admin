@@ -93,7 +93,8 @@
     "discardTitle": "Өөрчлөлтийг цуцлах уу?",
     "discardMessage": "{{count}} өөрчлөлт хадгалагдахгүй.",
     "discard": "Цуцлах",
-    "keepEditing": "Үргэлжлүүлэх"
+    "keepEditing": "Үргэлжлүүлэх",
+    "totalOnly": "Нийт: {{count}}"
   },
   "sidebar": {
     "application": "Програм",

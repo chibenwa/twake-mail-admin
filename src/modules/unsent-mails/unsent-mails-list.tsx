@@ -281,6 +281,7 @@ export default function UnsentMailsList() {
             totalPages,
             total: filtered.length,
           })}
+          total={filtered.length}
         />
       )}
 

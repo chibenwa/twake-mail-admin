@@ -45,9 +45,10 @@ describe("event dead letter group detail", () => {
 
     renderDetail("?&page=1&size=10");
 
-    expect((await paginationInfo()).textContent).toContain('"total":1');
-    expect(screen.getByText("common.next").hasAttribute("disabled")).toBe(true);
-    expect(screen.getByText("common.last").hasAttribute("disabled")).toBe(true);
+    // Everything fits on one page: the total alone, without paging buttons
+    expect((await screen.findByText(/common\.totalOnly/)).textContent).toContain('"count":1');
+    expect(screen.queryByText("common.next")).toBeNull();
+    expect(screen.queryByText("common.last")).toBeNull();
   });
 
   it("paginates the events client side", async () => {

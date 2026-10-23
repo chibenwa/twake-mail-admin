@@ -95,7 +95,8 @@
     "discardTitle": "Отменить изменения?",
     "discardMessage": "Изменения не будут сохранены: {{count}}.",
     "discard": "Отменить",
-    "keepEditing": "Продолжить"
+    "keepEditing": "Продолжить",
+    "totalOnly": "Всего: {{count}}"
   },
   "sidebar": {
     "application": "Приложение",

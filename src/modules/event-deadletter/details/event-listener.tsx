@@ -119,6 +119,7 @@ export default function EventListenersDetail() {
         disabledPrev={page <= 1}
         disabledNext={!hasMore}
         label={t("eventDeadletter.paginationInfo", { page, limit, total })}
+        total={total}
       />
       {failedEventKeys && (
         <div className="mt-8">

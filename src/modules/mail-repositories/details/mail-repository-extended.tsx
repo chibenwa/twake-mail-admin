@@ -463,7 +463,8 @@ export default function MailRepositoryExtended() {
           onLast={() => goToPage(totalPages)}
           disabledPrev={page <= 1}
           disabledNext={!hasMore}
-          label={`Page ${page} / ${totalPages} — Total: ${repoSize}`}
+          label={t("common.page", { page, totalPages, total: repoSize })}
+          total={repoSize}
         />
       )}
 

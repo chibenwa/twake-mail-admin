@@ -540,6 +540,7 @@ export default function MailingListsList({ domain }: Props) {
           disabledPrev={page <= 1}
           disabledNext={page >= totalPages}
           label={t("common.page", { page, totalPages, total: filtered.length })}
+          total={filtered.length}
         />
       )}
       <div className="mt-4 overflow-x-auto">

@@ -410,6 +410,7 @@ export default function Tasks() {
             disabledPrev={page <= 1}
             disabledNext={!hasMore}
             label={t("common.pageOf", { page, count: pageTasks.length })}
+            total={pageTasks.length}
           />
         )}
       </div>

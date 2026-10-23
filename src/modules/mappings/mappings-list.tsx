@@ -455,6 +455,7 @@ export default function MappingsList() {
           disabledPrev={page <= 1}
           disabledNext={page >= totalPages}
           label={t("common.page", { page, totalPages, total: filteredMappings.length })}
+          total={filteredMappings.length}
         />
       )}
       <div className="mt-4 overflow-x-auto">
