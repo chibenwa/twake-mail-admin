@@ -1788,7 +1788,8 @@
     "removeOwnerConfirm": "¿Seguro que desea quitar a {{owner}} de {{address}}?",
     "removeOwnerTooltip": "Quitar este propietario",
     "unavailableTitle": "Las listas de correo no están disponibles en este servidor",
-    "unavailableText": "Este servidor no expone las rutas de listas de correo. Requieren la extensión LDAP de listas de correo de tmail-backend."
+    "unavailableText": "Este servidor no expone las rutas de listas de correo. Requieren la extensión LDAP de listas de correo de tmail-backend.",
+    "createButton": "Crear una lista de correo"
   },
   "networkChannels": {
     "disconnectAll": "Desconectar todos",

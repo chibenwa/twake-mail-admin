@@ -1788,7 +1788,8 @@
     "removeOwnerConfirm": "Are you sure you want to remove {{owner}} from {{address}}?",
     "removeOwnerTooltip": "Remove this owner",
     "unavailableTitle": "Mailing lists are not available on this server",
-    "unavailableText": "This server does not expose the mailing list routes. They require the LDAP mailing list extension of tmail-backend."
+    "unavailableText": "This server does not expose the mailing list routes. They require the LDAP mailing list extension of tmail-backend.",
+    "createButton": "Create a mailing list"
   },
   "networkChannels": {
     "disconnectAll": "Disconnect all",

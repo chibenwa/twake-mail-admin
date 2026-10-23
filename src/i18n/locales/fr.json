@@ -1788,7 +1788,8 @@
     "removeOwnerConfirm": "Voulez-vous vraiment retirer {{owner}} de {{address}} ?",
     "removeOwnerTooltip": "Retirer ce propriétaire",
     "unavailableTitle": "Les listes de diffusion ne sont pas disponibles sur ce serveur",
-    "unavailableText": "Ce serveur n'expose pas les routes des listes de diffusion. Elles nécessitent l'extension LDAP de listes de diffusion de tmail-backend."
+    "unavailableText": "Ce serveur n'expose pas les routes des listes de diffusion. Elles nécessitent l'extension LDAP de listes de diffusion de tmail-backend.",
+    "createButton": "Créer une liste de diffusion"
   },
   "networkChannels": {
     "disconnectAll": "Déconnecter tout",

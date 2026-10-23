@@ -1786,7 +1786,8 @@
     "removeOwnerConfirm": "Bạn có chắc muốn xóa {{owner}} khỏi {{address}}?",
     "removeOwnerTooltip": "Xóa chủ sở hữu này",
     "unavailableTitle": "Danh sách thư không khả dụng trên máy chủ này",
-    "unavailableText": "Máy chủ này không cung cấp các route danh sách thư. Chúng cần phần mở rộng danh sách thư LDAP của tmail-backend."
+    "unavailableText": "Máy chủ này không cung cấp các route danh sách thư. Chúng cần phần mở rộng danh sách thư LDAP của tmail-backend.",
+    "createButton": "Tạo danh sách thư"
   },
   "networkChannels": {
     "disconnectAll": "Ngắt kết nối tất cả",

@@ -29,7 +29,7 @@ describe("create mailing list form: field labels", () => {
     ["mailingLists.owners", "INPUT"],
   ])("names the %s field after its visible label", (label, tagName) => {
     render(<MailingListsList />);
-    fireEvent.click(screen.getByText("mailingLists.createTitle"));
+    fireEvent.click(screen.getByRole("button", { name: "mailingLists.createButton" }));
 
     expect(screen.getByLabelText(label, { exact: false }).tagName).toBe(tagName);
   });
@@ -47,7 +47,7 @@ describe("mailing lists: extension absent from the server", () => {
     render(<MailingListsList />);
 
     expect(await screen.findByText("mailingLists.unavailableTitle")).not.toBeNull();
-    expect(screen.queryByText("mailingLists.createTitle")).toBeNull();
+    expect(screen.queryByRole("button", { name: "mailingLists.createButton" })).toBeNull();
     expect(screen.queryByRole("table")).toBeNull();
     expect(screen.queryByText("common.errorPrefix")).toBeNull();
   });
@@ -58,5 +58,13 @@ describe("mailing lists: extension absent from the server", () => {
 
     expect(await screen.findByText("common.errorPrefix")).not.toBeNull();
     expect(screen.queryByText("mailingLists.unavailableTitle")).toBeNull();
+  });
+});
+
+describe("mailing lists: one toolbar line", () => {
+  it("puts the search and Create a mailing list on one line", () => {
+    render(<MailingListsList />);
+    const toolbar = screen.getByPlaceholderText("mailingLists.searchPlaceholder").closest("[data-list-toolbar]")!;
+    expect(toolbar.contains(screen.getByRole("button", { name: "mailingLists.createButton" }))).toBe(true);
   });
 });

@@ -1792,7 +1792,8 @@
     "removeOwnerConfirm": "Вы действительно хотите удалить {{owner}} из {{address}}?",
     "removeOwnerTooltip": "Удалить этого владельца",
     "unavailableTitle": "Списки рассылки недоступны на этом сервере",
-    "unavailableText": "Этот сервер не предоставляет маршруты списков рассылки. Для них нужно расширение LDAP-списков рассылки tmail-backend."
+    "unavailableText": "Этот сервер не предоставляет маршруты списков рассылки. Для них нужно расширение LDAP-списков рассылки tmail-backend.",
+    "createButton": "Создать список рассылки"
   },
   "networkChannels": {
     "disconnectAll": "Отключить все",

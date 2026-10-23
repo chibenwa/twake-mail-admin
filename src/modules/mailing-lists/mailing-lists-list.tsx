@@ -30,9 +30,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 import UnavailableFeature from "@/components/custom/unavailable-feature";
 import { MAILING_LISTS_DOC_URL } from "./doc";
+import ListToolbar from "@/components/custom/list-toolbar";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
+import { Button } from "@/components/ui/button";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -82,6 +84,7 @@ function AddressAdder({
         className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
       />
       <button
+        type="button"
         onClick={onAdd}
         disabled={!value.trim()}
         className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
@@ -109,7 +112,7 @@ function AddressChips({
           className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-md text-sm"
         >
           {address}
-          <button onClick={() => onRemove(address)} className="text-gray-500 hover:text-red-600">
+          <button type="button" onClick={() => onRemove(address)} className="text-gray-500 hover:text-red-600">
             <X className="w-3 h-3" />
           </button>
         </span>
@@ -118,19 +121,19 @@ function AddressChips({
   );
 }
 
-function CreateMailingListForm({ onCreated }: { onCreated: () => void }) {
+/** "Create a mailing list", next to the search: the list, its members and owners in one modal. */
+function CreateMailingListButton({ onCreated }: { onCreated: () => void }) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const idPrefix = useId();
 
-  const [open, setOpen, openContentId] = useSectionOpen("mailing-lists");
+  const [open, setOpen] = useState(false);
   const [address, setAddress] = useState("");
   const [category, setCategory] = useState<string>(NO_CATEGORY);
   const [members, setMembers] = useState<string[]>([]);
   const [owners, setOwners] = useState<string[]>([]);
   const [newMember, setNewMember] = useState("");
   const [newOwner, setNewOwner] = useState("");
-  const [submitting, setSubmitting] = useState(false);
 
   const stage = (
     raw: string,
@@ -144,6 +147,14 @@ function CreateMailingListForm({ onCreated }: { onCreated: () => void }) {
     clearInput();
   };
 
+  // An address typed but not added is not dropped: it counts as added on Create
+  const withPending = (list: string[], pending: string) => {
+    const value = pending.trim();
+    return value && !list.includes(value) ? [...list, value] : list;
+  };
+  const allMembers = withPending(members, newMember);
+  const allOwners = withPending(owners, newOwner);
+
   const resetForm = () => {
     setAddress("");
     setCategory(NO_CATEGORY);
@@ -155,116 +166,100 @@ function CreateMailingListForm({ onCreated }: { onCreated: () => void }) {
 
   const handleCreate = async () => {
     const mail = address.trim();
-    if (!mail || members.length === 0) return;
-    setSubmitting(true);
-    try {
-      await createMailingList(mail, {
-        businessCategory:
-          category === NO_CATEGORY ? undefined : (category as BusinessCategory),
-        members,
-        owners: owners.length > 0 ? owners : undefined,
-      });
-      toast({ title: t("mailingLists.created", { address: mail }) });
-      resetForm();
-      setOpen(false);
-      onCreated();
-    } catch (err) {
-      toast({
-        title: t("mailingLists.errorCreating"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    } finally {
-      setSubmitting(false);
-    }
+    await createMailingList(mail, {
+      businessCategory:
+        category === NO_CATEGORY ? undefined : (category as BusinessCategory),
+      members: allMembers,
+      owners: allOwners.length > 0 ? allOwners : undefined,
+    });
+    toast({ title: t("mailingLists.created", { address: mail }) });
+    resetForm();
+    onCreated();
   };
 
   return (
-    <div className="mt-4">
-      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
-        <Plus className="w-4 h-4" />
-        {t("mailingLists.createTitle")}
-      </SectionToggle>
-
-      {open && (
-        <div id={openContentId} className="flex flex-col gap-3 mt-3 p-4 bg-gray-50 rounded-2">
-          <div className="flex flex-col gap-1">
-            <label htmlFor={`${idPrefix}-address`} className="text-sm font-medium">{t("mailingLists.address")}</label>
-            <input
-              id={`${idPrefix}-address`}
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="sales@lists.domain.tld"
-              className="px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label htmlFor={`${idPrefix}-category`} className="text-sm font-medium">{t("mailingLists.businessCategory")}</label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger id={`${idPrefix}-category`}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NO_CATEGORY}>{t("mailingLists.noBusinessCategory")}</SelectItem>
-                {BUSINESS_CATEGORIES.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label htmlFor={`${idPrefix}-members`} className="text-sm font-medium">
-              {t("mailingLists.members")} <span className="text-red-600">*</span>
-            </label>
-            <AddressAdder
-              value={newMember}
-              onChange={setNewMember}
-              onAdd={() => stage(newMember, members, setMembers, () => setNewMember(""))}
-              id={`${idPrefix}-members`}
-              placeholder="user@domain.tld"
-              label={t("common.add")}
-            />
-            <AddressChips
-              addresses={members}
-              onRemove={(m) => setMembers(members.filter((x) => x !== m))}
-            />
-            {members.length === 0 && (
-              <p className="text-xs text-gray-500">{t("mailingLists.membersRequired")}</p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label htmlFor={`${idPrefix}-owners`} className="text-sm font-medium">{t("mailingLists.owners")}</label>
-            <AddressAdder
-              value={newOwner}
-              onChange={setNewOwner}
-              onAdd={() => stage(newOwner, owners, setOwners, () => setNewOwner(""))}
-              id={`${idPrefix}-owners`}
-              placeholder="user@domain.tld"
-              label={t("common.add")}
-            />
-            <AddressChips
-              addresses={owners}
-              onRemove={(o) => setOwners(owners.filter((x) => x !== o))}
-            />
-          </div>
-
-          <div>
-            <button
-              onClick={handleCreate}
-              disabled={submitting || !address.trim() || members.length === 0}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {t("common.create")}
-            </button>
-          </div>
+    <>
+      <Button onClick={() => setOpen(true)}>
+        <Plus className="w-4 h-4" aria-hidden="true" />
+        {t("mailingLists.createButton")}
+      </Button>
+      <FormDialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title={t("mailingLists.createTitle")}
+        submitLabel={t("common.create")}
+        submitDisabled={!address.trim() || allMembers.length === 0}
+        onSubmit={handleCreate}
+        className="max-w-lg"
+      >
+        <div className="flex flex-col gap-1">
+          <label htmlFor={`${idPrefix}-address`} className="text-sm font-medium">{t("mailingLists.address")}</label>
+          <input
+            id={`${idPrefix}-address`}
+            type="text"
+            autoFocus
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="sales@lists.domain.tld"
+            className={FIELD_CLASS}
+          />
         </div>
-      )}
-    </div>
+
+        <div className="flex flex-col gap-1">
+          <label htmlFor={`${idPrefix}-category`} className="text-sm font-medium">{t("mailingLists.businessCategory")}</label>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger id={`${idPrefix}-category`}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NO_CATEGORY}>{t("mailingLists.noBusinessCategory")}</SelectItem>
+              {BUSINESS_CATEGORIES.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label htmlFor={`${idPrefix}-members`} className="text-sm font-medium">
+            {t("mailingLists.members")} <span className="text-red-600">*</span>
+          </label>
+          <AddressAdder
+            value={newMember}
+            onChange={setNewMember}
+            onAdd={() => stage(newMember, members, setMembers, () => setNewMember(""))}
+            id={`${idPrefix}-members`}
+            placeholder="user@domain.tld"
+            label={t("common.add")}
+          />
+          <AddressChips
+            addresses={members}
+            onRemove={(m) => setMembers(members.filter((x) => x !== m))}
+          />
+          {allMembers.length === 0 && (
+            <p className="text-xs text-gray-500">{t("mailingLists.membersRequired")}</p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label htmlFor={`${idPrefix}-owners`} className="text-sm font-medium">{t("mailingLists.owners")}</label>
+          <AddressAdder
+            value={newOwner}
+            onChange={setNewOwner}
+            onAdd={() => stage(newOwner, owners, setOwners, () => setNewOwner(""))}
+            id={`${idPrefix}-owners`}
+            placeholder="user@domain.tld"
+            label={t("common.add")}
+          />
+          <AddressChips
+            addresses={owners}
+            onRemove={(o) => setOwners(owners.filter((x) => x !== o))}
+          />
+        </div>
+      </FormDialog>
+    </>
   );
 }
 
@@ -528,7 +523,10 @@ export default function MailingListsList({ domain }: Props) {
 
   return (
     <div>
-      {canCreate && <CreateMailingListForm onCreated={refresh} />}
+
+      <ListToolbar search={search} onSearch={(value) => { setSearch(value); setPage(1); }} placeholder={t("mailingLists.searchPlaceholder")}>
+        {canCreate && <CreateMailingListButton onCreated={refresh} />}
+      </ListToolbar>
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -537,13 +535,7 @@ export default function MailingListsList({ domain }: Props) {
         </div>
       )}
       {error && <p className="text-red-500 mt-4">{t("common.errorPrefix", { message: error })}</p>}
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-        placeholder={t("mailingLists.searchPlaceholder")}
-        className="mt-4 w-full px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-      />
+
       {filtered.length > 0 && (
         <PaginationControls
           onFirst={() => goToPage(1)}

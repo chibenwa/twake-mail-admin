@@ -1788,7 +1788,8 @@
     "removeOwnerConfirm": "Möchten Sie {{owner}} wirklich aus {{address}} entfernen?",
     "removeOwnerTooltip": "Diesen Eigentümer entfernen",
     "unavailableTitle": "Mailinglisten sind auf diesem Server nicht verfügbar",
-    "unavailableText": "Dieser Server stellt die Mailinglisten-Routen nicht bereit. Sie erfordern die LDAP-Mailinglisten-Erweiterung von tmail-backend."
+    "unavailableText": "Dieser Server stellt die Mailinglisten-Routen nicht bereit. Sie erfordern die LDAP-Mailinglisten-Erweiterung von tmail-backend.",
+    "createButton": "Mailingliste erstellen"
   },
   "networkChannels": {
     "disconnectAll": "Alle trennen",
