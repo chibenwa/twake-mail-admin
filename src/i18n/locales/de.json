@@ -94,7 +94,8 @@
     "discardMessage": "{{count}} Änderung(en) werden nicht gespeichert.",
     "discard": "Verwerfen",
     "keepEditing": "Weiter bearbeiten",
-    "totalOnly": "Gesamt: {{count}}"
+    "totalOnly": "Gesamt: {{count}}",
+    "serverMessage": "Meldung des Servers:"
   },
   "sidebar": {
     "application": "Anwendung",

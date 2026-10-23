@@ -93,7 +93,8 @@
     "discardMessage": "{{count}} thay đổi sẽ không được lưu.",
     "discard": "Bỏ",
     "keepEditing": "Tiếp tục chỉnh sửa",
-    "totalOnly": "Tổng: {{count}}"
+    "totalOnly": "Tổng: {{count}}",
+    "serverMessage": "Thông báo của máy chủ:"
   },
   "sidebar": {
     "application": "Ứng dụng",

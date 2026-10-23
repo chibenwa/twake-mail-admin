@@ -94,7 +94,8 @@
     "discardMessage": "{{count}} өөрчлөлт хадгалагдахгүй.",
     "discard": "Цуцлах",
     "keepEditing": "Үргэлжлүүлэх",
-    "totalOnly": "Нийт: {{count}}"
+    "totalOnly": "Нийт: {{count}}",
+    "serverMessage": "Серверийн мэдэгдэл:"
   },
   "sidebar": {
     "application": "Програм",

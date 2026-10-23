@@ -94,7 +94,8 @@
     "discardMessage": "{{count}} cambio(s) no se guardarán.",
     "discard": "Descartar",
     "keepEditing": "Seguir editando",
-    "totalOnly": "Total: {{count}}"
+    "totalOnly": "Total: {{count}}",
+    "serverMessage": "Mensaje del servidor:"
   },
   "sidebar": {
     "application": "Aplicación",

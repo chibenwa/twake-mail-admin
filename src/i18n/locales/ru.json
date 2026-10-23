@@ -96,7 +96,8 @@
     "discardMessage": "Изменения не будут сохранены: {{count}}.",
     "discard": "Отменить",
     "keepEditing": "Продолжить",
-    "totalOnly": "Всего: {{count}}"
+    "totalOnly": "Всего: {{count}}",
+    "serverMessage": "Сообщение сервера:"
   },
   "sidebar": {
     "application": "Приложение",
