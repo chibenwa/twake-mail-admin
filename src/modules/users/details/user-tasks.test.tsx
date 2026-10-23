@@ -96,7 +96,8 @@ describe("user tasks: confirmation dialogs preview their command", () => {
 
     fireEvent.click(screen.getByText("users.deletedVault.criteria.addCriterion"));
     expect(dialog.validate!()).toBe(false);
-    expect(screen.getAllByRole("alert").map((alert) => alert.textContent)).toEqual(["users.deletedVault.criteria.incomplete"]);
+    expect(screen.getByText("users.deletedVault.criteria.incomplete").getAttribute("role")).toBe("status");
+    expect(screen.queryAllByRole("alert")).toEqual([]);
 
     fireEvent.click(screen.getByRole("button", { name: "users.deletedVault.criteria.removeCriterion" }));
     expect(dialog.validate!()).toBeNull();

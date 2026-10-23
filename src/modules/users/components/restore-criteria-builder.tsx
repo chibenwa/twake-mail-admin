@@ -1,5 +1,5 @@
 import { useState, useEffect, useId } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Info } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -224,7 +224,9 @@ export default function RestoreCriteriaBuilder({ onChange }: Props) {
       })}
 
       {!criteria.every(isComplete) && (
-        <p role="alert" className="text-sm text-red-600">
+        // A hint while the criteria are being typed, not an error: calm colour, polite announcement
+        <p role="status" className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Info className="w-4 h-4 shrink-0" aria-hidden="true" />
           {t("users.deletedVault.criteria.incomplete")}
         </p>
       )}

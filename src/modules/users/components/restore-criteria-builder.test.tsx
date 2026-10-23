@@ -33,7 +33,7 @@ describe("restore criteria builder", () => {
     fireEvent.click(screen.getByText("users.deletedVault.criteria.addCriterion"));
 
     expect(onChange).toHaveBeenLastCalledWith([], undefined, false);
-    expect(screen.getByRole("alert").textContent).toBe("users.deletedVault.criteria.incomplete");
+    expect(screen.getByRole("status").textContent).toBe("users.deletedVault.criteria.incomplete");
   });
 
   it("reports the criteria as valid again once the incomplete criterion is removed", () => {
