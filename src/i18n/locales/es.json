@@ -84,7 +84,10 @@
     "breadcrumb": "Ruta de navegación",
     "expandAll": "Desplegar todo",
     "collapseAll": "Plegar todo",
-    "skipToContent": "Ir al contenido"
+    "skipToContent": "Ir al contenido",
+    "sharedWith_one": "Compartido con {{count}}",
+    "sharedWith_other": "Compartido con {{count}}",
+    "andMore": "+{{count}} más"
   },
   "sidebar": {
     "application": "Aplicación",

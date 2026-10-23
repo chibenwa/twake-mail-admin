@@ -84,7 +84,12 @@
     "breadcrumb": "Навигационная цепочка",
     "expandAll": "Развернуть всё",
     "collapseAll": "Свернуть всё",
-    "skipToContent": "Перейти к содержимому"
+    "skipToContent": "Перейти к содержимому",
+    "sharedWith_one": "Общий доступ: {{count}}",
+    "sharedWith_few": "Общий доступ: {{count}}",
+    "sharedWith_many": "Общий доступ: {{count}}",
+    "sharedWith_other": "Общий доступ: {{count}}",
+    "andMore": "ещё {{count}}"
   },
   "sidebar": {
     "application": "Приложение",

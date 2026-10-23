@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DEFAULT_CALENDAR_COLOR, isValidCalendarColor, toColorPickerValue } from "./calendar-color";
 import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
+import SharedWithChip from "@/components/custom/shared-with-chip";
 
 interface Props {
   username: string;
@@ -170,6 +171,14 @@ function CalendarRow({
               count={getUserCalendarEventCount}
               icon={CalendarDays}
               title={t("users.calendars.eventCount")}
+            />
+          )}
+          {isOwned && (
+            <SharedWithChip
+              sharees={currentInvitees(calendar)
+                .filter((invitee) => invitee.right !== null)
+                .map((invitee) => ({ label: invitee.email, right: t(`users.calendars.invitees.rights.${invitee.right}`) }))}
+              onOpen={permissions.invitees ? () => onInvitees(calendar) : undefined}
             />
           )}
         </div>

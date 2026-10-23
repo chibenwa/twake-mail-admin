@@ -84,7 +84,10 @@
     "breadcrumb": "Breadcrumb",
     "expandAll": "Expand all",
     "collapseAll": "Collapse all",
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "sharedWith_one": "Shared with {{count}}",
+    "sharedWith_other": "Shared with {{count}}",
+    "andMore": "+{{count}} more"
   },
   "sidebar": {
     "application": "Application",

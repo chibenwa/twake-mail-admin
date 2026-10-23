@@ -169,3 +169,38 @@ describe("calendar delegation: stage an invitee", () => {
     await waitFor(() => expect(screen.getByText(BOB)).toBeTruthy());
   });
 });
+
+describe("UserCalendars shared with chip", () => {
+  it("shows on each owned calendar shared with someone, not on an owner-only one", async () => {
+    mocks.api.getUserCalendars.mockResolvedValue({
+      _embedded: {
+        "dav:calendar": [
+          {
+            _links: { self: { href: `/calendars/${HOME}/${HOME}.json` } },
+            "dav:name": "#default",
+            invite: [{ href: `mailto:${CHARLOTTE}`, access: 1 }, { href: `mailto:${BOB}`, access: 3 }],
+          },
+          {
+            _links: { self: { href: `/calendars/${HOME}/073e50b9.json` } },
+            "dav:name": "Private",
+            invite: [{ href: `mailto:${CHARLOTTE}`, access: 1 }],
+          },
+        ],
+      },
+    });
+    await openCalendars();
+
+    const chips = screen.getAllByRole("button", { name: "common.sharedWith" });
+    expect(chips).toHaveLength(1);
+    fireEvent.focus(chips[0]);
+    expect((await screen.findAllByText(`${BOB} — users.calendars.invitees.rights.read-write`)).length).toBeGreaterThan(0);
+  });
+
+  it("opens the delegation dialog when clicked", async () => {
+    await openCalendars();
+
+    fireEvent.click(screen.getAllByRole("button", { name: "common.sharedWith" })[0]);
+
+    expect(await screen.findByText(/users.calendars.invitees.title —/)).not.toBeNull();
+  });
+});

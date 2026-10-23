@@ -84,7 +84,10 @@
     "breadcrumb": "Замчлал",
     "expandAll": "Бүгдийг дэлгэх",
     "collapseAll": "Бүгдийг хураах",
-    "skipToContent": "Агуулга руу шилжих"
+    "skipToContent": "Агуулга руу шилжих",
+    "sharedWith_one": "{{count}} хүнтэй хуваалцсан",
+    "sharedWith_other": "{{count}} хүнтэй хуваалцсан",
+    "andMore": "+{{count}} бусад"
   },
   "sidebar": {
     "application": "Програм",

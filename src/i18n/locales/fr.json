@@ -84,7 +84,10 @@
     "breadcrumb": "Fil d'Ariane",
     "expandAll": "Tout déplier",
     "collapseAll": "Tout replier",
-    "skipToContent": "Aller au contenu"
+    "skipToContent": "Aller au contenu",
+    "sharedWith_one": "Partagé avec {{count}}",
+    "sharedWith_other": "Partagé avec {{count}}",
+    "andMore": "+{{count}} autres"
   },
   "sidebar": {
     "application": "Application",

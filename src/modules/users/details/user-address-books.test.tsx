@@ -137,3 +137,27 @@ describe("address book dialogs: field labels", () => {
     expect(email.className).toContain("min-w-0");
   });
 });
+
+describe("address book shared with chip", () => {
+  it("shows who an owned address book is shared with, as its Sharing dialog does", async () => {
+    mocks.api.getUserAddressBooks.mockResolvedValue({
+      _embedded: {
+        "dav:addressbook": [
+          {
+            _links: { self: { href: "/addressbooks/abc/contacts.json" } },
+            "dav:name": "Contacts",
+            invite: [{ href: `mailto:${BOB}`, principal: "principals/users/bob", access: 2 }],
+          },
+          { _links: { self: { href: "/addressbooks/abc/private.json" } }, "dav:name": "Private" },
+        ],
+      },
+    });
+    render(<UserAddressBooks username={ALICE} />);
+    fireEvent.click(screen.getByText("users.addressBooks.title"));
+
+    const chips = await screen.findAllByRole("button", { name: "common.sharedWith" });
+    expect(chips).toHaveLength(1);
+    fireEvent.click(chips[0]);
+    expect(await screen.findByPlaceholderText("users.addressBooks.invitees.placeholder")).not.toBeNull();
+  });
+});

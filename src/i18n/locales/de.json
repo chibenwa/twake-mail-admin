@@ -84,7 +84,10 @@
     "breadcrumb": "Brotkrumennavigation",
     "expandAll": "Alle aufklappen",
     "collapseAll": "Alle zuklappen",
-    "skipToContent": "Zum Inhalt springen"
+    "skipToContent": "Zum Inhalt springen",
+    "sharedWith_one": "Geteilt mit {{count}}",
+    "sharedWith_other": "Geteilt mit {{count}}",
+    "andMore": "+{{count}} weitere"
   },
   "sidebar": {
     "application": "Anwendung",

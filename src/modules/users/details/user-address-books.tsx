@@ -22,6 +22,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
+import SharedWithChip from "@/components/custom/shared-with-chip";
 
 interface Props {
   username: string;
@@ -120,6 +121,7 @@ function AddressBookRow({
   onDelete,
   onPublicRight,
   onInvitees,
+  sharees,
 }: {
   username: string;
   addressBook: UserAddressBook;
@@ -129,6 +131,8 @@ function AddressBookRow({
   onDelete: (addressBook: UserAddressBook) => void;
   onPublicRight: (addressBook: UserAddressBook) => void;
   onInvitees: (addressBook: UserAddressBook) => void;
+  // Who an owned address book is shared with, as its Sharing dialog lists them
+  sharees: CurrentSharee[];
 }) {
   const { t } = useTranslation();
   const id = addressBookId(addressBook);
@@ -161,6 +165,15 @@ function AddressBookRow({
               count={getUserAddressBookContactCount}
               icon={Contact}
               title={t("users.addressBooks.contactCount")}
+            />
+          )}
+          {owned && (
+            <SharedWithChip
+              sharees={sharees.map((sharee) => ({
+                label: sharee.label,
+                right: sharee.right ? t(`users.addressBooks.invitees.rights.${sharee.right}`) : "",
+              }))}
+              onOpen={sharingManageable && permissions.invitees ? () => onInvitees(addressBook) : undefined}
             />
           )}
         </div>
@@ -426,6 +439,7 @@ export default function UserAddressBooks({ username, defaultOpen = false }: Prop
                     onDelete={handleDelete}
                     onPublicRight={openPublicRight}
                     onInvitees={setInviteesAddressBook}
+                    sharees={isOwned(ab) ? currentSharees(ab, username, userEmailsById(registeredUsers)) : []}
                   />
                 ))}
               </div>

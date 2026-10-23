@@ -84,7 +84,9 @@
     "breadcrumb": "Đường dẫn",
     "expandAll": "Mở rộng tất cả",
     "collapseAll": "Thu gọn tất cả",
-    "skipToContent": "Chuyển đến nội dung"
+    "skipToContent": "Chuyển đến nội dung",
+    "sharedWith_other": "Đã chia sẻ với {{count}}",
+    "andMore": "+{{count}} người khác"
   },
   "sidebar": {
     "application": "Ứng dụng",
