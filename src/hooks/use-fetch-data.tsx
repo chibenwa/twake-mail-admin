@@ -1,3 +1,4 @@
+import axios from "axios";
 import { toErrorMessage } from "@/components/custom/error-message";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,17 +16,21 @@ export function useFetchData<T>(getter: (() => Promise<T>) | null, refreshKey?: 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // The raw failure message is stored so that the error is translated at render time and follows language changes.
   const [failureMessage, setFailureMessage] = useState<string | null>(null);
+  // HTTP status of the failure: a 404 tells a feature the server does not offer from an error
+  const [status, setStatus] = useState<number | null>(null);
 
   const fetchData = async () => {
     if (!getter) return;
     setIsLoading(true);
     setFailureMessage(null);
+    setStatus(null);
     try {
       const result = await getter();
       setData(result);
     } catch (error: unknown) {
       setData(null);
       setFailureMessage(toFailureMessage(error));
+      setStatus(axios.isAxiosError(error) ? error.response?.status ?? null : null);
     } finally {
       setIsLoading(false);
     }
@@ -38,5 +43,5 @@ export function useFetchData<T>(getter: (() => Promise<T>) | null, refreshKey?: 
 
   const error = failureMessage === null ? null : t("common.fetchFailed", { message: failureMessage });
 
-  return { data, isLoading, error, refresh: fetchData };
+  return { data, isLoading, error, status, refresh: fetchData };
 }

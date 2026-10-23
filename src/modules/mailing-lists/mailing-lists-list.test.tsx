@@ -5,8 +5,9 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 vi.mock("@/lib/proxy-resolver-context", () => ({ useIsAllowed: () => true }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: vi.fn() }) }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => async () => false }));
+const lists = vi.hoisted(() => ({ get: async (): Promise<string[]> => [] }));
 vi.mock("./api-client", () => ({
-  getMailingLists: async () => [],
+  getMailingLists: () => lists.get(),
   getMailingListDetail: vi.fn(),
   createMailingList: vi.fn(),
   deleteMailingList: vi.fn(),
@@ -31,5 +32,31 @@ describe("create mailing list form: field labels", () => {
     fireEvent.click(screen.getByText("mailingLists.createTitle"));
 
     expect(screen.getByLabelText(label, { exact: false }).tagName).toBe(tagName);
+  });
+});
+
+
+describe("mailing lists: extension absent from the server", () => {
+  const axiosError = (status: number) =>
+    Object.assign(new Error(`Request failed with status code ${status}`), { isAxiosError: true, response: { status, data: {} } });
+
+  afterEach(() => { lists.get = async () => []; });
+
+  it("explains that mailing lists are not available, without form nor table, on a 404", async () => {
+    lists.get = () => Promise.reject(axiosError(404));
+    render(<MailingListsList />);
+
+    expect(await screen.findByText("mailingLists.unavailableTitle")).not.toBeNull();
+    expect(screen.queryByText("mailingLists.createTitle")).toBeNull();
+    expect(screen.queryByRole("table")).toBeNull();
+    expect(screen.queryByText("common.errorPrefix")).toBeNull();
+  });
+
+  it("keeps the red error on a 500", async () => {
+    lists.get = () => Promise.reject(axiosError(500));
+    render(<MailingListsList />);
+
+    expect(await screen.findByText("common.errorPrefix")).not.toBeNull();
+    expect(screen.queryByText("mailingLists.unavailableTitle")).toBeNull();
   });
 });

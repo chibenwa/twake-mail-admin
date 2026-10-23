@@ -58,3 +58,23 @@ describe("live metrics", () => {
     expect(screen.getByRole("button", { name: "liveMetrics.refresh" })).not.toBeNull();
   });
 });
+
+describe("live metrics: route absent from the server", () => {
+  const axiosError = (status: number) =>
+    Object.assign(new Error(`Request failed with status code ${status}`), { isAxiosError: true, response: { status, data: {} } });
+
+  it("explains that metrics are not available on a 404", async () => {
+    api.getMetrics.mockRejectedValue(axiosError(404));
+    renderPage();
+    expect(await screen.findByText("liveMetrics.unavailableTitle")).not.toBeNull();
+    expect(screen.queryByText("common.errorPrefix")).toBeNull();
+    expect(screen.queryByPlaceholderText("liveMetrics.filterPlaceholder")).toBeNull();
+  });
+
+  it("keeps the red error on a 500", async () => {
+    api.getMetrics.mockRejectedValue(axiosError(500));
+    renderPage();
+    expect(await screen.findByText("common.errorPrefix")).not.toBeNull();
+    expect(screen.queryByText("liveMetrics.unavailableTitle")).toBeNull();
+  });
+});

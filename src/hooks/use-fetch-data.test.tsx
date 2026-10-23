@@ -92,3 +92,27 @@ describe("useFetchData", () => {
     }
   });
 });
+
+describe("useFetchData status", () => {
+  const rejectWith = (status: number) => () =>
+    Promise.reject(new AxiosError(`Request failed with status code ${status}`, "ERR_BAD_REQUEST", undefined, undefined, {
+      status, statusText: "", headers: {}, config: {}, data: {},
+    } as AxiosResponse));
+
+  it("reports the HTTP status of a failure", async () => {
+    const getter = rejectWith(404);
+    const { result } = renderHook(() => useFetchData(getter));
+    await waitFor(() => expect(result.current.status).toBe(404));
+  });
+
+  it("has no status for a failure without response, nor once loaded", async () => {
+    const { result } = renderHook(() => useFetchData(failingGetter));
+    await waitFor(() => expect(result.current.error).not.toBeNull());
+    expect(result.current.status).toBeNull();
+
+    const ok = () => Promise.resolve(1);
+    const { result: loaded } = renderHook(() => useFetchData(ok));
+    await waitFor(() => expect(loaded.current.data).toBe(1));
+    expect(loaded.current.status).toBeNull();
+  });
+});

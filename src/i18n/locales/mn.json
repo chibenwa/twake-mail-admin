@@ -1757,7 +1757,9 @@
     "errorRemovingOwner": "Эзэмшигч хасахад алдаа гарлаа",
     "removeOwnerTitle": "Эзэмшигч хасах",
     "removeOwnerConfirm": "{{owner}}-г {{address}}-с хасахдаа итгэлтэй байна уу?",
-    "removeOwnerTooltip": "Энэ эзэмшигчийг хасах"
+    "removeOwnerTooltip": "Энэ эзэмшигчийг хасах",
+    "unavailableTitle": "Энэ серверт шуудангийн жагсаалт боломжгүй",
+    "unavailableText": "Энэ сервер шуудангийн жагсаалтын маршрутыг нээгээгүй. Тэдгээрт tmail-backend-ийн LDAP шуудангийн жагсаалтын өргөтгөл шаардлагатай."
   },
   "networkChannels": {
     "disconnectAll": "Бүгдийг салгах",
@@ -1830,7 +1832,10 @@
     "filterPlaceholder": "Filter metrics...",
     "refresh": "Хэмжүүрийг шинэчлэх",
     "empty": "Хэмжүүр алга.",
-    "noMatch": "\"{{search}}\"-д тохирох хэмжүүр алга."
+    "noMatch": "\"{{search}}\"-д тохирох хэмжүүр алга.",
+    "unavailableTitle": "Энэ серверт хэмжүүр боломжгүй",
+    "unavailableText": "Энэ сервер Prometheus /metrics маршрутыг нээгээгүй.",
+    "familyCount": "{{shown}} / {{count}} бүлэг"
   },
   "registeredUsers": {
     "placeholder": "user@domain.tld",

@@ -1761,7 +1761,9 @@
     "errorRemovingOwner": "Ошибка при удалении владельца",
     "removeOwnerTitle": "Удалить владельца",
     "removeOwnerConfirm": "Вы действительно хотите удалить {{owner}} из {{address}}?",
-    "removeOwnerTooltip": "Удалить этого владельца"
+    "removeOwnerTooltip": "Удалить этого владельца",
+    "unavailableTitle": "Списки рассылки недоступны на этом сервере",
+    "unavailableText": "Этот сервер не предоставляет маршруты списков рассылки. Для них нужно расширение LDAP-списков рассылки tmail-backend."
   },
   "networkChannels": {
     "disconnectAll": "Отключить все",
@@ -1834,7 +1836,10 @@
     "filterPlaceholder": "Filter metrics...",
     "refresh": "Обновить метрики",
     "empty": "Нет доступных метрик.",
-    "noMatch": "Нет метрик, соответствующих \"{{search}}\"."
+    "noMatch": "Нет метрик, соответствующих \"{{search}}\".",
+    "unavailableTitle": "Метрики недоступны на этом сервере",
+    "unavailableText": "Этот сервер не предоставляет маршрут Prometheus /metrics.",
+    "familyCount": "{{shown}} / {{count}} семейств"
   },
   "registeredUsers": {
     "placeholder": "user@domain.tld",

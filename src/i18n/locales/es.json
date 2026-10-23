@@ -1757,7 +1757,9 @@
     "errorRemovingOwner": "Error al quitar el propietario",
     "removeOwnerTitle": "Quitar propietario",
     "removeOwnerConfirm": "¿Seguro que desea quitar a {{owner}} de {{address}}?",
-    "removeOwnerTooltip": "Quitar este propietario"
+    "removeOwnerTooltip": "Quitar este propietario",
+    "unavailableTitle": "Las listas de correo no están disponibles en este servidor",
+    "unavailableText": "Este servidor no expone las rutas de listas de correo. Requieren la extensión LDAP de listas de correo de tmail-backend."
   },
   "networkChannels": {
     "disconnectAll": "Desconectar todos",
@@ -1830,7 +1832,10 @@
     "filterPlaceholder": "Filtrar métricas...",
     "refresh": "Actualizar métricas",
     "empty": "No hay métricas disponibles.",
-    "noMatch": "Ninguna métrica coincide con \"{{search}}\"."
+    "noMatch": "Ninguna métrica coincide con \"{{search}}\".",
+    "unavailableTitle": "Las métricas no están disponibles en este servidor",
+    "unavailableText": "Este servidor no expone la ruta Prometheus /metrics.",
+    "familyCount": "{{shown}} / {{count}} familias"
   },
   "registeredUsers": {
     "placeholder": "usuario@dominio.tld",

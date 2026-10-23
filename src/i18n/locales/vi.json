@@ -1755,7 +1755,9 @@
     "errorRemovingOwner": "Lỗi khi xóa chủ sở hữu",
     "removeOwnerTitle": "Xóa chủ sở hữu",
     "removeOwnerConfirm": "Bạn có chắc muốn xóa {{owner}} khỏi {{address}}?",
-    "removeOwnerTooltip": "Xóa chủ sở hữu này"
+    "removeOwnerTooltip": "Xóa chủ sở hữu này",
+    "unavailableTitle": "Danh sách thư không khả dụng trên máy chủ này",
+    "unavailableText": "Máy chủ này không cung cấp các route danh sách thư. Chúng cần phần mở rộng danh sách thư LDAP của tmail-backend."
   },
   "networkChannels": {
     "disconnectAll": "Ngắt kết nối tất cả",
@@ -1828,7 +1830,10 @@
     "filterPlaceholder": "Filter metrics...",
     "refresh": "Làm mới số liệu",
     "empty": "Không có số liệu nào.",
-    "noMatch": "Không có số liệu nào khớp với \"{{search}}\"."
+    "noMatch": "Không có số liệu nào khớp với \"{{search}}\".",
+    "unavailableTitle": "Số liệu không khả dụng trên máy chủ này",
+    "unavailableText": "Máy chủ này không cung cấp route Prometheus /metrics.",
+    "familyCount": "{{shown}} / {{count}} nhóm"
   },
   "registeredUsers": {
     "placeholder": "user@domain.tld",

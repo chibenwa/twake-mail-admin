@@ -1757,7 +1757,9 @@
     "errorRemovingOwner": "Erreur lors du retrait du propriétaire",
     "removeOwnerTitle": "Retirer le propriétaire",
     "removeOwnerConfirm": "Voulez-vous vraiment retirer {{owner}} de {{address}} ?",
-    "removeOwnerTooltip": "Retirer ce propriétaire"
+    "removeOwnerTooltip": "Retirer ce propriétaire",
+    "unavailableTitle": "Les listes de diffusion ne sont pas disponibles sur ce serveur",
+    "unavailableText": "Ce serveur n'expose pas les routes des listes de diffusion. Elles nécessitent l'extension LDAP de listes de diffusion de tmail-backend."
   },
   "networkChannels": {
     "disconnectAll": "Déconnecter tout",
@@ -1830,7 +1832,10 @@
     "filterPlaceholder": "Filtrer les métriques...",
     "refresh": "Rafraîchir les métriques",
     "empty": "Aucune métrique disponible.",
-    "noMatch": "Aucune métrique ne correspond à « {{search}} »."
+    "noMatch": "Aucune métrique ne correspond à « {{search}} ».",
+    "unavailableTitle": "Les métriques ne sont pas disponibles sur ce serveur",
+    "unavailableText": "Ce serveur n'expose pas la route Prometheus /metrics.",
+    "familyCount": "{{shown}} / {{count}} familles"
   },
   "registeredUsers": {
     "placeholder": "utilisateur@domaine.tld",

@@ -31,6 +31,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import UnavailableFeature from "@/components/custom/unavailable-feature";
+import { MAILING_LISTS_DOC_URL } from "./doc";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -462,7 +464,7 @@ export default function MailingListsList({ domain }: Props) {
   const canDelete = useIsAllowed("DELETE", "/mailingLists/{address}");
 
   const fetcher = useCallback(() => getMailingLists(domain), [domain]);
-  const { data, isLoading, error, refresh } = useFetchData<MailingListAddresses>(fetcher);
+  const { data, isLoading, error, status, refresh } = useFetchData<MailingListAddresses>(fetcher);
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -512,6 +514,17 @@ export default function MailingListsList({ domain }: Props) {
       });
     }
   };
+
+  // No LDAP mailing list extension on this server: nothing to list nor create
+  if (status === 404) {
+    return (
+      <UnavailableFeature
+        title={t("mailingLists.unavailableTitle")}
+        text={t("mailingLists.unavailableText")}
+        docUrl={MAILING_LISTS_DOC_URL}
+      />
+    );
+  }
 
   return (
     <div>

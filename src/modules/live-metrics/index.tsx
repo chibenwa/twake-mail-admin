@@ -6,6 +6,7 @@ import { getMetrics } from "./api-client";
 import Header from "@/components/custom/header";
 import { Button } from "@/components/ui/button";
 import { currentLocale } from "@/i18n/locale";
+import UnavailableFeature from "@/components/custom/unavailable-feature";
 const docuUrl = "https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/metrics.html";
 
 interface MetricFamily {
@@ -60,7 +61,7 @@ function formatValue(val: string): string {
 export default function LiveMetrics() {
   const { t } = useTranslation();
   const fetchMetrics = useCallback(() => getMetrics(), []);
-  const { data: raw, isLoading, error, refresh } = useFetchData<string>(fetchMetrics);
+  const { data: raw, isLoading, error, status, refresh } = useFetchData<string>(fetchMetrics);
   const [search, setSearch] = useState("");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
@@ -82,6 +83,16 @@ export default function LiveMetrics() {
   const toggleCollapse = (name: string) => {
     setCollapsed((prev) => ({ ...prev, [name]: !prev[name] }));
   };
+
+  // No Prometheus route on this server: there is nothing to refresh or filter
+  if (status === 404) {
+    return (
+      <div className="p-4">
+        <Header headerTitle={t("sidebar.liveMetrics")} headerSubTitle={t("liveMetrics.subtitle")} docuUrl={docuUrl} />
+        <UnavailableFeature title={t("liveMetrics.unavailableTitle")} text={t("liveMetrics.unavailableText")} docUrl={docuUrl} />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4">
@@ -110,7 +121,7 @@ export default function LiveMetrics() {
         </div>
         {families.length > 0 && (
           <span className="text-sm text-muted-foreground whitespace-nowrap">
-            {filtered.length} / {families.length} families
+            {t("liveMetrics.familyCount", { shown: filtered.length, count: families.length })}
           </span>
         )}
       </div>

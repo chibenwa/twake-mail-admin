@@ -1757,7 +1757,9 @@
     "errorRemovingOwner": "Error removing the owner",
     "removeOwnerTitle": "Remove owner",
     "removeOwnerConfirm": "Are you sure you want to remove {{owner}} from {{address}}?",
-    "removeOwnerTooltip": "Remove this owner"
+    "removeOwnerTooltip": "Remove this owner",
+    "unavailableTitle": "Mailing lists are not available on this server",
+    "unavailableText": "This server does not expose the mailing list routes. They require the LDAP mailing list extension of tmail-backend."
   },
   "networkChannels": {
     "disconnectAll": "Disconnect all",
@@ -1830,7 +1832,10 @@
     "filterPlaceholder": "Filter metrics...",
     "refresh": "Refresh metrics",
     "empty": "No metrics available.",
-    "noMatch": "No metrics match \"{{search}}\"."
+    "noMatch": "No metrics match \"{{search}}\".",
+    "unavailableTitle": "Metrics are not available on this server",
+    "unavailableText": "This server does not expose the Prometheus /metrics route.",
+    "familyCount": "{{shown}} / {{count}} families"
   },
   "registeredUsers": {
     "placeholder": "user@domain.tld",

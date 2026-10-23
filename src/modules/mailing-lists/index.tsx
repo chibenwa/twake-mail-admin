@@ -1,9 +1,9 @@
 import { Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
 import Header from "@/components/custom/header";
+import { MAILING_LISTS_DOC_URL } from "./doc";
 
-const docuUrl =
-  "https://github.com/linagora/tmail-backend/pull/2489";
+const docuUrl = MAILING_LISTS_DOC_URL;
 
 export default function MailingLists() {
   const { t } = useTranslation();
