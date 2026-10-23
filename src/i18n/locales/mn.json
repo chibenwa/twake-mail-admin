@@ -995,7 +995,9 @@
         "subscription": "Захиалга",
         "resource": "Нөөц"
       },
-      "colorCode": "Өнгөний код"
+      "colorCode": "Өнгөний код",
+      "mainCalendar": "Үндсэн хуанли",
+      "mainCalendarOf": "{{owner}}-ийн үндсэн хуанли"
     },
     "addressBooks": {
       "title": "Хаягийн дэвтрүүд",

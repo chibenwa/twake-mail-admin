@@ -67,7 +67,7 @@ afterEach(cleanup);
 const openCalendars = async () => {
   render(<UserCalendars username="frank@open-paas.org" />);
   fireEvent.click(screen.getByText("users.calendars.title"));
-  await screen.findByText("#default");
+  await screen.findByText("users.calendars.mainCalendar");
 };
 
 const typeInvitee = async (invitee: string, status: UserExistsStatus) => {

@@ -995,7 +995,9 @@
         "subscription": "Подписки",
         "resource": "Ресурсы"
       },
-      "colorCode": "Код цвета"
+      "colorCode": "Код цвета",
+      "mainCalendar": "Основной календарь",
+      "mainCalendarOf": "Основной календарь {{owner}}"
     },
     "addressBooks": {
       "title": "Адресные книги",

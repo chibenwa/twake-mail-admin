@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { createUserCalendar, deleteUserCalendar, exportUserCalendar, getUserCalendarEventCount, getUserCalendars, importUserCalendar, setUserCalendarPublicRight, updateUserCalendar, updateUserCalendarInvitees } from "../api-client";
-import { isMainCalendar } from "./main-calendar";
+import { calendarDisplayName, isMainCalendar } from "./main-calendar";
 import { CalendarShareUpdate, CreateUserCalendarPayload, GetUserCalendarsResponseType, UpdateUserCalendarPayload, UserCalendar } from "../types";
 import { CollectionCountBadge, ExportCollectionButton, ImportCollectionButton } from "@/components/custom/dav-collection-actions";
 import { useToast } from "@/hooks/use-toast";
@@ -142,6 +142,7 @@ function CalendarRow({
 }) {
   const { t } = useTranslation();
   const name = calendar["dav:name"];
+  const displayName = calendarDisplayName(calendar, t, owner) || calendarId(calendar);
   const color = calendar["apple:color"];
   const description = calendar["caldav:description"];
   const isPublicCalendar = isPublic(calendar);
@@ -160,7 +161,7 @@ function CalendarRow({
       />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <p className="font-medium min-w-0 break-words">{name}</p>
+          <p className="font-medium min-w-0 break-words" title={name !== displayName ? name : undefined}>{displayName}</p>
           {permissions.count && (
             <CollectionCountBadge
               key={countKey}
@@ -430,7 +431,7 @@ export default function UserCalendars({ username, onCalendarsChanged, defaultOpe
       header: t("users.calendars.deleteTitle"),
       destructive: true,
       confirmLabel: t("common.delete"),
-      message: t("users.calendars.deleteConfirm", { name: calendar["dav:name"] }),
+      message: t("users.calendars.deleteConfirm", { name: calendarDisplayName(calendar, t, ownerEmail(calendar, ownerEmails)) || calendarId(calendar) }),
     });
     if (!confirmed) return;
     try {
@@ -557,7 +558,7 @@ export default function UserCalendars({ username, onCalendarsChanged, defaultOpe
       <Dialog open={!!editCalendar} onOpenChange={(v) => { if (!v) setEditCalendar(null); }}>
         <DialogContent className="max-w-md" aria-describedby={undefined}>
           <DialogHeader>
-            <DialogTitle>{t("users.calendars.editTitle")} — {editCalendar?.["dav:name"]}</DialogTitle>
+            <DialogTitle>{t("users.calendars.editTitle")} — {editCalendar && calendarDisplayName(editCalendar, t)}</DialogTitle>
           </DialogHeader>
           {editCalendar && (
             <div className="space-y-3">
@@ -607,7 +608,7 @@ export default function UserCalendars({ username, onCalendarsChanged, defaultOpe
       <Dialog open={!!publicRightCalendar} onOpenChange={(v) => { if (!v) setPublicRightCalendar(null); }}>
         <DialogContent className="max-w-md" aria-describedby={undefined}>
           <DialogHeader>
-            <DialogTitle>{t("users.calendars.publicRight.title")} — {publicRightCalendar?.["dav:name"]}</DialogTitle>
+            <DialogTitle>{t("users.calendars.publicRight.title")} — {publicRightCalendar && calendarDisplayName(publicRightCalendar, t)}</DialogTitle>
           </DialogHeader>
           {publicRightCalendar && (
             <div className="space-y-3">
@@ -755,7 +756,7 @@ function InviteesModal({
     <Dialog open onOpenChange={(v) => { if (!v) onClose(); }}>
       <DialogContent className="max-w-lg" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>{t("users.calendars.invitees.title")} — {calendar["dav:name"]}</DialogTitle>
+          <DialogTitle>{t("users.calendars.invitees.title")} — {calendarDisplayName(calendar, t)}</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           {/* Current + staged invitees */}

@@ -995,7 +995,9 @@
         "subscription": "Đăng ký",
         "resource": "Tài nguyên"
       },
-      "colorCode": "Mã màu"
+      "colorCode": "Mã màu",
+      "mainCalendar": "Lịch chính",
+      "mainCalendarOf": "Lịch chính của {{owner}}"
     },
     "addressBooks": {
       "title": "Sổ địa chỉ",

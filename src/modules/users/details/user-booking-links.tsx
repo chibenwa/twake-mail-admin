@@ -1,6 +1,8 @@
 import { useCallback, useId, useState } from "react";
 import { Plus, Minus, Copy, Pencil, Trash2, RefreshCw, Loader2, Save, CalendarX } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
+import { calendarDisplayName } from "./main-calendar";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { getUserBookingLinks, createUserBookingLink, updateUserBookingLink, deleteUserBookingLink, resetUserBookingLinkPublicId, deleteUserBookingLinkEvents, getUserCalendars } from "../api-client";
@@ -41,10 +43,11 @@ function calendarHref(calendar: UserCalendar): string {
 
 // A delegated calendar keeps the name of its source one (often "#default"): its owner tells it
 // apart from the user's own calendar of the same name.
-function calendarLabel(calendar: UserCalendar, ownerEmails: Record<string, string>): string {
-  const name = calendar["dav:name"]?.trim() || calendarHref(calendar);
+function calendarLabel(calendar: UserCalendar, ownerEmails: Record<string, string>, t: TFunction): string {
   const owner = ownerEmail(calendar, ownerEmails);
-  return owner ? `${name} (${owner})` : name;
+  const name = calendarDisplayName(calendar, t, owner) || calendarHref(calendar);
+  const isMainOfOwner = owner && name === t("users.calendars.mainCalendarOf", { owner });
+  return owner && !isMainOfOwner ? `${name} (${owner})` : name;
 }
 
 // A dropdown of the user's calendars (by name) instead of a raw URL field.
@@ -452,13 +455,13 @@ export default function UserBookingLinks({ username, calendarsVersion }: Props) 
   // Full list, used only to resolve calendar names for display (a link may
   // point to a calendar the user can no longer book on).
   const calendarOptions: CalendarOption[] = allCalendars
-    .map((c) => ({ value: calendarHref(c), label: calendarLabel(c, ownerEmails) }))
+    .map((c) => ({ value: calendarHref(c), label: calendarLabel(c, ownerEmails, t) }))
     .filter((o) => o.value);
   // Restricted list offered in the create/edit dropdowns: only calendars the
   // user can write to (owned or write-delegated), never resources.
   const bookableCalendarOptions: CalendarOption[] = allCalendars
     .filter((c) => isBookableCalendar(c, username))
-    .map((c) => ({ value: calendarHref(c), label: calendarLabel(c, ownerEmails) }))
+    .map((c) => ({ value: calendarHref(c), label: calendarLabel(c, ownerEmails, t) }))
     .filter((o) => o.value);
 
   const [showCreate, setShowCreate] = useState(false);

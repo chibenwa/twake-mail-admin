@@ -435,7 +435,7 @@ describe("UserBookingLinks calendar of a delegated calendar", () => {
     await openSection();
     fireEvent.click(screen.getByText("users.bookingLinks.create"));
 
-    await screen.findByRole("option", { name: "#default (charlotte@open-paas.org)" });
-    expect(screen.getByRole("option", { name: "#default" })).toBeTruthy();
+    await screen.findByRole("option", { name: 'users.calendars.mainCalendarOf {"owner":"charlotte@open-paas.org"}' });
+    expect(screen.getByRole("option", { name: "users.calendars.mainCalendar" })).toBeTruthy();
   });
 });

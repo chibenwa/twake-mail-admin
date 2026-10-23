@@ -995,7 +995,9 @@
         "subscription": "Subscriptions",
         "resource": "Resources"
       },
-      "colorCode": "Color code"
+      "colorCode": "Color code",
+      "mainCalendar": "Main calendar",
+      "mainCalendarOf": "Main calendar of {{owner}}"
     },
     "addressBooks": {
       "title": "Address Books",

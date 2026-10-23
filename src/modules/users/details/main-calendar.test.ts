@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { isMainCalendar } from "./main-calendar";
+import type { TFunction } from "i18next";
+import { calendarDisplayName, isMainCalendar } from "./main-calendar";
 import { UserCalendar } from "../types";
 
 function calendarAt(href: string): UserCalendar {
@@ -25,5 +26,26 @@ describe("isMainCalendar", () => {
 
   it("rejects an unexpected href", () => {
     expect(isMainCalendar(calendarAt("/addressbooks/6ad1f971/6ad1f971.json"))).toBe(false);
+  });
+});
+
+describe("calendarDisplayName", () => {
+  const t = ((key: string, options?: { owner?: string }) => (options?.owner ? `${key}:${options.owner}` : key)) as unknown as TFunction;
+  const calendar = (name: string | undefined, href: string): UserCalendar =>
+    ({ "dav:name": name, _links: { self: { href } } }) as UserCalendar;
+
+  it("names the user's own main calendar", () => {
+    expect(calendarDisplayName(calendar("#default", "/calendars/alice/alice.json"), t)).toBe("users.calendars.mainCalendar");
+    expect(calendarDisplayName(calendar(undefined, "/calendars/alice/alice.json"), t)).toBe("users.calendars.mainCalendar");
+  });
+
+  it("names a delegated main calendar after its owner", () => {
+    expect(calendarDisplayName(calendar("#default", "/calendars/bob/x1.json"), t, "alice@open-paas.org"))
+      .toBe("users.calendars.mainCalendarOf:alice@open-paas.org");
+  });
+
+  it("keeps the name the user gave", () => {
+    expect(calendarDisplayName(calendar("Work", "/calendars/alice/w.json"), t)).toBe("Work");
+    expect(calendarDisplayName(calendar("Work", "/calendars/bob/w.json"), t, "alice@open-paas.org")).toBe("Work");
   });
 });

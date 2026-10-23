@@ -995,7 +995,9 @@
         "subscription": "Abonnements",
         "resource": "Ressources"
       },
-      "colorCode": "Code couleur"
+      "colorCode": "Code couleur",
+      "mainCalendar": "Calendrier principal",
+      "mainCalendarOf": "Calendrier principal de {{owner}}"
     },
     "addressBooks": {
       "title": "Carnets d'adresses",

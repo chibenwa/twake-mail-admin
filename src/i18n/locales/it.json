@@ -995,7 +995,9 @@
         "subscription": "Iscrizioni",
         "resource": "Risorse"
       },
-      "colorCode": "Codice colore"
+      "colorCode": "Codice colore",
+      "mainCalendar": "Calendario principale",
+      "mainCalendarOf": "Calendario principale di {{owner}}"
     },
     "addressBooks": {
       "title": "Rubriche",

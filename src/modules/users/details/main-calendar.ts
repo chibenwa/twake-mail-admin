@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import { UserCalendar } from "../types";
 
 // Legacy URI of the main calendar, still recognised by esn-sabre.
@@ -12,4 +13,20 @@ export function isMainCalendar(calendar: UserCalendar): boolean {
   if (root !== "calendars" || !homeId || !file) return false;
   const id = file.replace(/\.json$/, "");
   return id === homeId || id === LEGACY_MAIN_CALENDAR_ID;
+}
+
+// Name the server gives the main calendar of every user
+export const MAIN_CALENDAR_NAME = "#default";
+
+/**
+ * The name shown for a calendar: "Main calendar" for the user's own main calendar, "Main
+ * calendar of alice@…" for one delegated or subscribed from its owner, else the stored name
+ * (empty when there is none). The stored name stays the one edited and exported.
+ */
+export function calendarDisplayName(calendar: UserCalendar, t: TFunction, owner?: string | null): string {
+  const name = calendar["dav:name"]?.trim() ?? "";
+  const isMainName = name === "" || name === MAIN_CALENDAR_NAME;
+  if (isMainName && owner) return t("users.calendars.mainCalendarOf", { owner });
+  if (name === MAIN_CALENDAR_NAME || (name === "" && isMainCalendar(calendar))) return t("users.calendars.mainCalendar");
+  return name;
 }

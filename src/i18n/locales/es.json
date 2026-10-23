@@ -995,7 +995,9 @@
         "subscription": "Suscripciones",
         "resource": "Recursos"
       },
-      "colorCode": "Código de color"
+      "colorCode": "Código de color",
+      "mainCalendar": "Calendario principal",
+      "mainCalendarOf": "Calendario principal de {{owner}}"
     },
     "addressBooks": {
       "title": "Libretas de direcciones",
