@@ -13,7 +13,7 @@ interface HeaderProps {
   headerTitle?: string | ReactNode;
   headerSubTitle?: string | ReactNode;
   docuUrl?: string;
-  // On a detail page: the way back to the list, and to the parents in between
+  // On a detail page: its parents, from the list down; the back link leads to the last one
   breadcrumb?: BreadcrumbItem[];
   // Browser tab title, when the title is not plain text
   documentTitle?: string;
@@ -38,21 +38,21 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const { t } = useTranslation();
   useDocumentTitle(documentTitle ?? (typeof headerTitle === "string" ? headerTitle : undefined));
+  // The page one level up: the list of a detail page, the parent of a nested one
+  const back = breadcrumb?.[breadcrumb.length - 1];
 
   return (
     <div className="min-w-0">
-      {breadcrumb && breadcrumb.length > 0 && (
+      {back && (
         <nav aria-label={t("common.breadcrumb")} className="mb-1">
-          <ol className="flex flex-wrap items-center gap-1 text-sm">
-            {breadcrumb.map((item, index) => (
-              <li key={item.to} className="flex items-center gap-1 min-w-0">
-                {index === 0
-                  ? <ChevronLeft className="w-4 h-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                  : <span className="text-muted-foreground" aria-hidden="true">›</span>}
-                <Link to={item.to} className="text-blue-600 hover:underline break-all">{item.label}</Link>
-              </li>
-            ))}
-          </ol>
+          {/* Chevron and name of the page it returns to, one link: both are clickable */}
+          <Link
+            to={back.to}
+            className="inline-flex items-center gap-1 -ml-2 px-2 py-1 rounded-md text-sm text-blue-600 hover:bg-gray-100 hover:underline break-all"
+          >
+            <ChevronLeft className="w-4 h-4 shrink-0" aria-hidden="true" />
+            {back.label}
+          </Link>
         </nav>
       )}
       <div className="flex flex-wrap items-start justify-between gap-2">

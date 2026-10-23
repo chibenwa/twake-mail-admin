@@ -20,17 +20,16 @@ describe("header", () => {
     expect(document.title).toBe("alice@example.com — Twake Calendar Admin");
   });
 
-  it("leads back to the list through a breadcrumb", () => {
+  it("leads back to the parent page with one link holding the chevron and its name", () => {
     render(
       <MemoryRouter>
         <Header headerTitle="sales@example.com" breadcrumb={[{ label: "Domains", to: "/domains" }, { label: "example.com", to: "/domains/domain/example.com" }]} />
       </MemoryRouter>
     );
     const nav = screen.getByRole("navigation", { name: "common.breadcrumb" });
-    expect(Array.from(nav.querySelectorAll("a")).map((a) => [a.textContent, a.getAttribute("href")])).toEqual([
-      ["Domains", "/domains"],
-      ["example.com", "/domains/domain/example.com"],
-    ]);
+    const links = Array.from(nav.querySelectorAll("a"));
+    expect(links.map((a) => [a.textContent, a.getAttribute("href")])).toEqual([["example.com", "/domains/domain/example.com"]]);
+    expect(links[0].querySelector("svg")).not.toBeNull();
   });
 
   it("renders no breadcrumb on a list page", () => {
