@@ -1226,7 +1226,6 @@
     "submittedFrom": "Submitted from",
     "cancelledAt": "Cancelled",
     "failedAt": "Failed",
-    "additionalInfo": "Additional Information",
     "cancelButton": "Cancel",
     "fullDetails": "Full Details",
     "startedCompleted": "Started / Completed",
@@ -1234,7 +1233,24 @@
       "caution": "Modifies data",
       "destructive": "Deletes data"
     },
-    "detailKind": "Task"
+    "detailKind": "Task",
+    "autoRefresh": "Refreshing every 2 s",
+    "duration": "Duration",
+    "durationSeconds": "{{value}} s",
+    "durationMinutes": "{{min}} min {{sec}} s",
+    "durationHours": "{{h}} h {{min}} min",
+    "details": "Details",
+    "rawJson": "Raw JSON",
+    "info": {
+      "repositoryPath": "Repository",
+      "initialCount": "Mails at start",
+      "remainingCount": "Mails remaining",
+      "processedUserCount": "Users processed",
+      "failedUsers": "Failed users",
+      "username": "User",
+      "mailboxId": "Mailbox",
+      "domain": "Domain"
+    }
   },
   "commonTasks": {
     "title": "Common Tasks",

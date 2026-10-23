@@ -1226,7 +1226,6 @@
     "submittedFrom": "Enviada desde",
     "cancelledAt": "Cancelada",
     "failedAt": "Fallida",
-    "additionalInfo": "Información adicional",
     "cancelButton": "Cancelar",
     "fullDetails": "Detalles completos",
     "startedCompleted": "Iniciada / Completada",
@@ -1234,7 +1233,24 @@
       "caution": "Modifica datos",
       "destructive": "Elimina datos"
     },
-    "detailKind": "Tarea"
+    "detailKind": "Tarea",
+    "autoRefresh": "Actualización cada 2 s",
+    "duration": "Duración",
+    "durationSeconds": "{{value}} s",
+    "durationMinutes": "{{min}} min {{sec}} s",
+    "durationHours": "{{h}} h {{min}} min",
+    "details": "Detalles",
+    "rawJson": "JSON sin procesar",
+    "info": {
+      "repositoryPath": "Repositorio",
+      "initialCount": "Correos al inicio",
+      "remainingCount": "Correos restantes",
+      "processedUserCount": "Usuarios procesados",
+      "failedUsers": "Usuarios con error",
+      "username": "Usuario",
+      "mailboxId": "Buzón",
+      "domain": "Dominio"
+    }
   },
   "commonTasks": {
     "title": "Tareas comunes",

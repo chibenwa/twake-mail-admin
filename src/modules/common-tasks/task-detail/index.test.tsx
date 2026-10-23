@@ -134,3 +134,45 @@ describe("task detail", () => {
     expect(api.cancelTask).toHaveBeenCalledWith(TASK_ID, undefined);
   });
 });
+
+describe("task detail: readable summary", () => {
+  it("reads a completed reprocess without opening the JSON", async () => {
+    api.getTaskDetail.mockResolvedValue({
+      taskId: TASK_ID,
+      type: "reprocessing-all",
+      status: TaskStatus.COMPLETED,
+      submitDate: "2026-10-23T03:34:40.615+0000",
+      startedDate: "2026-10-23T03:34:40.620+0000",
+      completedDate: "2026-10-23T03:34:40.790+0000",
+      additionalInformation: { repositoryPath: "var/mail/address-error", initialCount: 0, remainingCount: 0, targetProcessor: null },
+    });
+    renderTaskDetail();
+
+    expect(await screen.findByText("tasks.info.repositoryPath")).not.toBeNull();
+    expect(screen.getByText("var/mail/address-error")).not.toBeNull();
+    expect(screen.getByText("tasks.duration")).not.toBeNull();
+    expect(screen.queryByText("targetProcessor")).toBeNull();
+    expect((screen.getByText("tasks.rawJson").closest("details") as HTMLDetailsElement).open).toBe(false);
+    expect(screen.queryByText("tasks.autoRefresh")).toBeNull();
+  });
+
+  it("follows a running task by itself, and stops once it is over", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      api.getTaskDetail
+        .mockResolvedValueOnce({ taskId: TASK_ID, type: "full-reindexing", status: TaskStatus.IN_PROGRESS })
+        .mockResolvedValue({ taskId: TASK_ID, type: "full-reindexing", status: TaskStatus.COMPLETED });
+      renderTaskDetail();
+      expect(await screen.findByText("tasks.autoRefresh")).not.toBeNull();
+
+      await vi.advanceTimersByTimeAsync(2000);
+      await waitFor(() => expect(screen.queryByText("tasks.autoRefresh")).toBeNull());
+      const calls = api.getTaskDetail.mock.calls.length;
+
+      await vi.advanceTimersByTimeAsync(6000);
+      expect(api.getTaskDetail.mock.calls.length).toBe(calls);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});

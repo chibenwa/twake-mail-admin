@@ -1,16 +1,20 @@
 import { useFetchData } from "@/hooks/use-fetch-data";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { cancelTask, getTaskDetail } from "../api-client";
 import { useDomain } from "@/modules/domain-admin/domain-context";
 import { Button } from "@/components/ui/button";
-import { CircleStop, RefreshCcw } from "lucide-react";
+import { CircleStop, Loader2, RefreshCcw } from "lucide-react";
 import { TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tooltip } from "@radix-ui/react-tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
-import { TaskStatus } from "../types";
+import { TaskDetailResponse, TaskStatus } from "../types";
+import { isRunning, StatusPill, TaskDetails, TaskSummary } from "@/modules/tasks/task-summary";
+
+// A running task is read again this often, until it is over
+const AUTO_REFRESH_MS = 2000;
 import Header from "@/components/custom/header";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
@@ -36,7 +40,15 @@ export default function TaskDetail() {
     isLoading,
     error,
     refresh,
-  } = useFetchData(fetchTaskDetail);
+  } = useFetchData<TaskDetailResponse>(fetchTaskDetail);
+
+  // Follows a waiting or running task by itself; no request once it completed, failed or was cancelled
+  const running = !!taskDetail && isRunning(taskDetail.status);
+  useEffect(() => {
+    if (!running) return;
+    const timer = window.setInterval(refresh, AUTO_REFRESH_MS);
+    return () => window.clearInterval(timer);
+  }, [running, refresh]);
 
   // Same confirmation and feedback as the Tasks list
   const handleCancelTask = async () => {
@@ -94,14 +106,25 @@ export default function TaskDetail() {
         </TooltipProvider>}
       </div>
 
-      {isLoading && <p>{t("common.loading")}</p>}
+      {/* The previous state stays on screen while it is read again */}
+      {isLoading && !taskDetail && <p>{t("common.loading")}</p>}
       {error && <p className="text-red-500">{t("common.errorPrefix", { message: error })}</p>}
 
-      {
-        taskDetail && (
-          <pre>{JSON.stringify(taskDetail, null, 2)}</pre>
-        )
-      }
+      {taskDetail && (
+        <div className="space-y-4 max-w-3xl">
+          <div className="flex flex-wrap items-center gap-3">
+            <StatusPill status={taskDetail.status} />
+            {running && (
+              <span role="status" className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
+                {t("tasks.autoRefresh")}
+              </span>
+            )}
+          </div>
+          <TaskSummary task={taskDetail} />
+          <TaskDetails task={taskDetail} raw={taskDetail} />
+        </div>
+      )}
     </div>
   );
 }

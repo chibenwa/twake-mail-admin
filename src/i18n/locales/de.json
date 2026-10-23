@@ -1226,7 +1226,6 @@
     "submittedFrom": "Übermittelt von",
     "cancelledAt": "Abgebrochen",
     "failedAt": "Fehlgeschlagen",
-    "additionalInfo": "Zusätzliche Informationen",
     "cancelButton": "Abbrechen",
     "fullDetails": "Alle Details",
     "startedCompleted": "Gestartet / Abgeschlossen",
@@ -1234,7 +1233,24 @@
       "caution": "Ändert Daten",
       "destructive": "Löscht Daten"
     },
-    "detailKind": "Aufgabe"
+    "detailKind": "Aufgabe",
+    "autoRefresh": "Aktualisierung alle 2 s",
+    "duration": "Dauer",
+    "durationSeconds": "{{value}} s",
+    "durationMinutes": "{{min}} min {{sec}} s",
+    "durationHours": "{{h}} h {{min}} min",
+    "details": "Details",
+    "rawJson": "Roh-JSON",
+    "info": {
+      "repositoryPath": "Repository",
+      "initialCount": "Mails zu Beginn",
+      "remainingCount": "Verbleibende Mails",
+      "processedUserCount": "Verarbeitete Benutzer",
+      "failedUsers": "Fehlgeschlagene Benutzer",
+      "username": "Benutzer",
+      "mailboxId": "Postfach",
+      "domain": "Domäne"
+    }
   },
   "commonTasks": {
     "title": "Allgemeine Aufgaben",

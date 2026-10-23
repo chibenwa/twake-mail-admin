@@ -1230,7 +1230,6 @@
     "submittedFrom": "Отправлено с",
     "cancelledAt": "Отменено",
     "failedAt": "Сбой",
-    "additionalInfo": "Дополнительная информация",
     "cancelButton": "Отменить",
     "fullDetails": "Полные сведения",
     "startedCompleted": "Начато / Завершено",
@@ -1238,7 +1237,24 @@
       "caution": "Изменяет данные",
       "destructive": "Удаляет данные"
     },
-    "detailKind": "Задача"
+    "detailKind": "Задача",
+    "autoRefresh": "Обновление каждые 2 с",
+    "duration": "Длительность",
+    "durationSeconds": "{{value}} с",
+    "durationMinutes": "{{min}} мин {{sec}} с",
+    "durationHours": "{{h}} ч {{min}} мин",
+    "details": "Подробности",
+    "rawJson": "Исходный JSON",
+    "info": {
+      "repositoryPath": "Хранилище",
+      "initialCount": "Писем в начале",
+      "remainingCount": "Осталось писем",
+      "processedUserCount": "Обработано пользователей",
+      "failedUsers": "Пользователи с ошибкой",
+      "username": "Пользователь",
+      "mailboxId": "Ящик",
+      "domain": "Домен"
+    }
   },
   "commonTasks": {
     "title": "Общие задачи",

@@ -1226,7 +1226,6 @@
     "submittedFrom": "Илгээсэн эх",
     "cancelledAt": "Цуцлагдсан",
     "failedAt": "Амжилтгүй болсон",
-    "additionalInfo": "Нэмэлт мэдээлэл",
     "cancelButton": "Цуцлах",
     "fullDetails": "Бүрэн дэлгэрэнгүй",
     "startedCompleted": "Эхэлсэн / Дууссан",
@@ -1234,7 +1233,24 @@
       "caution": "Өгөгдөл өөрчилнө",
       "destructive": "Өгөгдөл устгана"
     },
-    "detailKind": "Даалгавар"
+    "detailKind": "Даалгавар",
+    "autoRefresh": "2 секунд тутам шинэчилнэ",
+    "duration": "Үргэлжлэх хугацаа",
+    "durationSeconds": "{{value}} с",
+    "durationMinutes": "{{min}} мин {{sec}} с",
+    "durationHours": "{{h}} ц {{min}} мин",
+    "details": "Дэлгэрэнгүй",
+    "rawJson": "Түүхий JSON",
+    "info": {
+      "repositoryPath": "Агуулах",
+      "initialCount": "Эхэнд байсан захидал",
+      "remainingCount": "Үлдсэн захидал",
+      "processedUserCount": "Боловсруулсан хэрэглэгч",
+      "failedUsers": "Алдаатай хэрэглэгч",
+      "username": "Хэрэглэгч",
+      "mailboxId": "Шуудангийн хайрцаг",
+      "domain": "Домэйн"
+    }
   },
   "commonTasks": {
     "title": "Нийтлэг даалгаврууд",

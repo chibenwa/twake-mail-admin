@@ -15,7 +15,7 @@ import Header from "@/components/custom/header";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaginationControls } from "@/components/custom/pagination-controls";
-import { currentLocale } from "@/i18n/locale";
+import { endDate, formatDate, statusLabel, STATUS_COLORS, TaskDetails, taskTarget, TaskSummary } from "./task-summary";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -38,31 +38,6 @@ const STATUS_OPTIONS = [
 ];
 
 type SortField = "submitDate" | "startedDate" | "completedDate" | "status" | "type";
-
-const STATUS_COLORS: Record<string, string> = {
-  [TaskStatus.COMPLETED]: "bg-green-100 text-green-800",
-  [TaskStatus.FAILED]: "bg-red-100 text-red-800",
-  [TaskStatus.IN_PROGRESS]: "bg-primary/10 text-primary",
-  [TaskStatus.WAITING]: "bg-yellow-100 text-yellow-800",
-  [TaskStatus.CANCELLED]: "bg-gray-100 text-gray-600",
-  [TaskStatus.CANCEL_REQUESTED]: "bg-orange-100 text-orange-800",
-};
-
-function formatDate(d: string | null | undefined): string {
-  if (!d) return "—";
-  try {
-    const dt = new Date(d);
-    return `${dt.toLocaleDateString(currentLocale())} ${dt.toLocaleTimeString(currentLocale())}`;
-  } catch {
-    return d;
-  }
-}
-
-// A task ends by completing, failing or being cancelled: WebAdmin sets the matching date only
-// (spelled canceledDate, with a single L, unlike cancelledFrom)
-function endDate(task: TaskDetailResponse): string | null {
-  return task.completedDate ?? task.failedDate ?? task.canceledDate ?? null;
-}
 
 function startedCompletedText(task: TaskDetailResponse): string {
   const started = formatDate(task.startedDate);
@@ -196,17 +171,7 @@ export default function Tasks() {
     setAppliedParams({});
   };
 
-  const STATUS_LABELS: Record<string, string> = {
-    "": t("tasks.all"),
-    [TaskStatus.WAITING]: t("tasks.waiting"),
-    [TaskStatus.IN_PROGRESS]: t("tasks.inProgress"),
-    [TaskStatus.CANCEL_REQUESTED]: t("tasks.cancelRequested"),
-    [TaskStatus.COMPLETED]: t("tasks.completed"),
-    [TaskStatus.CANCELLED]: t("tasks.cancelled"),
-    [TaskStatus.FAILED]: t("tasks.failed"),
-  };
-
-  const statusLabel = (status: string) => STATUS_LABELS[status] ?? status;
+  const labelOf = (status: string) => statusLabel(t, status);
 
   const SORT_FIELDS: { key: SortField; label: string }[] = [
     { key: "submitDate", label: t("tasks.submitted") },
@@ -269,7 +234,7 @@ export default function Tasks() {
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
                   {STATUS_OPTIONS.map((s) => (
-                    <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                    <option key={s} value={s}>{labelOf(s)}</option>
                   ))}
                 </select>
               </div>
@@ -356,19 +321,22 @@ export default function Tasks() {
                     <span className="text-xs text-gray-500" title={task.type}>
                       {task.type}
                     </span>
+                    {taskTarget(task) && (
+                      <span className="block text-xs text-gray-500 break-all">{taskTarget(task)}</span>
+                    )}
                   </div>
                   {/* Below md the header is hidden: status and labelled dates stack under the ID / type */}
                   <div className="col-start-2 col-span-2 min-w-0 flex flex-col items-start gap-1 md:contents">
                     <span className={`md:w-full text-center text-xs px-2 py-0.5 rounded-full ${statusClass}`}>
-                      {statusLabel(task.status)}
+                      {labelOf(task.status)}
                     </span>
-                    <span className={`text-xs max-w-full ${WRAP_BELOW_MD}`}>
+                    <span className="text-xs max-w-full break-words">
                       <span className="md:hidden text-gray-500">{t("tasks.submitted")}: </span>
                       {formatDate(task.submitDate)}
                     </span>
                     <div
                       data-testid="task-started-completed"
-                      className={`text-xs max-w-full ${WRAP_BELOW_MD}`}
+                      className="text-xs max-w-full break-words"
                       title={startedCompletedText(task)}
                     >
                       <span className="md:hidden text-gray-500">{t("tasks.startedCompleted")}: </span>
@@ -423,52 +391,8 @@ export default function Tasks() {
           </DialogHeader>
           {selectedTask && (
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <span className="text-gray-500 font-medium">{t("tasks.status")}</span>
-                <span className={`inline-block w-fit px-2 py-0.5 rounded-full text-xs ${STATUS_COLORS[selectedTask.status] || ""}`}>
-                  {statusLabel(selectedTask.status)}
-                </span>
-                <span className="text-gray-500 font-medium">{t("tasks.type")}</span>
-                <span>{selectedTask.type}</span>
-                <span className="text-gray-500 font-medium">{t("tasks.submitted")}</span>
-                <span>{formatDate(selectedTask.submitDate)}</span>
-                <span className="text-gray-500 font-medium">{t("tasks.started")}</span>
-                <span>{formatDate(selectedTask.startedDate)}</span>
-                <span className="text-gray-500 font-medium">{t("tasks.completed")}</span>
-                <span>{formatDate(selectedTask.completedDate)}</span>
-                {selectedTask.canceledDate && (
-                  <>
-                    <span className="text-gray-500 font-medium">{t("tasks.cancelledAt")}</span>
-                    <span>{formatDate(selectedTask.canceledDate)}</span>
-                  </>
-                )}
-                {selectedTask.failedDate && (
-                  <>
-                    <span className="text-gray-500 font-medium">{t("tasks.failedAt")}</span>
-                    <span>{formatDate(selectedTask.failedDate)}</span>
-                  </>
-                )}
-                {selectedTask.executedOn && (
-                  <>
-                    <span className="text-gray-500 font-medium">{t("tasks.executedOn")}</span>
-                    <span>{selectedTask.executedOn}</span>
-                  </>
-                )}
-                {selectedTask.submittedFrom && (
-                  <>
-                    <span className="text-gray-500 font-medium">{t("tasks.submittedFrom")}</span>
-                    <span>{selectedTask.submittedFrom}</span>
-                  </>
-                )}
-              </div>
-              {selectedTask.additionalInformation && Object.keys(selectedTask.additionalInformation).length > 0 && (
-                <div>
-                  <span className="text-sm text-gray-500 font-medium">{t("tasks.additionalInfo")}</span>
-                  <pre className="mt-1 text-xs bg-gray-50 p-3 rounded overflow-x-auto">
-                    {JSON.stringify(selectedTask.additionalInformation, null, 2)}
-                  </pre>
-                </div>
-              )}
+              <TaskSummary task={selectedTask} />
+              <TaskDetails task={selectedTask} raw={selectedTask} />
               <div className="flex justify-end gap-2 pt-2">
                 {canCancel && isCancellable(selectedTask.status) && (
                   <Button

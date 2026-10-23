@@ -1224,7 +1224,6 @@
     "submittedFrom": "Gửi từ",
     "cancelledAt": "Đã hủy",
     "failedAt": "Thất bại",
-    "additionalInfo": "Thông tin bổ sung",
     "cancelButton": "Hủy",
     "fullDetails": "Chi tiết đầy đủ",
     "startedCompleted": "Bắt đầu / Hoàn thành",
@@ -1232,7 +1231,24 @@
       "caution": "Thay đổi dữ liệu",
       "destructive": "Xóa dữ liệu"
     },
-    "detailKind": "Tác vụ"
+    "detailKind": "Tác vụ",
+    "autoRefresh": "Làm mới mỗi 2 giây",
+    "duration": "Thời lượng",
+    "durationSeconds": "{{value}} giây",
+    "durationMinutes": "{{min}} phút {{sec}} giây",
+    "durationHours": "{{h}} giờ {{min}} phút",
+    "details": "Chi tiết",
+    "rawJson": "JSON thô",
+    "info": {
+      "repositoryPath": "Kho",
+      "initialCount": "Số thư lúc đầu",
+      "remainingCount": "Số thư còn lại",
+      "processedUserCount": "Người dùng đã xử lý",
+      "failedUsers": "Người dùng bị lỗi",
+      "username": "Người dùng",
+      "mailboxId": "Hộp thư",
+      "domain": "Miền"
+    }
   },
   "commonTasks": {
     "title": "Tác vụ chung",

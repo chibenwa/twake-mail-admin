@@ -1226,7 +1226,6 @@
     "submittedFrom": "Inviata da",
     "cancelledAt": "Annullata",
     "failedAt": "Non riuscita",
-    "additionalInfo": "Informazioni aggiuntive",
     "cancelButton": "Annulla",
     "fullDetails": "Dettagli completi",
     "startedCompleted": "Avviata / Completata",
@@ -1234,7 +1233,24 @@
       "caution": "Modifica dati",
       "destructive": "Elimina dati"
     },
-    "detailKind": "Attività"
+    "detailKind": "Attività",
+    "autoRefresh": "Aggiornamento ogni 2 s",
+    "duration": "Durata",
+    "durationSeconds": "{{value}} s",
+    "durationMinutes": "{{min}} min {{sec}} s",
+    "durationHours": "{{h}} h {{min}} min",
+    "details": "Dettagli",
+    "rawJson": "JSON grezzo",
+    "info": {
+      "repositoryPath": "Repository",
+      "initialCount": "Messaggi all'inizio",
+      "remainingCount": "Messaggi rimanenti",
+      "processedUserCount": "Utenti elaborati",
+      "failedUsers": "Utenti con errore",
+      "username": "Utente",
+      "mailboxId": "Casella",
+      "domain": "Dominio"
+    }
   },
   "commonTasks": {
     "title": "Attività comuni",

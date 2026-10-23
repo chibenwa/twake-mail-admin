@@ -86,7 +86,7 @@ describe("tasks list", () => {
     expect(columnClasses(screen.getByTestId("tasks-header"))).toEqual(columnClasses(row));
   });
 
-  it("only truncates the task type and dates from the md breakpoint, so phone cards show them in full", async () => {
+  it("only truncates the task type from the md breakpoint, and never the dates", async () => {
     api.listTasks.mockResolvedValue([
       {
         taskId: TASK_ID,
@@ -102,10 +102,11 @@ describe("tasks list", () => {
     const startedCompleted = await screen.findByTestId("task-started-completed");
     const typeCell = screen.getByText("tmail-deleted-messages-blob-store-based-garbage-collection").parentElement!;
 
-    [startedCompleted, typeCell].forEach((element) => {
-      expect(element.classList).not.toContain("truncate");
-      expect(element.classList).toContain("md:truncate");
-    });
+    // The type column truncates from md on; the dates are never cut, they wrap
+    expect(typeCell.classList).not.toContain("truncate");
+    expect(typeCell.classList).toContain("md:truncate");
+    expect(startedCompleted.classList).not.toContain("truncate");
+    expect(startedCompleted.classList).not.toContain("md:truncate");
     expect(startedCompleted.title).toContain("→");
   });
 });
@@ -332,5 +333,20 @@ describe("tasks: sort", () => {
     fireEvent.click(screen.getByText("tasks.desc"));
 
     expect(screen.getAllByTestId("task-row")).toHaveLength(50);
+  });
+
+  it("shows under the type what a task worked on", async () => {
+    api.listTasks.mockResolvedValue([
+      {
+        taskId: TASK_ID,
+        type: "reprocessing-all",
+        status: "completed",
+        submitDate: "2026-10-10T06:00:00Z",
+        additionalInformation: { repositoryPath: "var/mail/address-error", initialCount: 0 },
+      },
+    ]);
+    renderTasks();
+
+    expect(await screen.findByText("var/mail/address-error")).not.toBeNull();
   });
 });

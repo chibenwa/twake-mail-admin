@@ -1226,7 +1226,6 @@
     "submittedFrom": "Soumise depuis",
     "cancelledAt": "Annulée",
     "failedAt": "Échouée",
-    "additionalInfo": "Informations supplémentaires",
     "cancelButton": "Annuler",
     "fullDetails": "Détails complets",
     "startedCompleted": "Démarrée / Terminée",
@@ -1234,7 +1233,24 @@
       "caution": "Modifie des données",
       "destructive": "Supprime des données"
     },
-    "detailKind": "Tâche"
+    "detailKind": "Tâche",
+    "autoRefresh": "Actualisation toutes les 2 s",
+    "duration": "Durée",
+    "durationSeconds": "{{value}} s",
+    "durationMinutes": "{{min}} min {{sec}} s",
+    "durationHours": "{{h}} h {{min}} min",
+    "details": "Détails",
+    "rawJson": "JSON brut",
+    "info": {
+      "repositoryPath": "Dépôt",
+      "initialCount": "Mails au départ",
+      "remainingCount": "Mails restants",
+      "processedUserCount": "Utilisateurs traités",
+      "failedUsers": "Utilisateurs en échec",
+      "username": "Utilisateur",
+      "mailboxId": "Boîte",
+      "domain": "Domaine"
+    }
   },
   "commonTasks": {
     "title": "Tâches communes",
