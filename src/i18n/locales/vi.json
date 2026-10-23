@@ -1125,7 +1125,7 @@
       "ruleEnd": "Giờ kết thúc"
     },
     "subtitle": "Quản lý người dùng đã đăng ký trên máy chủ thư.",
-    "subtitleCalendar": "Quản lý người dùng đã đăng ký trên máy chủ lịch.",
+    "subtitleCalendar": "Các tài khoản của máy chủ. Mở một tài khoản để quản lý lịch, sổ địa chỉ và liên kết đặt lịch của tài khoản đó.",
     "detailKind": "Người dùng",
     "summary": {
       "quota": "Hạn mức: {{used}} / {{limit}} ({{percent}})",
@@ -1842,7 +1842,7 @@
     "deleted": "Đã xóa người dùng \"{{email}}\"",
     "errorDeleting": "Lỗi khi xóa người dùng",
     "id": "ID:",
-    "subtitle": "Quản lý người dùng đã đăng ký trên máy chủ DAV.",
+    "subtitle": "Người dùng đã đăng ký trên máy chủ lịch (DAV). Chỉ người dùng đã đăng ký mới có lịch, sổ địa chỉ và liên kết đặt lịch.",
     "firstnameRequired": "Tên là bắt buộc",
     "lastnameRequired": "Họ là bắt buộc",
     "invalidEmail": "Email phải là địa chỉ hợp lệ, ví dụ user@domain.tld"

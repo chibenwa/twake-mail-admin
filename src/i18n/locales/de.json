@@ -1127,7 +1127,7 @@
       "ruleEnd": "Endzeit"
     },
     "subtitle": "Auf dem Mailserver registrierte Benutzer verwalten.",
-    "subtitleCalendar": "Auf dem Kalenderserver registrierte Benutzer verwalten.",
+    "subtitleCalendar": "Konten des Servers. Öffnen Sie ein Konto, um seine Kalender, Adressbücher und Buchungslinks zu verwalten.",
     "detailKind": "Benutzer",
     "summary": {
       "quota": "Quota: {{used}} / {{limit}} ({{percent}})",
@@ -1844,7 +1844,7 @@
     "deleted": "Benutzer „{{email}}“ gelöscht",
     "errorDeleting": "Fehler beim Löschen des Benutzers",
     "id": "ID:",
-    "subtitle": "Auf dem DAV-Server registrierte Benutzer verwalten.",
+    "subtitle": "Auf dem Kalenderserver (DAV) registrierte Benutzer. Nur registrierte Benutzer haben Kalender, Adressbücher und Buchungslinks.",
     "firstnameRequired": "Vorname ist erforderlich",
     "lastnameRequired": "Nachname ist erforderlich",
     "invalidEmail": "E-Mail muss eine gültige Adresse sein, z. B. user@domain.tld"

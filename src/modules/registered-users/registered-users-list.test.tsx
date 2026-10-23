@@ -23,14 +23,17 @@ vi.mock("@/modules/domain-admin/domain-context", () => ({ useDomain: () => "" })
 
 import RegisteredUsersList, { EditUserForm } from "./registered-users-list";
 import { RegisterUserForm } from "./register-user-form";
+import { MemoryRouter } from "react-router";
 
 const input = (label: string) => screen.getByLabelText(label, { exact: false }) as HTMLInputElement;
 
 const openEditDialog = async () => {
   render(
-    <ConfirmProvider>
-      <RegisteredUsersList />
-    </ConfirmProvider>
+    <MemoryRouter>
+      <ConfirmProvider>
+        <RegisteredUsersList />
+      </ConfirmProvider>
+    </MemoryRouter>
   );
   fireEvent.click(await screen.findByTitle("registeredUsers.editTooltip"));
   await screen.findByText("registeredUsers.editTitle");
@@ -100,9 +103,11 @@ describe("Add registered user", () => {
     userStatus.current = "exists";
     api.createRegisteredUser.mockResolvedValue(undefined);
     render(
-      <ConfirmProvider>
-        <RegisteredUsersList />
-      </ConfirmProvider>
+      <MemoryRouter>
+        <ConfirmProvider>
+          <RegisteredUsersList />
+        </ConfirmProvider>
+      </MemoryRouter>
     );
     await screen.findByText(CHARLOTTE.email);
     fireEvent.change(screen.getByPlaceholderText("registeredUsers.placeholder"), { target: { value: EMMA } });
@@ -151,9 +156,11 @@ describe("Add registered user", () => {
   it.each([CHARLOTTE.email, "Charlotte@Open-Paas.org"])("tells that %s is already registered and keeps Add disabled", async (typed) => {
     userStatus.current = "exists";
     render(
-      <ConfirmProvider>
-        <RegisteredUsersList />
-      </ConfirmProvider>
+      <MemoryRouter>
+        <ConfirmProvider>
+          <RegisteredUsersList />
+        </ConfirmProvider>
+      </MemoryRouter>
     );
     await screen.findAllByText(CHARLOTTE.email);
     fireEvent.change(screen.getByPlaceholderText("registeredUsers.placeholder"), { target: { value: typed } });
@@ -171,9 +178,11 @@ describe("registered users list: search", () => {
   const renderList = async () => {
     api.getRegisteredUsers.mockResolvedValue([ALICE, BOB]);
     render(
-      <ConfirmProvider>
-        <RegisteredUsersList />
-      </ConfirmProvider>
+      <MemoryRouter>
+        <ConfirmProvider>
+          <RegisteredUsersList />
+        </ConfirmProvider>
+      </MemoryRouter>
     );
     await screen.findByText("alice@example.com");
   };
@@ -223,4 +232,22 @@ describe("registered user forms: field labels", () => {
       expect(screen.getByLabelText(label, { exact: false }).tagName).toBe("INPUT");
     },
   );
+});
+
+
+describe("registered users list: link to the user page", () => {
+  it("opens the page of the user from their e-mail", async () => {
+    api.getRegisteredUsers.mockResolvedValue([{ id: "1", email: "alice@example.com", firstname: "Alice", lastname: "Smith" }]);
+    render(
+      <MemoryRouter>
+        <ConfirmProvider>
+          <RegisteredUsersList />
+        </ConfirmProvider>
+      </MemoryRouter>
+    );
+
+    const link = await screen.findByRole("link", { name: "alice@example.com" });
+    expect(link.getAttribute("href")).toBe("/users/user/alice%40example.com");
+    expect(screen.getByTitle("registeredUsers.editTooltip")).toBeTruthy();
+  });
 });

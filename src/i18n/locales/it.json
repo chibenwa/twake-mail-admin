@@ -1127,7 +1127,7 @@
       "ruleEnd": "Ora di fine"
     },
     "subtitle": "Gestisci gli utenti registrati sul server di posta.",
-    "subtitleCalendar": "Gestisci gli utenti registrati sul server del calendario.",
+    "subtitleCalendar": "Account del server. Aprine uno per gestirne calendari, rubriche e link di prenotazione.",
     "detailKind": "Utente",
     "summary": {
       "quota": "Quota: {{used}} / {{limit}} ({{percent}})",
@@ -1844,7 +1844,7 @@
     "deleted": "Utente «{{email}}» eliminato",
     "errorDeleting": "Errore durante l'eliminazione dell'utente",
     "id": "ID:",
-    "subtitle": "Gestisci gli utenti registrati sul server DAV.",
+    "subtitle": "Utenti registrati sul server calendario (DAV). Solo gli utenti registrati hanno calendari, rubriche e link di prenotazione.",
     "firstnameRequired": "Il nome è obbligatorio",
     "lastnameRequired": "Il cognome è obbligatorio",
     "invalidEmail": "L'e-mail deve essere un indirizzo valido, ad esempio user@domain.tld"

@@ -1127,7 +1127,7 @@
       "ruleEnd": "End time"
     },
     "subtitle": "Manage users registered on the mail server.",
-    "subtitleCalendar": "Manage users registered on the calendar server.",
+    "subtitleCalendar": "Accounts of the server. Open one to manage its calendars, address books and booking links.",
     "detailKind": "User",
     "summary": {
       "quota": "Quota: {{used}} / {{limit}} ({{percent}})",
@@ -1844,7 +1844,7 @@
     "deleted": "User \"{{email}}\" deleted",
     "errorDeleting": "Error deleting user",
     "id": "ID:",
-    "subtitle": "Manage users registered on the DAV server.",
+    "subtitle": "Users registered on the calendar (DAV) server. Only registered users have calendars, address books and booking links.",
     "firstnameRequired": "Firstname is required",
     "lastnameRequired": "Lastname is required",
     "invalidEmail": "Email must be a valid address, like user@domain.tld"

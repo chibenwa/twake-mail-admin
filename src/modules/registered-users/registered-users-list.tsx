@@ -1,6 +1,7 @@
 import { useCallback, useId, useMemo, useState } from "react";
 import { Pencil, Trash2, AlertTriangle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 import { appConfig } from "@/lib/config";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { useCheckUserExists } from "@/hooks/use-check-user-exists";
@@ -282,11 +283,16 @@ export default function RegisteredUsersList() {
             className="space-y-1 p-4 bg-white rounded-2 my-4 flex justify-between items-center"
           >
             <div>
-              <h4 className="text-sm font-medium leading-none">
+              <h4 className="min-w-0 text-sm font-medium leading-none break-all">
                 <span className="text-gray-500 mr-2">
                   {(page - 1) * PAGE_LIMIT + index + 1}/
                 </span>
-                {user.email}
+                {/* Like the Users list: the page of the user, with their calendars and address books */}
+                {user.email ? (
+                  <Link to={`/users/user/${encodeURIComponent(user.email)}`} className="text-blue-600 hover:underline">
+                    {user.email}
+                  </Link>
+                ) : user.email}
               </h4>
               <p className="text-xs text-gray-500 mt-1">
                 {user.firstname} {user.lastname}

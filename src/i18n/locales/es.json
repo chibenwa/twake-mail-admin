@@ -1127,7 +1127,7 @@
       "ruleEnd": "Hora de fin"
     },
     "subtitle": "Gestione los usuarios registrados en el servidor de correo.",
-    "subtitleCalendar": "Gestione los usuarios registrados en el servidor de calendario.",
+    "subtitleCalendar": "Cuentas del servidor. Abra una para gestionar sus calendarios, libretas de direcciones y enlaces de reserva.",
     "detailKind": "Usuario",
     "summary": {
       "quota": "Cuota: {{used}} / {{limit}} ({{percent}})",
@@ -1844,7 +1844,7 @@
     "deleted": "Usuario «{{email}}» eliminado",
     "errorDeleting": "Error al eliminar el usuario",
     "id": "ID:",
-    "subtitle": "Gestione los usuarios registrados en el servidor DAV.",
+    "subtitle": "Usuarios registrados en el servidor de calendario (DAV). Solo los usuarios registrados tienen calendarios, libretas de direcciones y enlaces de reserva.",
     "firstnameRequired": "El nombre es obligatorio",
     "lastnameRequired": "El apellido es obligatorio",
     "invalidEmail": "El correo debe ser una dirección válida, como user@domain.tld"

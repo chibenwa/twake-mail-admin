@@ -1127,7 +1127,7 @@
       "ruleEnd": "Heure de fin"
     },
     "subtitle": "Gérer les utilisateurs enregistrés sur le serveur mail.",
-    "subtitleCalendar": "Gérer les utilisateurs enregistrés sur le serveur calendrier.",
+    "subtitleCalendar": "Comptes du serveur. Ouvrez-en un pour gérer ses calendriers, carnets d'adresses et liens de réservation.",
     "detailKind": "Utilisateur",
     "summary": {
       "quota": "Quota : {{used}} / {{limit}} ({{percent}})",
@@ -1844,7 +1844,7 @@
     "deleted": "Utilisateur « {{email}} » supprimé",
     "errorDeleting": "Erreur lors de la suppression de l'utilisateur",
     "id": "ID :",
-    "subtitle": "Gérer les utilisateurs enregistrés sur le serveur DAV.",
+    "subtitle": "Utilisateurs enregistrés sur le serveur calendrier (DAV). Seuls les utilisateurs enregistrés ont des calendriers, carnets d'adresses et liens de réservation.",
     "firstnameRequired": "Le prénom est obligatoire",
     "lastnameRequired": "Le nom est obligatoire",
     "invalidEmail": "L'e-mail doit être une adresse valide, par exemple user@domain.tld"
