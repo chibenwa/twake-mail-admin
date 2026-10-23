@@ -1889,7 +1889,9 @@
     "subtitle": "Utilisateurs enregistrés sur le serveur calendrier (DAV). Seuls les utilisateurs enregistrés ont des calendriers, carnets d'adresses et liens de réservation.",
     "firstnameRequired": "Le prénom est obligatoire",
     "lastnameRequired": "Le nom est obligatoire",
-    "invalidEmail": "L'e-mail doit être une adresse valide, par exemple user@domain.tld"
+    "invalidEmail": "L'e-mail doit être une adresse valide, par exemple user@domain.tld",
+    "registerButton": "Enregistrer un utilisateur",
+    "registerSubmit": "Enregistrer"
   },
   "unsentMails": {
     "subtitle": "Mails dont la livraison SMTP a échoué, conservés pour inspection et réémission.",

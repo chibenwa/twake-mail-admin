@@ -1889,7 +1889,9 @@
     "subtitle": "Auf dem Kalenderserver (DAV) registrierte Benutzer. Nur registrierte Benutzer haben Kalender, Adressbücher und Buchungslinks.",
     "firstnameRequired": "Vorname ist erforderlich",
     "lastnameRequired": "Nachname ist erforderlich",
-    "invalidEmail": "E-Mail muss eine gültige Adresse sein, z. B. user@domain.tld"
+    "invalidEmail": "E-Mail muss eine gültige Adresse sein, z. B. user@domain.tld",
+    "registerButton": "Benutzer registrieren",
+    "registerSubmit": "Registrieren"
   },
   "unsentMails": {
     "subtitle": "E-Mails, deren SMTP-Zustellung fehlgeschlagen ist, aufbewahrt zur Prüfung und erneuten Versendung.",

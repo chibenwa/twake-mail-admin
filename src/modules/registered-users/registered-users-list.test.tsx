@@ -110,9 +110,9 @@ describe("Add registered user", () => {
       </MemoryRouter>
     );
     await screen.findByText(CHARLOTTE.email);
-    fireEvent.change(screen.getByPlaceholderText("registeredUsers.placeholder"), { target: { value: EMMA } });
-    fireEvent.click(screen.getByText("common.add"));
+    fireEvent.click(screen.getByRole("button", { name: "registeredUsers.registerButton" }));
     await screen.findByText("users.registration.registerTitle");
+    fireEvent.change(screen.getByPlaceholderText("registeredUsers.placeholder"), { target: { value: EMMA } });
   };
 
   it("asks for the names, suggesting the local part as firstname", async () => {
@@ -125,7 +125,7 @@ describe("Add registered user", () => {
 
   it("does not send a user without lastname", async () => {
     await openRegisterDialog();
-    confirmDialog();
+    fireEvent.click(screen.getByText("registeredUsers.registerSubmit"));
 
     expect((await screen.findByRole("alert")).textContent).toBe("registeredUsers.lastnameRequired");
     expect(screen.queryByRole("dialog")).not.toBeNull();
@@ -135,7 +135,7 @@ describe("Add registered user", () => {
   it("registers the user with the typed names", async () => {
     await openRegisterDialog();
     fireEvent.change(input("registeredUsers.lastname"), { target: { value: "QA" } });
-    confirmDialog();
+    fireEvent.click(screen.getByText("registeredUsers.registerSubmit"));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     expect(api.createRegisteredUser).toHaveBeenCalledWith({ id: EMMA, email: EMMA, firstname: "emma", lastname: "QA" }, undefined);
@@ -146,14 +146,14 @@ describe("Add registered user", () => {
     await openRegisterDialog();
     api.createRegisteredUser.mockRejectedValue(new Error("Missing lastname"));
     fireEvent.change(input("registeredUsers.lastname"), { target: { value: "QA" } });
-    confirmDialog();
+    fireEvent.click(screen.getByText("registeredUsers.registerSubmit"));
 
     expect((await screen.findByRole("alert")).textContent).toContain("Missing lastname");
     expect(input("registeredUsers.lastname").value).toBe("QA");
     expect(toast).not.toHaveBeenCalled();
   });
 
-  it.each([CHARLOTTE.email, "Charlotte@Open-Paas.org"])("tells that %s is already registered and keeps Add disabled", async (typed) => {
+  it.each([CHARLOTTE.email, "Charlotte@Open-Paas.org"])("tells that %s is already registered and keeps Register disabled", async (typed) => {
     userStatus.current = "exists";
     render(
       <MemoryRouter>
@@ -163,11 +163,12 @@ describe("Add registered user", () => {
       </MemoryRouter>
     );
     await screen.findAllByText(CHARLOTTE.email);
+    fireEvent.click(screen.getByRole("button", { name: "registeredUsers.registerButton" }));
     fireEvent.change(screen.getByPlaceholderText("registeredUsers.placeholder"), { target: { value: typed } });
 
     expect(screen.getByText("registeredUsers.alreadyRegistered")).toBeTruthy();
     expect(screen.queryByText("common.userExists")).toBeNull();
-    expect(screen.getByText("common.add").closest("button")).toHaveProperty("disabled", true);
+    expect(screen.getByText("registeredUsers.registerSubmit").closest("button")).toHaveProperty("disabled", true);
   });
 });
 

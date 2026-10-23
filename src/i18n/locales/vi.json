@@ -1887,7 +1887,9 @@
     "subtitle": "Người dùng đã đăng ký trên máy chủ lịch (DAV). Chỉ người dùng đã đăng ký mới có lịch, sổ địa chỉ và liên kết đặt lịch.",
     "firstnameRequired": "Tên là bắt buộc",
     "lastnameRequired": "Họ là bắt buộc",
-    "invalidEmail": "Email phải là địa chỉ hợp lệ, ví dụ user@domain.tld"
+    "invalidEmail": "Email phải là địa chỉ hợp lệ, ví dụ user@domain.tld",
+    "registerButton": "Đăng ký người dùng",
+    "registerSubmit": "Đăng ký"
   },
   "unsentMails": {
     "subtitle": "Thư không gửi được qua SMTP, được lưu lại để xem và gửi lại.",

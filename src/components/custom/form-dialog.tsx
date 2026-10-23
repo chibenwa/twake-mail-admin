@@ -11,6 +11,8 @@ interface Props {
   title: string;
   submitLabel: string;
   submitDisabled?: boolean;
+  // Checked before submitting: the message to show in the modal, or null when the values are fine
+  validate?: () => string | null;
   // Throws to keep the modal open with the typed values and show why
   onSubmit: () => Promise<unknown> | unknown;
   children: ReactNode;
@@ -21,20 +23,25 @@ interface Props {
  * The modal every "create" or "add" action of a list opens: its fields, Enter to submit,
  * and a refusal shown in it, the typed values kept, instead of a toast that loses them.
  */
-export default function FormDialog({ open, onClose, title, submitLabel, submitDisabled, onSubmit, children, className }: Props) {
+export default function FormDialog({ open, onClose, title, submitLabel, submitDisabled, validate, onSubmit, children, className }: Props) {
   const { t } = useTranslation();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<unknown>(null);
+  const [invalid, setInvalid] = useState<string | null>(null);
 
   const close = () => {
     if (submitting) return;
     setError(null);
+    setInvalid(null);
     onClose();
   };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (submitDisabled || submitting) return;
+    const problem = validate?.() ?? null;
+    setInvalid(problem);
+    if (problem) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -54,8 +61,10 @@ export default function FormDialog({ open, onClose, title, submitLabel, submitDi
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} onChange={() => setError(null)} className="space-y-3">
+        {/* Our own messages rather than the browser's validation bubbles */}
+        <form noValidate onSubmit={handleSubmit} onChange={() => { setError(null); setInvalid(null); }} className="space-y-3">
           {children}
+          {invalid && <p role="alert" className="text-sm text-red-600">{invalid}</p>}
           {error !== null && <div role="alert" className="text-sm text-red-600"><ErrorDisplayer error={error} /></div>}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={close} disabled={submitting}>{t("common.cancel")}</Button>

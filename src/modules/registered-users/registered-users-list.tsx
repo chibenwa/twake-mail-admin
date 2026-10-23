@@ -4,13 +4,13 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { appConfig } from "@/lib/config";
 import { useFetchData } from "@/hooks/use-fetch-data";
-import { useCheckUserExists } from "@/hooks/use-check-user-exists";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
-import { getRegisteredUsers, createRegisteredUser, updateRegisteredUser, deleteRegisteredUser } from "./api-client";
+import { getRegisteredUsers, updateRegisteredUser, deleteRegisteredUser } from "./api-client";
 import { RegisteredUser } from "./types";
-import { defaultRegisteredUserNames, validateRegisteredUser, validateRegisteredUserNames } from "./validation";
-import { RegisterUserForm } from "./register-user-form";
+import { validateRegisteredUser } from "./validation";
+import RegisterUserButton from "./register-user-button";
+import ListToolbar from "@/components/custom/list-toolbar";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useDomain } from "@/modules/domain-admin/domain-context";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -95,40 +95,6 @@ export default function RegisteredUsersList() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [newUsername, setNewUsername] = useState("");
-  const userStatus = useCheckUserExists(newUsername);
-  // The DAV server refuses to register a user twice: tell it before the Register dialog.
-  const isAlreadyRegistered = !!newUsername.trim() && (usersResult ?? []).some(
-    (u) => (u.email ?? "").toLowerCase() === newUsername.trim().toLowerCase()
-  );
-  const canAdd = !!newUsername.trim() && userStatus === "exists" && !isAlreadyRegistered;
-
-  const handleAdd = async () => {
-    const username = newUsername.trim();
-    if (!canAdd) return;
-
-    const defaults = defaultRegisteredUserNames(username);
-    let values = { ...defaults };
-
-    await confirm({
-      header: t("users.registration.registerTitle"),
-      message: (
-        <RegisterUserForm
-          username={username}
-          defaults={defaults}
-          onChange={(v) => { values = v; }}
-        />
-      ),
-      validate: () => validateRegisteredUserNames(values, t),
-      action: async () => {
-        await createRegisteredUser({ id: username, email: username, ...values }, domain);
-        toast({ title: t("registeredUsers.registered", { username }) });
-        setNewUsername("");
-        refresh();
-      },
-    });
-  };
-
   const handleDelete = async (user: RegisteredUser) => {
     const confirmed = await confirm({
       header: t("registeredUsers.deleteTitle"),
@@ -195,54 +161,9 @@ export default function RegisteredUsersList() {
 
   return (
     <div>
-      {canCreate && (
-        <div className="flex gap-2 mt-4">
-          <input
-            type="text"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            placeholder={t("registeredUsers.placeholder")}
-            className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-          />
-          {userStatus === "checking" && (
-            <span className="flex items-center text-xs text-gray-400 whitespace-nowrap">
-              {t("common.checking")}
-            </span>
-          )}
-          {isAlreadyRegistered && (
-            <span className="flex items-center gap-1 text-xs text-orange-500 whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-orange-400" />
-              {t("registeredUsers.alreadyRegistered")}
-            </span>
-          )}
-          {!isAlreadyRegistered && userStatus === "exists" && (
-            <span className="flex items-center gap-1 text-xs text-green-600 whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
-              {t("common.userExists")}
-            </span>
-          )}
-          {userStatus === "not_found" && (
-            <span className="flex items-center gap-1 text-xs text-orange-500 whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-orange-400" />
-              {t("common.userNotFound")}
-            </span>
-          )}
-          {userStatus === "invalid" && (
-            <span className="flex items-center gap-1 text-xs text-red-600 whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
-              {t("common.invalidUsername")}
-            </span>
-          )}
-          <button
-            onClick={handleAdd}
-            disabled={!canAdd}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t("common.add")}
-          </button>
-        </div>
-      )}
+      <ListToolbar search={search} onSearch={(value) => { setSearch(value); setPage(1); }} placeholder={t("registeredUsers.searchPlaceholder")}>
+        {canCreate && <RegisterUserButton registered={usersResult ?? []} domain={domain} onRegistered={refresh} />}
+      </ListToolbar>
 
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
@@ -253,16 +174,6 @@ export default function RegisteredUsersList() {
       )}
       {error && <p className="text-red-500 mt-4">{t("common.errorPrefix", { message: error })}</p>}
 
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setPage(1);
-        }}
-        placeholder={t("registeredUsers.searchPlaceholder")}
-        className="mt-4 w-full px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-      />
 
       {filtered.length > 0 && (
         <PaginationControls

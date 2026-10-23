@@ -1889,7 +1889,9 @@
     "subtitle": "Usuarios registrados en el servidor de calendario (DAV). Solo los usuarios registrados tienen calendarios, libretas de direcciones y enlaces de reserva.",
     "firstnameRequired": "El nombre es obligatorio",
     "lastnameRequired": "El apellido es obligatorio",
-    "invalidEmail": "El correo debe ser una dirección válida, como user@domain.tld"
+    "invalidEmail": "El correo debe ser una dirección válida, como user@domain.tld",
+    "registerButton": "Registrar un usuario",
+    "registerSubmit": "Registrar"
   },
   "unsentMails": {
     "subtitle": "Correos cuya entrega SMTP ha fallado, conservados para su inspección y reenvío.",
