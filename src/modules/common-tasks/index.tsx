@@ -1,7 +1,8 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
-import { ReIndexMode, TaskKey, TaskProps } from "./types";
+import { ReIndexMode, TaskGroup, TaskKey, TaskProps, taskDescriptionKey } from "./types";
+import TaskGroups, { TaskEntry } from "./task-groups";
 
 import { reloadCertificates, cleanupOldTasks, repositionTeamMailboxSystemRights, cleanupMailbox, runAllUsersReindexTask, summarizeAllUsersReindex } from "./api-client";
 import { parseCleanupDays } from "./cleanup-days";
@@ -21,6 +22,7 @@ import { CALENDAR_WEBADMIN_DOC_URL, calendarWebadminDoc } from "@/lib/calendar-d
 const TASKS: TaskProps[] = [
   {
     nameKey: 'commonTasks.reindexFixOutdated',
+    group: 'search',
     taskKey: TaskKey.REINDEX,
     mode: ReIndexMode.FIX_OUTDATED,
     command: 'curl -XPOST /mailboxes?task=reIndex&mode=fixOutdated',
@@ -32,6 +34,7 @@ const TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.reindexRebuildAll',
+    group: 'search',
     taskKey: TaskKey.REINDEX,
     mode: ReIndexMode.REBUILD_ALL,
     command: 'curl -XPOST /mailboxes?task=reIndex&mode=rebuildAll',
@@ -43,6 +46,7 @@ const TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.fixMailboxInconsistencies',
+    group: 'consistency',
     taskKey: TaskKey.FIX_MAILBOX_INCONSISTENCIES,
     command: 'curl -XPOST /mailboxes?task=SolveInconsistencies',
     params: [
@@ -54,6 +58,7 @@ const TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.fixMessageInconsistencies',
+    group: 'consistency',
     taskKey: TaskKey.FIX_MESSAGE_INCONSISTENCIES,
     command: 'curl -XPOST /messages?task=SolveInconsistencies',
     params: [
@@ -64,6 +69,7 @@ const TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.recomputeMailboxCounters',
+    group: 'consistency',
     taskKey: TaskKey.RECOMPUTE_MAILBOX_COUNTERS,
     command: 'curl -XPOST /mailboxes?task=RecomputeMailboxCounters',
     params: [
@@ -74,6 +80,7 @@ const TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.recomputeMailboxQuota',
+    group: 'consistency',
     taskKey: TaskKey.RECOMPUTE_MAILBOX_QUOTA,
     command: 'curl -XPOST /quota/users?task=RecomputeCurrentQuotas',
     params: [
@@ -85,6 +92,7 @@ const TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.fixMappingDenormalization',
+    group: 'consistency',
     taskKey: TaskKey.FIX_MAPPING_DENORMALIZATION,
     command: 'curl -XPOST /cassandra/mappings?action=SolveInconsistencies',
     doc: 'https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_operations_on_mappings_sources',
@@ -92,6 +100,7 @@ const TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.cleanupJmapUploads',
+    group: 'cleanup',
     taskKey: TaskKey.CLEANUP_JMAP_UPLOADS,
     command: 'curl -XDELETE /jmap/uploads?scope=expired',
     doc: 'https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_cleaning_upload_repository',
@@ -99,6 +108,7 @@ const TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.blobGarbageCollection',
+    group: 'cleanup',
     taskKey: TaskKey.BLOB_GARBAGE_COLLECTION,
     command: 'curl -XDELETE /blobs?scope=unreferenced',
     params: [
@@ -110,6 +120,7 @@ const TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.reindexContacts',
+    group: 'search',
     taskKey: TaskKey.CONTACT_INDEXING,
     command: 'curl -XPOST /mailboxes?task=ContactIndexing',
     params: [
@@ -120,6 +131,7 @@ const TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.purgeDeletedMessages',
+    group: 'cleanup',
     taskKey: TaskKey.PURGE_DELETED_MESSAGES,
     command: 'curl -XDELETE /deletedMessages?scope=expired',
     doc: 'https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_purging_expired_deleted_messages',
@@ -127,6 +139,7 @@ const TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.populateEmailQueryView',
+    group: 'search',
     taskKey: TaskKey.POPULATE_EMAIL_QUERY_VIEW,
     command: 'curl -XPOST /mailboxes?task=populateEmailQueryView',
     params: [
@@ -145,11 +158,15 @@ const CLEANUP_PARAMS: TaskParam[] = [
 const cleanupCommand = (mailbox: "Trash" | "Spam") =>
   `curl -XDELETE "/messages?olderThan=5d&mailbox=${mailbox}&useSavedDate"`;
 
+const MAIL_GROUPS: TaskGroup[] = ["search", "consistency", "cleanup", "server"];
+const CALENDAR_GROUPS: TaskGroup[] = ["directory", "search", "consistency", "cleanup"];
+
 const docuUrl = "https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_task_management";
 
 const CALENDAR_TASKS: TaskProps[] = [
   {
     nameKey: 'commonTasks.importLdapUsers',
+    group: 'directory',
     taskKey: TaskKey.IMPORT_LDAP_USERS,
     command: 'curl -XPOST /registeredUsers/tasks?task=importFromLDAP&usersPerSecond=100',
     params: [
@@ -159,6 +176,7 @@ const CALENDAR_TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.domainMemberSync',
+    group: 'directory',
     taskKey: TaskKey.DOMAIN_MEMBER_SYNC,
     command: 'curl -XPOST /addressbook/domain-members?task=sync',
     params: [
@@ -169,6 +187,7 @@ const CALENDAR_TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.calendarEventReindex',
+    group: 'search',
     taskKey: TaskKey.CALENDAR_EVENT_REINDEX,
     command: 'curl -XPOST /calendars?task=reindex&eventsPerSecond=100',
     params: [
@@ -178,6 +197,7 @@ const CALENDAR_TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.calendarEventArchival',
+    group: 'cleanup',
     taskKey: TaskKey.CALENDAR_EVENT_ARCHIVAL,
     command: 'curl -XPOST /calendars?task=archive',
     params: [
@@ -193,6 +213,7 @@ const CALENDAR_TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.alarmRescheduling',
+    group: 'consistency',
     taskKey: TaskKey.ALARM_RESCHEDULING,
     command: 'curl -XPOST /calendars?task=scheduleAlarms&eventsPerSecond=100',
     params: [
@@ -202,6 +223,7 @@ const CALENDAR_TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.addMissingFields',
+    group: 'directory',
     taskKey: TaskKey.ADD_MISSING_FIELDS,
     command: 'curl -XPOST /registeredUsers?action=addMissingFields',
     params: [],
@@ -209,6 +231,7 @@ const CALENDAR_TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.republishCommonContacts',
+    group: 'directory',
     taskKey: TaskKey.REPUBLISH_COMMON_CONTACTS,
     command: 'curl -XPOST /contacts?action=republish&contactsPerSecond=100',
     params: [
@@ -220,6 +243,7 @@ const CALENDAR_TASKS: TaskProps[] = [
   },
   {
     nameKey: 'commonTasks.clearDomainMembersContacts',
+    group: 'cleanup',
     taskKey: TaskKey.CLEAR_DOMAIN_MEMBERS_CONTACTS,
     command: 'curl -XDELETE /addressbook/domain-members',
     params: [
@@ -238,11 +262,10 @@ export default function CommonTasks() {
     return (
       <div className="p-4 relative w-fit max-w-full">
         <Header headerTitle={t("commonTasks.title")} headerSubTitle={t("commonTasks.subtitleCalendar")} docuUrl={CALENDAR_WEBADMIN_DOC_URL} />
-        <div className="grid grid-cols-1 gap-2 mt-4">
-          {CALENDAR_TASKS.map((task) => (
-            <TaskContainer {...task} key={task.nameKey} />
-          ))}
-        </div>
+        <TaskGroups
+          order={CALENDAR_GROUPS}
+          entries={CALENDAR_TASKS.map((task) => ({ nameKey: task.nameKey, group: task.group!, node: <TaskContainer {...task} /> }))}
+        />
       </div>
     );
   }
@@ -376,6 +399,102 @@ function MailCommonTasks() {
     }
   };
 
+  const entries: TaskEntry[] = [
+    ...TASKS.flatMap((task): TaskEntry[] => [
+      { nameKey: task.nameKey, group: task.group!, node: <TaskContainer {...task} /> },
+      // Listed right after the full reindex it splits per user
+      ...(task.nameKey === "commonTasks.reindexRebuildAll" && canReindexUsers ? [{
+        nameKey: "commonTasks.perUserReindex",
+        group: "search" as const,
+        node: (
+          <TaskRow
+            title={t("commonTasks.perUserReindex")}
+            description={t(taskDescriptionKey("commonTasks.perUserReindex"))}
+            command="curl -XPOST /users?action=reindex&mode=rebuildAll&messagesPerSecond=50"
+            onRun={handlePerUserReindex}
+          />
+        ),
+      }] : []),
+    ]),
+    ...(canRepositionRights ? [{
+      nameKey: "commonTasks.repositionSystemRights",
+      group: "consistency" as const,
+      node: (
+        <TaskRow
+          title={t("commonTasks.repositionSystemRights")}
+          description={t(taskDescriptionKey("commonTasks.repositionSystemRights"))}
+          command="curl -XPOST /team-mailboxes?action=repositionSystemRights"
+          onRun={handleRepositionSystemRights}
+          loading={repositionLoading}
+        />
+      ),
+    }] : []),
+    ...(canCleanupMailbox ? (["Trash", "Spam"] as const).map((mailbox) => ({
+      nameKey: `commonTasks.cleanup${mailbox}All`,
+      group: "cleanup" as const,
+      node: (
+        <TaskRow
+          title={t(`commonTasks.cleanup${mailbox}All`)}
+          description={t(taskDescriptionKey(`commonTasks.cleanup${mailbox}All`))}
+          risk="caution"
+          command={defaultCommand(cleanupCommand(mailbox), CLEANUP_PARAMS)}
+          onRun={() => handleCleanupMailbox(mailbox)}
+        />
+      ),
+    })) : []),
+    ...(canCleanupOldTasks ? [{
+      nameKey: "commonTasks.cleaningUpOldTasks",
+      group: "cleanup" as const,
+      node: (
+        <TaskRow
+          title={t("commonTasks.cleaningUpOldTasks")}
+          description={t(taskDescriptionKey("commonTasks.cleaningUpOldTasks"))}
+          risk="caution"
+          // The request run with the days of the field, as sent by cleanupOldTasks
+          command={`curl -XDELETE /tasks?olderThan=${cleanupDaysValue ?? "N"}day`}
+          onRun={handleCleanupOldTasks}
+          disabled={cleanupDaysValue === null || cleanupLoading}
+          loading={cleanupLoading}
+        >
+          <input
+            type="number"
+            min="1"
+            aria-label={t("commonTasks.days")}
+            value={cleanupDays}
+            onChange={(e) => setCleanupDays(e.target.value)}
+            className="border rounded px-2 py-1 text-sm w-24"
+          />
+          <span className="text-sm text-gray-500">{t("commonTasks.days")}</span>
+          {cleanupDaysValue === null && (
+            <span role="alert" className="text-sm text-red-500">{t("commonTasks.invalidCleanupDays")}</span>
+          )}
+        </TaskRow>
+      ),
+    }] : []),
+    ...(canReloadCerts ? [{
+      nameKey: "commonTasks.reloadCertificates",
+      group: "server" as const,
+      node: (
+        <TaskRow
+          title={t("commonTasks.reloadCertificates")}
+          description={t(taskDescriptionKey("commonTasks.reloadCertificates"))}
+          command="curl -XPOST /servers?reload-certificate"
+          onRun={handleReloadCertificates}
+          loading={reloadLoading}
+        >
+          <input
+            type="text"
+            aria-label={t("commonTasks.portOptional")}
+            placeholder={t("commonTasks.portOptional")}
+            value={reloadPort}
+            onChange={(e) => setReloadPort(e.target.value)}
+            className="border rounded px-2 py-1 text-sm w-32"
+          />
+        </TaskRow>
+      ),
+    }] : []),
+  ];
+
   return (
     <div className="p-4 relative w-fit max-w-full">
       <Header
@@ -384,85 +503,7 @@ function MailCommonTasks() {
         docuUrl={docuUrl}
       />
 
-      <div className="grid grid-cols-1 gap-2 mt-4">
-        {TASKS.map((task) => (
-          <Fragment key={task.nameKey}>
-            <TaskContainer {...task} />
-            {task.nameKey === "commonTasks.reindexRebuildAll" && canReindexUsers && (
-              <TaskRow
-                title={t("commonTasks.perUserReindex")}
-                command="curl -XPOST /users?action=reindex&mode=rebuildAll&messagesPerSecond=50"
-                onRun={handlePerUserReindex}
-              />
-            )}
-          </Fragment>
-        ))}
-        {canReloadCerts && (
-          <TaskRow
-            title={t("commonTasks.reloadCertificates")}
-            command="curl -XPOST /servers?reload-certificate"
-            onRun={handleReloadCertificates}
-            loading={reloadLoading}
-          >
-            <input
-              type="text"
-              aria-label={t("commonTasks.portOptional")}
-              placeholder={t("commonTasks.portOptional")}
-              value={reloadPort}
-              onChange={(e) => setReloadPort(e.target.value)}
-              className="border rounded px-2 py-1 text-sm w-32"
-            />
-          </TaskRow>
-        )}
-        {canRepositionRights && (
-          <TaskRow
-            title={t("commonTasks.repositionSystemRights")}
-            command="curl -XPOST /team-mailboxes?action=repositionSystemRights"
-            onRun={handleRepositionSystemRights}
-            loading={repositionLoading}
-          />
-        )}
-        {canCleanupMailbox && (
-          <TaskRow
-            title={t("commonTasks.cleanupTrashAll")}
-            risk="caution"
-            command={defaultCommand(cleanupCommand("Trash"), CLEANUP_PARAMS)}
-            onRun={() => handleCleanupMailbox("Trash")}
-          />
-        )}
-        {canCleanupMailbox && (
-          <TaskRow
-            title={t("commonTasks.cleanupSpamAll")}
-            risk="caution"
-            command={defaultCommand(cleanupCommand("Spam"), CLEANUP_PARAMS)}
-            onRun={() => handleCleanupMailbox("Spam")}
-          />
-        )}
-        {canCleanupOldTasks && (
-          <TaskRow
-            title={t("commonTasks.cleaningUpOldTasks")}
-            risk="caution"
-            // The request run with the days of the field, as sent by cleanupOldTasks
-            command={`curl -XDELETE /tasks?olderThan=${cleanupDaysValue ?? "N"}day`}
-            onRun={handleCleanupOldTasks}
-            disabled={cleanupDaysValue === null || cleanupLoading}
-            loading={cleanupLoading}
-          >
-            <input
-              type="number"
-              min="1"
-              aria-label={t("commonTasks.days")}
-              value={cleanupDays}
-              onChange={(e) => setCleanupDays(e.target.value)}
-              className="border rounded px-2 py-1 text-sm w-24"
-            />
-            <span className="text-sm text-gray-500">{t("commonTasks.days")}</span>
-            {cleanupDaysValue === null && (
-              <span role="alert" className="text-sm text-red-500">{t("commonTasks.invalidCleanupDays")}</span>
-            )}
-          </TaskRow>
-        )}
-      </div>
+      <TaskGroups order={MAIL_GROUPS} entries={entries} />
     </div>
   );
 }

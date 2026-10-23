@@ -904,6 +904,22 @@
         "calendars": "Kalender: {{count}}",
         "addressBooks": "Adressbücher: {{count}}",
         "bookingLinks": "Buchungslinks: {{count}}"
+      },
+      "desc": {
+        "reindexAll": "Wenn die Suche dieses Benutzers Mails nicht findet. Indiziert seine Postfächer neu.",
+        "subscribeAll": "Wenn Ordner im Mailprogramm fehlen. Abonniert alle Postfächer des Benutzers.",
+        "fastView": "Wenn Nachrichtenvorschauen dieses Benutzers falsch wirken. Baut die JMAP-Schnellansicht neu.",
+        "restoreDeleted": "Holt passende Nachrichten aus dem Tresor gelöschter Nachrichten in einen Ordner Restored-Messages zurück.",
+        "cleanupTrash": "Löscht alte Nachrichten im Papierkorb dieses Benutzers endgültig.",
+        "cleanupSpam": "Löscht alte Nachrichten im Spam-Ordner dieses Benutzers endgültig.",
+        "provisionTemplates": "Kopiert den Vorlagenordner eines Quellbenutzers in das Postfach dieses Benutzers.",
+        "tierData": "Verschiebt zwischengespeicherte Daten alter Nachrichten in günstigeren Speicher; die Nachrichten bleiben lesbar.",
+        "renameUser": "Verschiebt alle Daten dieses Benutzers in ein anderes bestehendes Konto.",
+        "deleteAllMailboxes": "Löscht endgültig alle Postfächer dieses Benutzers samt Nachrichten.",
+        "deleteData": "Löscht endgültig Postfächer, Nachrichten und Einstellungen dieses Benutzers; das Konto bleibt.",
+        "calendarDeleteData": "Löscht endgültig Kalender, Adressbücher und Buchungslinks dieses Benutzers.",
+        "archive": "Verschiebt passende Termine dieses Benutzers in einen Kalender „Archival“.",
+        "republishContacts": "Wenn die Kontakte dieses Benutzers bei anderen fehlen. Veröffentlicht sie erneut."
       }
     },
     "calendarTasks": {
@@ -1383,6 +1399,43 @@
       "w": "Wochen",
       "m": "Monate",
       "y": "Jahre"
+    },
+    "group": {
+      "search": "Suchindex",
+      "consistency": "Konsistenzreparatur",
+      "cleanup": "Bereinigung",
+      "server": "Server",
+      "directory": "Benutzer und Kontakte"
+    },
+    "filter": "Aufgaben filtern…",
+    "noMatch": "Keine Aufgabe passt zu „{{q}}“.",
+    "desc": {
+      "reindexFixOutdated": "Wenn die Suche neue Mails nicht findet. Indiziert nur veraltete Dokumente neu; mäßige Last.",
+      "reindexRebuildAll": "Nach einem OpenSearch-Verlust oder einer Mapping-Änderung. Baut den ganzen Index neu; hohe Last, kann Stunden dauern.",
+      "perUserReindex": "Dieselbe vollständige Neuindizierung, aufgeteilt in eine Aufgabe pro Benutzer: ein Fehler betrifft nur ein Konto.",
+      "populateEmailQueryView": "Nach dem Aktivieren der E-Mail-Abfrageansicht. Füllt sie aus den vorhandenen Nachrichten; mäßige Last.",
+      "reindexContacts": "Füllt die Empfänger-Autovervollständigung jedes Benutzers aus seinen gesendeten Mails.",
+      "fixMailboxInconsistencies": "Wenn Postfächer fehlen, doppelt sind oder sich nicht öffnen lassen. Alle anderen Dienste müssen vorher gestoppt sein.",
+      "fixMessageInconsistencies": "Wenn eine Nachricht aufgeführt, aber nicht lesbar ist, oder umgekehrt. Repariert die Nachrichtentabellen.",
+      "recomputeMailboxCounters": "Wenn ungelesene oder Gesamtzähler der Postfächer falsch wirken. Zählt jedes Postfach neu.",
+      "recomputeMailboxQuota": "Wenn die Quota-Belegung eines Benutzers falsch wirkt. Zählt die Belegung jedes Benutzers neu.",
+      "fixMappingDenormalization": "Wenn ein Alias oder eine Weiterleitung ignoriert wird, obwohl sie aufgeführt ist. Schreibt die Mapping-Suchtabellen neu.",
+      "repositionSystemRights": "Wenn Ordner von Team-Postfächern nicht mehr verwaltet werden können. Gibt den Systembenutzern alle Rechte auf jeden Ordner zurück.",
+      "cleanupJmapUploads": "Löscht abgelaufene JMAP-Uploads: an den Server gesendete, aber nie in einer Mail verwendete Anhänge.",
+      "blobGarbageCollection": "Gibt Speicher frei, den Blobs belegen, auf die keine Nachricht mehr verweist. Belastet den Objektspeicher stark.",
+      "purgeDeletedMessages": "Löscht endgültig die Nachrichten im Tresor gelöschter Nachrichten, deren Aufbewahrungsfrist abgelaufen ist.",
+      "cleanupTrashAll": "Löscht alte Nachrichten im Papierkorb jedes Benutzers endgültig.",
+      "cleanupSpamAll": "Löscht alte Nachrichten im Spam-Ordner jedes Benutzers endgültig.",
+      "cleaningUpOldTasks": "Entfernt abgeschlossene Aufgaben, die älter als die angegebenen Tage sind, damit die Liste kurz bleibt.",
+      "reloadCertificates": "Nach der Erneuerung der TLS-Zertifikate: lädt sie ohne Serverneustart neu.",
+      "importLdapUsers": "Registriert die noch nicht registrierten LDAP-Benutzer auf dem Kalenderserver.",
+      "addMissingFields": "Ergänzt fehlende Felder registrierter Benutzer, etwa Vor- oder Nachname.",
+      "domainMemberSync": "Aktualisiert das Adressbuch „Domänenmitglieder“ jeder Domäne aus LDAP.",
+      "republishCommonContacts": "Wenn Domänen- oder Benutzerkontakte bei anderen Benutzern fehlen. Veröffentlicht sie erneut.",
+      "calendarEventReindex": "Wenn Termine in der Kalendersuche fehlen. Baut den Suchindex der Termine neu.",
+      "alarmRescheduling": "Wenn Terminerinnerungen nicht gesendet werden. Plant die Alarme aller Termine neu.",
+      "calendarEventArchival": "Verschiebt die Termine, die den Kriterien entsprechen, in einen Kalender „Archival“ jedes Benutzers.",
+      "clearDomainMembersContacts": "Leert das Adressbuch „Domänenmitglieder“ jeder Domäne. Eine Synchronisierung füllt es wieder."
     }
   },
   "healthCheck": {

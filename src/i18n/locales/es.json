@@ -904,6 +904,22 @@
         "calendars": "Calendarios: {{count}}",
         "addressBooks": "Libretas de direcciones: {{count}}",
         "bookingLinks": "Enlaces de reserva: {{count}}"
+      },
+      "desc": {
+        "reindexAll": "Cuando las búsquedas de este usuario no encuentran correos. Reindexa sus buzones.",
+        "subscribeAll": "Cuando faltan carpetas en el cliente de correo. Suscribe al usuario a todos sus buzones.",
+        "fastView": "Cuando las vistas previas de este usuario parecen incorrectas. Reconstruye la vista rápida JMAP.",
+        "restoreDeleted": "Recupera los mensajes del almacén de eliminados que cumplen los criterios en una carpeta Restored-Messages.",
+        "cleanupTrash": "Elimina definitivamente los mensajes antiguos de la Papelera de este usuario.",
+        "cleanupSpam": "Elimina definitivamente los mensajes antiguos del Spam de este usuario.",
+        "provisionTemplates": "Copia la carpeta de plantillas de un usuario de origen en el buzón de este usuario.",
+        "tierData": "Mueve los datos en caché de los mensajes antiguos a un almacenamiento más barato; los mensajes siguen legibles.",
+        "renameUser": "Mueve todos los datos de este usuario a otra cuenta existente.",
+        "deleteAllMailboxes": "Elimina definitivamente todos los buzones de este usuario y sus mensajes.",
+        "deleteData": "Elimina definitivamente los buzones, mensajes y ajustes de este usuario; la cuenta se conserva.",
+        "calendarDeleteData": "Elimina definitivamente los calendarios, libretas de direcciones y enlaces de reserva de este usuario.",
+        "archive": "Mueve los eventos de este usuario que cumplen los criterios a un calendario «Archival».",
+        "republishContacts": "Cuando faltan los contactos de este usuario para los demás. Los vuelve a publicar."
       }
     },
     "calendarTasks": {
@@ -1383,6 +1399,43 @@
       "w": "Semanas",
       "m": "Meses",
       "y": "Años"
+    },
+    "group": {
+      "search": "Índice de búsqueda",
+      "consistency": "Reparación de coherencia",
+      "cleanup": "Limpieza",
+      "server": "Servidor",
+      "directory": "Usuarios y contactos"
+    },
+    "filter": "Filtrar tareas…",
+    "noMatch": "Ninguna tarea coincide con «{{q}}».",
+    "desc": {
+      "reindexFixOutdated": "Cuando las búsquedas no encuentran correos recientes. Reindexa solo los documentos obsoletos; carga moderada.",
+      "reindexRebuildAll": "Tras una pérdida de OpenSearch o un cambio de mapping. Reconstruye todo el índice; carga alta, puede durar horas.",
+      "perUserReindex": "La misma reindexación completa, dividida en una tarea por usuario: un fallo queda limitado a una cuenta.",
+      "populateEmailQueryView": "Tras activar la vista de consulta de correo. La rellena con los mensajes existentes; carga moderada.",
+      "reindexContacts": "Rellena el autocompletado de destinatarios de cada usuario a partir de los correos enviados.",
+      "fixMailboxInconsistencies": "Cuando faltan buzones, están duplicados o no se abren. Todos los demás servicios deben detenerse antes.",
+      "fixMessageInconsistencies": "Cuando un mensaje aparece en la lista pero no se puede leer, o al revés. Repara las tablas de mensajes.",
+      "recomputeMailboxCounters": "Cuando los contadores de no leídos o de mensajes parecen incorrectos. Vuelve a contar cada buzón.",
+      "recomputeMailboxQuota": "Cuando el uso de cuota de un usuario parece incorrecto. Vuelve a contar el uso de cada usuario.",
+      "fixMappingDenormalization": "Cuando un alias o reenvío se ignora aunque aparezca en la lista. Reescribe las tablas de búsqueda de mappings.",
+      "repositionSystemRights": "Cuando las carpetas de los buzones de equipo ya no se pueden gestionar. Devuelve a los usuarios del sistema todos sus derechos en cada carpeta.",
+      "cleanupJmapUploads": "Elimina las subidas JMAP caducadas: adjuntos enviados al servidor pero nunca usados en un correo.",
+      "blobGarbageCollection": "Libera el almacenamiento de blobs que ya no referencia ningún mensaje. Exigente para el almacenamiento de objetos.",
+      "purgeDeletedMessages": "Elimina definitivamente los mensajes del almacén de mensajes eliminados cuyo periodo de retención ha terminado.",
+      "cleanupTrashAll": "Elimina definitivamente los mensajes antiguos de la Papelera de cada usuario.",
+      "cleanupSpamAll": "Elimina definitivamente los mensajes antiguos de la carpeta Spam de cada usuario.",
+      "cleaningUpOldTasks": "Olvida las tareas terminadas más antiguas que los días indicados, para mantener la lista corta.",
+      "reloadCertificates": "Tras renovar los certificados TLS: los recarga sin reiniciar el servidor.",
+      "importLdapUsers": "Registra en el servidor de calendario a los usuarios LDAP que aún no lo están.",
+      "addMissingFields": "Completa los campos que faltan en los usuarios registrados, como su nombre o apellido.",
+      "domainMemberSync": "Actualiza desde LDAP la libreta «Miembros del dominio» de cada dominio.",
+      "republishCommonContacts": "Cuando faltan contactos de dominio o de usuario para otros usuarios. Los vuelve a publicar.",
+      "calendarEventReindex": "Cuando faltan eventos en las búsquedas del calendario. Reconstruye el índice de búsqueda de eventos.",
+      "alarmRescheduling": "Cuando no se envían los recordatorios de eventos. Vuelve a programar las alarmas de cada evento.",
+      "calendarEventArchival": "Mueve los eventos que cumplen los criterios a un calendario «Archival» de cada usuario.",
+      "clearDomainMembersContacts": "Vacía la libreta «Miembros del dominio» de cada dominio. Ejecute una sincronización para volver a llenarla."
     }
   },
   "healthCheck": {

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { TaskProps } from "./types";
+import { TaskProps, taskDescriptionKey } from "./types";
 import TaskRow from "@/components/custom/task-row";
 import { useRunTask } from "@/hooks/use-run-task";
 import { useConfirm } from "@/hooks/use-confirm";
@@ -48,6 +48,7 @@ export default function TaskContainer({ nameKey, taskKey, mode, command, doc, pa
   return (
     <TaskRow
       title={name}
+      description={t(taskDescriptionKey(nameKey))}
       doc={doc}
       risk={risk}
       command={defaultCommand(command, params)}

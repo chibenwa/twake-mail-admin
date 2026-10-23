@@ -904,6 +904,22 @@
         "calendars": "Calendars: {{count}}",
         "addressBooks": "Address books: {{count}}",
         "bookingLinks": "Booking links: {{count}}"
+      },
+      "desc": {
+        "reindexAll": "Use when searches of this user miss mails. Reindexes their mailboxes.",
+        "subscribeAll": "Use when folders do not show in the user's mail client. Subscribes the user to every mailbox.",
+        "fastView": "Use when message previews of this user look wrong. Rebuilds the JMAP fast view.",
+        "restoreDeleted": "Brings back messages of the Deleted Messages Vault matching the criteria into a Restored-Messages folder.",
+        "cleanupTrash": "Permanently deletes the old messages of this user's Trash.",
+        "cleanupSpam": "Permanently deletes the old messages of this user's Spam.",
+        "provisionTemplates": "Copies the templates folder of a source user into this user's mailbox.",
+        "tierData": "Moves the cached data of old messages to cheaper storage; the messages stay readable.",
+        "renameUser": "Moves all the data of this user to another existing account.",
+        "deleteAllMailboxes": "Permanently deletes every mailbox of this user and the messages they contain.",
+        "deleteData": "Permanently deletes the mailboxes, messages and settings of this user; the account is kept.",
+        "calendarDeleteData": "Permanently deletes the calendars, address books and booking links of this user.",
+        "archive": "Moves the events of this user matching the criteria into an \"Archival\" calendar.",
+        "republishContacts": "Use when this user's contacts are missing for other users. Publishes them again."
       }
     },
     "calendarTasks": {
@@ -1383,6 +1399,43 @@
       "w": "Weeks",
       "m": "Months",
       "y": "Years"
+    },
+    "group": {
+      "search": "Search index",
+      "consistency": "Consistency repair",
+      "cleanup": "Cleanup",
+      "server": "Server",
+      "directory": "Users and contacts"
+    },
+    "filter": "Filter tasks…",
+    "noMatch": "No task matches \"{{q}}\".",
+    "desc": {
+      "reindexFixOutdated": "Use when searches miss recent mails. Reindexes only outdated documents; moderate load.",
+      "reindexRebuildAll": "Use after an OpenSearch loss or a mapping change. Rebuilds the whole index; heavy load, can take hours.",
+      "perUserReindex": "The same full reindex, split into one task per user so that a failure stays limited to one account.",
+      "populateEmailQueryView": "Use after enabling the email query view. Fills it from the existing messages; moderate load.",
+      "reindexContacts": "Fills the recipient autocompletion of every user from the mails they sent.",
+      "fixMailboxInconsistencies": "Use when mailboxes are missing, duplicated or cannot be opened. Every other service must be stopped first.",
+      "fixMessageInconsistencies": "Use when a message is listed but cannot be read, or the reverse. Repairs the message tables.",
+      "recomputeMailboxCounters": "Use when the unread or total counts of mailboxes look wrong. Recounts every mailbox.",
+      "recomputeMailboxQuota": "Use when a user's quota usage looks wrong. Recounts every user's usage.",
+      "fixMappingDenormalization": "Use when an alias or forward is ignored although it is listed. Rewrites the mapping lookup tables.",
+      "repositionSystemRights": "Use when team mailbox folders can no longer be managed. Gives the system users back their full rights on every folder.",
+      "cleanupJmapUploads": "Deletes expired JMAP uploads: attachments sent to the server but never used in a mail.",
+      "blobGarbageCollection": "Frees storage held by blobs no message references any more. Heavy on object storage.",
+      "purgeDeletedMessages": "Permanently deletes the messages of the Deleted Messages Vault whose retention period is over.",
+      "cleanupTrashAll": "Permanently deletes old messages from every user's Trash.",
+      "cleanupSpamAll": "Permanently deletes old messages from every user's Spam.",
+      "cleaningUpOldTasks": "Forgets the finished tasks older than the given number of days, to keep the task list short.",
+      "reloadCertificates": "Use after renewing the TLS certificates: reloads them without restarting the server.",
+      "importLdapUsers": "Registers on the calendar server the LDAP users that are not registered yet.",
+      "addMissingFields": "Fills in the fields missing from registered users, such as their first or last name.",
+      "domainMemberSync": "Updates the \"Domain members\" address book of every domain from LDAP.",
+      "republishCommonContacts": "Use when domain or user contacts are missing for other users. Publishes them again.",
+      "calendarEventReindex": "Use when events are missing from calendar searches. Rebuilds the event search index.",
+      "alarmRescheduling": "Use when event reminders are not sent. Schedules the alarms of every event again.",
+      "calendarEventArchival": "Moves the events matching the criteria into an \"Archival\" calendar of each user.",
+      "clearDomainMembersContacts": "Empties the \"Domain members\" address book of every domain. Run a synchronization to fill it again."
     }
   },
   "healthCheck": {

@@ -72,8 +72,15 @@ export type TaskProps = {
   risk?: import("@/components/custom/run-task-button").TaskRisk;
   // Irreversible task: what it deletes, and the word to type before it can run.
   consequenceKey?: string;
+  // Heading of Common Tasks the task is listed under
+  group?: TaskGroup;
   typeToConfirmKey?: string;
 }
+
+export type TaskGroup = "search" | "consistency" | "cleanup" | "server" | "directory";
+
+// One line saying when to use a task and what it costs, next to its name
+export const taskDescriptionKey = (nameKey: string) => nameKey.replace(/^commonTasks\./, "commonTasks.desc.");
 
 export enum TaskStatus {
   COMPLETED = 'completed',

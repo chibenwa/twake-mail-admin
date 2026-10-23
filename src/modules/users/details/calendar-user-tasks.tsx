@@ -136,6 +136,7 @@ export default function CalendarUserTasks({ username, counts = {} }: Props) {
           {canArchiveCalendar && (
             <TaskRow
               title={t("users.calendarTasks.archiveButton")}
+              description={t("users.tasks.desc.archive")}
               risk="caution"
               command={`curl -XPOST /calendars/${username}?task=archive`}
               onRun={handleArchiveCalendarEvents}
@@ -144,6 +145,7 @@ export default function CalendarUserTasks({ username, counts = {} }: Props) {
           {canRepublishContacts && (
             <TaskRow
               title={t("users.calendarTasks.republishContactsButton")}
+              description={t("users.tasks.desc.republishContacts")}
               risk="safe"
               command={`curl -XPOST /users/${username}/contacts?action=republish`}
               onRun={handleRepublishContacts}
@@ -152,6 +154,7 @@ export default function CalendarUserTasks({ username, counts = {} }: Props) {
           {canDeleteData && (
             <TaskRow
               title={t("users.tasks.deleteData")}
+              description={t("users.tasks.desc.calendarDeleteData")}
               risk="destructive"
               command={`curl -XPOST /users/${username}?action=deleteData`}
               onRun={handleDeleteUserData}

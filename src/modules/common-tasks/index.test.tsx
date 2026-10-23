@@ -83,3 +83,40 @@ describe("common tasks: cleaning up old tasks validation", () => {
     expect(screen.queryByText("commonTasks.invalidCleanupDays")).not.toBeNull();
   });
 });
+
+describe("common tasks: groups and filter", () => {
+  const groupHeadings = () => screen.queryAllByRole("heading", { level: 2 }).map((h) => h.textContent).filter((text) => text?.startsWith("commonTasks.group."));
+  const ALL: ProxyRule[] = [{ verb: ["GET", "POST", "PUT", "PATCH", "DELETE"], endpoint: "/**" }];
+
+  it("lists the tasks under the four headings, in order", () => {
+    renderWith(ALL);
+    expect(groupHeadings()).toEqual([
+      "commonTasks.group.search",
+      "commonTasks.group.consistency",
+      "commonTasks.group.cleanup",
+      "commonTasks.group.server",
+    ]);
+    const cleanupGroup = screen.getByRole("region", { name: "commonTasks.group.cleanup" });
+    expect(within(cleanupGroup).queryByText("commonTasks.blobGarbageCollection")).not.toBeNull();
+    expect(within(cleanupGroup).queryByText("commonTasks.cleaningUpOldTasks")).not.toBeNull();
+  });
+
+  it("describes every task", () => {
+    renderWith(ALL);
+    expect(screen.queryByText("commonTasks.desc.recomputeMailboxQuota")).not.toBeNull();
+    expect(screen.queryByText("commonTasks.desc.reloadCertificates")).not.toBeNull();
+  });
+
+  it("keeps only the tasks matching the filter, and says when none does", () => {
+    renderWith(ALL);
+    const filter = screen.getByLabelText("commonTasks.filter");
+
+    fireEvent.change(filter, { target: { value: "QUOTA" } });
+    expect(screen.queryByText("commonTasks.recomputeMailboxQuota")).not.toBeNull();
+    expect(screen.queryByText("commonTasks.blobGarbageCollection")).toBeNull();
+
+    fireEvent.change(filter, { target: { value: "zzz" } });
+    expect(screen.queryByText("commonTasks.noMatch")).not.toBeNull();
+    expect(groupHeadings()).toEqual([]);
+  });
+});

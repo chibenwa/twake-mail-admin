@@ -346,6 +346,7 @@ export default function UserTasks({ username }: Props) {
           {canReindex && (
             <TaskRow
               title={t("users.tasks.reindexAll")}
+              description={t("users.tasks.desc.reindexAll")}
               risk="safe"
               command={defaultCommand(reindexCommand, REINDEX_PARAMS)}
               onRun={handleReindex}
@@ -354,6 +355,7 @@ export default function UserTasks({ username }: Props) {
           {canSubscribeAll && (
             <TaskRow
               title={t("users.tasks.subscribeAll")}
+              description={t("users.tasks.desc.subscribeAll")}
               risk="safe"
               command={subscribeAllCommand(username)}
               onRun={handleSubscribeAll}
@@ -363,6 +365,7 @@ export default function UserTasks({ username }: Props) {
           {canRecomputeFastView && (
             <TaskRow
               title={t("users.tasks.fastView")}
+              description={t("users.tasks.desc.fastView")}
               risk="safe"
               command={defaultCommand(fastViewCommand, FAST_VIEW_PARAMS)}
               onRun={handleRecomputeFastView}
@@ -371,6 +374,7 @@ export default function UserTasks({ username }: Props) {
           {canRestoreDeleted && (
             <TaskRow
               title={t("users.tasks.restoreDeleted")}
+              description={t("users.tasks.desc.restoreDeleted")}
               risk="safe"
               command={restoreDeletedMessagesCommand(username, buildRestoreRequest([], undefined))}
               onRun={handleRestoreDeletedMessages}
@@ -379,6 +383,7 @@ export default function UserTasks({ username }: Props) {
           {canCleanupTrash && (
             <TaskRow
               title={t("users.tasks.cleanupTrash")}
+              description={t("users.tasks.desc.cleanupTrash")}
               risk="caution"
               command={defaultCommand(cleanupCommand("Trash"), CLEANUP_PARAMS)}
               onRun={() => handleCleanupMailbox("Trash")}
@@ -387,6 +392,7 @@ export default function UserTasks({ username }: Props) {
           {canCleanupSpam && (
             <TaskRow
               title={t("users.tasks.cleanupSpam")}
+              description={t("users.tasks.desc.cleanupSpam")}
               risk="caution"
               command={defaultCommand(cleanupCommand("Spam"), CLEANUP_PARAMS)}
               onRun={() => handleCleanupMailbox("Spam")}
@@ -395,6 +401,7 @@ export default function UserTasks({ username }: Props) {
           {canProvisionTemplates && appConfig.application === 'MAIL' && (
             <TaskRow
               title={t("users.tasks.provisionTemplates")}
+              description={t("users.tasks.desc.provisionTemplates")}
               risk="caution"
               command={provisionTemplatesCommand(username, INITIAL_PROVISION_VALUES)}
               onRun={handleProvisionTemplates}
@@ -403,6 +410,7 @@ export default function UserTasks({ username }: Props) {
           {canTierData && appConfig.application === 'MAIL' && (
             <TaskRow
               title={t("users.tasks.tierData")}
+              description={t("users.tasks.desc.tierData")}
               risk="caution"
               command={defaultCommand(tierCommand, TIER_PARAMS)}
               onRun={handleTierData}
@@ -411,6 +419,7 @@ export default function UserTasks({ username }: Props) {
           {canRename && (
             <TaskRow
               title={t("users.tasks.renameUser")}
+              description={t("users.tasks.desc.renameUser")}
               risk="caution"
               command={renameUserCommand(username, INITIAL_RENAME_VALUES)}
               onRun={handleRenameUser}
@@ -419,6 +428,7 @@ export default function UserTasks({ username }: Props) {
           {canDeleteAllMailboxes && (
             <TaskRow
               title={t("users.tasks.deleteAllMailboxes")}
+              description={t("users.tasks.desc.deleteAllMailboxes")}
               risk="destructive"
               command={deleteAllMailboxesCommand(username)}
               onRun={handleDeleteAllMailboxes}
@@ -427,6 +437,7 @@ export default function UserTasks({ username }: Props) {
           {canDeleteData && (
             <TaskRow
               title={t("users.tasks.deleteData")}
+              description={t("users.tasks.desc.deleteData")}
               risk="destructive"
               command={deleteUserDataCommand(username, "")}
               onRun={handleDeleteUserData}

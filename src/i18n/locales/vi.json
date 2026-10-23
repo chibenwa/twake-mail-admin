@@ -904,6 +904,22 @@
         "calendars": "Lịch: {{count}}",
         "addressBooks": "Sổ địa chỉ: {{count}}",
         "bookingLinks": "Liên kết đặt lịch: {{count}}"
+      },
+      "desc": {
+        "reindexAll": "Khi tìm kiếm của người dùng này bỏ sót thư. Lập chỉ mục lại các hộp thư.",
+        "subscribeAll": "Khi thư mục không hiện trong ứng dụng thư. Đăng ký người dùng vào mọi hộp thư.",
+        "fastView": "Khi bản xem trước thư của người dùng này có vẻ sai. Dựng lại chế độ xem nhanh JMAP.",
+        "restoreDeleted": "Khôi phục các thư khớp tiêu chí từ kho thư đã xóa vào thư mục Restored-Messages.",
+        "cleanupTrash": "Xóa vĩnh viễn thư cũ trong Thùng rác của người dùng này.",
+        "cleanupSpam": "Xóa vĩnh viễn thư cũ trong Spam của người dùng này.",
+        "provisionTemplates": "Sao chép thư mục mẫu của người dùng nguồn vào hộp thư của người dùng này.",
+        "tierData": "Chuyển dữ liệu đệm của thư cũ sang kho rẻ hơn; thư vẫn đọc được.",
+        "renameUser": "Chuyển toàn bộ dữ liệu của người dùng này sang một tài khoản khác đã có.",
+        "deleteAllMailboxes": "Xóa vĩnh viễn mọi hộp thư của người dùng này cùng thư bên trong.",
+        "deleteData": "Xóa vĩnh viễn hộp thư, thư và cài đặt của người dùng này; tài khoản được giữ lại.",
+        "calendarDeleteData": "Xóa vĩnh viễn lịch, sổ địa chỉ và liên kết đặt lịch của người dùng này.",
+        "archive": "Chuyển các sự kiện khớp tiêu chí của người dùng này vào lịch \"Archival\".",
+        "republishContacts": "Khi người khác thiếu liên hệ của người dùng này. Xuất bản lại chúng."
       }
     },
     "calendarTasks": {
@@ -1382,6 +1398,43 @@
       "w": "Tuần",
       "m": "Tháng",
       "y": "Năm"
+    },
+    "group": {
+      "search": "Chỉ mục tìm kiếm",
+      "consistency": "Sửa tính nhất quán",
+      "cleanup": "Dọn dẹp",
+      "server": "Máy chủ",
+      "directory": "Người dùng và liên hệ"
+    },
+    "filter": "Lọc tác vụ…",
+    "noMatch": "Không có tác vụ nào khớp với \"{{q}}\".",
+    "desc": {
+      "reindexFixOutdated": "Khi tìm kiếm bỏ sót thư gần đây. Chỉ lập chỉ mục lại tài liệu lỗi thời; tải vừa phải.",
+      "reindexRebuildAll": "Sau khi mất OpenSearch hoặc thay đổi mapping. Dựng lại toàn bộ chỉ mục; tải nặng, có thể mất hàng giờ.",
+      "perUserReindex": "Cùng việc lập chỉ mục lại toàn bộ, chia thành một tác vụ cho mỗi người dùng để lỗi chỉ ảnh hưởng một tài khoản.",
+      "populateEmailQueryView": "Sau khi bật chế độ xem truy vấn thư. Điền dữ liệu từ các thư hiện có; tải vừa phải.",
+      "reindexContacts": "Điền gợi ý người nhận của mỗi người dùng từ các thư họ đã gửi.",
+      "fixMailboxInconsistencies": "Khi hộp thư bị thiếu, trùng lặp hoặc không mở được. Phải dừng mọi dịch vụ khác trước.",
+      "fixMessageInconsistencies": "Khi thư có trong danh sách nhưng không đọc được, hoặc ngược lại. Sửa các bảng thư.",
+      "recomputeMailboxCounters": "Khi số thư chưa đọc hoặc tổng số thư có vẻ sai. Đếm lại mọi hộp thư.",
+      "recomputeMailboxQuota": "Khi mức dùng hạn mức của người dùng có vẻ sai. Đếm lại mức dùng của mọi người dùng.",
+      "fixMappingDenormalization": "Khi bí danh hoặc chuyển tiếp bị bỏ qua dù có trong danh sách. Ghi lại các bảng tra cứu ánh xạ.",
+      "repositionSystemRights": "Khi không còn quản lý được thư mục của hộp thư nhóm. Trả lại cho người dùng hệ thống toàn quyền trên mọi thư mục.",
+      "cleanupJmapUploads": "Xóa các tải lên JMAP đã hết hạn: tệp đính kèm gửi lên máy chủ nhưng chưa từng dùng trong thư.",
+      "blobGarbageCollection": "Giải phóng dung lượng do các blob không còn thư nào tham chiếu chiếm giữ. Nặng cho kho lưu trữ đối tượng.",
+      "purgeDeletedMessages": "Xóa vĩnh viễn các thư trong kho thư đã xóa đã hết thời hạn lưu giữ.",
+      "cleanupTrashAll": "Xóa vĩnh viễn các thư cũ trong Thùng rác của mọi người dùng.",
+      "cleanupSpamAll": "Xóa vĩnh viễn các thư cũ trong thư mục Spam của mọi người dùng.",
+      "cleaningUpOldTasks": "Xóa các tác vụ đã xong cũ hơn số ngày đã nhập, để danh sách luôn ngắn.",
+      "reloadCertificates": "Sau khi gia hạn chứng chỉ TLS: tải lại mà không cần khởi động lại máy chủ.",
+      "importLdapUsers": "Đăng ký trên máy chủ lịch những người dùng LDAP chưa được đăng ký.",
+      "addMissingFields": "Điền các trường còn thiếu của người dùng đã đăng ký, như tên hoặc họ.",
+      "domainMemberSync": "Cập nhật từ LDAP sổ địa chỉ \"Thành viên miền\" của mọi miền.",
+      "republishCommonContacts": "Khi người dùng khác thiếu liên hệ của miền hoặc người dùng. Xuất bản lại chúng.",
+      "calendarEventReindex": "Khi tìm kiếm lịch bỏ sót sự kiện. Dựng lại chỉ mục tìm kiếm sự kiện.",
+      "alarmRescheduling": "Khi lời nhắc sự kiện không được gửi. Lên lịch lại báo thức của mọi sự kiện.",
+      "calendarEventArchival": "Chuyển các sự kiện khớp tiêu chí vào lịch \"Archival\" của mỗi người dùng.",
+      "clearDomainMembersContacts": "Làm trống sổ địa chỉ \"Thành viên miền\" của mọi miền. Chạy đồng bộ để điền lại."
     }
   },
   "healthCheck": {

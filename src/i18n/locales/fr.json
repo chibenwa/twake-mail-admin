@@ -904,6 +904,22 @@
         "calendars": "Calendriers : {{count}}",
         "addressBooks": "Carnets d'adresses : {{count}}",
         "bookingLinks": "Liens de réservation : {{count}}"
+      },
+      "desc": {
+        "reindexAll": "Quand les recherches de cet utilisateur ne trouvent pas des mails. Réindexe ses boîtes.",
+        "subscribeAll": "Quand des dossiers n'apparaissent pas dans le client mail. Abonne l'utilisateur à toutes ses boîtes.",
+        "fastView": "Quand les aperçus des messages de cet utilisateur semblent faux. Reconstruit la vue rapide JMAP.",
+        "restoreDeleted": "Ramène les messages du coffre des messages supprimés correspondant aux critères dans un dossier Restored-Messages.",
+        "cleanupTrash": "Supprime définitivement les anciens messages de la Corbeille de cet utilisateur.",
+        "cleanupSpam": "Supprime définitivement les anciens messages du Spam de cet utilisateur.",
+        "provisionTemplates": "Copie le dossier de modèles d'un utilisateur source dans la boîte de cet utilisateur.",
+        "tierData": "Déplace les données en cache des anciens messages vers un stockage moins coûteux ; les messages restent lisibles.",
+        "renameUser": "Déplace toutes les données de cet utilisateur vers un autre compte existant.",
+        "deleteAllMailboxes": "Supprime définitivement toutes les boîtes de cet utilisateur et leurs messages.",
+        "deleteData": "Supprime définitivement les boîtes, messages et paramètres de cet utilisateur ; le compte est conservé.",
+        "calendarDeleteData": "Supprime définitivement les calendriers, carnets d'adresses et liens de réservation de cet utilisateur.",
+        "archive": "Déplace les événements de cet utilisateur correspondant aux critères dans un calendrier « Archival ».",
+        "republishContacts": "Quand les contacts de cet utilisateur manquent chez les autres. Les republie."
       }
     },
     "calendarTasks": {
@@ -1383,6 +1399,43 @@
       "w": "Semaines",
       "m": "Mois",
       "y": "Années"
+    },
+    "group": {
+      "search": "Index de recherche",
+      "consistency": "Réparation de cohérence",
+      "cleanup": "Nettoyage",
+      "server": "Serveur",
+      "directory": "Utilisateurs et contacts"
+    },
+    "filter": "Filtrer les tâches…",
+    "noMatch": "Aucune tâche ne correspond à « {{q}} ».",
+    "desc": {
+      "reindexFixOutdated": "Quand les recherches ne trouvent pas des mails récents. Réindexe seulement les documents obsolètes ; charge modérée.",
+      "reindexRebuildAll": "Après une perte d'OpenSearch ou un changement de mapping. Reconstruit tout l'index ; charge lourde, peut durer des heures.",
+      "perUserReindex": "La même réindexation complète, découpée en une tâche par utilisateur : un échec reste limité à un compte.",
+      "populateEmailQueryView": "Après l'activation de la vue de requête des mails. La remplit à partir des messages existants ; charge modérée.",
+      "reindexContacts": "Alimente l'autocomplétion des destinataires de chaque utilisateur à partir des mails envoyés.",
+      "fixMailboxInconsistencies": "Quand des boîtes manquent, sont en double ou ne s'ouvrent pas. Tous les autres services doivent être arrêtés avant.",
+      "fixMessageInconsistencies": "Quand un message est listé mais illisible, ou l'inverse. Répare les tables des messages.",
+      "recomputeMailboxCounters": "Quand les compteurs de non-lus ou de messages des boîtes semblent faux. Recompte chaque boîte.",
+      "recomputeMailboxQuota": "Quand l'occupation du quota d'un utilisateur semble fausse. Recompte l'occupation de chaque utilisateur.",
+      "fixMappingDenormalization": "Quand un alias ou un transfert est ignoré bien qu'il soit listé. Réécrit les tables de recherche des mappings.",
+      "repositionSystemRights": "Quand les dossiers des boîtes partagées ne sont plus gérables. Rend aux utilisateurs système tous leurs droits sur chaque dossier.",
+      "cleanupJmapUploads": "Supprime les envois JMAP expirés : pièces jointes envoyées au serveur mais jamais utilisées dans un mail.",
+      "blobGarbageCollection": "Libère le stockage occupé par des blobs qu'aucun message ne référence plus. Lourd pour le stockage objet.",
+      "purgeDeletedMessages": "Supprime définitivement les messages du coffre des messages supprimés dont la durée de conservation est dépassée.",
+      "cleanupTrashAll": "Supprime définitivement les anciens messages de la Corbeille de chaque utilisateur.",
+      "cleanupSpamAll": "Supprime définitivement les anciens messages du dossier Spam de chaque utilisateur.",
+      "cleaningUpOldTasks": "Oublie les tâches terminées plus anciennes que le nombre de jours indiqué, pour garder une liste courte.",
+      "reloadCertificates": "Après le renouvellement des certificats TLS : les recharge sans redémarrer le serveur.",
+      "importLdapUsers": "Enregistre sur le serveur calendrier les utilisateurs LDAP qui ne le sont pas encore.",
+      "addMissingFields": "Complète les champs manquants des utilisateurs enregistrés, comme leur prénom ou leur nom.",
+      "domainMemberSync": "Met à jour depuis LDAP le carnet « Membres du domaine » de chaque domaine.",
+      "republishCommonContacts": "Quand des contacts de domaine ou d'utilisateur manquent chez les autres utilisateurs. Les republie.",
+      "calendarEventReindex": "Quand des événements manquent dans les recherches. Reconstruit l'index de recherche des événements.",
+      "alarmRescheduling": "Quand les rappels d'événements ne partent pas. Reprogramme les alarmes de chaque événement.",
+      "calendarEventArchival": "Déplace les événements correspondant aux critères dans un calendrier « Archival » de chaque utilisateur.",
+      "clearDomainMembersContacts": "Vide le carnet « Membres du domaine » de chaque domaine. Lancez une synchronisation pour le remplir à nouveau."
     }
   },
   "healthCheck": {
