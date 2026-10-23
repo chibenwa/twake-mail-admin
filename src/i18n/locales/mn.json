@@ -243,6 +243,7 @@
     "folders": {
       "title": "Хавтаснууд",
       "createTooltip": "Хавтас үүсгэх",
+      "nameLabel": "Хавтасны нэр",
       "namePlaceholder": "Шинэ хавтасны нэр (үүрлэхдээ . ашиглана, жнь INBOX.work)",
       "errorCreating": "Хавтас үүсгэхэд алдаа гарлаа",
       "created": "Хавтас амжилттай үүслээ",

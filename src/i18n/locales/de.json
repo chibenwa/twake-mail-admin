@@ -243,6 +243,7 @@
     "folders": {
       "title": "Ordner",
       "createTooltip": "Ordner erstellen",
+      "nameLabel": "Ordnername",
       "namePlaceholder": "Neuer Ordnername (. für Unterordner, z. B. INBOX.work)",
       "errorCreating": "Fehler beim Erstellen des Ordners",
       "created": "Ordner erfolgreich erstellt",

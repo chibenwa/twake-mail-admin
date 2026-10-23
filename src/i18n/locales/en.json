@@ -243,6 +243,7 @@
     "folders": {
       "title": "Folders",
       "createTooltip": "Create folder",
+      "nameLabel": "Folder name",
       "namePlaceholder": "New folder name (use . for nesting, e.g. INBOX.work)",
       "errorCreating": "Error creating folder",
       "created": "Folder created successfully",

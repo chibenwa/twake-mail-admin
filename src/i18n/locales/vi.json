@@ -242,6 +242,7 @@
     "folders": {
       "title": "Thư mục",
       "createTooltip": "Tạo thư mục",
+      "nameLabel": "Tên thư mục",
       "namePlaceholder": "Tên thư mục mới (dùng . để lồng cấp, vd INBOX.work)",
       "errorCreating": "Lỗi khi tạo thư mục",
       "created": "Đã tạo thư mục thành công",

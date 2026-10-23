@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
 const api = vi.hoisted(() => ({
@@ -38,5 +38,24 @@ describe("team mailbox folders", () => {
 
     const listed = screen.getAllByTestId("counts").map((counts) => counts.textContent);
     expect(listed).toEqual(["INBOX", "Sent"]);
+  });
+
+  it("opens the section and creates the folder named in the modal of the + button", async () => {
+    api.getTeamMailboxFolders.mockResolvedValue([{ mailboxName: "INBOX", mailboxId: "2" }]);
+    api.createTeamMailboxFolder.mockResolvedValue(undefined);
+    render(
+      <MemoryRouter>
+        <TeamMailboxFolders domain="example.com" mailbox="sales" />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByTitle("domains.folders.createTooltip"));
+    const dialog = screen.getByRole("dialog");
+    fireEvent.change(within(dialog).getByLabelText("domains.folders.nameLabel"), { target: { value: "INBOX.work" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "common.create" }));
+
+    expect(await screen.findByTestId("counts")).not.toBeNull();
+    await waitFor(() => expect(api.createTeamMailboxFolder).toHaveBeenCalledWith("example.com", "sales", "INBOX.work"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   });
 });

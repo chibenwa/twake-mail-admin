@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -12,6 +12,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import TeamMailboxFolderCounts from "./team-mailbox-folder-counts";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -38,7 +39,8 @@ export default function TeamMailboxFolders({ domain, mailbox }: Props) {
   const [open, setOpen, openContentId] = useSectionOpen("folders");
   const [page, setPage] = useState(1);
   const [newFolder, setNewFolder] = useState("");
-  const [showCreateInput, setShowCreateInput] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+  const fieldId = useId();
 
   // WebAdmin lists the team mailbox root under its bare name, but folder routes are relative to that root
   const sorted = useMemo(() => {
@@ -58,21 +60,13 @@ export default function TeamMailboxFolders({ domain, mailbox }: Props) {
     setPage(newPage);
   };
 
+  // A refusal is shown in the modal, which then stays open with the typed name
   const handleCreate = async () => {
     const name = newFolder.trim();
-    if (!name) return;
-    try {
-      await createTeamMailboxFolder(domain, mailbox, name);
-      toast({ title: t("domains.folders.created") });
-      setNewFolder("");
-      setShowCreateInput(false);
-      await refresh();
-    } catch (err) {
-      toast({
-        title: t("domains.folders.errorCreating"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    }
+    await createTeamMailboxFolder(domain, mailbox, name);
+    toast({ title: t("domains.folders.created") });
+    setNewFolder("");
+    await refresh();
   };
 
   const handleDelete = async (folderName: string) => {
@@ -108,7 +102,7 @@ export default function TeamMailboxFolders({ domain, mailbox }: Props) {
         </SectionToggle>
         {canCreate && (
           <button
-            onClick={() => { if (!open) { setOpen(true); setShowCreateInput(true); } else setShowCreateInput(!showCreateInput); }}
+            onClick={() => { setOpen(true); setShowCreate(true); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("domains.folders.createTooltip")}
           >
@@ -119,27 +113,6 @@ export default function TeamMailboxFolders({ domain, mailbox }: Props) {
 
       {open && (
         <div id={openContentId} className="mt-2">
-          {showCreateInput && (
-            <div className="flex gap-2 mt-2 mb-2">
-              <input
-                autoFocus
-                type="text"
-                value={newFolder}
-                onChange={(e) => setNewFolder(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-                placeholder={t("domains.folders.namePlaceholder")}
-                className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                onClick={handleCreate}
-                disabled={!newFolder.trim()}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {t("common.create")}
-              </button>
-            </div>
-          )}
-
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -204,6 +177,28 @@ export default function TeamMailboxFolders({ domain, mailbox }: Props) {
           )}
         </div>
       )}
+
+      <FormDialog
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+        title={t("domains.folders.createTooltip")}
+        submitLabel={t("common.create")}
+        submitDisabled={!newFolder.trim()}
+        onSubmit={handleCreate}
+      >
+        <div>
+          <label htmlFor={fieldId} className="text-sm font-medium">{t("domains.folders.nameLabel")}</label>
+          <input
+            id={fieldId}
+            type="text"
+            autoFocus
+            value={newFolder}
+            onChange={(e) => setNewFolder(e.target.value)}
+            placeholder={t("domains.folders.namePlaceholder")}
+            className={FIELD_CLASS}
+          />
+        </div>
+      </FormDialog>
     </div>
   );
 }

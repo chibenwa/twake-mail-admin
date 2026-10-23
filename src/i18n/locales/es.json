@@ -243,6 +243,7 @@
     "folders": {
       "title": "Carpetas",
       "createTooltip": "Crear carpeta",
+      "nameLabel": "Nombre de la carpeta",
       "namePlaceholder": "Nombre de la nueva carpeta (use . para anidar, p. ej. INBOX.work)",
       "errorCreating": "Error al crear la carpeta",
       "created": "Carpeta creada correctamente",

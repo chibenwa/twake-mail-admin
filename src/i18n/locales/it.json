@@ -243,6 +243,7 @@
     "folders": {
       "title": "Cartelle",
       "createTooltip": "Crea cartella",
+      "nameLabel": "Nome della cartella",
       "namePlaceholder": "Nome della nuova cartella (usa . per annidare, ad es. INBOX.work)",
       "errorCreating": "Errore durante la creazione della cartella",
       "created": "Cartella creata correttamente",

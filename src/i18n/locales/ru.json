@@ -245,6 +245,7 @@
     "folders": {
       "title": "Папки",
       "createTooltip": "Создать папку",
+      "nameLabel": "Имя папки",
       "namePlaceholder": "Имя новой папки (используйте . для вложенности, напр. INBOX.work)",
       "errorCreating": "Ошибка при создании папки",
       "created": "Папка успешно создана",

@@ -243,6 +243,7 @@
     "folders": {
       "title": "Dossiers",
       "createTooltip": "Créer un dossier",
+      "nameLabel": "Nom du dossier",
       "namePlaceholder": "Nom du dossier (utiliser . pour l'imbrication, ex. INBOX.travail)",
       "errorCreating": "Erreur lors de la création du dossier",
       "created": "Dossier créé avec succès",
