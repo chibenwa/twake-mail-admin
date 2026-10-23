@@ -129,7 +129,6 @@
     "errorCreating": "Errore durante la creazione del dominio",
     "created": "Dominio «{{name}}» creato",
     "createConfirmTitle": "Crea dominio",
-    "createConfirm": "Creare «{{name}}»? Assicurati che sia il dominio che vuoi creare.",
     "deleteDomain": "Elimina dominio",
     "deleteConfirm": "Eliminare «{{domain}}»? Il dominio potrà essere ricreato in seguito e i dati utente esistenti non saranno interessati.",
     "deleted": "Dominio «{{domain}}» eliminato",
@@ -142,7 +141,9 @@
       "counters": "Creati: {{created}}, Già esistenti: {{alreadyExisting}}, Errori: {{errors}}",
       "moreDetails": "Più dettagli",
       "failuresTitle": "Domini che non è stato possibile creare ({{count}})",
-      "error": "Errore durante l'importazione dei domini"
+      "error": "Errore durante l'importazione dei domini",
+      "title": "Importa domini",
+      "chooseFile": "Scegli un file…"
     },
     "aliases": {
       "title": "Alias di dominio",
@@ -543,7 +544,10 @@
     },
     "subtitleMail": "Gestisci i domini registrati sul server di posta.",
     "subtitleCalendar": "Gestisci i domini registrati sul server del calendario.",
-    "detailKind": "Dominio"
+    "detailKind": "Dominio",
+    "createButton": "Crea un dominio",
+    "domainName": "Nome del dominio",
+    "createHint": "Verifica che sia il dominio voluto: i suoi utenti riceveranno la posta con questo nome."
   },
   "users": {
     "searchPlaceholder": "Cerca utenti per inizio del nome...",

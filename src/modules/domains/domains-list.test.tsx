@@ -58,26 +58,24 @@ describe("domains list: search", () => {
   });
 });
 
-describe("domains list: create with Enter", () => {
-  it("asks for confirmation and prevents the default action of the key press", async () => {
+describe("domains list: one toolbar line", () => {
+  it("puts the search, Create a domain and Import on the same line", async () => {
     await renderList();
-    const input = screen.getByPlaceholderText("domains.newDomainPlaceholder");
-    fireEvent.change(input, { target: { value: "qa-create.org" } });
-
-    const notCancelled = fireEvent.keyDown(input, { key: "Enter" });
-
-    expect(notCancelled).toBe(false);
-    expect(confirm).toHaveBeenCalledTimes(1);
+    const searchField = screen.getByPlaceholderText("domains.searchPlaceholder");
+    const toolbar = searchField.parentElement!;
+    expect(toolbar.contains(screen.getByRole("button", { name: "domains.createButton" }))).toBe(true);
+    expect(toolbar.contains(screen.getByRole("button", { name: "domains.import.button" }))).toBe(true);
   });
 
-  it("leaves other keys untouched", async () => {
+  it("creates a domain from its modal, Enter included", async () => {
+    const { createDomain } = await import("./api-client");
     await renderList();
-    const input = screen.getByPlaceholderText("domains.newDomainPlaceholder");
-    fireEvent.change(input, { target: { value: "qa-create.org" } });
+    fireEvent.click(screen.getByRole("button", { name: "domains.createButton" }));
+    const field = screen.getByLabelText("domains.domainName");
+    fireEvent.change(field, { target: { value: "qa-create.org" } });
 
-    const notCancelled = fireEvent.keyDown(input, { key: "a" });
+    fireEvent.submit(field.closest("form")!);
 
-    expect(notCancelled).toBe(true);
-    expect(confirm).not.toHaveBeenCalled();
+    await vi.waitFor(() => expect(createDomain).toHaveBeenCalledWith("qa-create.org"));
   });
 });

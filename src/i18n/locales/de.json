@@ -129,7 +129,6 @@
     "errorCreating": "Fehler beim Erstellen der Domain",
     "created": "Domain „{{name}}“ erstellt",
     "createConfirmTitle": "Domain erstellen",
-    "createConfirm": "„{{name}}“ erstellen? Bitte vergewissern Sie sich, dass dies die Domain ist, die Sie erstellen möchten.",
     "deleteDomain": "Domain löschen",
     "deleteConfirm": "„{{domain}}“ löschen? Die Domain kann danach neu erstellt werden, vorhandene Benutzerdaten sind nicht betroffen.",
     "deleted": "Domain „{{domain}}“ gelöscht",
@@ -142,7 +141,9 @@
       "counters": "Erstellt: {{created}}, Bereits vorhanden: {{alreadyExisting}}, Fehler: {{errors}}",
       "moreDetails": "Weitere Details",
       "failuresTitle": "Domains, die nicht erstellt werden konnten ({{count}})",
-      "error": "Fehler beim Importieren der Domains"
+      "error": "Fehler beim Importieren der Domains",
+      "title": "Domänen importieren",
+      "chooseFile": "Datei auswählen…"
     },
     "aliases": {
       "title": "Domain-Aliasse",
@@ -543,7 +544,10 @@
     },
     "subtitleMail": "Auf dem Mailserver registrierte Domains verwalten.",
     "subtitleCalendar": "Auf dem Kalenderserver registrierte Domains verwalten.",
-    "detailKind": "Domäne"
+    "detailKind": "Domäne",
+    "createButton": "Domäne erstellen",
+    "domainName": "Domänenname",
+    "createHint": "Prüfen Sie, dass dies die gewünschte Domäne ist: Ihre Benutzer erhalten ihre Mails unter diesem Namen."
   },
   "users": {
     "searchPlaceholder": "Benutzer nach Namensanfang suchen...",

@@ -1,10 +1,10 @@
 import { useRef, useState, type ChangeEvent } from "react";
-import { CircleHelp, Loader2, Upload } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { toast } from "@/hooks/use-toast";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { createDomain, getDomains } from "./api-client";
 import { importDomains, parseDomainList, type ImportFailure, type ImportProgress } from "./domain-import";
 
@@ -18,7 +18,7 @@ export default function ImportDomainsButton({ onImported }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [importing, setImporting] = useState(false);
   const [shownFailures, setShownFailures] = useState<ImportFailure[] | null>(null);
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const describe = (progress: ImportProgress) => (
     <div className="space-y-2">
@@ -68,42 +68,34 @@ export default function ImportDomainsButton({ onImported }: Props) {
     }
   };
 
+  const chooseFile = () => {
+    setOpen(false);
+    inputRef.current?.click();
+  };
+
   return (
     <>
       <input type="file" accept=".txt,text/plain" ref={inputRef} onChange={handleFile} className="hidden" />
-      <button
-        onClick={() => inputRef.current?.click()}
-        disabled={importing}
-        className="px-4 py-2 border rounded-md hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-        title={t("domains.import.button")}
-      >
-        {importing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+      <Button variant="outline" onClick={() => setOpen(true)} disabled={importing}>
+        {importing ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Upload className="w-4 h-4" aria-hidden="true" />}
         {t("domains.import.button")}
-      </button>
-      <TooltipProvider>
-        <Tooltip delayDuration={0} open={helpOpen} onOpenChange={setHelpOpen}>
-          {/* A button so that keyboard users can reach the help, which opens on focus. Radix closes the tooltip
-              on click: open it instead, so that it can be tapped on touch screens. */}
-          <TooltipTrigger
-            asChild
-            onClick={(event) => {
-              event.preventDefault();
-              setHelpOpen(true);
-            }}
-          >
-            <button
-              type="button"
-              className="self-center text-gray-500 cursor-help rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              aria-label={t("domains.import.help")}
-            >
-              <CircleHelp className="w-4 h-4" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent className="max-w-xs whitespace-pre-line">
-            {t("domains.import.help")}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      </Button>
+      {/* The expected format, in plain sight before picking the file */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-md" aria-describedby={undefined}>
+          <DialogHeader>
+            <DialogTitle>{t("domains.import.title")}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm whitespace-pre-line">{t("domains.import.help")}</p>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="outline" onClick={() => setOpen(false)}>{t("common.cancel")}</Button>
+            <Button onClick={chooseFile}>
+              <Upload className="w-4 h-4" aria-hidden="true" />
+              {t("domains.import.chooseFile")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       <Dialog open={shownFailures !== null} onOpenChange={(open) => { if (!open) setShownFailures(null); }}>
         <DialogContent className="max-w-lg">
           <DialogHeader>

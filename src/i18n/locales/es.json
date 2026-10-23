@@ -129,7 +129,6 @@
     "errorCreating": "Error al crear el dominio",
     "created": "Dominio «{{name}}» creado",
     "createConfirmTitle": "Crear dominio",
-    "createConfirm": "¿Crear «{{name}}»? Asegúrese de que es el dominio que desea crear.",
     "deleteDomain": "Eliminar dominio",
     "deleteConfirm": "¿Eliminar «{{domain}}»? El dominio podrá volver a crearse después y los datos de usuario existentes no se verán afectados.",
     "deleted": "Dominio «{{domain}}» eliminado",
@@ -142,7 +141,9 @@
       "counters": "Creados: {{created}}, Ya existentes: {{alreadyExisting}}, Errores: {{errors}}",
       "moreDetails": "Más detalles",
       "failuresTitle": "Dominios que no se pudieron crear ({{count}})",
-      "error": "Error al importar los dominios"
+      "error": "Error al importar los dominios",
+      "title": "Importar dominios",
+      "chooseFile": "Elegir un archivo…"
     },
     "aliases": {
       "title": "Alias de dominio",
@@ -543,7 +544,10 @@
     },
     "subtitleMail": "Gestione los dominios registrados en el servidor de correo.",
     "subtitleCalendar": "Gestione los dominios registrados en el servidor de calendario.",
-    "detailKind": "Dominio"
+    "detailKind": "Dominio",
+    "createButton": "Crear un dominio",
+    "domainName": "Nombre del dominio",
+    "createHint": "Compruebe que es el dominio deseado: sus usuarios recibirán el correo con este nombre."
   },
   "users": {
     "searchPlaceholder": "Buscar usuarios por inicio del nombre...",

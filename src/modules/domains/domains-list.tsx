@@ -5,12 +5,13 @@ import { useTranslation } from "react-i18next";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useToast } from "@/hooks/use-toast";
-import { getDomains, createDomain, deleteDomain } from "./api-client";
+import { getDomains, deleteDomain } from "./api-client";
 import { GetDomainsResponseType } from "./types";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import ImportDomainsButton from "./import-domains-button";
+import CreateDomainButton from "./create-domain-button";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -30,28 +31,6 @@ export default function DomainsList() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [newDomain, setNewDomain] = useState("");
-
-  const handleCreate = async () => {
-    const name = newDomain.trim();
-    if (!name) return;
-    const confirmed = await confirm({
-      header: t("domains.createConfirmTitle"),
-      message: t("domains.createConfirm", { name }),
-    });
-    if (!confirmed) return;
-    try {
-      await createDomain(name);
-      toast({ title: t("domains.created", { name }) });
-      setNewDomain("");
-      refresh();
-    } catch (err) {
-      toast({
-        title: t("domains.errorCreating"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    }
-  };
 
   const handleDelete = async (domain: string) => {
     const confirmed = await confirm({
@@ -91,32 +70,19 @@ export default function DomainsList() {
 
   return (
     <div>
-      {canCreate && (
-        <div className="flex flex-wrap gap-2 mt-4">
-          <input
-            type="text"
-            value={newDomain}
-            onChange={(e) => setNewDomain(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key !== "Enter") return;
-              // The confirmation dialog takes the focus synchronously: without this, the
-              // keypress of the same Enter would activate its Cancel button.
-              e.preventDefault();
-              handleCreate();
-            }}
-            placeholder={t("domains.newDomainPlaceholder")}
-            className="flex-1 min-w-48 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            onClick={handleCreate}
-            disabled={!newDomain.trim()}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t("common.create")}
-          </button>
-          <ImportDomainsButton onImported={refresh} />
-        </div>
-      )}
+      {/* One line: the search, then what can be done to the list */}
+      <div className="flex flex-wrap items-center gap-2 mt-4">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          placeholder={t("domains.searchPlaceholder")}
+          aria-label={t("domains.searchPlaceholder")}
+          className="flex-1 min-w-48 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+        />
+        {canCreate && <CreateDomainButton onCreated={refresh} />}
+        {canCreate && <ImportDomainsButton onImported={refresh} />}
+      </div>
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
           <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -125,13 +91,6 @@ export default function DomainsList() {
         </div>
       )}
       {error && <p className="text-red-500 mt-4">{t("common.errorPrefix", { message: error })}</p>}
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-        placeholder={t("domains.searchPlaceholder")}
-        className="mt-4 w-full px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-      />
 
       {filtered.length > 0 && (
         <PaginationControls

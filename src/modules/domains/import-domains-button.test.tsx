@@ -7,41 +7,17 @@ vi.mock("./api-client", () => ({ createDomain: vi.fn(), getDomains: vi.fn() }));
 
 import ImportDomainsButton from "./import-domains-button";
 
-function helpButton() {
-  render(<ImportDomainsButton onImported={() => {}} />);
-  return screen.getByRole("button", { name: "domains.import.help" });
-}
-
 afterEach(cleanup);
 
-describe("import domains help", () => {
-  it("is a focusable button", () => {
-    const help = helpButton();
+describe("import domains", () => {
+  it("opens a modal showing the expected file format before picking the file", () => {
+    render(<ImportDomainsButton onImported={() => {}} />);
+    expect(screen.queryByText("domains.import.help")).toBeNull();
 
-    expect(help.tagName).toBe("BUTTON");
-    expect(help.getAttribute("type")).toBe("button");
-    expect(help.tabIndex).toBe(0);
-  });
+    fireEvent.click(screen.getByRole("button", { name: "domains.import.button" }));
 
-  it("shows the file format when focused with the keyboard", () => {
-    const help = helpButton();
-
-    fireEvent.focus(help);
-
-    expect(screen.getAllByText("domains.import.help").length).toBeGreaterThan(0);
-  });
-
-  it("shows the file format when tapped", () => {
-    const help = helpButton();
-
-    fireEvent.click(help);
-
-    expect(screen.getAllByText("domains.import.help").length).toBeGreaterThan(0);
-  });
-
-  it("does not show the file format until asked", () => {
-    helpButton();
-
-    expect(screen.queryAllByText("domains.import.help")).toHaveLength(0);
+    expect(screen.getByText("domains.import.title")).toBeTruthy();
+    expect(screen.getByText("domains.import.help")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "domains.import.chooseFile" })).toBeTruthy();
   });
 });
