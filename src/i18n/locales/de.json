@@ -196,6 +196,7 @@
     },
     "teamMailboxes": {
       "title": "Team-Postfächer",
+      "nameLabel": "Name",
       "namePlaceholder": "Postfachname",
       "created": "Team-Postfach erstellt",
       "errorCreating": "Fehler beim Erstellen des Team-Postfachs",

@@ -196,6 +196,7 @@
     },
     "teamMailboxes": {
       "title": "Team Mailboxes",
+      "nameLabel": "Name",
       "namePlaceholder": "mailbox name",
       "created": "Team mailbox created",
       "errorCreating": "Error creating team mailbox",

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
 const mocks = vi.hoisted(() => ({
@@ -44,15 +44,23 @@ describe("domain team mailboxes: row heading", () => {
 });
 
 describe("domain team mailboxes: add", () => {
-  it("focuses the name field revealed by the + button", async () => {
+  it("opens the section and creates the team mailbox named in the modal of the + button", async () => {
+    mocks.api.createTeamMailbox.mockResolvedValue(undefined);
     render(
       <MemoryRouter>
-        <DomainTeamMailboxes domain="example.com" defaultOpen />
+        <DomainTeamMailboxes domain="example.com" />
       </MemoryRouter>
     );
 
-    fireEvent.click(await screen.findByTitle("domains.teamMailboxes.addTooltip"));
+    fireEvent.click(screen.getByTitle("domains.teamMailboxes.addTooltip"));
+    const dialog = screen.getByRole("dialog");
+    const name = within(dialog).getByLabelText("domains.teamMailboxes.nameLabel");
+    expect(document.activeElement).toBe(name);
+    fireEvent.change(name, { target: { value: "support" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "common.add" }));
 
-    expect(document.activeElement).toBe(screen.getByPlaceholderText("domains.teamMailboxes.namePlaceholder"));
+    expect(await screen.findByRole("heading", { level: 4 })).not.toBeNull();
+    await waitFor(() => expect(mocks.api.createTeamMailbox).toHaveBeenCalledWith("example.com", "support"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   });
 });

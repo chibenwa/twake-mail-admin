@@ -195,6 +195,7 @@
     },
     "teamMailboxes": {
       "title": "Hộp thư nhóm",
+      "nameLabel": "Tên",
       "namePlaceholder": "tên hộp thư",
       "created": "Đã tạo hộp thư nhóm",
       "errorCreating": "Lỗi khi tạo hộp thư nhóm",

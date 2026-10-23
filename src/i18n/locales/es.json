@@ -196,6 +196,7 @@
     },
     "teamMailboxes": {
       "title": "Buzones compartidos",
+      "nameLabel": "Nombre",
       "namePlaceholder": "nombre del buzón",
       "created": "Buzón compartido creado",
       "errorCreating": "Error al crear el buzón compartido",

@@ -196,6 +196,7 @@
     },
     "teamMailboxes": {
       "title": "Caselle condivise",
+      "nameLabel": "Nome",
       "namePlaceholder": "nome della casella",
       "created": "Casella condivisa creata",
       "errorCreating": "Errore durante la creazione della casella condivisa",

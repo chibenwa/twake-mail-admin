@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -12,6 +12,7 @@ import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useSearchPagination } from "@/hooks/use-search-pagination";
 import { ListSearchPagination } from "@/components/custom/list-search-pagination";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 
 const searchable = (mb: TeamMailbox) => [mb.name, mb.emailAddress];
 
@@ -38,7 +39,8 @@ export default function DomainTeamMailboxes({ domain, defaultOpen }: Props) {
 
   const [open, setOpen, openContentId] = useSectionOpen("team-mailboxes", defaultOpen ?? false);
   const [newName, setNewName] = useState("");
-  const [showCreateInput, setShowCreateInput] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+  const fieldId = useId();
 
   const sorted = useMemo(() => {
     if (!mailboxes) return [];
@@ -48,21 +50,13 @@ export default function DomainTeamMailboxes({ domain, defaultOpen }: Props) {
 
   if (!canView) return null;
 
+  // A refusal is shown in the modal, which then stays open with the typed name
   const handleAdd = async () => {
     const name = newName.trim();
-    if (!name) return;
-    try {
-      await createTeamMailbox(domain, name);
-      toast({ title: t("domains.teamMailboxes.created") });
-      setNewName("");
-      setShowCreateInput(false);
-      await refresh();
-    } catch (err) {
-      toast({
-        title: t("domains.teamMailboxes.errorCreating"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    }
+    await createTeamMailbox(domain, name);
+    toast({ title: t("domains.teamMailboxes.created") });
+    setNewName("");
+    await refresh();
   };
 
   const handleRemove = async (name: string) => {
@@ -98,7 +92,7 @@ export default function DomainTeamMailboxes({ domain, defaultOpen }: Props) {
         </SectionToggle>
         {canCreate && (
           <button
-            onClick={() => { if (!open) { setOpen(true); setShowCreateInput(true); } else setShowCreateInput(!showCreateInput); }}
+            onClick={() => { setOpen(true); setShowCreate(true); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("domains.teamMailboxes.addTooltip")}
           >
@@ -109,27 +103,6 @@ export default function DomainTeamMailboxes({ domain, defaultOpen }: Props) {
 
       {open && (
         <div id={openContentId} className="mt-2">
-          {showCreateInput && (
-            <div className="flex gap-2 mt-2 mb-2">
-              <input
-                autoFocus
-                type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-                placeholder={t("domains.teamMailboxes.namePlaceholder")}
-                className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                onClick={handleAdd}
-                disabled={!newName.trim()}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {t("common.add")}
-              </button>
-            </div>
-          )}
-
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -186,6 +159,28 @@ export default function DomainTeamMailboxes({ domain, defaultOpen }: Props) {
           )}
         </div>
       )}
+
+      <FormDialog
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+        title={t("domains.teamMailboxes.addTooltip")}
+        submitLabel={t("common.add")}
+        submitDisabled={!newName.trim()}
+        onSubmit={handleAdd}
+      >
+        <div>
+          <label htmlFor={fieldId} className="text-sm font-medium">{t("domains.teamMailboxes.nameLabel")}</label>
+          <input
+            id={fieldId}
+            type="text"
+            autoFocus
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder={t("domains.teamMailboxes.namePlaceholder")}
+            className={FIELD_CLASS}
+          />
+        </div>
+      </FormDialog>
     </div>
   );
 }

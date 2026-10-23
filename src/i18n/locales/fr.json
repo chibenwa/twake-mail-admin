@@ -196,6 +196,7 @@
     },
     "teamMailboxes": {
       "title": "Boîtes partagées",
+      "nameLabel": "Nom",
       "namePlaceholder": "nom de la boîte",
       "created": "Boîte partagée créée",
       "errorCreating": "Erreur lors de la création de la boîte partagée",
