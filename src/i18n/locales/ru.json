@@ -222,6 +222,8 @@
       "memberRemoved": "Участник удалён",
       "errorRemovingMember": "Ошибка при удалении участника",
       "noMembers": "Участников нет.",
+      "addMember": "Добавить участника",
+      "user": "Пользователь",
       "removeMemberTooltip": "Удалить участника",
       "role": "Роль",
       "detailKind": "Командный ящик"

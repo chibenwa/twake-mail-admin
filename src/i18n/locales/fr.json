@@ -220,6 +220,8 @@
       "memberRemoved": "Membre retiré",
       "errorRemovingMember": "Erreur lors du retrait du membre",
       "noMembers": "Aucun membre.",
+      "addMember": "Ajouter un membre",
+      "user": "Utilisateur",
       "removeMemberTooltip": "Retirer le membre",
       "role": "Rôle",
       "detailKind": "Boîte partagée"

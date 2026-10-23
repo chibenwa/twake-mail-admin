@@ -220,6 +220,8 @@
       "memberRemoved": "Member removed",
       "errorRemovingMember": "Error removing member",
       "noMembers": "No members.",
+      "addMember": "Add member",
+      "user": "User",
       "removeMemberTooltip": "Remove member",
       "role": "Role",
       "detailKind": "Team mailbox"

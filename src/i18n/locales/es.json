@@ -220,6 +220,8 @@
       "memberRemoved": "Miembro quitado",
       "errorRemovingMember": "Error al quitar el miembro",
       "noMembers": "No hay miembros.",
+      "addMember": "Añadir miembro",
+      "user": "Usuario",
       "removeMemberTooltip": "Quitar miembro",
       "role": "Rol",
       "detailKind": "Buzón de equipo"

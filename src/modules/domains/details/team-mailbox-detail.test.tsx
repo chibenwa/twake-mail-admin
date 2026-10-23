@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import type { UserExistsStatus } from "@/hooks/use-check-user-exists";
 
 const mocks = vi.hoisted(() => ({
@@ -39,13 +39,16 @@ vi.mock("@/modules/users/details/user-deleted-message-vault", () => ({ default: 
 
 import TeamMailboxDetail from "./team-mailbox-detail";
 
-const input = () => screen.getByPlaceholderText("user@domain.tld");
-const roleSelect = () => screen.getByLabelText("domains.teamMailbox.role") as HTMLSelectElement;
-const addButton = () => screen.getByText("common.add") as HTMLButtonElement;
+const dialog = () => screen.getByRole("dialog");
+const input = () => within(dialog()).getByLabelText("domains.teamMailbox.user") as HTMLInputElement;
+const roleSelect = () => within(dialog()).getByLabelText("domains.teamMailbox.role") as HTMLSelectElement;
+const addButton = () => within(dialog()).getByRole("button", { name: "common.add" }) as HTMLButtonElement;
 
+// The + next to the section title opens the modal holding the add form
 const typeMember = (user: string, status: UserExistsStatus) => {
   mocks.userStatus.mockReturnValue(status);
   render(<TeamMailboxDetail />);
+  fireEvent.click(screen.getByTitle("domains.teamMailbox.addMember"));
   fireEvent.change(input(), { target: { value: user } });
 };
 
@@ -58,7 +61,7 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("team mailbox members: add a member", () => {
-  it("adds an existing user without confirmation", async () => {
+  it("adds an existing user typed in the modal of the + button, without confirmation", async () => {
     typeMember("alice@example.com", "exists");
     fireEvent.click(addButton());
 
@@ -66,13 +69,24 @@ describe("team mailbox members: add a member", () => {
       expect(mocks.api.addTeamMailboxMember).toHaveBeenCalledWith("example.com", "sales", "alice@example.com", "member")
     );
     expect(mocks.confirm).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("keeps the modal open with the typed user when the addition is refused", async () => {
+    mocks.api.addTeamMailboxMember.mockRejectedValue(new Error("Not allowed"));
+    typeMember("alice@example.com", "exists");
+    fireEvent.click(addButton());
+
+    expect(await within(dialog()).findByText("Not allowed")).not.toBeNull();
+    expect(input().value).toBe("alice@example.com");
+    expect(mocks.toast).not.toHaveBeenCalled();
   });
 
   it.each<UserExistsStatus>(["invalid", "checking"])("disables Add while the user is %s", (status) => {
     typeMember("a@b@c", status);
 
     expect(addButton().disabled).toBe(true);
-    fireEvent.keyDown(input(), { key: "Enter" });
+    fireEvent.submit(input());
     expect(mocks.api.addTeamMailboxMember).not.toHaveBeenCalled();
   });
 
@@ -94,6 +108,9 @@ describe("team mailbox members: add a member", () => {
 
     await waitFor(() => expect(mocks.confirm).toHaveBeenCalled());
     expect(mocks.api.addTeamMailboxMember).not.toHaveBeenCalled();
+    // Still there, to correct the address
+    await waitFor(() => expect(addButton().disabled).toBe(false));
+    expect(input().value).toBe("ghost@example.com");
   });
 
   it("resets the role to member after an addition", async () => {
@@ -104,6 +121,8 @@ describe("team mailbox members: add a member", () => {
     await waitFor(() =>
       expect(mocks.api.addTeamMailboxMember).toHaveBeenCalledWith("example.com", "sales", "alice@example.com", "manager")
     );
-    await waitFor(() => expect(roleSelect().value).toBe("member"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    fireEvent.click(screen.getByTitle("domains.teamMailbox.addMember"));
+    expect(roleSelect().value).toBe("member");
   });
 });

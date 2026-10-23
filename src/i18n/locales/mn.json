@@ -220,6 +220,8 @@
       "memberRemoved": "Гишүүн устгагдлаа",
       "errorRemovingMember": "Гишүүн устгахад алдаа гарлаа",
       "noMembers": "Гишүүн байхгүй.",
+      "addMember": "Гишүүн нэмэх",
+      "user": "Хэрэглэгч",
       "removeMemberTooltip": "Гишүүн устгах",
       "role": "Үүрэг",
       "detailKind": "Багийн шуудангийн хайрцаг"

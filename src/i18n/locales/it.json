@@ -220,6 +220,8 @@
       "memberRemoved": "Membro rimosso",
       "errorRemovingMember": "Errore durante la rimozione del membro",
       "noMembers": "Nessun membro.",
+      "addMember": "Aggiungi membro",
+      "user": "Utente",
       "removeMemberTooltip": "Rimuovi membro",
       "role": "Ruolo",
       "detailKind": "Casella di team"

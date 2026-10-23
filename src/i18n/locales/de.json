@@ -220,6 +220,8 @@
       "memberRemoved": "Mitglied entfernt",
       "errorRemovingMember": "Fehler beim Entfernen des Mitglieds",
       "noMembers": "Keine Mitglieder.",
+      "addMember": "Mitglied hinzufügen",
+      "user": "Benutzer",
       "removeMemberTooltip": "Mitglied entfernen",
       "role": "Rolle",
       "detailKind": "Team-Postfach"

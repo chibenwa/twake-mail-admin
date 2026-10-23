@@ -219,6 +219,8 @@
       "memberRemoved": "Đã xóa thành viên",
       "errorRemovingMember": "Lỗi khi xóa thành viên",
       "noMembers": "Không có thành viên.",
+      "addMember": "Thêm thành viên",
+      "user": "Người dùng",
       "removeMemberTooltip": "Xóa thành viên",
       "role": "Vai trò",
       "detailKind": "Hộp thư nhóm"

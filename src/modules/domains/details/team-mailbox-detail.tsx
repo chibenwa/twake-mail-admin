@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useId, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router";
-import { Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -19,6 +19,7 @@ import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 import { ExpandCollapseAll, SectionsProvider } from "@/components/custom/collapsible-section";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -41,6 +42,10 @@ export default function TeamMailboxDetail() {
 
   const [membersOpen, setMembersOpen, membersOpenContentId] = useSectionOpen("members", true);
   const [page, setPage] = useState(1);
+  const [showAdd, setShowAdd] = useState(false);
+  // Declining to add an unknown user leaves the modal open, the typed address kept
+  const keepAddOpen = useRef(false);
+  const fieldId = useId();
   const [newMember, setNewMember] = useState("");
   const [role, setRole] = useState<"member" | "manager">("member");
   const memberStatus = useCheckUserExists(newMember);
@@ -65,22 +70,26 @@ export default function TeamMailboxDetail() {
       message: t("common.unknownUserConfirm", { username }),
     });
 
+  // A refusal is shown in the modal, which then stays open with the typed values
   const handleAdd = async () => {
-    if (!canSubmit) return;
     const username = newMember.trim();
-    if (memberStatus === "not_found" && !(await confirmUnknownUser(username))) return;
-    try {
-      await addTeamMailboxMember(domain!, mailbox!, username, role);
-      toast({ title: t("domains.teamMailbox.memberAdded") });
-      setNewMember("");
-      setRole("member");
-      await refresh();
-    } catch (err) {
-      toast({
-        title: t("domains.teamMailbox.errorAddingMember"),
-        description: <ErrorDisplayer error={err} />,
-      });
+    if (memberStatus === "not_found" && !(await confirmUnknownUser(username))) {
+      keepAddOpen.current = true;
+      return;
     }
+    await addTeamMailboxMember(domain!, mailbox!, username, role);
+    toast({ title: t("domains.teamMailbox.memberAdded") });
+    setNewMember("");
+    setRole("member");
+    await refresh();
+  };
+
+  const closeAdd = () => {
+    if (keepAddOpen.current) {
+      keepAddOpen.current = false;
+      return;
+    }
+    setShowAdd(false);
   };
 
   const handleRemove = async (username: string) => {
@@ -109,60 +118,22 @@ export default function TeamMailboxDetail() {
     <div className="mt-4 p-4 bg-white rounded-2">
 
       <div className="mt-6">
-        <SectionToggle open={membersOpen} onToggle={() => setMembersOpen(!membersOpen)} controls={membersOpenContentId}>
-          {t("domains.teamMailbox.members")} {members && <span className="text-sm font-normal text-gray-500">({members.length})</span>}
-        </SectionToggle>
+        <div className="flex items-center gap-2">
+          <SectionToggle open={membersOpen} onToggle={() => setMembersOpen(!membersOpen)} controls={membersOpenContentId}>
+            {t("domains.teamMailbox.members")} {members && <span className="text-sm font-normal text-gray-500">({members.length})</span>}
+          </SectionToggle>
+          {canAddMember && (
+            <button
+              onClick={() => { setMembersOpen(true); setShowAdd(true); }}
+              className="p-1 rounded-md hover:bg-gray-200 transition"
+              title={t("domains.teamMailbox.addMember")}
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          )}
+        </div>
 
         {membersOpen && (<div id={membersOpenContentId}>
-        {/* Add member */}
-        {canAddMember && (<div className="flex flex-wrap gap-2 mt-3 mb-4">
-          <input
-            type="text"
-            value={newMember}
-            onChange={(e) => setNewMember(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            placeholder="user@domain.tld"
-            className="flex-1 min-w-48 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-          />
-          {memberStatus === "checking" && (
-            <span className="flex items-center text-xs text-gray-400 whitespace-nowrap">{t("common.checking")}</span>
-          )}
-          {memberStatus === "exists" && (
-            <span className="flex items-center gap-1 text-xs text-green-600 whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
-              {t("common.userExists")}
-            </span>
-          )}
-          {memberStatus === "not_found" && (
-            <span className="flex items-center gap-1 text-xs text-orange-500 whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-orange-400" />
-              {t("common.userNotFound")}
-            </span>
-          )}
-          {memberStatus === "invalid" && (
-            <span className="flex items-center gap-1 text-xs text-red-600 whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
-              {t("common.invalidUsername")}
-            </span>
-          )}
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value as "member" | "manager")}
-            aria-label={t("domains.teamMailbox.role")}
-            className="px-3 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="member">{t("domains.teamMailbox.member")}</option>
-            <option value="manager">{t("domains.teamMailbox.manager")}</option>
-          </select>
-          <button
-            onClick={handleAdd}
-            disabled={!canSubmit}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t("common.add")}
-          </button>
-        </div>)}
-
         {isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -213,6 +184,47 @@ export default function TeamMailboxDetail() {
           )}
         </div>
         </div>)}
+
+        <FormDialog
+          open={showAdd}
+          onClose={closeAdd}
+          title={t("domains.teamMailbox.addMember")}
+          submitLabel={t("common.add")}
+          submitDisabled={!canSubmit}
+          onSubmit={handleAdd}
+        >
+          <div>
+            <label htmlFor={`${fieldId}-user`} className="text-sm font-medium">{t("domains.teamMailbox.user")}</label>
+            <input
+              id={`${fieldId}-user`}
+              type="text"
+              autoFocus
+              value={newMember}
+              onChange={(e) => setNewMember(e.target.value)}
+              placeholder="user@domain.tld"
+              className={FIELD_CLASS}
+            />
+            {/* Reserved height: the status appearing does not resize the modal */}
+            <p className="h-4 mt-1 text-xs">
+              {memberStatus === "checking" && <span className="text-gray-400">{t("common.checking")}</span>}
+              {memberStatus === "exists" && <span className="text-green-700">{t("common.userExists")}</span>}
+              {memberStatus === "not_found" && <span className="text-orange-600">{t("common.userNotFound")}</span>}
+              {memberStatus === "invalid" && <span className="text-red-600">{t("common.invalidUsername")}</span>}
+            </p>
+          </div>
+          <div>
+            <label htmlFor={`${fieldId}-role`} className="text-sm font-medium">{t("domains.teamMailbox.role")}</label>
+            <select
+              id={`${fieldId}-role`}
+              value={role}
+              onChange={(e) => setRole(e.target.value as "member" | "manager")}
+              className={FIELD_CLASS}
+            >
+              <option value="member">{t("domains.teamMailbox.member")}</option>
+              <option value="manager">{t("domains.teamMailbox.manager")}</option>
+            </select>
+          </div>
+        </FormDialog>
       </div>
       <TeamMailboxFolders domain={domain!} mailbox={mailbox!} />
       <TeamMailboxQuota domain={domain!} mailbox={mailbox!} />
