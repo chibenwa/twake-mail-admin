@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useState } from "react";
 import { Link } from "react-router";
-import { ChevronDown, ChevronRight, Contact, Plus, Minus, Pencil, Trash2, Save, Eye, EyeOff, Users, Loader2 } from "lucide-react";
+import { Contact, Plus, Minus, Pencil, Trash2, Save, Eye, EyeOff, Users, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -21,11 +21,14 @@ import { RegisteredUser } from "@/modules/registered-users/types";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
   // Reports how many address books are listed, e.g. for the summary of the data a deletion loses.
   onCount?: (count: number) => void;
+  // Open on a first visit of the page
+  defaultOpen?: boolean;
 }
 
 const EMPTY_CREATE: CreateUserAddressBookPayload = {
@@ -242,7 +245,7 @@ function AddressBookRow({
   );
 }
 
-export default function UserAddressBooks({ username, onCount }: Props) {
+export default function UserAddressBooks({ username, onCount, defaultOpen = false }: Props) {
   const { t } = useTranslation();
   const idPrefix = useId();
   const { toast } = useToast();
@@ -272,7 +275,7 @@ export default function UserAddressBooks({ username, onCount }: Props) {
     canView && canRegisteredUsers ? fetchRegisteredUsers : null
   );
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("address-books", defaultOpen);
   const [showCreate, setShowCreate] = useState(false);
   const [createForm, setCreateForm] = useState<CreateUserAddressBookPayload>({ ...EMPTY_CREATE });
   const [creating, setCreating] = useState(false);
@@ -382,19 +385,15 @@ export default function UserAddressBooks({ username, onCount }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("users.addressBooks.title")}
         {data && (
           <span className="text-sm font-normal text-gray-500">({addressBooks.length})</span>
         )}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2 space-y-4">
+        <div id={openContentId} className="mt-2 space-y-4">
           {isLoading && (
             <div className="h-[40px] rounded-2 animate-pulse bg-gray-200" />
           )}

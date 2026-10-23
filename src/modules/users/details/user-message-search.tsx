@@ -163,6 +163,7 @@ export default function UserMessageSearch() {
           <button
             type="button"
             onClick={() => setShowFilters(!showFilters)}
+            aria-expanded={showFilters}
             className="flex items-center gap-2 text-sm font-medium hover:text-blue-600 transition"
           >
             {showFilters ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}

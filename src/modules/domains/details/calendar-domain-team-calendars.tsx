@@ -1,5 +1,5 @@
 import { useCallback, useId, useMemo, useState } from "react";
-import { Check, ChevronDown, ChevronRight, Loader2, Minus, Pencil, Plus, Save, Trash2, Users, X } from "lucide-react";
+import { Check, Loader2, Minus, Pencil, Plus, Save, Trash2, Users, X } from "lucide-react";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useSearchPagination } from "@/hooks/use-search-pagination";
 import { ListSearchPagination } from "@/components/custom/list-search-pagination";
@@ -14,6 +14,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const ROLE_OPTIONS: TeamCalendarMemberRole[] = ["viewer", "member", "manager"];
 
@@ -60,7 +61,7 @@ export default function CalendarDomainTeamCalendars({ domain, defaultOpen = fals
   const fetchTeamCalendars = useCallback(() => getTeamCalendars(domain), [domain]);
   const { data: teamCalendars, isLoading, error, refresh } = useFetchData<TeamCalendar[]>(canView ? fetchTeamCalendars : null);
 
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen, openContentId] = useSectionOpen("team-calendars", defaultOpen);
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState("");
   const [newDisplayName, setNewDisplayName] = useState("");
@@ -134,25 +135,22 @@ export default function CalendarDomainTeamCalendars({ domain, defaultOpen = fals
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-        >
-          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           {t("domains.teamCalendars.title")}
           {sorted.length > 0 && (
             <span className="text-sm font-normal text-gray-500">({sorted.length})</span>
           )}
-        </button>
-        {open && canCreate && (
-          <button onClick={() => setShowCreate(!showCreate)} className="p-1 rounded-md hover:bg-gray-200 transition" title={t("domains.teamCalendars.addTooltip")}>
+        </SectionToggle>
+        {canCreate && (
+          <button
+            onClick={() => { if (!open) { setOpen(true); setShowCreate(true); } else setShowCreate(!showCreate); }} className="p-1 rounded-md hover:bg-gray-200 transition" title={t("domains.teamCalendars.addTooltip")}>
             <Plus className="w-4 h-4" />
           </button>
         )}
       </div>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {showCreate && (
             <div className="p-4 bg-blue-50 rounded-2 mb-2 space-y-2">
               <h5 className="text-sm font-semibold">{t("domains.teamCalendars.newTitle")}</h5>

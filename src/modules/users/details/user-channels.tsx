@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, ChevronRight, Loader2, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { getUserChannels, disconnectUserChannels } from "../api-client";
 import { NetworkChannel } from "@/modules/network-channels/types";
@@ -9,6 +9,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
 import ChannelGrid from "@/modules/network-channels/components/channel-grid";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
@@ -20,7 +21,7 @@ export default function UserChannels({ username }: Props) {
   const confirm = useConfirm();
   const canView = useIsAllowed("GET", "/servers/channels/{username}");
   const canDisconnect = useIsAllowed("DELETE", "/servers/channels/{username}");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("channels");
   const [channels, setChannels] = useState<NetworkChannel[]>([]);
   const [loading, setLoading] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
@@ -70,16 +71,12 @@ export default function UserChannels({ username }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("users.channels.title")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           <div className="flex justify-end gap-2 mb-2">
             <Button variant="outline" size="sm" onClick={fetchChannels} disabled={loading} aria-label={t("common.refresh")} title={t("common.refresh")}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}

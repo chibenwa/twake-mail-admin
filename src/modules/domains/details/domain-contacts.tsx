@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
-import { ChevronDown, ChevronRight, Plus, Trash2, Pencil, AlertTriangle, Loader2, Save } from "lucide-react";
+import { Plus, Trash2, Pencil, AlertTriangle, Loader2, Save } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -18,6 +18,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { PaginationControls } from "@/components/custom/pagination-controls";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -68,7 +69,7 @@ export default function DomainContacts({ domain }: Props) {
     [fetchedContacts, localChanges]
   );
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("contacts");
   const [showCreate, setShowCreate] = useState(false);
   const [createEmail, setCreateEmail] = useState("");
   const [createFirstname, setCreateFirstname] = useState("");
@@ -219,21 +220,17 @@ export default function DomainContacts({ domain }: Props) {
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-        >
-          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           {t("domains.contacts.title")}
           {contacts && (
             <span className="text-sm font-normal text-gray-500">
               ({contacts.length})
             </span>
           )}
-        </button>
-        {open && canCreate && (
+        </SectionToggle>
+        {canCreate && (
           <button
-            onClick={() => setShowCreate(!showCreate)}
+            onClick={() => { if (!open) { setOpen(true); setShowCreate(true); } else setShowCreate(!showCreate); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("domains.contacts.createButton")}
           >
@@ -243,7 +240,7 @@ export default function DomainContacts({ domain }: Props) {
       </div>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-md mb-3 text-sm text-amber-800">
             <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
             <span>{t("domains.contacts.ldapNotice")}</span>

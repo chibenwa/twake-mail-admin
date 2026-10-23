@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { getDomainAliases, addDomainAlias, removeDomainAlias } from "../api-client";
@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   domain: string;
@@ -30,7 +31,7 @@ export default function DomainAliases({ domain, defaultOpen }: Props) {
     refresh,
   } = useFetchData<GetDomainAliasesResponseType>(canView ? fetchAliases : null);
 
-  const [open, setOpen] = useState(defaultOpen ?? false);
+  const [open, setOpen, openContentId] = useSectionOpen("aliases", defaultOpen ?? false);
   const [newAlias, setNewAlias] = useState("");
   const [showCreateInput, setShowCreateInput] = useState(false);
 
@@ -81,21 +82,17 @@ export default function DomainAliases({ domain, defaultOpen }: Props) {
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-        >
-          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           {t("domains.aliases.title")}
           {aliases && (
             <span className="text-sm font-normal text-gray-500">
               ({aliases.length})
             </span>
           )}
-        </button>
-        {open && canAdd && (
+        </SectionToggle>
+        {canAdd && (
           <button
-            onClick={() => setShowCreateInput(!showCreateInput)}
+            onClick={() => { if (!open) { setOpen(true); setShowCreateInput(true); } else setShowCreateInput(!showCreateInput); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("domains.aliases.addTooltip")}
           >
@@ -105,7 +102,7 @@ export default function DomainAliases({ domain, defaultOpen }: Props) {
       </div>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {showCreateInput && (
             <div className="flex gap-2 mt-2 mb-2">
               <input

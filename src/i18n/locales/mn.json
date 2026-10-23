@@ -81,7 +81,9 @@
     "remove": "Хасах",
     "optional": "заавал биш",
     "advancedOptions": "Нэмэлт сонголтууд",
-    "breadcrumb": "Замчлал"
+    "breadcrumb": "Замчлал",
+    "expandAll": "Бүгдийг дэлгэх",
+    "collapseAll": "Бүгдийг хураах"
   },
   "sidebar": {
     "application": "Програм",

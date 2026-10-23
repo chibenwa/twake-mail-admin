@@ -81,7 +81,9 @@
     "remove": "Удалить",
     "optional": "необязательно",
     "advancedOptions": "Дополнительные параметры",
-    "breadcrumb": "Навигационная цепочка"
+    "breadcrumb": "Навигационная цепочка",
+    "expandAll": "Развернуть всё",
+    "collapseAll": "Свернуть всё"
   },
   "sidebar": {
     "application": "Приложение",

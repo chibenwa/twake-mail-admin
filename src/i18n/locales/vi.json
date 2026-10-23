@@ -81,7 +81,9 @@
     "remove": "Gỡ bỏ",
     "optional": "không bắt buộc",
     "advancedOptions": "Tùy chọn nâng cao",
-    "breadcrumb": "Đường dẫn"
+    "breadcrumb": "Đường dẫn",
+    "expandAll": "Mở rộng tất cả",
+    "collapseAll": "Thu gọn tất cả"
   },
   "sidebar": {
     "application": "Ứng dụng",

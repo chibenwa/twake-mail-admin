@@ -12,6 +12,7 @@ import {
   updateDomainSignatureTemplates,
   deleteDomainSignatureTemplates,
 } from "../api-client";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   domain: string;
@@ -34,7 +35,7 @@ export default function DomainSignatureTemplates({ domain }: Props) {
   const canEdit = useIsAllowed("PUT", "/domains/{domain}/signature-templates");
   const canDelete = useIsAllowed("DELETE", "/domains/{domain}/signature-templates");
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("signature-templates");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -122,16 +123,12 @@ export default function DomainSignatureTemplates({ domain }: Props) {
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-        >
-          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           {t("domains.signatureTemplates.title")}
           {!loading && (
             <span className="text-sm font-normal text-gray-500">({templates.length})</span>
           )}
-        </button>
+        </SectionToggle>
         {open && canEdit && (
           <button
             onClick={handleAdd}
@@ -145,7 +142,7 @@ export default function DomainSignatureTemplates({ domain }: Props) {
       </div>
 
       {open && (
-        <div className="mt-2 space-y-2">
+        <div id={openContentId} className="mt-2 space-y-2">
           {loading && (
             <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
           )}
@@ -160,6 +157,7 @@ export default function DomainSignatureTemplates({ domain }: Props) {
               <div className="flex items-center justify-between px-4 py-3">
                 <button
                   className="flex items-center gap-2 text-sm font-medium hover:text-blue-600 transition"
+                  aria-expanded={expandedIndex === index}
                   onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
                 >
                   {expandedIndex === index

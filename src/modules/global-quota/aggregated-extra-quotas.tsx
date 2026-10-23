@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { getQuotaExtraSummary } from "./api-client";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface AggregatedExtraQuotasProps {
   formatCount: (count: number | null) => string;
@@ -12,19 +11,15 @@ interface AggregatedExtraQuotasProps {
 // The summary scans every user with a specific quota: it is only fetched once the section is opened.
 export default function AggregatedExtraQuotas({ formatCount, formatSize }: AggregatedExtraQuotasProps) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("aggregated-extra-quotas");
   const { data, isLoading, error } = useFetchData(open ? getQuotaExtraSummary : null);
 
   return (
     <div className="p-4 bg-gray-50 rounded-2 space-y-3">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-sm font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("globalQuota.aggregatedExtra")}
-      </button>
-      {open && (isLoading ? (
+      </SectionToggle>
+      {open && <div id={openContentId}>{isLoading ? (
         <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
       ) : error ? (
         <p className="text-sm text-red-500">{t("common.errorPrefix", { message: error })}</p>
@@ -39,7 +34,7 @@ export default function AggregatedExtraQuotas({ formatCount, formatSize }: Aggre
           <span className="text-gray-600">{t("globalQuota.usersUnlimitedCount")}</span>
           <strong>{data.totalUnlimitedCount}</strong>
         </div>
-      ) : null)}
+      ) : null}</div>}
     </div>
   );
 }

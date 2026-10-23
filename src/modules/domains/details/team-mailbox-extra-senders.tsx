@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -9,6 +9,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { getTeamMailboxExtraSenders, addTeamMailboxExtraSender, removeTeamMailboxExtraSender } from "../api-client";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { PaginationControls } from "@/components/custom/pagination-controls";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -31,7 +32,7 @@ export default function TeamMailboxExtraSenders({ domain, mailbox }: Props) {
   );
   const { data: senders, isLoading, error, refresh } = useFetchData<string[]>(canView ? fetchSenders : null);
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen, openContentId] = useSectionOpen("extra-senders", true);
   const [page, setPage] = useState(1);
   const [newSender, setNewSender] = useState("");
   const senderStatus = useCheckUserExists(newSender);
@@ -91,16 +92,12 @@ export default function TeamMailboxExtraSenders({ domain, mailbox }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 text-md font-semibold w-full text-left"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("domains.extraSenders.title")}
         {senders && <span className="text-sm font-normal text-gray-500">({senders.length})</span>}
-      </button>
+      </SectionToggle>
 
-      {open && (<>
+      {open && (<div id={openContentId}>
         {/* Add sender */}
         {canAdd && (<div className="flex flex-wrap gap-2 mt-3 mb-4">
           <input
@@ -188,7 +185,7 @@ export default function TeamMailboxExtraSenders({ domain, mailbox }: Props) {
             <p className="mt-2 text-sm text-gray-500">{t("domains.extraSenders.empty")}</p>
           )}
         </div>
-      </>)}
+      </div>)}
     </div>
   );
 }

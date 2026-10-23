@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { getUsersWithSpecificQuotas } from "./api-client";
 import { UserSpecificQuota } from "./types";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const PAGE_SIZE = 20;
 
@@ -19,7 +19,7 @@ interface UsersWithSpecificQuotasProps {
 // The report scans every user: it is only fetched once the section is opened.
 export default function UsersWithSpecificQuotas({ formatCount, formatSize }: UsersWithSpecificQuotasProps) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("users-with-specific-quotas");
   const [page, setPage] = useState(1);
   const { data, isLoading, error } = useFetchData(open ? getUsersWithSpecificQuotas : null);
   const users = data ?? NO_USERS;
@@ -36,14 +36,10 @@ export default function UsersWithSpecificQuotas({ formatCount, formatSize }: Use
 
   return (
     <div className="p-4 bg-gray-50 rounded-2 space-y-3">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-sm font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {data ? t("globalQuota.usersSpecificTitle", { count: users.length }) : t("globalQuota.usersSpecific")}
-      </button>
-      {open && (isLoading ? (
+      </SectionToggle>
+      {open && <div id={openContentId}>{isLoading ? (
         <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
       ) : error ? (
         <p className="text-sm text-red-500">{t("common.errorPrefix", { message: error })}</p>
@@ -82,7 +78,7 @@ export default function UsersWithSpecificQuotas({ formatCount, formatSize }: Use
             />
           )}
         </>
-      ))}
+      )}</div>}
     </div>
   );
 }

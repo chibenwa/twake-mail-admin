@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -120,7 +121,7 @@ function CreateMailingListForm({ onCreated }: { onCreated: () => void }) {
   const { toast } = useToast();
   const idPrefix = useId();
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("mailing-lists");
   const [address, setAddress] = useState("");
   const [category, setCategory] = useState<string>(NO_CATEGORY);
   const [members, setMembers] = useState<string[]>([]);
@@ -177,17 +178,13 @@ function CreateMailingListForm({ onCreated }: { onCreated: () => void }) {
 
   return (
     <div className="mt-4">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 text-md font-semibold"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         <Plus className="w-4 h-4" />
         {t("mailingLists.createTitle")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="flex flex-col gap-3 mt-3 p-4 bg-gray-50 rounded-2">
+        <div id={openContentId} className="flex flex-col gap-3 mt-3 p-4 bg-gray-50 rounded-2">
           <div className="flex flex-col gap-1">
             <label htmlFor={`${idPrefix}-address`} className="text-sm font-medium">{t("mailingLists.address")}</label>
             <input
@@ -571,6 +568,7 @@ export default function MailingListsList({ domain }: Props) {
                     <td className="px-4 py-2 text-sm">
                       <button
                         onClick={(e) => { e.stopPropagation(); toggle(address); }}
+                        aria-expanded={isOpen}
                         className="flex items-center gap-1 text-blue-500 hover:underline"
                       >
                         {isOpen ? (

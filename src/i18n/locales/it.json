@@ -81,7 +81,9 @@
     "remove": "Rimuovi",
     "optional": "facoltativo",
     "advancedOptions": "Opzioni avanzate",
-    "breadcrumb": "Percorso di navigazione"
+    "breadcrumb": "Percorso di navigazione",
+    "expandAll": "Espandi tutto",
+    "collapseAll": "Comprimi tutto"
   },
   "sidebar": {
     "application": "Applicazione",

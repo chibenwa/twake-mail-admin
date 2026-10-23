@@ -18,6 +18,7 @@ import UserBookingLinks from "./user-booking-links";
 import UserAddressBooks from "./user-address-books";
 import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
+import { ExpandCollapseAll, SectionsProvider } from "@/components/custom/collapsible-section";
 
 function UnregisteredUser({ username, onRegistered }: { username: string; onRegistered: () => void }) {
   const { t } = useTranslation();
@@ -96,8 +97,8 @@ export default function CalendarUserDetail() {
   const onBookingLinksCount = useCallback((bookingLinks: number) => setCounts((c) => ({ ...c, bookingLinks })), []);
 
   return (
-    <>
-    <Header headerTitle={username} headerSubTitle={status ?? t("users.detailKind")} breadcrumb={breadcrumbs.users()} />
+    <SectionsProvider page="user">
+    <Header headerTitle={username} headerSubTitle={status ?? t("users.detailKind")} breadcrumb={breadcrumbs.users()} actions={<ExpandCollapseAll />} />
     <div className="mt-4 p-4 bg-white rounded-2">
 
       {pending && <div className="h-[58px] mt-4 rounded-2 animate-pulse bg-gray-200" />}
@@ -108,13 +109,13 @@ export default function CalendarUserDetail() {
 
       {!pending && isRegistered && (
         <>
-          <UserCalendars username={username!} onCalendarsChanged={() => setCalendarsVersion((v) => v + 1)} onCount={onCalendarsCount} />
-          <UserAddressBooks username={username!} onCount={onAddressBooksCount} />
+          <UserCalendars username={username!} onCalendarsChanged={() => setCalendarsVersion((v) => v + 1)} onCount={onCalendarsCount} defaultOpen />
+          <UserAddressBooks username={username!} onCount={onAddressBooksCount} defaultOpen />
           <UserBookingLinks username={username!} calendarsVersion={calendarsVersion} onCount={onBookingLinksCount} />
           <CalendarUserTasks username={username!} counts={counts} />
         </>
       )}
     </div>
-    </>
+    </SectionsProvider>
   );
 }

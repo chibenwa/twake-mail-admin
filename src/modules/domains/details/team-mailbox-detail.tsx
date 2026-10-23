@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { useParams } from "react-router";
-import { Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -17,6 +17,8 @@ import TeamMailboxExtraSenders from "./team-mailbox-extra-senders";
 import UserDeletedMessageVault from "@/modules/users/details/user-deleted-message-vault";
 import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { ExpandCollapseAll, SectionsProvider } from "@/components/custom/collapsible-section";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -37,7 +39,7 @@ export default function TeamMailboxDetail() {
   );
   const { data: members, isLoading, error, refresh } = useFetchData<GetTeamMailboxMembersResponseType>(fetchMembers);
 
-  const [membersOpen, setMembersOpen] = useState(true);
+  const [membersOpen, setMembersOpen, membersOpenContentId] = useSectionOpen("members", true);
   const [page, setPage] = useState(1);
   const [newMember, setNewMember] = useState("");
   const [role, setRole] = useState<"member" | "manager">("member");
@@ -102,20 +104,16 @@ export default function TeamMailboxDetail() {
   };
 
   return (
-    <>
-    <Header headerTitle={`${mailbox}@${domain}`} headerSubTitle={t("domains.teamMailbox.detailKind")} breadcrumb={breadcrumbs.teamMailboxes(domain!)} />
+    <SectionsProvider page="teamMailbox">
+    <Header headerTitle={`${mailbox}@${domain}`} headerSubTitle={t("domains.teamMailbox.detailKind")} breadcrumb={breadcrumbs.teamMailboxes(domain!)} actions={<ExpandCollapseAll />} />
     <div className="mt-4 p-4 bg-white rounded-2">
 
       <div className="mt-6">
-        <button
-          onClick={() => setMembersOpen((o) => !o)}
-          className="flex items-center gap-1 text-md font-semibold w-full text-left"
-        >
-          {membersOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={membersOpen} onToggle={() => setMembersOpen(!membersOpen)} controls={membersOpenContentId}>
           {t("domains.teamMailbox.members")} {members && <span className="text-sm font-normal text-gray-500">({members.length})</span>}
-        </button>
+        </SectionToggle>
 
-        {membersOpen && (<>
+        {membersOpen && (<div id={membersOpenContentId}>
         {/* Add member */}
         {canAddMember && (<div className="flex flex-wrap gap-2 mt-3 mb-4">
           <input
@@ -213,7 +211,7 @@ export default function TeamMailboxDetail() {
             <p className="mt-2 text-sm text-gray-500">{t("domains.teamMailbox.noMembers")}</p>
           )}
         </div>
-        </>)}
+        </div>)}
       </div>
       <TeamMailboxFolders domain={domain!} mailbox={mailbox!} />
       <TeamMailboxQuota domain={domain!} mailbox={mailbox!} />
@@ -228,6 +226,6 @@ export default function TeamMailboxDetail() {
         />
       )}
     </div>
-    </>
+    </SectionsProvider>
   );
 }

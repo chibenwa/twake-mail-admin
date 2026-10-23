@@ -1,5 +1,5 @@
 import { useCallback, useId, useMemo, useState } from "react";
-import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useSearchPagination } from "@/hooks/use-search-pagination";
 import { ListSearchPagination } from "@/components/custom/list-search-pagination";
@@ -14,6 +14,7 @@ import { useCheckUserExists } from "@/hooks/use-check-user-exists";
 import ResourceIconPicker from "@/components/custom/resource-icon-picker";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useTranslation } from "react-i18next";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const searchable = (resource: Resource) => [resourceDisplayName(resource), resource.description];
 
@@ -48,7 +49,7 @@ export default function CalendarDomainResources({ domain, defaultOpen = false, r
   const fetchResources = useCallback(() => getResources(domain), [domain]);
   const { data: resources, isLoading, error, refresh } = useFetchData<Resource[]>(canView ? fetchResources : null);
 
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen, openContentId] = useSectionOpen("resources", defaultOpen);
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -125,25 +126,22 @@ export default function CalendarDomainResources({ domain, defaultOpen = false, r
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-        >
-          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           {t("domains.calendarResources.title")}
           {active.length > 0 && (
             <span className="text-sm font-normal text-gray-500">({active.length})</span>
           )}
-        </button>
-        {open && canCreate && (
-          <button onClick={() => setShowCreate(!showCreate)} className="p-1 rounded-md hover:bg-gray-200 transition" title={t("domains.calendarResources.addTooltip")}>
+        </SectionToggle>
+        {canCreate && (
+          <button
+            onClick={() => { if (!open) { setOpen(true); setShowCreate(true); } else setShowCreate(!showCreate); }} className="p-1 rounded-md hover:bg-gray-200 transition" title={t("domains.calendarResources.addTooltip")}>
             <Plus className="w-4 h-4" />
           </button>
         )}
       </div>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {showCreate && (
             <div className="p-4 bg-blue-50 rounded-2 mb-2 space-y-2">
               <h5 className="text-sm font-semibold">{t("domains.calendarResources.newTitle")}</h5>

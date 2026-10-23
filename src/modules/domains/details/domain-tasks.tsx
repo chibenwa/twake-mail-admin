@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import TaskRow from "@/components/custom/task-row";
 import { deleteAllUsersData, applyDomainSignatureTemplates, provisionDomainTemplates } from "../api-client";
@@ -13,6 +12,7 @@ import { appConfig } from "@/lib/config";
 import ConfirmTaskContent from "@/modules/common-tasks/components/confirm-task-content";
 import FormTaskContent from "@/modules/common-tasks/components/form-task-content";
 import { deleteAllUsersDataCommand, provisionDomainTemplatesCommand } from "./domain-task-commands";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const INITIAL_PROVISION_VALUES: ProvisionTemplatesValues = { sourceUser: "", folderName: "", overwriteExisting: false, prune: false, usersPerSecond: "1" };
 
@@ -30,7 +30,7 @@ export default function DomainTasks({ domain, defaultOpen }: Props) {
   const canDeleteData = useIsAllowed("POST", "/domains/{domain}?action=deleteData");
   const canProvisionTemplates = useIsAllowed("POST", "/domains/{domain}/templates");
 
-  const [open, setOpen] = useState(defaultOpen ?? false);
+  const [open, setOpen, openContentId] = useSectionOpen("tasks", defaultOpen ?? false);
   const [applyLoading, setApplyLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -123,16 +123,12 @@ export default function DomainTasks({ domain, defaultOpen }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("domains.tasks.title")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2 space-y-2">
+        <div id={openContentId} className="mt-2 space-y-2">
           {showProvision && (
             <TaskRow
               title={t("domains.tasks.provisionTemplates")}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Loader2, Search, RotateCcw } from "lucide-react";
+import { Loader2, Search, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import RestoreCriteriaBuilder from "../components/restore-criteria-builder";
@@ -11,6 +11,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { RunTaskResponse } from "@/modules/common-tasks/types";
 import { currentLocale } from "@/i18n/locale";
 import { formatByteSize } from "@/i18n/format-size";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const PAGE_SIZE = 10;
 
@@ -35,7 +36,7 @@ export default function UserDeletedMessageVault({ label, onSearch, onRestore, ca
   const { toast } = useToast();
   const toastTaskCreated = useTaskCreatedToast();
   const confirm = useConfirm();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("deleted-message-vault");
   const [criteria, setCriteria] = useState<RestoreCriterion[]>([]);
   const [limit, setLimit] = useState<number | undefined>(undefined);
   const [criteriaValid, setCriteriaValid] = useState(true);
@@ -132,16 +133,12 @@ export default function UserDeletedMessageVault({ label, onSearch, onRestore, ca
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("users.deletedVault.title")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-3 space-y-4">
+        <div id={openContentId} className="mt-3 space-y-4">
           <RestoreCriteriaBuilder
             onChange={(c, l, valid) => {
               setCriteria(c);

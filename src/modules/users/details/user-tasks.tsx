@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import TaskRow from "@/components/custom/task-row";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -27,6 +26,7 @@ import {
 } from "./user-task-commands";
 import { TaskParam } from "@/modules/common-tasks/types";
 import { defaultCommand } from "@/modules/common-tasks/components/command-preview";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const REINDEX_PARAMS: TaskParam[] = [
   { key: "messagesPerSecond", defaultValue: "50", type: "input" },
@@ -71,7 +71,7 @@ export default function UserTasks({ username }: Props) {
   const canDeleteData = useIsAllowed("POST", "/users/{username}?action=deleteData");
   const canTierData = useIsAllowed("POST", "/users/{username}/data?tiering={tiering}");
   const canProvisionTemplates = useIsAllowed("POST", "/users/{username}/templates");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("tasks");
   const [subscribeLoading, setSubscribeLoading] = useState(false);
 
   // Each Run tooltip shows the command its dialog first previews, with the default parameters
@@ -333,16 +333,12 @@ export default function UserTasks({ username }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("common.tasks")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2 space-y-2">
+        <div id={openContentId} className="mt-2 space-y-2">
           {canReindex && (
             <TaskRow
               title={t("users.tasks.reindexAll")}

@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useSearchPagination } from "@/hooks/use-search-pagination";
 import { ListSearchPagination } from "@/components/custom/list-search-pagination";
@@ -10,6 +10,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useCheckUserExists } from "@/hooks/use-check-user-exists";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useTranslation } from "react-i18next";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const searchable = (admin: string) => [admin];
 
@@ -32,7 +33,7 @@ export default function CalendarDomainAdmins({ domain, defaultOpen = false }: Pr
   const fetchAdmins = useCallback(() => getDomainAdmins(domain), [domain]);
   const { data: admins, isLoading, error, refresh } = useFetchData<string[]>(canView ? fetchAdmins : null);
 
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen, openContentId] = useSectionOpen("admins", defaultOpen);
   const [showAddInput, setShowAddInput] = useState(false);
   const [newAdmin, setNewAdmin] = useState("");
   const adminStatus = useCheckUserExists(newAdmin);
@@ -88,21 +89,17 @@ export default function CalendarDomainAdmins({ domain, defaultOpen = false }: Pr
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-        >
-          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           {t("domains.calendarAdmins.title")}
           {admins && (
             <span className="text-sm font-normal text-gray-500">
               ({admins.length})
             </span>
           )}
-        </button>
-        {open && canAdd && (
+        </SectionToggle>
+        {canAdd && (
           <button
-            onClick={() => setShowAddInput(!showAddInput)}
+            onClick={() => { if (!open) { setOpen(true); setShowAddInput(true); } else setShowAddInput(!showAddInput); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("domains.calendarAdmins.addTooltip")}
           >
@@ -112,7 +109,7 @@ export default function CalendarDomainAdmins({ domain, defaultOpen = false }: Pr
       </div>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {showAddInput && (
             <div className="flex gap-2 mt-2 mb-2">
               <input

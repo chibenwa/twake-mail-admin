@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -14,6 +14,7 @@ import {
 } from "../api-client";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -60,7 +61,7 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
   );
   const { data: acl, isLoading, error, refresh } = useFetchData<Record<string, string>>(canViewAcl ? fetchAcl : null);
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("folder-extra-acl");
   const [page, setPage] = useState(1);
 
   const [showAddForm, setShowAddForm] = useState(false);
@@ -154,18 +155,14 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-1 text-md font-semibold w-full text-left"
-        >
-          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           Extra ACL
           {acl && (
             <span className="text-sm font-normal text-gray-500">({entries.length})</span>
           )}
-        </button>
+        </SectionToggle>
         {open && (
-          <div className="flex items-center gap-1 shrink-0">
+          <div id={openContentId} className="flex items-center gap-1 shrink-0">
             {canAddAcl && (
               <button
                 onClick={() => setShowAddForm(!showAddForm)}

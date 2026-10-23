@@ -23,6 +23,7 @@ import { getUserRateLimits, updateUserRateLimits, searchDeletedMessages, restore
 import { appConfig } from "@/lib/config";
 import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
+import { ExpandCollapseAll, SectionsProvider } from "@/components/custom/collapsible-section";
 
 export default function UserDetail() {
   const { t } = useTranslation();
@@ -37,8 +38,8 @@ export default function UserDetail() {
   const updateRateLimits = useCallback((limits: any) => updateUserRateLimits(username!, limits), [username]);
 
   return (
-    <>
-    <Header headerTitle={username} headerSubTitle={t("users.detailKind")} breadcrumb={breadcrumbs.users()} />
+    <SectionsProvider page="user">
+    <Header headerTitle={username} headerSubTitle={t("users.detailKind")} breadcrumb={breadcrumbs.users()} actions={<ExpandCollapseAll />} />
     <div className="mt-4 p-4 bg-white rounded-2">
 
       <UserMailboxes username={username!} />
@@ -68,6 +69,6 @@ export default function UserDetail() {
       <UserTasks username={username!} />
       <UserChannels username={username!} />
     </div>
-    </>
+    </SectionsProvider>
   );
 }

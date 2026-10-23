@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import TaskRow from "@/components/custom/task-row";
 import { deleteUserData, archiveUserCalendarEvents, republishUserContacts } from "../api-client";
@@ -10,6 +8,7 @@ import ConfirmTaskContent from "@/modules/common-tasks/components/confirm-task-c
 import ArchivalNotice from "@/modules/common-tasks/components/archival-notice";
 import { TaskParam } from "@/modules/common-tasks/types";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const ARCHIVE_CALENDAR_PARAMS: TaskParam[] = [
   { key: "createdBefore", defaultValue: "", type: "duration" },
@@ -45,7 +44,7 @@ export default function CalendarUserTasks({ username, counts = {} }: Props) {
   const canDeleteData = useIsAllowed("POST", "/users/{username}?action=deleteData");
   const canArchiveCalendar = useIsAllowed("POST", "/calendars/{username}");
   const canRepublishContacts = useIsAllowed("POST", "/users/{username}/contacts?action=republish");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("tasks");
 
 
   const handleDeleteUserData = async () => {
@@ -125,16 +124,12 @@ export default function CalendarUserTasks({ username, counts = {} }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("users.calendarTasks.title")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2 space-y-2">
+        <div id={openContentId} className="mt-2 space-y-2">
           {canArchiveCalendar && (
             <TaskRow
               title={t("users.calendarTasks.archiveButton")}

@@ -8,6 +8,7 @@ import DomainAddressBookCounts from "./domain-address-book-counts";
 import { useTranslation } from "react-i18next";
 import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
+import { ExpandCollapseAll, SectionsProvider } from "@/components/custom/collapsible-section";
 
 export default function CalendarDomainDetail() {
   const { t } = useTranslation();
@@ -15,8 +16,8 @@ export default function CalendarDomainDetail() {
   const breadcrumbs = useBreadcrumbs();
 
   return (
-    <>
-    <Header headerTitle={domain} headerSubTitle={t("domains.detailKind")} breadcrumb={breadcrumbs.domains()} />
+    <SectionsProvider page="domain">
+    <Header headerTitle={domain} headerSubTitle={t("domains.detailKind")} breadcrumb={breadcrumbs.domains()} actions={<ExpandCollapseAll />} />
     <div className="mt-4 p-4 bg-white rounded-2">
 
       <CalendarDomainAdmins domain={domain!} />
@@ -26,6 +27,6 @@ export default function CalendarDomainDetail() {
       <DomainAddressBookCounts domain={domain!} />
       <CalendarDomainTasks domain={domain!} />
     </div>
-    </>
+    </SectionsProvider>
   );
 }

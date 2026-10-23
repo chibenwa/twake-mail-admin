@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, ChevronRight, Loader2, Save, Trash2 } from "lucide-react";
+import { Loader2, Save, Trash2 } from "lucide-react";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { datetimeLocalToIso, isoToDatetimeLocal } from "@/lib/datetime-local";
 import { getUserVacation, updateUserVacation, deleteUserVacation } from "../api-client";
@@ -11,6 +11,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
@@ -32,7 +33,7 @@ export default function UserVacation({ username }: Props) {
   const canView = useIsAllowed("GET", "/vacation/{username}");
   const canSave = useIsAllowed("POST", "/vacation/{username}");
   const canDelete = useIsAllowed("DELETE", "/vacation/{username}");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("vacation");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<VacationSettings>(EMPTY_VACATION);
@@ -107,16 +108,12 @@ export default function UserVacation({ username }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("users.vacation.title")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />

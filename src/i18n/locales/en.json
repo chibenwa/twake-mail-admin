@@ -81,7 +81,9 @@
     "remove": "Remove",
     "optional": "optional",
     "advancedOptions": "Advanced options",
-    "breadcrumb": "Breadcrumb"
+    "breadcrumb": "Breadcrumb",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all"
   },
   "sidebar": {
     "application": "Application",

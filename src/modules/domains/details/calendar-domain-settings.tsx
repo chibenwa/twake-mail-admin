@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useState } from "react";
-import { ChevronDown, ChevronRight, Save, Loader2, RotateCcw } from "lucide-react";
+import { Save, Loader2, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 // Radix selects cannot hold an empty value, so a sentinel represents "null"
 // (i.e. clear the setting and fall back to the system default).
@@ -82,7 +83,7 @@ export default function CalendarDomainSettings({ domain, defaultOpen = false }: 
   const canView = useIsAllowed("GET", "/domains/{domain}/settings");
   const canUpdate = useIsAllowed("PUT", "/domains/{domain}/settings");
 
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen, openContentId] = useSectionOpen("settings", defaultOpen);
 
   const fetchSettings = useCallback(() => getDomainSettings(domain), [domain]);
   const { data: settings, isLoading, error, refresh } = useFetchData<DomainSettings>(
@@ -151,17 +152,13 @@ export default function CalendarDomainSettings({ domain, defaultOpen = false }: 
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-        >
-          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           {t("domains.domainSettings.title")}
-        </button>
+        </SectionToggle>
       </div>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {isLoading && <div className="h-[40px] rounded-2 animate-pulse bg-gray-200" />}
           {error && <p className="text-red-500 mt-2">{t("common.errorPrefix", { message: error })}</p>}
 

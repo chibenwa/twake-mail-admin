@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { getUserQuota, updateUserQuotaSize, deleteUserQuotaSize } from "../api-client";
@@ -13,6 +12,7 @@ import i18n from "i18next";
 import { currentLocale } from "@/i18n/locale";
 import { formatByteSize } from "@/i18n/format-size";
 import { formatPercent } from "@/i18n/format-percent";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 function formatSize(bytes: number | null): string {
   if (bytes === null) return i18n.t("common.notSet");
@@ -50,7 +50,7 @@ export default function UserQuota({ username }: Props) {
   const canView = useIsAllowed("GET", "/quota/users/{username}");
   const canUpdate = useIsAllowed("PUT", "/quota/users/{username}/size");
   const canReset = useIsAllowed("DELETE", "/quota/users/{username}/size");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("quota");
   const [sizeInput, setSizeInput] = useState("");
   const [sizeUnit, setSizeUnit] = useState<"B" | "KB" | "MB" | "GB">("GB");
   const [showSizeEdit, setShowSizeEdit] = useState(false);
@@ -110,16 +110,12 @@ export default function UserQuota({ username }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("users.quota.title")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />

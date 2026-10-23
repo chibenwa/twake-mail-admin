@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { deleteAllUsersData, republishDomainContacts, syncDomainMembers } from "../api-client";
 import { useToast } from "@/hooks/use-toast";
 import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
@@ -10,6 +9,7 @@ import { TaskParam } from "@/modules/common-tasks/types";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useTranslation } from "react-i18next";
 import TaskRow from "@/components/custom/task-row";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const REPUBLISH_CONTACTS_PARAMS: TaskParam[] = [
   { key: "contactsPerSecond", defaultValue: "100", type: "input" },
@@ -29,7 +29,7 @@ export default function CalendarDomainTasks({ domain, defaultOpen = false }: Pro
   const canDeleteData = useIsAllowed("POST", "/domains/{domain}?action=deleteData");
   const canSyncMembers = useIsAllowed("POST", "/addressbook/domain-members/{domain}");
   const canRepublishContacts = useIsAllowed("POST", "/domains/{domain}/contacts?action=republish");
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen, openContentId] = useSectionOpen("tasks", defaultOpen);
   const [deleting, setDeleting] = useState(false);
   const [syncing, setSyncing] = useState(false);
 
@@ -96,16 +96,12 @@ export default function CalendarDomainTasks({ domain, defaultOpen = false }: Pro
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("domains.calendarTasks.title")}
-      </button>
+      </SectionToggle>
 
       {open && (canSyncMembers || canRepublishContacts || canDeleteData) && (
-        <div className="mt-2 space-y-2">
+        <div id={openContentId} className="mt-2 space-y-2">
           {canSyncMembers && (
             <TaskRow
               title={t("domains.calendarTasks.syncButton")}

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
-import { ChevronDown, ChevronRight, Eraser, Plus, Search, Trash2 } from "lucide-react";
+import { Eraser, Plus, Search, Trash2 } from "lucide-react";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { getUserMailboxes, createUserMailbox, deleteUserMailbox, clearMailboxContent } from "../api-client";
@@ -14,6 +14,7 @@ import MailboxCounts from "./mailbox-counts";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import { currentLocale } from "@/i18n/locale";
 import { formatMailboxCreationDate } from "./mailbox-creation-date";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -50,7 +51,7 @@ export default function UserMailboxes({ username }: Props) {
     refresh,
   } = useFetchData<GetUserMailboxesResponseType>(canView ? fetchMailboxes : null);
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("mailboxes");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [newMailbox, setNewMailbox] = useState("");
@@ -142,22 +143,14 @@ export default function UserMailboxes({ username }: Props) {
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-        >
-          {open ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           {t("users.mailboxes.title")}
           {mailboxes && (
             <span className="text-sm font-normal text-gray-500">
               ({mailboxes.length})
             </span>
           )}
-        </button>
+        </SectionToggle>
         <Link
           to={`/users/user/${encodeURIComponent(username)}/message-search`}
           className="p-1 rounded-md hover:bg-gray-200 transition text-gray-500 hover:text-blue-600"
@@ -165,9 +158,9 @@ export default function UserMailboxes({ username }: Props) {
         >
           <Search className="w-4 h-4" />
         </Link>
-        {open && canCreate && (
+        {canCreate && (
           <button
-            onClick={() => setShowCreateInput(!showCreateInput)}
+            onClick={() => { if (!open) { setOpen(true); setShowCreateInput(true); } else setShowCreateInput(!showCreateInput); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("users.mailboxes.createTooltip")}
           >
@@ -177,7 +170,7 @@ export default function UserMailboxes({ username }: Props) {
       </div>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {showCreateInput && (
             <div className="flex gap-2 mt-2 mb-2">
               <input

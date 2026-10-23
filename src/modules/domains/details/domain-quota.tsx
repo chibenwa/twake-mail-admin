@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { getDomainQuota, updateDomainQuota, deleteDomainQuotaSize } from "../api-client";
 import { DomainQuota, DomainQuotaValues } from "../types";
@@ -13,6 +12,7 @@ import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import i18n from "i18next";
 import { currentLocale } from "@/i18n/locale";
 import { formatByteSize } from "@/i18n/format-size";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   domain: string;
@@ -61,7 +61,7 @@ export default function DomainQuotaSection({ domain, defaultOpen }: Props) {
   const canView = useIsAllowed("GET", "/quota/domains/{domain}");
   const canUpdate = useIsAllowed("PUT", "/quota/domains/{domain}");
   const canReset = useIsAllowed("DELETE", "/quota/domains/{domain}/size");
-  const [open, setOpen] = useState(defaultOpen ?? false);
+  const [open, setOpen, openContentId] = useSectionOpen("quota", defaultOpen ?? false);
   const [loading, setLoading] = useState(false);
   const [quota, setQuota] = useState<DomainQuota | null>(null);
   const [showSizeEdit, setShowSizeEdit] = useState(false);
@@ -124,16 +124,12 @@ export default function DomainQuotaSection({ domain, defaultOpen }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("domains.quota.title")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />

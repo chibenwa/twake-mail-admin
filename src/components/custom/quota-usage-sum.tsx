@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { apiClient } from "@/lib/apiClient";
 import { appConfig } from "@/lib/config";
@@ -7,6 +6,7 @@ import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { currentLocale } from "@/i18n/locale";
 import { formatByteSize } from "@/i18n/format-size";
 import { parseQuotaUsageSum, type QuotaUsageSum } from "./quota-usage";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 function formatCount(count: number): string {
   return count.toLocaleString(currentLocale());
@@ -20,7 +20,7 @@ export default function QuotaUsageSumSection({ domain }: Props) {
   const { t } = useTranslation();
   const pattern = domain ? "/quota/domains/{domain}" : "/quota/sum";
   const canView = useIsAllowed("GET", pattern);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("quota-usage-sum");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<QuotaUsageSum | null>(null);
   const [error, setError] = useState(false);
@@ -49,16 +49,12 @@ export default function QuotaUsageSumSection({ domain }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {domain ? t("quotaUsage.domainTitle") : t("quotaUsage.globalTitle")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {loading ? (
             <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
           ) : error ? (

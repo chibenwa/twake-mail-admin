@@ -1,6 +1,6 @@
 import { FormEvent, useId, useState } from "react";
 import { Link } from "react-router";
-import { ChevronDown, ChevronRight, Search, Loader2 } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { apiClient } from "@/lib/apiClient";
@@ -11,6 +11,7 @@ import { currentLocale } from "@/i18n/locale";
 import { formatByteSize } from "@/i18n/format-size";
 import { formatPercent } from "@/i18n/format-percent";
 import { toErrorMessage } from "./error-message";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -99,7 +100,7 @@ export default function ExploreUserQuota({ domain }: Props) {
   const canSearchGlobal = useIsAllowed("GET", "/quota/users?minOccupationRatio={min}&maxOccupationRatio={max}&limit={limit}&offset={offset}");
   const canSearchDomain = useIsAllowed("GET", "/quota/users?minOccupationRatio={min}&maxOccupationRatio={max}&limit={limit}&offset={offset}&domain={domain}");
   const canSearch = domain ? canSearchDomain : canSearchGlobal;
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("explore-user-quota");
   const [minPercent, setMinPercent] = useState("80");
   const [maxPercent, setMaxPercent] = useState("100");
   const [page, setPage] = useState(1);
@@ -157,16 +158,12 @@ export default function ExploreUserQuota({ domain }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("exploreQuota.title")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {/* Search controls */}
           <div className="p-4 bg-gray-50 rounded-2 space-y-3">
             <form onSubmit={handleSearch} noValidate className="flex items-start gap-3 flex-wrap">

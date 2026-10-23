@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -11,6 +11,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import TeamMailboxFolderCounts from "./team-mailbox-folder-counts";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -34,7 +35,7 @@ export default function TeamMailboxFolders({ domain, mailbox }: Props) {
 
   const { data: folders, isLoading, error, refresh } = useFetchData<GetTeamMailboxFoldersResponseType>(canView ? fetchFolders : null);
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("folders");
   const [page, setPage] = useState(1);
   const [newFolder, setNewFolder] = useState("");
   const [showCreateInput, setShowCreateInput] = useState(false);
@@ -99,19 +100,15 @@ export default function TeamMailboxFolders({ domain, mailbox }: Props) {
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-1 text-md font-semibold w-full text-left"
-        >
-          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           {t("domains.folders.title")}
           {folders && (
             <span className="text-sm font-normal text-gray-500">({sorted.length})</span>
           )}
-        </button>
-        {open && canCreate && (
+        </SectionToggle>
+        {canCreate && (
           <button
-            onClick={() => setShowCreateInput(!showCreateInput)}
+            onClick={() => { if (!open) { setOpen(true); setShowCreateInput(true); } else setShowCreateInput(!showCreateInput); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("domains.folders.createTooltip")}
           >
@@ -121,7 +118,7 @@ export default function TeamMailboxFolders({ domain, mailbox }: Props) {
       </div>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {showCreateInput && (
             <div className="flex gap-2 mt-2 mb-2">
               <input

@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import Header from "@/components/custom/header";
+import { ExpandCollapseAll, SectionsProvider } from "@/components/custom/collapsible-section";
 import { Button } from "@/components/ui/button";
 import ExploreUserQuota from "@/components/custom/explore-user-quota";
 import QuotaUsageSumSection from "@/components/custom/quota-usage-sum";
@@ -93,8 +94,9 @@ export default function GlobalQuota() {
   };
 
   return (
+    <SectionsProvider page="globalQuota">
     <div className="p-4 w-fit max-w-full">
-      <Header headerTitle={t("globalQuota.title")} headerSubTitle={t("globalQuota.subtitle")} docuUrl={docuUrl} />
+      <Header headerTitle={t("globalQuota.title")} headerSubTitle={t("globalQuota.subtitle")} docuUrl={docuUrl} actions={<ExpandCollapseAll />} />
 
       <div className="mt-4">
         {isLoading && (
@@ -188,5 +190,6 @@ export default function GlobalQuota() {
         <ExploreUserQuota />
       </div>
     </div>
+    </SectionsProvider>
   );
 }

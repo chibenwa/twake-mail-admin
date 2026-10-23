@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useState } from "react";
-import { ChevronDown, ChevronRight, Loader2, Save } from "lucide-react";
+import { Loader2, Save } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
 import ErrorDisplayer from "@/components/custom/error-displayer";
@@ -15,6 +15,7 @@ import {
   toRateLimitInputs,
   toRateLimitsPayload,
 } from "./rate-limits";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const EMPTY: RateLimits = normalizeRateLimits(null);
 const EMPTY_INPUTS: RateLimitInputs = toRateLimitInputs(EMPTY);
@@ -30,7 +31,7 @@ export default function RateLimitsSection({ fetchRateLimits, updateRateLimits, d
   const { t } = useTranslation();
   const { toast } = useToast();
   const idPrefix = useId();
-  const [open, setOpen] = useState(defaultOpen ?? false);
+  const [open, setOpen, openContentId] = useSectionOpen("rate-limits", defaultOpen ?? false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<RateLimitInputs>({ ...EMPTY_INPUTS });
@@ -81,16 +82,12 @@ export default function RateLimitsSection({ fetchRateLimits, updateRateLimits, d
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("rateLimits.sectionTitle")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />

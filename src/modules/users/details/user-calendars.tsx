@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useState } from "react";
 import { Link } from "react-router";
-import { CalendarDays, ChevronDown, ChevronRight, Plus, Minus, Pencil, Trash2, Save, Eye, EyeOff, Users, Loader2 } from "lucide-react";
+import { CalendarDays, Plus, Minus, Pencil, Trash2, Save, Eye, EyeOff, Users, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -19,6 +19,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DEFAULT_CALENDAR_COLOR, isValidCalendarColor, toColorPickerValue } from "./calendar-color";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
@@ -26,6 +27,8 @@ interface Props {
   onCalendarsChanged?: () => void;
   // Reports how many calendars are listed, e.g. for the summary of the data a deletion loses.
   onCount?: (count: number) => void;
+  // Open on a first visit of the page
+  defaultOpen?: boolean;
 }
 
 type CalendarCategory = "owner" | "delegated" | "subscription" | "resource";
@@ -294,7 +297,7 @@ function CalendarColorField({ value, onChange }: { value: string | undefined; on
   );
 }
 
-export default function UserCalendars({ username, onCalendarsChanged, onCount }: Props) {
+export default function UserCalendars({ username, onCalendarsChanged, onCount, defaultOpen = false }: Props) {
   const { t } = useTranslation();
   const idPrefix = useId();
   const { toast } = useToast();
@@ -324,7 +327,7 @@ export default function UserCalendars({ username, onCalendarsChanged, onCount }:
     canView && canRegisteredUsers ? fetchRegisteredUsers : null
   );
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("calendars", defaultOpen);
   const [showCreate, setShowCreate] = useState(false);
   const [createForm, setCreateForm] = useState<CreateUserCalendarPayload>({ ...EMPTY_CREATE });
   const [creating, setCreating] = useState(false);
@@ -444,19 +447,15 @@ export default function UserCalendars({ username, onCalendarsChanged, onCount }:
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("users.calendars.title")}
         {data && (
           <span className="text-sm font-normal text-gray-500">({calendars.length})</span>
         )}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2 space-y-4">
+        <div id={openContentId} className="mt-2 space-y-4">
           {isLoading && (
             <div className="h-[40px] rounded-2 animate-pulse bg-gray-200" />
           )}

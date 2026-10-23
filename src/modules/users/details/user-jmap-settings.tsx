@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { ChevronDown, ChevronRight, Plus, Trash2, Save, Loader2, RotateCcw } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -7,6 +7,7 @@ import { getUserJmapSettings, updateUserJmapSettings } from "../api-client";
 import { useToast } from "@/hooks/use-toast";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const KEY_REGEX = /^[a-zA-Z0-9.\-_#]{1,255}$/;
 
@@ -33,7 +34,7 @@ export default function UserJmapSettings({ username }: Props) {
   const canView = useIsAllowed("GET", "/users/{username}/jmap/settings");
   const canUpdate = useIsAllowed("PUT", "/users/{username}/jmap/settings");
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("jmap-settings");
 
   const fetchSettings = useCallback(() => getUserJmapSettings(username), [username]);
   const { data: settings, isLoading, error, refresh } = useFetchData<Record<string, string>>(
@@ -136,20 +137,16 @@ export default function UserJmapSettings({ username }: Props) {
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-        >
-          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           {t("users.jmapSettings.title")}
           {savedCount !== null && (
             <span className="text-sm font-normal text-gray-500">({savedCount})</span>
           )}
-        </button>
+        </SectionToggle>
       </div>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {isLoading && (
             <div className="h-[40px] rounded-2 animate-pulse bg-gray-200" />
           )}

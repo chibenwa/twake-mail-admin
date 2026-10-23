@@ -81,7 +81,9 @@
     "remove": "Entfernen",
     "optional": "optional",
     "advancedOptions": "Erweiterte Optionen",
-    "breadcrumb": "Brotkrumennavigation"
+    "breadcrumb": "Brotkrumennavigation",
+    "expandAll": "Alle aufklappen",
+    "collapseAll": "Alle zuklappen"
   },
   "sidebar": {
     "application": "Anwendung",

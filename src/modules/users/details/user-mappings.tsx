@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { useUserMappingsRevision } from "./user-mappings-revision";
@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
@@ -28,7 +29,7 @@ export default function UserMappings({ username }: Props) {
   const canView = useIsAllowed("GET", "/mappings/user/{username}");
   const canDeleteSources = useIsAllowed("DELETE", "/mappings/sources/{username}");
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("mappings");
   const { revision, notifyMappingsChanged } = useUserMappingsRevision();
 
   // Mappings originating from user
@@ -98,22 +99,18 @@ export default function UserMappings({ username }: Props) {
   return (
     <div className="mt-6">
       <div className="flex items-center gap-2">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-        >
-          {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
           {t("users.mappings.title")}
           {!isLoading && (
             <span className="text-sm font-normal text-gray-500">
               ({totalCount})
             </span>
           )}
-        </button>
+        </SectionToggle>
       </div>
 
       {open && (
-        <div className="mt-2">
+        <div id={openContentId} className="mt-2">
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />

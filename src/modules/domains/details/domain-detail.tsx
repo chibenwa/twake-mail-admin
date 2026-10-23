@@ -14,6 +14,7 @@ import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { appConfig } from "@/lib/config";
 import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
+import { ExpandCollapseAll, SectionsProvider } from "@/components/custom/collapsible-section";
 
 export default function DomainDetail() {
   const { t } = useTranslation();
@@ -25,8 +26,8 @@ export default function DomainDetail() {
   const updateRateLimits = useCallback((limits: any) => updateDomainRateLimits(domain!, limits), [domain]);
 
   return (
-    <>
-    <Header headerTitle={domain} headerSubTitle={t("domains.detailKind")} breadcrumb={breadcrumbs.domains()} />
+    <SectionsProvider page="domain">
+    <Header headerTitle={domain} headerSubTitle={t("domains.detailKind")} breadcrumb={breadcrumbs.domains()} actions={<ExpandCollapseAll />} />
     <div className="mt-4 p-4 bg-white rounded-2">
 
       <DomainQuotaSection domain={domain!} />
@@ -38,6 +39,6 @@ export default function DomainDetail() {
       <DomainJmapReport domain={domain!} />
       <DomainTasks domain={domain!} />
     </div>
-    </>
+    </SectionsProvider>
   );
 }

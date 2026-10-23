@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Contact } from "lucide-react";
+import { Contact } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { CollectionCount, CollectionCountBadge, ExportCollectionButton, ImportCollectionButton } from "@/components/custom/dav-collection-actions";
@@ -7,6 +7,7 @@ import { RunTaskResponse } from "@/modules/common-tasks/types";
 import { DomainAddressBookId, exportDomainAddressBook, getDomainAddressBookContactCount, importDomainAddressBook } from "../api-client";
 import ClearAddressBookButton from "./clear-address-book-button";
 import CopyAddressBookButton from "./copy-address-book-button";
+import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const LABEL_KEYS: Record<DomainAddressBookId, string> = {
   dab: "domains.addressBookCounts.dab",
@@ -121,7 +122,7 @@ export default function DomainAddressBookCounts({ domain }: Props) {
       copy: false,
     },
   };
-  const [open, setOpen] = useState(false);
+  const [open, setOpen, openContentId] = useSectionOpen("address-book-counts");
 
   const addressBookIds = (Object.keys(permissions) as DomainAddressBookId[])
     .filter((id) => isVisible(permissions[id]));
@@ -130,16 +131,12 @@ export default function DomainAddressBookCounts({ domain }: Props) {
 
   return (
     <div className="mt-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-md font-semibold hover:text-blue-600 transition"
-      >
-        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
         {t("domains.addressBookCounts.title")}
-      </button>
+      </SectionToggle>
 
       {open && (
-        <div className="mt-2 space-y-1">
+        <div id={openContentId} className="mt-2 space-y-1">
           {addressBookIds.map((id) => (
             <AddressBookRow key={id} domain={domain} addressBookId={id} permissions={permissions[id]} />
           ))}

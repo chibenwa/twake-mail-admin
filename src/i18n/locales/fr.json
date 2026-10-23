@@ -81,7 +81,9 @@
     "remove": "Retirer",
     "optional": "facultatif",
     "advancedOptions": "Options avancées",
-    "breadcrumb": "Fil d'Ariane"
+    "breadcrumb": "Fil d'Ariane",
+    "expandAll": "Tout déplier",
+    "collapseAll": "Tout replier"
   },
   "sidebar": {
     "application": "Application",
