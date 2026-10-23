@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import type { UserExistsStatus } from "@/hooks/use-check-user-exists";
 
 const api = vi.hoisted(() => ({
@@ -103,5 +103,33 @@ describe("CalendarDomainAdmins existing admin", () => {
     fireEvent.click(add);
 
     await waitFor(() => expect(api.addDomainAdmin).toHaveBeenCalledWith("open-paas.org", "bob@open-paas.org"));
+  });
+});
+
+describe("CalendarDomainAdmins add modal", () => {
+  it("opens the closed section and a modal from the +, then adds the admin and closes", async () => {
+    userCheck.status = "exists";
+    render(<CalendarDomainAdmins domain="open-paas.org" />);
+
+    fireEvent.click(screen.getByTitle("domains.calendarAdmins.addTooltip"));
+    const dialog = await screen.findByRole("dialog", { name: "domains.calendarAdmins.addTooltip" });
+    expect(screen.getByPlaceholderText("domains.calendarAdmins.searchPlaceholder")).toBeTruthy();
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "domains.calendarAdmins.addTooltip" }), { target: { value: "bob@open-paas.org" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "common.add" }));
+
+    await waitFor(() => expect(api.addDomainAdmin).toHaveBeenCalledWith("open-paas.org", "bob@open-paas.org"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("keeps the modal open with the typed address and shows the refusal in it", async () => {
+    userCheck.status = "exists";
+    api.addDomainAdmin.mockRejectedValue(new Error("Forbidden"));
+    const input = await openAddInput();
+    const dialog = screen.getByRole("dialog");
+
+    fireEvent.click(addButton());
+
+    expect((await within(dialog).findByRole("alert")).textContent).toContain("Forbidden");
+    expect(input).toHaveProperty("value", "nobody@open-paas.org");
   });
 });

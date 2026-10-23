@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useCheckUserExists } from "@/hooks/use-check-user-exists";
 import ErrorDisplayer from "@/components/custom/error-displayer";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 import { useTranslation } from "react-i18next";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 
@@ -50,20 +51,18 @@ export default function CalendarDomainAdmins({ domain, defaultOpen = false }: Pr
   const isAlreadyAdmin = isListedAdmin(admins ?? [], trimmedAdmin);
   const canSubmit = !!trimmedAdmin && !isAlreadyAdmin && adminStatus === "exists";
 
+  const closeAdd = () => {
+    setShowAddInput(false);
+    setNewAdmin("");
+  };
+
+  // Throws on a refusal: the modal shows it and keeps the typed address
   const handleAdd = async () => {
     if (!canSubmit) return;
-    try {
-      await addDomainAdmin(domain, trimmedAdmin);
-      toast({ title: t("domains.calendarAdmins.added") });
-      setNewAdmin("");
-      setShowAddInput(false);
-      await refresh();
-    } catch (err) {
-      toast({
-        title: t("domains.calendarAdmins.errorAdding"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    }
+    await addDomainAdmin(domain, trimmedAdmin);
+    toast({ title: t("domains.calendarAdmins.added") });
+    closeAdd();
+    await refresh();
   };
 
   const handleRemove = async (username: string) => {
@@ -99,7 +98,7 @@ export default function CalendarDomainAdmins({ domain, defaultOpen = false }: Pr
         </SectionToggle>
         {canAdd && (
           <button
-            onClick={() => { if (!open) { setOpen(true); setShowAddInput(true); } else setShowAddInput(!showAddInput); }}
+            onClick={() => { setOpen(true); setShowAddInput(true); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("domains.calendarAdmins.addTooltip")}
           >
@@ -110,54 +109,6 @@ export default function CalendarDomainAdmins({ domain, defaultOpen = false }: Pr
 
       {open && (
         <div id={openContentId} className="mt-2">
-          {showAddInput && (
-            <div className="flex gap-2 mt-2 mb-2">
-              <input
-                autoFocus
-                type="text"
-                value={newAdmin}
-                onChange={(e) => setNewAdmin(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-                placeholder={t("domains.calendarAdmins.addPlaceholder")}
-                className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-              />
-              {adminStatus === "checking" && (
-                <span className="flex items-center text-xs text-gray-400 whitespace-nowrap">{t("common.checking")}</span>
-              )}
-              {isAlreadyAdmin && (
-                <span className="flex items-center gap-1 text-xs text-orange-500 whitespace-nowrap">
-                  <span className="inline-block w-2 h-2 rounded-full bg-orange-400" />
-                  {t("domains.calendarAdmins.alreadyAdmin")}
-                </span>
-              )}
-              {!isAlreadyAdmin && adminStatus === "exists" && (
-                <span className="flex items-center gap-1 text-xs text-green-600 whitespace-nowrap">
-                  <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
-                  {t("common.userExists")}
-                </span>
-              )}
-              {adminStatus === "not_found" && (
-                <span className="flex items-center gap-1 text-xs text-orange-500 whitespace-nowrap">
-                  <span className="inline-block w-2 h-2 rounded-full bg-orange-400" />
-                  {t("common.userNotFound")}
-                </span>
-              )}
-              {adminStatus === "invalid" && (
-                <span className="flex items-center gap-1 text-xs text-red-600 whitespace-nowrap">
-                  <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
-                  {t("common.invalidUsername")}
-                </span>
-              )}
-              <button
-                onClick={handleAdd}
-                disabled={!canSubmit}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {t("common.add")}
-              </button>
-            </div>
-          )}
-
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -203,6 +154,35 @@ export default function CalendarDomainAdmins({ domain, defaultOpen = false }: Pr
           )}
         </div>
       )}
+      <FormDialog
+        open={showAddInput}
+        onClose={closeAdd}
+        title={t("domains.calendarAdmins.addTooltip")}
+        submitLabel={t("common.add")}
+        submitDisabled={!canSubmit}
+        onSubmit={handleAdd}
+      >
+        <div>
+          {/* The only field: named by the action, the modal title */}
+          <input
+            autoFocus
+            aria-label={t("domains.calendarAdmins.addTooltip")}
+            type="text"
+            value={newAdmin}
+            onChange={(e) => setNewAdmin(e.target.value)}
+            placeholder={t("domains.calendarAdmins.addPlaceholder")}
+            className={FIELD_CLASS}
+          />
+          {/* Reserved height: the status appearing does not resize the modal */}
+          <p className="h-4 mt-1 text-xs">
+            {trimmedAdmin && adminStatus === "checking" && <span className="text-gray-400">{t("common.checking")}</span>}
+            {isAlreadyAdmin && <span className="text-orange-600">{t("domains.calendarAdmins.alreadyAdmin")}</span>}
+            {!isAlreadyAdmin && adminStatus === "exists" && <span className="text-green-700">{t("common.userExists")}</span>}
+            {adminStatus === "not_found" && <span className="text-orange-600">{t("common.userNotFound")}</span>}
+            {adminStatus === "invalid" && <span className="text-red-600">{t("common.invalidUsername")}</span>}
+          </p>
+        </div>
+      </FormDialog>
     </div>
   );
 }
