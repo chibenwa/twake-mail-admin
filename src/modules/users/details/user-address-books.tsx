@@ -397,12 +397,24 @@ export default function UserAddressBooks({ username, defaultOpen = false }: Prop
 
   return (
     <div className="mt-6">
-      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
-        {t("users.addressBooks.title")}
-        {data && (
-          <span className="text-sm font-normal text-gray-500">({addressBooks.length})</span>
+      {/* Like the other sections: the + sits next to the title, and opens the section */}
+      <div className="flex items-center gap-2">
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
+          {t("users.addressBooks.title")}
+          {data && (
+            <span className="text-sm font-normal text-gray-500">({addressBooks.length})</span>
+          )}
+        </SectionToggle>
+        {canCreate && (
+          <button
+            onClick={() => { setOpen(true); setShowCreate(true); }}
+            className="p-1 rounded-md hover:bg-gray-200 transition"
+            title={t("users.addressBooks.createTitle")}
+          >
+            <Plus className="w-4 h-4" />
+          </button>
         )}
-      </SectionToggle>
+      </div>
 
       {open && (
         <div id={openContentId} className="mt-2 space-y-4">
@@ -417,17 +429,6 @@ export default function UserAddressBooks({ username, defaultOpen = false }: Prop
 
           {data && (addressBooks.length > 0 || canCreate) && (
             <div>
-              {canCreate && (
-                <div className="flex items-center gap-2 mb-2">
-                  <button
-                    onClick={() => setShowCreate(true)}
-                    className="p-1 rounded-md hover:bg-gray-200 transition"
-                    title={t("users.addressBooks.createTitle")}
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
               <div className="space-y-1">
                 {addressBooks.map((ab, i) => (
                   <AddressBookRow
