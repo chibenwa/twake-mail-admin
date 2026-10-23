@@ -734,7 +734,6 @@
       "description": "Description (optional)",
       "descriptionPlaceholder": "Work emails",
       "created": "Label created",
-      "errorCreating": "Error creating label",
       "empty": "No labels configured.",
       "displayName": "Display Name",
       "readOnly": "Read Only",

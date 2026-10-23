@@ -734,7 +734,6 @@
       "description": "Description (optionnel)",
       "descriptionPlaceholder": "Emails professionnels",
       "created": "Étiquette créée",
-      "errorCreating": "Erreur lors de la création de l'étiquette",
       "empty": "Aucune étiquette configurée.",
       "displayName": "Nom d'affichage",
       "readOnly": "Lecture seule",

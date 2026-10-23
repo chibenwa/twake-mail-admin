@@ -59,14 +59,31 @@ describe("user labels: edit dialog color", () => {
   });
 });
 
+describe("user labels: create modal", () => {
+  it("opens the section and a modal from the +, and creates the typed label", async () => {
+    render(<UserLabels username="bob@example.com" />);
+    fireEvent.click(screen.getByTitle("users.labels.createButton"));
+
+    const dialog = await screen.findByRole("dialog");
+    expect(screen.getByText("users.labels.title").closest("button")?.getAttribute("aria-expanded")).toBe("true");
+    fireEvent.change(screen.getByLabelText("users.labels.displayNameLabel"), { target: { value: " Work " } });
+    fireEvent.change(screen.getByLabelText("users.labels.description"), { target: { value: "Work emails" } });
+    fireEvent.click(screen.getByRole("button", { name: "common.create" }));
+
+    await waitFor(() =>
+      expect(createUserLabel).toHaveBeenCalledWith("bob@example.com", { displayName: "Work", description: "Work emails" })
+    );
+    await waitFor(() => expect(dialog.isConnected).toBe(false));
+  });
+});
+
 // jsdom does not submit a form on Enter: submitting the field's form is what the browser does then
 describe("user labels: Enter in a field", () => {
   it("creates the label, like Create", async () => {
     render(<UserLabels username="bob@example.com" />);
-    fireEvent.click(screen.getByText("users.labels.title"));
     fireEvent.click(screen.getByTitle("users.labels.createButton"));
 
-    const displayName = screen.getByLabelText("users.labels.displayNameLabel") as HTMLInputElement;
+    const displayName = (await screen.findByLabelText("users.labels.displayNameLabel")) as HTMLInputElement;
     fireEvent.change(displayName, { target: { value: "QAEnter" } });
     fireEvent.submit(displayName.form!);
 

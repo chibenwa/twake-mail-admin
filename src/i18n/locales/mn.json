@@ -734,7 +734,6 @@
       "description": "Тайлбар (заавал биш)",
       "descriptionPlaceholder": "Ажлын и-мэйл",
       "created": "Шошго үүслээ",
-      "errorCreating": "Шошго үүсгэхэд алдаа гарлаа",
       "empty": "Шошго тохируулаагүй байна.",
       "displayName": "Харагдах нэр",
       "readOnly": "Зөвхөн унших",

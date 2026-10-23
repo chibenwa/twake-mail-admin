@@ -736,7 +736,6 @@
       "description": "Описание (необязательно)",
       "descriptionPlaceholder": "Рабочая почта",
       "created": "Метка создана",
-      "errorCreating": "Ошибка при создании метки",
       "empty": "Метки не настроены.",
       "displayName": "Отображаемое имя",
       "readOnly": "Только для чтения",

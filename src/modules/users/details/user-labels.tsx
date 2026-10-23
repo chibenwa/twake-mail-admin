@@ -12,6 +12,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 
 interface Props {
   username: string;
@@ -40,7 +41,6 @@ export default function UserLabels({ username }: Props) {
   const [open, setOpen, openContentId] = useSectionOpen("labels");
   const [showCreate, setShowCreate] = useState(false);
   const [createForm, setCreateForm] = useState<UserLabelCreatePayload>({ ...EMPTY_CREATE });
-  const [creating, setCreating] = useState(false);
 
   const [editLabel, setEditLabel] = useState<UserLabel | null>(null);
   const [editForm, setEditForm] = useState<UserLabelUpdatePayload>({ displayName: "" });
@@ -48,26 +48,18 @@ export default function UserLabels({ username }: Props) {
 
   if (!canView) return null;
 
+  // A refusal throws: the modal shows it and keeps the typed values
   const handleCreate = async () => {
-    if (!createForm.displayName.trim()) return;
-    setCreating(true);
-    try {
-      const payload: UserLabelCreatePayload = {
-        displayName: createForm.displayName.trim(),
-      };
-      if (createForm.keyword?.trim()) payload.keyword = createForm.keyword.trim();
-      if (createForm.color?.trim()) payload.color = createForm.color.trim();
-      if (createForm.description?.trim()) payload.description = createForm.description.trim();
-      await createUserLabel(username, payload);
-      toast({ title: t("users.labels.created") });
-      setCreateForm({ ...EMPTY_CREATE });
-      setShowCreate(false);
-      await refresh();
-    } catch (err) {
-      toast({ title: t("users.labels.errorCreating"), description: <ErrorDisplayer error={err} /> });
-    } finally {
-      setCreating(false);
-    }
+    const payload: UserLabelCreatePayload = {
+      displayName: createForm.displayName.trim(),
+    };
+    if (createForm.keyword?.trim()) payload.keyword = createForm.keyword.trim();
+    if (createForm.color?.trim()) payload.color = createForm.color.trim();
+    if (createForm.description?.trim()) payload.description = createForm.description.trim();
+    await createUserLabel(username, payload);
+    toast({ title: t("users.labels.created") });
+    setCreateForm({ ...EMPTY_CREATE });
+    await refresh();
   };
 
   const openEdit = (label: UserLabel) => {
@@ -123,7 +115,8 @@ export default function UserLabels({ username }: Props) {
         </SectionToggle>
         {canCreate && (
           <button
-            onClick={() => { if (!open) { setOpen(true); setShowCreate(true); } else setShowCreate(!showCreate); }}
+            type="button"
+            onClick={() => { setOpen(true); setShowCreate(true); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("users.labels.createButton")}
           >
@@ -132,89 +125,72 @@ export default function UserLabels({ username }: Props) {
         )}
       </div>
 
+      <FormDialog
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+        title={t("users.labels.newTitle")}
+        submitLabel={t("common.create")}
+        submitDisabled={!createForm.displayName.trim()}
+        onSubmit={handleCreate}
+      >
+        <div>
+          <label htmlFor={`${idPrefix}-create-displayName`} className="text-sm font-medium">{t("users.labels.displayNameLabel")}</label>
+          <input
+            autoFocus
+            id={`${idPrefix}-create-displayName`}
+            type="text"
+            value={createForm.displayName}
+            onChange={(e) => setCreateForm((f) => ({ ...f, displayName: e.target.value }))}
+            placeholder={t("users.labels.displayNamePlaceholder")}
+            className={FIELD_CLASS}
+          />
+        </div>
+        <div>
+          <label htmlFor={`${idPrefix}-create-keyword`} className="text-sm font-medium">{t("users.labels.keyword")}</label>
+          <input
+            id={`${idPrefix}-create-keyword`}
+            type="text"
+            value={createForm.keyword ?? ""}
+            onChange={(e) => setCreateForm((f) => ({ ...f, keyword: e.target.value }))}
+            placeholder={t("users.labels.keywordHint")}
+            className={FIELD_CLASS}
+          />
+        </div>
+        <div>
+          <label htmlFor={`${idPrefix}-create-color`} className="text-sm font-medium">{t("users.labels.color")}</label>
+          <div className="flex gap-2 mt-1 items-center">
+            <input
+              type="color"
+              value={createForm.color?.trim() || "#000000"}
+              onChange={(e) => setCreateForm((f) => ({ ...f, color: e.target.value }))}
+              aria-label={t("users.labels.colorPicker")}
+              className="h-9 w-12 cursor-pointer border rounded-md"
+            />
+            <input
+              id={`${idPrefix}-create-color`}
+              type="text"
+              value={createForm.color ?? ""}
+              onChange={(e) => setCreateForm((f) => ({ ...f, color: e.target.value }))}
+              placeholder={t("users.labels.colorPlaceholder")}
+              className="flex-1 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+        <div>
+          <label htmlFor={`${idPrefix}-create-description`} className="text-sm font-medium">{t("users.labels.description")}</label>
+          <input
+            id={`${idPrefix}-create-description`}
+            type="text"
+            value={createForm.description ?? ""}
+            onChange={(e) => setCreateForm((f) => ({ ...f, description: e.target.value }))}
+            placeholder={t("users.labels.descriptionPlaceholder")}
+            className={FIELD_CLASS}
+          />
+        </div>
+      </FormDialog>
+
       {open && (
         <div id={openContentId} className="mt-2">
-          {showCreate && (
-            // A form, so that Enter in a field submits like Create
-            <form
-              className="p-4 bg-blue-50 rounded-2 mb-2 space-y-2"
-              onSubmit={(e) => { e.preventDefault(); if (!creating) handleCreate(); }}
-            >
-              <h5 className="text-sm font-semibold">{t("users.labels.newTitle")}</h5>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <div>
-                  <label htmlFor={`${idPrefix}-create-displayName`} className="text-xs text-gray-500">{t("users.labels.displayNameLabel")}</label>
-                  <input
-                    autoFocus
-                    id={`${idPrefix}-create-displayName`}
-                    type="text"
-                    value={createForm.displayName}
-                    onChange={(e) => setCreateForm((f) => ({ ...f, displayName: e.target.value }))}
-                    placeholder={t("users.labels.displayNamePlaceholder")}
-                    className="w-full mt-1 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label htmlFor={`${idPrefix}-create-keyword`} className="text-xs text-gray-500">{t("users.labels.keyword")}</label>
-                  <input
-                    id={`${idPrefix}-create-keyword`}
-                    type="text"
-                    value={createForm.keyword ?? ""}
-                    onChange={(e) => setCreateForm((f) => ({ ...f, keyword: e.target.value }))}
-                    placeholder={t("users.labels.keywordHint")}
-                    className="w-full mt-1 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <div>
-                  <label htmlFor={`${idPrefix}-create-color`} className="text-xs text-gray-500">{t("users.labels.color")}</label>
-                  <div className="flex gap-2 mt-1 items-center">
-                    <input
-                      type="color"
-                      value={createForm.color?.trim() || "#000000"}
-                      onChange={(e) => setCreateForm((f) => ({ ...f, color: e.target.value }))}
-                      aria-label={t("users.labels.colorPicker")}
-                      className="h-9 w-12 cursor-pointer border rounded-md"
-                    />
-                    <input
-                      id={`${idPrefix}-create-color`}
-                      type="text"
-                      value={createForm.color ?? ""}
-                      onChange={(e) => setCreateForm((f) => ({ ...f, color: e.target.value }))}
-                      placeholder={t("users.labels.colorPlaceholder")}
-                      className="flex-1 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor={`${idPrefix}-create-description`} className="text-xs text-gray-500">{t("users.labels.description")}</label>
-                  <input
-                    id={`${idPrefix}-create-description`}
-                    type="text"
-                    value={createForm.description ?? ""}
-                    onChange={(e) => setCreateForm((f) => ({ ...f, description: e.target.value }))}
-                    placeholder={t("users.labels.descriptionPlaceholder")}
-                    className="w-full mt-1 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => { setShowCreate(false); setCreateForm({ ...EMPTY_CREATE }); }}>
-                  {t("common.cancel")}
-                </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={creating || !createForm.displayName.trim()}
-                >
-                  {creating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
-                  {t("common.create")}
-                </Button>
-              </div>
-            </form>
-          )}
-
           {isLoading && (
             <div className="grid grid-cols-1 gap-4 mt-2">
               <div className="h-[40px] rounded-2 animate-pulse bg-gray-200" />

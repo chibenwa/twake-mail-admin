@@ -734,7 +734,6 @@
       "description": "Descripción (opcional)",
       "descriptionPlaceholder": "Correos de trabajo",
       "created": "Etiqueta creada",
-      "errorCreating": "Error al crear la etiqueta",
       "empty": "No hay etiquetas configuradas.",
       "displayName": "Nombre visible",
       "readOnly": "Solo lectura",

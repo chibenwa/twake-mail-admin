@@ -733,7 +733,6 @@
       "description": "Mô tả (tùy chọn)",
       "descriptionPlaceholder": "Email công việc",
       "created": "Đã tạo nhãn",
-      "errorCreating": "Lỗi khi tạo nhãn",
       "empty": "Chưa cấu hình nhãn nào.",
       "displayName": "Tên hiển thị",
       "readOnly": "Chỉ đọc",

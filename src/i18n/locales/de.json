@@ -734,7 +734,6 @@
       "description": "Beschreibung (optional)",
       "descriptionPlaceholder": "Geschäftliche E-Mails",
       "created": "Label erstellt",
-      "errorCreating": "Fehler beim Erstellen des Labels",
       "empty": "Keine Labels konfiguriert.",
       "displayName": "Anzeigename",
       "readOnly": "Schreibgeschützt",

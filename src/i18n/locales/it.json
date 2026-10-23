@@ -734,7 +734,6 @@
       "description": "Descrizione (facoltativa)",
       "descriptionPlaceholder": "Email di lavoro",
       "created": "Etichetta creata",
-      "errorCreating": "Errore durante la creazione dell'etichetta",
       "empty": "Nessuna etichetta configurata.",
       "displayName": "Nome visualizzato",
       "readOnly": "Sola lettura",
