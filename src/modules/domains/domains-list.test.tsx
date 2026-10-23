@@ -62,7 +62,7 @@ describe("domains list: one toolbar line", () => {
   it("puts the search, Create a domain and Import on the same line", async () => {
     await renderList();
     const searchField = screen.getByPlaceholderText("domains.searchPlaceholder");
-    const toolbar = searchField.parentElement!;
+    const toolbar = searchField.closest("[data-list-toolbar]")!;
     expect(toolbar.contains(screen.getByRole("button", { name: "domains.createButton" }))).toBe(true);
     expect(toolbar.contains(screen.getByRole("button", { name: "domains.import.button" }))).toBe(true);
   });

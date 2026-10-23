@@ -12,6 +12,7 @@ import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import ImportDomainsButton from "./import-domains-button";
 import CreateDomainButton from "./create-domain-button";
+import ListToolbar from "@/components/custom/list-toolbar";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -71,18 +72,10 @@ export default function DomainsList() {
   return (
     <div>
       {/* One line: the search, then what can be done to the list */}
-      <div className="flex flex-wrap items-center gap-2 mt-4">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          placeholder={t("domains.searchPlaceholder")}
-          aria-label={t("domains.searchPlaceholder")}
-          className="flex-1 min-w-48 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-        />
+      <ListToolbar search={search} onSearch={(value) => { setSearch(value); setPage(1); }} placeholder={t("domains.searchPlaceholder")}>
         {canCreate && <CreateDomainButton onCreated={refresh} />}
         {canCreate && <ImportDomainsButton onImported={refresh} />}
-      </div>
+      </ListToolbar>
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
           <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
