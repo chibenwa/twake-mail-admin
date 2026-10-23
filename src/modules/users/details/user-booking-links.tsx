@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useId, useState } from "react";
 import { Plus, Minus, Copy, Pencil, Trash2, RefreshCw, Loader2, Save, CalendarX } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -18,14 +18,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useDomain } from "@/modules/domain-admin/domain-context";
 import { getRegisteredUsers } from "@/modules/registered-users/api-client";
 import { RegisteredUser } from "@/modules/registered-users/types";
-import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
   // Changes whenever the Calendars section of the page creates, renames or deletes a calendar.
   calendarsVersion?: number;
-  // Reports how many booking links are listed, e.g. for the summary of the data a deletion loses.
-  onCount?: (count: number) => void;
 }
 
 const DAYS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"] as const;
@@ -414,7 +412,7 @@ const EMPTY_CREATE: CreateBookingLinkPayload = {
   color: DEFAULT_COLOR,
 };
 
-export default function UserBookingLinks({ username, calendarsVersion, onCount }: Props) {
+export default function UserBookingLinks({ username, calendarsVersion }: Props) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const toastTaskCreated = useTaskCreatedToast();
@@ -476,12 +474,12 @@ export default function UserBookingLinks({ username, calendarsVersion, onCount }
   const [editClearRules, setEditClearRules] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Before the early return: a hook runs on every render
+  useSectionFact("booking-links", data?.length);
+
   if (!canView) return null;
 
   const links = data ?? [];
-  useEffect(() => {
-    if (data) onCount?.(links.length);
-  }, [data, onCount, links.length]);
   const createDurationMinutes = parseDurationMinutes(createDuration);
   const editDurationMinutes = parseDurationMinutes(editDuration);
 

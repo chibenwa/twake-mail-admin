@@ -346,6 +346,16 @@ Note: an address book row is shown when at least one of its actions is allowed; 
 | Page load | GET | `/users` | MUST |
 | Domain filter selector | GET | `/domains` | MAY (do not show the selector if missing) |
 
+### User detail — Summary strip *(APPLICATION:"MAIL")*
+
+Under the user, the essential facts of the account; each opens its section. Mailboxes, aliases and
+forwards are counted by their sections, whose own rows below apply; the strip itself reads:
+
+| Trigger | Verb | Pattern | MUST/MAY |
+|---------|------|---------|----------|
+| Quota fact | GET | `/quota/users/{username}` | MAY (the fact is not shown if missing) |
+| Vacation fact | GET | `/vacation/{username}` | MAY (the fact is not shown if missing) |
+
 ### User detail — Mailboxes tab *(APPLICATION:"MAIL")*
 
 | Trigger | Verb | Pattern | MUST/MAY |

@@ -83,7 +83,8 @@
     "advancedOptions": "Opciones avanzadas",
     "breadcrumb": "Ruta de navegación",
     "expandAll": "Desplegar todo",
-    "collapseAll": "Plegar todo"
+    "collapseAll": "Plegar todo",
+    "skipToContent": "Ir al contenido"
   },
   "sidebar": {
     "application": "Aplicación",
@@ -1122,7 +1123,20 @@
     },
     "subtitle": "Gestione los usuarios registrados en el servidor de correo.",
     "subtitleCalendar": "Gestione los usuarios registrados en el servidor de calendario.",
-    "detailKind": "Usuario"
+    "detailKind": "Usuario",
+    "summary": {
+      "quota": "Cuota: {{used}} / {{limit}} ({{percent}})",
+      "quotaUnlimited": "Cuota: {{used}}, ilimitada",
+      "mailboxes": "Buzones: {{count}}",
+      "aliases": "Alias: {{count}}",
+      "forwards": "Reenvíos: {{count}}",
+      "forwardsTo": "Reenvía a {{address}}",
+      "vacationOn": "Ausencia: activada",
+      "vacationOff": "Ausencia: desactivada",
+      "calendars": "Calendarios: {{count}}",
+      "addressBooks": "Libretas de direcciones: {{count}}",
+      "bookingLinks": "Enlaces de reserva: {{count}}"
+    }
   },
   "mailboxCounts": {
     "totalMessages": "Mensajes en total",

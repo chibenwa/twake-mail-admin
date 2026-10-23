@@ -83,7 +83,8 @@
     "advancedOptions": "Options avancées",
     "breadcrumb": "Fil d'Ariane",
     "expandAll": "Tout déplier",
-    "collapseAll": "Tout replier"
+    "collapseAll": "Tout replier",
+    "skipToContent": "Aller au contenu"
   },
   "sidebar": {
     "application": "Application",
@@ -1122,7 +1123,20 @@
     },
     "subtitle": "Gérer les utilisateurs enregistrés sur le serveur mail.",
     "subtitleCalendar": "Gérer les utilisateurs enregistrés sur le serveur calendrier.",
-    "detailKind": "Utilisateur"
+    "detailKind": "Utilisateur",
+    "summary": {
+      "quota": "Quota : {{used}} / {{limit}} ({{percent}})",
+      "quotaUnlimited": "Quota : {{used}}, illimité",
+      "mailboxes": "Boîtes : {{count}}",
+      "aliases": "Alias : {{count}}",
+      "forwards": "Transferts : {{count}}",
+      "forwardsTo": "Transfère vers {{address}}",
+      "vacationOn": "Absence : activée",
+      "vacationOff": "Absence : désactivée",
+      "calendars": "Calendriers : {{count}}",
+      "addressBooks": "Carnets d'adresses : {{count}}",
+      "bookingLinks": "Liens de réservation : {{count}}"
+    }
   },
   "mailboxCounts": {
     "totalMessages": "Messages totaux",

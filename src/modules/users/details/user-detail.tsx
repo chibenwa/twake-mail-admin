@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import UserMailboxes from "./user-mailboxes";
+import { MailUserSummary } from "./user-summary";
 import UserQuota from "./user-quota";
 import UserAliases from "./user-aliases";
 import UserForwards from "./user-forwards";
@@ -40,6 +41,7 @@ export default function UserDetail() {
   return (
     <SectionsProvider page="user">
     <Header headerTitle={username} headerSubTitle={t("users.detailKind")} breadcrumb={breadcrumbs.users()} actions={<ExpandCollapseAll />} />
+    <MailUserSummary username={username!} />
     <div className="mt-4 p-4 bg-white rounded-2">
 
       <UserMailboxes username={username!} />

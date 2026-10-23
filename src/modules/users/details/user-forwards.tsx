@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { Checkbox } from "@/components/ui/checkbox";
 import ErrorDisplayer from "@/components/custom/error-displayer";
-import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
@@ -33,6 +33,7 @@ export default function UserForwards({ username }: Props) {
   } = useFetchData<GetUserForwardsResponseType>(canView ? fetchForwards : null, revision);
 
   const [open, setOpen, openContentId] = useSectionOpen("forwards");
+  useSectionFact("forwards", forwards ?? undefined);
   const [newForward, setNewForward] = useState("");
   const [showCreateInput, setShowCreateInput] = useState(false);
 

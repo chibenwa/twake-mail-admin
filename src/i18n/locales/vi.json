@@ -83,7 +83,8 @@
     "advancedOptions": "Tùy chọn nâng cao",
     "breadcrumb": "Đường dẫn",
     "expandAll": "Mở rộng tất cả",
-    "collapseAll": "Thu gọn tất cả"
+    "collapseAll": "Thu gọn tất cả",
+    "skipToContent": "Chuyển đến nội dung"
   },
   "sidebar": {
     "application": "Ứng dụng",
@@ -1121,7 +1122,20 @@
     },
     "subtitle": "Quản lý người dùng đã đăng ký trên máy chủ thư.",
     "subtitleCalendar": "Quản lý người dùng đã đăng ký trên máy chủ lịch.",
-    "detailKind": "Người dùng"
+    "detailKind": "Người dùng",
+    "summary": {
+      "quota": "Hạn mức: {{used}} / {{limit}} ({{percent}})",
+      "quotaUnlimited": "Hạn mức: {{used}}, không giới hạn",
+      "mailboxes": "Hộp thư: {{count}}",
+      "aliases": "Bí danh: {{count}}",
+      "forwards": "Chuyển tiếp: {{count}}",
+      "forwardsTo": "Chuyển tiếp tới {{address}}",
+      "vacationOn": "Vắng mặt: bật",
+      "vacationOff": "Vắng mặt: tắt",
+      "calendars": "Lịch: {{count}}",
+      "addressBooks": "Sổ địa chỉ: {{count}}",
+      "bookingLinks": "Liên kết đặt lịch: {{count}}"
+    }
   },
   "mailboxCounts": {
     "totalMessages": "Tổng số thư",

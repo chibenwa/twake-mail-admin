@@ -83,7 +83,8 @@
     "advancedOptions": "Advanced options",
     "breadcrumb": "Breadcrumb",
     "expandAll": "Expand all",
-    "collapseAll": "Collapse all"
+    "collapseAll": "Collapse all",
+    "skipToContent": "Skip to content"
   },
   "sidebar": {
     "application": "Application",
@@ -1122,7 +1123,20 @@
     },
     "subtitle": "Manage users registered on the mail server.",
     "subtitleCalendar": "Manage users registered on the calendar server.",
-    "detailKind": "User"
+    "detailKind": "User",
+    "summary": {
+      "quota": "Quota: {{used}} / {{limit}} ({{percent}})",
+      "quotaUnlimited": "Quota: {{used}}, unlimited",
+      "mailboxes": "Mailboxes: {{count}}",
+      "aliases": "Aliases: {{count}}",
+      "forwards": "Forwards: {{count}}",
+      "forwardsTo": "Forwards to {{address}}",
+      "vacationOn": "Vacation: on",
+      "vacationOff": "Vacation: off",
+      "calendars": "Calendars: {{count}}",
+      "addressBooks": "Address books: {{count}}",
+      "bookingLinks": "Booking links: {{count}}"
+    }
   },
   "mailboxCounts": {
     "totalMessages": "Total messages",

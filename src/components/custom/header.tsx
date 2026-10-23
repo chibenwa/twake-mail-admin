@@ -68,7 +68,8 @@ const Header: React.FC<HeaderProps> = ({
             </p>
           )}
         </div>
-        {actions}
+        {/* Anchored right, also when the title wraps it onto its own line */}
+        {actions && <div className="ml-auto shrink-0">{actions}</div>}
       </div>
     </div>
   );

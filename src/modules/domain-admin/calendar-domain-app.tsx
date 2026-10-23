@@ -20,6 +20,7 @@ import RegisteredUsers from "@/modules/registered-users";
 import RegisteredUsersList from "@/modules/registered-users/registered-users-list";
 import TaskDetail from "@/modules/common-tasks/task-detail";
 import CalendarResourceDetail from "@/modules/domains/details/calendar-resource-detail";
+import { MAIN_CONTENT_ID, SkipLink } from "@/components/custom/skip-link";
 
 interface Props {
   domain: string;
@@ -31,8 +32,9 @@ export default function CalendarDomainApp({ domain }: Props) {
     <DomainProvider value={domain}>
       <ConfirmProvider>
         <SidebarProvider>
+          <SkipLink />
           <CalendarDomainSidebar />
-          <SidebarInset>
+          <SidebarInset id={MAIN_CONTENT_ID} tabIndex={-1} className="focus:outline-hidden">
             <MobileSidebarBar />
             <div className="p-4">
               <Routes>

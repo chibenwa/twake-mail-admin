@@ -47,12 +47,21 @@ interface SectionsContextValue {
   register: (id: string, defaultOpen: boolean) => () => void;
 }
 
+// What the sections of a page know about their object (a count…), for its summary strip
+type Facts = Record<string, unknown>;
+const FactsContext = createContext<{ facts: Facts; report: (id: string, value: unknown) => void } | null>(null);
+
+const contentIdOf = (id: string) => `section-${id}-content`;
+
 const SectionsContext = createContext<SectionsContextValue | null>(null);
 
 /** Groups the sections of a page: they remember their state under `page`, and Expand all reaches them. */
 export function SectionsProvider({ page, children }: { page: string; children: ReactNode }) {
   const sections = useRef(new Map<string, number>());
   const [, setVersion] = useState(0);
+  const [facts, setFacts] = useState<Facts>({});
+  const report = useCallback((id: string, value: unknown) =>
+    setFacts((current) => (Object.is(current[id], value) ? current : { ...current, [id]: value })), []);
   const register = useCallback((id: string) => {
     sections.current.set(id, (sections.current.get(id) ?? 0) + 1);
     setVersion((v) => v + 1);
@@ -64,7 +73,9 @@ export function SectionsProvider({ page, children }: { page: string; children: R
   }, []);
   return (
     <SectionsContext.Provider value={{ page, register }}>
-      <SectionIdsContext.Provider value={sections}>{children}</SectionIdsContext.Provider>
+      <SectionIdsContext.Provider value={sections}>
+        <FactsContext.Provider value={{ facts, report }}>{children}</FactsContext.Provider>
+      </SectionIdsContext.Provider>
     </SectionsContext.Provider>
   );
 }
@@ -79,7 +90,9 @@ type SetOpen = (open: boolean | ((open: boolean) => boolean)) => void;
  */
 export function useSectionOpen(id: string, defaultOpen = false): [boolean, SetOpen, string] {
   const context = useContext(SectionsContext);
-  const contentId = useId();
+  const generatedId = useId();
+  // Known in advance inside a page, so that its summary strip can scroll to the section
+  const contentId = context ? contentIdOf(id) : generatedId;
   const [local, setLocal] = useState(defaultOpen);
   const key = context ? storageKey(context.page, id) : "";
   const stored = useSyncExternalStore(
@@ -140,4 +153,30 @@ export function ExpandCollapseAll() {
       <button type="button" className="text-blue-600 hover:underline" onClick={() => setAll(false)}>{t("common.collapseAll")}</button>
     </div>
   );
+}
+
+/** Reports a fact of a section (e.g. its count) to the summary strip of its page. */
+export function useSectionFact(id: string, value: unknown): void {
+  const report = useContext(FactsContext)?.report;
+  useEffect(() => {
+    if (value !== undefined) report?.(id, value);
+  }, [report, id, value]);
+}
+
+export function useSectionFacts(): Facts {
+  return useContext(FactsContext)?.facts ?? {};
+}
+
+/** Opens a section of the page and scrolls to it, e.g. from its summary strip. */
+export function useRevealSection(): (id: string) => void {
+  const context = useContext(SectionsContext);
+  return useCallback((id: string) => {
+    if (context) writeStored(storageKey(context.page, id), true);
+    requestAnimationFrame(() => {
+      const content = document.getElementById(contentIdOf(id));
+      const toggle = document.querySelector<HTMLElement>(`[aria-controls="${contentIdOf(id)}"]`);
+      (toggle ?? content)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      toggle?.focus({ preventScroll: true });
+    });
+  }, [context]);
 }

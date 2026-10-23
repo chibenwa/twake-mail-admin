@@ -83,7 +83,8 @@
     "advancedOptions": "Дополнительные параметры",
     "breadcrumb": "Навигационная цепочка",
     "expandAll": "Развернуть всё",
-    "collapseAll": "Свернуть всё"
+    "collapseAll": "Свернуть всё",
+    "skipToContent": "Перейти к содержимому"
   },
   "sidebar": {
     "application": "Приложение",
@@ -1124,7 +1125,20 @@
     },
     "subtitle": "Управление пользователями, зарегистрированными на почтовом сервере.",
     "subtitleCalendar": "Управление пользователями, зарегистрированными на сервере календаря.",
-    "detailKind": "Пользователь"
+    "detailKind": "Пользователь",
+    "summary": {
+      "quota": "Квота: {{used}} / {{limit}} ({{percent}})",
+      "quotaUnlimited": "Квота: {{used}}, без ограничений",
+      "mailboxes": "Ящики: {{count}}",
+      "aliases": "Псевдонимы: {{count}}",
+      "forwards": "Пересылки: {{count}}",
+      "forwardsTo": "Пересылает на {{address}}",
+      "vacationOn": "Автоответ: включён",
+      "vacationOff": "Автоответ: выключен",
+      "calendars": "Календари: {{count}}",
+      "addressBooks": "Адресные книги: {{count}}",
+      "bookingLinks": "Ссылки для бронирования: {{count}}"
+    }
   },
   "mailboxCounts": {
     "totalMessages": "Всего сообщений",

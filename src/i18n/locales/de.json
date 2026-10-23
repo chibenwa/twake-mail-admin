@@ -83,7 +83,8 @@
     "advancedOptions": "Erweiterte Optionen",
     "breadcrumb": "Brotkrumennavigation",
     "expandAll": "Alle aufklappen",
-    "collapseAll": "Alle zuklappen"
+    "collapseAll": "Alle zuklappen",
+    "skipToContent": "Zum Inhalt springen"
   },
   "sidebar": {
     "application": "Anwendung",
@@ -1122,7 +1123,20 @@
     },
     "subtitle": "Auf dem Mailserver registrierte Benutzer verwalten.",
     "subtitleCalendar": "Auf dem Kalenderserver registrierte Benutzer verwalten.",
-    "detailKind": "Benutzer"
+    "detailKind": "Benutzer",
+    "summary": {
+      "quota": "Quota: {{used}} / {{limit}} ({{percent}})",
+      "quotaUnlimited": "Quota: {{used}}, unbegrenzt",
+      "mailboxes": "Postfächer: {{count}}",
+      "aliases": "Aliasse: {{count}}",
+      "forwards": "Weiterleitungen: {{count}}",
+      "forwardsTo": "Leitet weiter an {{address}}",
+      "vacationOn": "Abwesenheit: an",
+      "vacationOff": "Abwesenheit: aus",
+      "calendars": "Kalender: {{count}}",
+      "addressBooks": "Adressbücher: {{count}}",
+      "bookingLinks": "Buchungslinks: {{count}}"
+    }
   },
   "mailboxCounts": {
     "totalMessages": "Nachrichten insgesamt",

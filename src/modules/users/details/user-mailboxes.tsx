@@ -14,7 +14,7 @@ import MailboxCounts from "./mailbox-counts";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import { currentLocale } from "@/i18n/locale";
 import { formatMailboxCreationDate } from "./mailbox-creation-date";
-import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -52,6 +52,7 @@ export default function UserMailboxes({ username }: Props) {
   } = useFetchData<GetUserMailboxesResponseType>(canView ? fetchMailboxes : null);
 
   const [open, setOpen, openContentId] = useSectionOpen("mailboxes");
+  useSectionFact("mailboxes", mailboxes?.length);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [newMailbox, setNewMailbox] = useState("");

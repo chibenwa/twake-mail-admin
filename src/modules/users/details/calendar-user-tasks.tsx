@@ -8,7 +8,7 @@ import ConfirmTaskContent from "@/modules/common-tasks/components/confirm-task-c
 import ArchivalNotice from "@/modules/common-tasks/components/archival-notice";
 import { TaskParam } from "@/modules/common-tasks/types";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
-import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { SectionToggle, useSectionFacts, useSectionOpen } from "@/components/custom/collapsible-section";
 
 const ARCHIVE_CALENDAR_PARAMS: TaskParam[] = [
   { key: "createdBefore", defaultValue: "", type: "duration" },
@@ -23,21 +23,15 @@ const REPUBLISH_CONTACTS_PARAMS: TaskParam[] = [
   { key: "contactsPerSecond", defaultValue: "100", type: "input" },
 ];
 
-// What the page lists of the user, for the summary of what a data deletion loses; unknown until loaded.
-export interface CalendarUserCounts {
-  calendars?: number;
-  addressBooks?: number;
-  bookingLinks?: number;
-}
-
 interface Props {
   username: string;
-  counts?: CalendarUserCounts;
 }
 
-const countText = (count: number | undefined) => (count === undefined ? "—" : String(count));
+// What the page counted of the user, for the summary of what a data deletion loses; unknown until loaded
+const countText = (count: unknown) => (typeof count === "number" ? String(count) : "—");
 
-export default function CalendarUserTasks({ username, counts = {} }: Props) {
+export default function CalendarUserTasks({ username }: Props) {
+  const facts = useSectionFacts();
   const { t } = useTranslation();
   const toastTaskCreated = useTaskCreatedToast();
   const confirm = useConfirm();
@@ -57,9 +51,9 @@ export default function CalendarUserTasks({ username, counts = {} }: Props) {
       consequence: (
         <>
           <ul className="list-disc ml-4">
-            <li>{t("users.tasks.deleteDataCounts.calendars", { count: countText(counts.calendars) })}</li>
-            <li>{t("users.tasks.deleteDataCounts.addressBooks", { count: countText(counts.addressBooks) })}</li>
-            <li>{t("users.tasks.deleteDataCounts.bookingLinks", { count: countText(counts.bookingLinks) })}</li>
+            <li>{t("users.tasks.deleteDataCounts.calendars", { count: countText(facts["calendars"]) })}</li>
+            <li>{t("users.tasks.deleteDataCounts.addressBooks", { count: countText(facts["address-books"]) })}</li>
+            <li>{t("users.tasks.deleteDataCounts.bookingLinks", { count: countText(facts["booking-links"]) })}</li>
           </ul>
           <p className="mt-2">{t("confirm.consequence.deleteCalendarUserData")}</p>
         </>

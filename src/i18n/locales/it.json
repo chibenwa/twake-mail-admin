@@ -83,7 +83,8 @@
     "advancedOptions": "Opzioni avanzate",
     "breadcrumb": "Percorso di navigazione",
     "expandAll": "Espandi tutto",
-    "collapseAll": "Comprimi tutto"
+    "collapseAll": "Comprimi tutto",
+    "skipToContent": "Vai al contenuto"
   },
   "sidebar": {
     "application": "Applicazione",
@@ -1122,7 +1123,20 @@
     },
     "subtitle": "Gestisci gli utenti registrati sul server di posta.",
     "subtitleCalendar": "Gestisci gli utenti registrati sul server del calendario.",
-    "detailKind": "Utente"
+    "detailKind": "Utente",
+    "summary": {
+      "quota": "Quota: {{used}} / {{limit}} ({{percent}})",
+      "quotaUnlimited": "Quota: {{used}}, illimitata",
+      "mailboxes": "Caselle: {{count}}",
+      "aliases": "Alias: {{count}}",
+      "forwards": "Inoltri: {{count}}",
+      "forwardsTo": "Inoltra a {{address}}",
+      "vacationOn": "Assenza: attiva",
+      "vacationOff": "Assenza: disattiva",
+      "calendars": "Calendari: {{count}}",
+      "addressBooks": "Rubriche: {{count}}",
+      "bookingLinks": "Link di prenotazione: {{count}}"
+    }
   },
   "mailboxCounts": {
     "totalMessages": "Messaggi totali",

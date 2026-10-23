@@ -59,6 +59,7 @@ import { appConfig } from "./lib/config";
 import { apiClient } from "./lib/apiClient";
 import DomainAdminApp from "./modules/domain-admin";
 import CalendarDomainApp from "./modules/domain-admin/calendar-domain-app";
+import { MAIN_CONTENT_ID, SkipLink } from "./components/custom/skip-link";
 
 // ---------------------------------------------------------------------------
 // GLOBAL mode — unchanged layout
@@ -70,8 +71,9 @@ function GlobalLayout() {
   return (
     <ConfirmProvider>
       <SidebarProvider>
+        <SkipLink />
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset id={MAIN_CONTENT_ID} tabIndex={-1} className="focus:outline-hidden">
           <MobileSidebarBar />
           <Routes>
             <Route path="/" element={<Navigate to="/health-check" replace />} />

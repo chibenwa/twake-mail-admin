@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useId, useState } from "react";
 import { Link } from "react-router";
 import { CalendarDays, Plus, Minus, Pencil, Trash2, Save, Eye, EyeOff, Users, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -19,14 +19,12 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DEFAULT_CALENDAR_COLOR, isValidCalendarColor, toColorPickerValue } from "./calendar-color";
-import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
   // Called once a calendar was created, renamed or deleted, for the other sections listing them.
   onCalendarsChanged?: () => void;
-  // Reports how many calendars are listed, e.g. for the summary of the data a deletion loses.
-  onCount?: (count: number) => void;
   // Open on a first visit of the page
   defaultOpen?: boolean;
 }
@@ -297,7 +295,7 @@ function CalendarColorField({ value, onChange }: { value: string | undefined; on
   );
 }
 
-export default function UserCalendars({ username, onCalendarsChanged, onCount, defaultOpen = false }: Props) {
+export default function UserCalendars({ username, onCalendarsChanged, defaultOpen = false }: Props) {
   const { t } = useTranslation();
   const idPrefix = useId();
   const { toast } = useToast();
@@ -342,12 +340,12 @@ export default function UserCalendars({ username, onCalendarsChanged, onCount, d
 
   const [inviteesCalendar, setInviteesCalendar] = useState<UserCalendar | null>(null);
 
+  // Before the early return: a hook runs on every render
+  useSectionFact("calendars", data?._embedded?.["dav:calendar"]?.length ?? (data ? 0 : undefined));
+
   if (!canView) return null;
 
   const calendars = data?._embedded?.["dav:calendar"] ?? [];
-  useEffect(() => {
-    if (data) onCount?.(calendars.length);
-  }, [data, onCount, calendars.length]);
   const ownerEmails = buildOwnerEmailMap(calendars, registeredUsers);
   const grouped = CATEGORY_ORDER.map((category) => ({
     category,

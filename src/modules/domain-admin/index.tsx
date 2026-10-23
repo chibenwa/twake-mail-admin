@@ -23,6 +23,7 @@ import UserMessageSearch from "@/modules/users/details/user-message-search";
 import TeamMailboxDetail from "@/modules/domains/details/team-mailbox-detail";
 import TeamMailboxFolderDetail from "@/modules/domains/details/team-mailbox-folder-detail";
 import TaskDetail from "@/modules/common-tasks/task-detail";
+import { MAIN_CONTENT_ID, SkipLink } from "@/components/custom/skip-link";
 
 interface Props {
   domain: string;
@@ -34,8 +35,9 @@ export default function DomainAdminApp({ domain }: Props) {
     <DomainProvider value={domain}>
       <ConfirmProvider>
         <SidebarProvider>
+          <SkipLink />
           <DomainSidebar />
-          <SidebarInset>
+          <SidebarInset id={MAIN_CONTENT_ID} tabIndex={-1} className="focus:outline-hidden">
             <MobileSidebarBar />
             <div className="p-4">
               <Routes>

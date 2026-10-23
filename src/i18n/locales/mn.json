@@ -83,7 +83,8 @@
     "advancedOptions": "Нэмэлт сонголтууд",
     "breadcrumb": "Замчлал",
     "expandAll": "Бүгдийг дэлгэх",
-    "collapseAll": "Бүгдийг хураах"
+    "collapseAll": "Бүгдийг хураах",
+    "skipToContent": "Агуулга руу шилжих"
   },
   "sidebar": {
     "application": "Програм",
@@ -1122,7 +1123,20 @@
     },
     "subtitle": "Шуудангийн сервер дээр бүртгэгдсэн хэрэглэгчдийг удирдах.",
     "subtitleCalendar": "Календарийн сервер дээр бүртгэгдсэн хэрэглэгчдийг удирдах.",
-    "detailKind": "Хэрэглэгч"
+    "detailKind": "Хэрэглэгч",
+    "summary": {
+      "quota": "Квот: {{used}} / {{limit}} ({{percent}})",
+      "quotaUnlimited": "Квот: {{used}}, хязгааргүй",
+      "mailboxes": "Хайрцаг: {{count}}",
+      "aliases": "Алиас: {{count}}",
+      "forwards": "Дамжуулалт: {{count}}",
+      "forwardsTo": "{{address}} руу дамжуулна",
+      "vacationOn": "Амралт: асаалттай",
+      "vacationOff": "Амралт: унтраалттай",
+      "calendars": "Хуанли: {{count}}",
+      "addressBooks": "Хаягийн дэвтэр: {{count}}",
+      "bookingLinks": "Захиалгын холбоос: {{count}}"
+    }
   },
   "mailboxCounts": {
     "totalMessages": "Нийт захидал",

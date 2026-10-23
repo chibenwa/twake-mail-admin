@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useId, useState } from "react";
 import { Link } from "react-router";
 import { Contact, Plus, Minus, Pencil, Trash2, Save, Eye, EyeOff, Users, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -21,12 +21,10 @@ import { RegisteredUser } from "@/modules/registered-users/types";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
-  // Reports how many address books are listed, e.g. for the summary of the data a deletion loses.
-  onCount?: (count: number) => void;
   // Open on a first visit of the page
   defaultOpen?: boolean;
 }
@@ -245,7 +243,7 @@ function AddressBookRow({
   );
 }
 
-export default function UserAddressBooks({ username, onCount, defaultOpen = false }: Props) {
+export default function UserAddressBooks({ username, defaultOpen = false }: Props) {
   const { t } = useTranslation();
   const idPrefix = useId();
   const { toast } = useToast();
@@ -290,12 +288,12 @@ export default function UserAddressBooks({ username, onCount, defaultOpen = fals
 
   const [inviteesAddressBook, setInviteesAddressBook] = useState<UserAddressBook | null>(null);
 
+  // Before the early return: a hook runs on every render
+  useSectionFact("address-books", data?._embedded?.["dav:addressbook"]?.length ?? (data ? 0 : undefined));
+
   if (!canView) return null;
 
   const addressBooks = data?._embedded?.["dav:addressbook"] ?? [];
-  useEffect(() => {
-    if (data) onCount?.(addressBooks.length);
-  }, [data, onCount, addressBooks.length]);
   const rowKeys = addressBookKeys(addressBooks);
 
   const handleCreate = async () => {

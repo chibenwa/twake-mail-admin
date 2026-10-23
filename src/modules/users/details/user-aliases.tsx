@@ -9,7 +9,7 @@ import { GetUserAliasesResponseType } from "../types";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
-import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
@@ -32,6 +32,7 @@ export default function UserAliases({ username }: Props) {
   } = useFetchData<GetUserAliasesResponseType>(canView ? fetchAliases : null, revision);
 
   const [open, setOpen, openContentId] = useSectionOpen("aliases");
+  useSectionFact("aliases", aliases?.length);
   const [newAlias, setNewAlias] = useState("");
   const [showCreateInput, setShowCreateInput] = useState(false);
 

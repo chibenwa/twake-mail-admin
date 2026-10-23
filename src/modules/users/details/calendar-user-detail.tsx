@@ -12,7 +12,8 @@ import { RegisteredUser } from "@/modules/registered-users/types";
 import { defaultRegisteredUserNames, validateRegisteredUserNames } from "@/modules/registered-users/validation";
 import { RegisterUserForm } from "@/modules/registered-users/register-user-form";
 import { Button } from "@/components/ui/button";
-import CalendarUserTasks, { CalendarUserCounts } from "./calendar-user-tasks";
+import CalendarUserTasks from "./calendar-user-tasks";
+import { CalendarUserSummary } from "./user-summary";
 import UserCalendars from "./user-calendars";
 import UserBookingLinks from "./user-booking-links";
 import UserAddressBooks from "./user-address-books";
@@ -91,14 +92,11 @@ export default function CalendarUserDetail() {
   // The booking links show the name of their calendar: they re-read the calendars once the
   // Calendars section changed them.
   const [calendarsVersion, setCalendarsVersion] = useState(0);
-  const [counts, setCounts] = useState<CalendarUserCounts>({});
-  const onCalendarsCount = useCallback((calendars: number) => setCounts((c) => ({ ...c, calendars })), []);
-  const onAddressBooksCount = useCallback((addressBooks: number) => setCounts((c) => ({ ...c, addressBooks })), []);
-  const onBookingLinksCount = useCallback((bookingLinks: number) => setCounts((c) => ({ ...c, bookingLinks })), []);
 
   return (
     <SectionsProvider page="user">
     <Header headerTitle={username} headerSubTitle={status ?? t("users.detailKind")} breadcrumb={breadcrumbs.users()} actions={<ExpandCollapseAll />} />
+    {isRegistered && <CalendarUserSummary />}
     <div className="mt-4 p-4 bg-white rounded-2">
 
       {pending && <div className="h-[58px] mt-4 rounded-2 animate-pulse bg-gray-200" />}
@@ -109,10 +107,10 @@ export default function CalendarUserDetail() {
 
       {!pending && isRegistered && (
         <>
-          <UserCalendars username={username!} onCalendarsChanged={() => setCalendarsVersion((v) => v + 1)} onCount={onCalendarsCount} defaultOpen />
-          <UserAddressBooks username={username!} onCount={onAddressBooksCount} defaultOpen />
-          <UserBookingLinks username={username!} calendarsVersion={calendarsVersion} onCount={onBookingLinksCount} />
-          <CalendarUserTasks username={username!} counts={counts} />
+          <UserCalendars username={username!} onCalendarsChanged={() => setCalendarsVersion((v) => v + 1)} defaultOpen />
+          <UserAddressBooks username={username!} defaultOpen />
+          <UserBookingLinks username={username!} calendarsVersion={calendarsVersion} />
+          <CalendarUserTasks username={username!} />
         </>
       )}
     </div>
