@@ -113,16 +113,29 @@ describe("user detail: mapping changes refresh every related section", () => {
   it("refreshes mappings and allowed from headers after adding an alias from the aliases section", async () => {
     renderSections();
     await waitFor(() => expect(sectionCount("users.mappings.title")).toBe("(1)"));
-    fireEvent.click(screen.getByText("users.aliases.title"));
     fireEvent.click(screen.getByTitle("users.aliases.addTooltip"));
-    fireEvent.change(screen.getByPlaceholderText("users.aliases.placeholder"), {
+    fireEvent.change(await screen.findByPlaceholderText("users.aliases.placeholder"), {
       target: { value: "alice.qa@example.com" },
     });
-    fireEvent.click(screen.getByText("common.add"));
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
 
     await waitFor(() => expect(sectionCount("users.mappings.title")).toBe("(2)"));
     await waitFor(() => expect(sectionCount("users.allowedFrom.title")).toBe("(3)"));
     expect(sectionCount("users.aliases.title")).toBe("(2)");
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("opens the aliases section and a modal from the +, and adds the typed alias", async () => {
+    renderSections();
+    fireEvent.click(screen.getByTitle("users.aliases.addTooltip"));
+
+    expect(await screen.findByRole("dialog")).toBeTruthy();
+    expect(screen.getByText("users.aliases.title").closest("button")?.getAttribute("aria-expanded")).toBe("true");
+    fireEvent.change(screen.getByPlaceholderText("users.aliases.placeholder"), { target: { value: " alice.qa@example.com " } });
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+
+    await waitFor(() => expect(mocks.api.addUserAlias).toHaveBeenCalledWith(ALICE, "alice.qa@example.com"));
+    expect(mocks.toast).toHaveBeenCalledWith({ title: "users.aliases.added" });
   });
 
   it("refreshes allowed from headers and identities after leaving a team mailbox", async () => {

@@ -570,7 +570,6 @@
       "title": "Өөр нэрс",
       "placeholder": "alias@domain.com",
       "added": "Өөр нэр амжилттай нэмэгдлээ",
-      "errorAdding": "Өөр нэр нэмэхэд алдаа гарлаа",
       "removeTitle": "Өөр нэр устгах",
       "removeConfirm": "«{{alias}}» өөр нэрийг {{username}}-аас устгах уу?",
       "removed": "Өөр нэр амжилттай устгагдлаа",

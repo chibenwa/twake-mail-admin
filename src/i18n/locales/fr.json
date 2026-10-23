@@ -570,7 +570,6 @@
       "title": "Alias",
       "placeholder": "alias@domaine.com",
       "added": "Alias ajouté avec succès",
-      "errorAdding": "Erreur lors de l'ajout de l'alias",
       "removeTitle": "Supprimer l'alias",
       "removeConfirm": "Supprimer l'alias « {{alias}} » de {{username}} ?",
       "removed": "Alias supprimé avec succès",

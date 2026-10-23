@@ -569,7 +569,6 @@
       "title": "Bí danh",
       "placeholder": "alias@domain.com",
       "added": "Đã thêm bí danh thành công",
-      "errorAdding": "Lỗi khi thêm bí danh",
       "removeTitle": "Xóa bí danh",
       "removeConfirm": "Xóa bí danh \"{{alias}}\" khỏi {{username}}?",
       "removed": "Đã xóa bí danh thành công",

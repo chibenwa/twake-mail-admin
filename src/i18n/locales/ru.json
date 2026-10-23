@@ -572,7 +572,6 @@
       "title": "Псевдонимы",
       "placeholder": "alias@domain.com",
       "added": "Псевдоним успешно добавлен",
-      "errorAdding": "Ошибка при добавлении псевдонима",
       "removeTitle": "Удалить псевдоним",
       "removeConfirm": "Удалить псевдоним «{{alias}}» у {{username}}?",
       "removed": "Псевдоним успешно удалён",
