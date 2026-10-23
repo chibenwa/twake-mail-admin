@@ -87,7 +87,13 @@
     "skipToContent": "Zum Inhalt springen",
     "sharedWith_one": "Geteilt mit {{count}}",
     "sharedWith_other": "Geteilt mit {{count}}",
-    "andMore": "+{{count}} weitere"
+    "andMore": "+{{count}} weitere",
+    "addOrClearPending": "Fügen Sie die Adresse oben hinzu oder löschen Sie sie vor dem Speichern.",
+    "pendingChanges": "{{count}} ausstehende Änderung(en): Klicken Sie auf Übernehmen, um zu speichern.",
+    "discardTitle": "Änderungen verwerfen?",
+    "discardMessage": "{{count}} Änderung(en) werden nicht gespeichert.",
+    "discard": "Verwerfen",
+    "keepEditing": "Weiter bearbeiten"
   },
   "sidebar": {
     "application": "Anwendung",

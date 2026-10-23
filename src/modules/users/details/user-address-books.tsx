@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 import SharedWithChip from "@/components/custom/shared-with-chip";
+import { StagedChangesNotice, blocksSave, useDiscardGuard } from "@/components/custom/staged-changes";
 
 interface Props {
   username: string;
@@ -669,6 +670,12 @@ function InviteesModal({
   const changedHrefs = Object.keys(changes).filter((href) => !removals.has(href));
   const hasChanges = additions.length > 0 || removals.size > 0 || changedHrefs.length > 0;
 
+  // An address typed but not added is added on Apply when valid, and blocks Apply otherwise
+  const pending = canAdd ? [{ email: trimmedEmail, right: newRight }] : [];
+  const stagedCount = additions.length + removals.size + changedHrefs.length;
+  const blocking = blocksSave(newEmail, canAdd);
+  const requestClose = useDiscardGuard(stagedCount + pending.length, onClose);
+
   const handleStageAdd = () => {
     if (!canAdd) return;
     setAdditions((prev) => [...prev, { email: trimmedEmail, right: newRight }]);
@@ -678,7 +685,7 @@ function InviteesModal({
 
   const handleApply = async () => {
     const sharees: AddressBookShareUpdate["dav:sharee"] = [
-      ...additions.map((a) => ({ "dav:href": `mailto:${a.email}`, "dav:share-access": rightToShareAccess(a.right) })),
+      ...[...additions, ...pending].map((a) => ({ "dav:href": `mailto:${a.email}`, "dav:share-access": rightToShareAccess(a.right) })),
       ...changedHrefs.map((href) => ({ "dav:href": href, "dav:share-access": rightToShareAccess(changes[href]) })),
       ...[...removals].map((href) => ({ "dav:href": href, "dav:share-access": SHARE_ACCESS_NO_ACCESS })),
     ];
@@ -701,7 +708,7 @@ function InviteesModal({
   };
 
   return (
-    <Dialog open onOpenChange={(v) => { if (!v) onClose(); }}>
+    <Dialog open onOpenChange={(v) => { if (!v) requestClose(); }}>
       <DialogContent className="max-w-lg" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{t("users.addressBooks.invitees.title")} — {addressBookName(addressBook, t)}</DialogTitle>
@@ -812,16 +819,17 @@ function InviteesModal({
                 <span className="text-xs text-red-600">{t("common.invalidUsername")}</span>
               )}
             </div>
+            <StagedChangesNotice count={stagedCount} blocking={blocking} />
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" size="sm" onClick={onClose}>
+            <Button variant="outline" size="sm" onClick={requestClose}>
               {t("common.cancel")}
             </Button>
             <Button
               size="sm"
               onClick={handleApply}
-              disabled={saving || !hasChanges}
+              disabled={saving || blocking || (!hasChanges && pending.length === 0)}
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Save className="w-4 h-4 mr-1" />}
               {t("users.addressBooks.invitees.apply")}

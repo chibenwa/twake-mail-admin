@@ -87,7 +87,13 @@
     "skipToContent": "Агуулга руу шилжих",
     "sharedWith_one": "{{count}} хүнтэй хуваалцсан",
     "sharedWith_other": "{{count}} хүнтэй хуваалцсан",
-    "andMore": "+{{count}} бусад"
+    "andMore": "+{{count}} бусад",
+    "addOrClearPending": "Хадгалахаас өмнө дээрх хаягийг нэмэх эсвэл арилгана уу.",
+    "pendingChanges": "Хүлээгдэж буй {{count}} өөрчлөлт: хадгалахын тулд Хэрэглэх дээр дарна уу.",
+    "discardTitle": "Өөрчлөлтийг цуцлах уу?",
+    "discardMessage": "{{count}} өөрчлөлт хадгалагдахгүй.",
+    "discard": "Цуцлах",
+    "keepEditing": "Үргэлжлүүлэх"
   },
   "sidebar": {
     "application": "Програм",

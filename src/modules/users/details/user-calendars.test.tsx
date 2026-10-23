@@ -204,3 +204,49 @@ describe("UserCalendars shared with chip", () => {
     expect(await screen.findByText(/users.calendars.invitees.title —/)).not.toBeNull();
   });
 });
+
+describe("delegation dialog: nothing typed or staged is lost", () => {
+  const applyButton = () => screen.getByText("users.calendars.invitees.apply").closest("button") as HTMLButtonElement;
+
+  it("applies an address typed but not added", async () => {
+    mocks.api.updateUserCalendarInvitees.mockResolvedValue(undefined);
+    await typeInvitee(BOB, "exists");
+
+    expect(applyButton().disabled).toBe(false);
+    fireEvent.click(applyButton());
+
+    await waitFor(() => expect(mocks.api.updateUserCalendarInvitees).toHaveBeenCalledWith(
+      CHARLOTTE,
+      expect.anything(),
+      { set: [{ "dav:href": `mailto:${BOB}`, "dav:read": true }] },
+    ));
+  });
+
+  it("blocks Apply and says why while the typed address is unknown", async () => {
+    await typeInvitee("nobody@open-paas.org", "not_found");
+
+    expect(applyButton().disabled).toBe(true);
+    expect(screen.getByText("common.addOrClearPending")).toBeTruthy();
+  });
+
+  it("asks before discarding staged changes, and keeps them when told to", async () => {
+    mocks.confirm.mockResolvedValue(false);
+    await typeInvitee(BOB, "exists");
+    fireEvent.keyDown(inviteeInput(), { key: "Enter" });
+    expect(screen.getByText("common.pendingChanges")).toBeTruthy();
+
+    fireEvent.click(screen.getByText("common.cancel"));
+
+    await waitFor(() => expect(mocks.confirm).toHaveBeenCalledWith(expect.objectContaining({ header: "common.discardTitle", destructive: true })));
+    expect(screen.getByText(BOB)).toBeTruthy();
+  });
+
+  it("closes at once without staged change", async () => {
+    await typeInvitee("", "idle");
+
+    fireEvent.click(screen.getByText("common.cancel"));
+
+    expect(mocks.confirm).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.queryByPlaceholderText("users.calendars.invitees.placeholder")).toBeNull());
+  });
+});

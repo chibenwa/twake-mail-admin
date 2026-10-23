@@ -87,7 +87,13 @@
     "skipToContent": "Skip to content",
     "sharedWith_one": "Shared with {{count}}",
     "sharedWith_other": "Shared with {{count}}",
-    "andMore": "+{{count}} more"
+    "andMore": "+{{count}} more",
+    "addOrClearPending": "Add or clear the address above before saving.",
+    "pendingChanges": "{{count}} pending change(s): click Apply to save.",
+    "discardTitle": "Discard changes?",
+    "discardMessage": "{{count}} change(s) will not be saved.",
+    "discard": "Discard",
+    "keepEditing": "Keep editing"
   },
   "sidebar": {
     "application": "Application",

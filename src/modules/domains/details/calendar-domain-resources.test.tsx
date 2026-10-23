@@ -15,7 +15,8 @@ const api = vi.hoisted(() => ({
 
 vi.mock("@/lib/proxy-resolver-context", () => ({ useIsAllowed: () => true }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => async () => true }));
-vi.mock("@/hooks/use-check-user-exists", () => ({ useCheckUserExists: () => "idle" }));
+const userStatus = vi.hoisted(() => ({ byUser: {} as Record<string, string> }));
+vi.mock("@/hooks/use-check-user-exists", () => ({ useCheckUserExists: (user: string) => userStatus.byUser[user.trim()] ?? "idle" }));
 vi.mock("../api-client", () => api);
 
 import CalendarDomainResources from "./calendar-domain-resources";
@@ -33,6 +34,7 @@ const resource = (id: string, name: string | null): Resource => ({
 
 beforeEach(() => {
   api.getResources.mockReset();
+  userStatus.byUser = {};
 });
 
 afterEach(() => {
@@ -74,5 +76,36 @@ describe("CalendarDomainResources: phone layout", () => {
     expect(heading.className).toContain("min-w-48");
     expect(heading.className).toContain("break-words");
     expect(heading.className).not.toContain("break-all");
+  });
+});
+
+
+describe("CalendarDomainResources creation: a typed administrator is never dropped", () => {
+  const fill = async (admin: string) => {
+    api.getResources.mockResolvedValue([]);
+    api.createResource.mockResolvedValue(undefined);
+    userStatus.byUser = { "alice@open-paas.org": "exists", "bob@open-paas.org": "exists", "nobody@open-paas.org": "not_found" };
+    render(<CalendarDomainResources domain="open-paas.org" defaultOpen />);
+    fireEvent.click(await screen.findByTitle("domains.calendarResources.addTooltip"));
+    fireEvent.change(screen.getByRole("textbox", { name: "domains.calendarResources.namePlaceholder" }), { target: { value: "Room" } });
+    fireEvent.change(screen.getByLabelText(/domains.calendarResources.creatorLabel/), { target: { value: "alice@open-paas.org" } });
+    fireEvent.change(screen.getByLabelText("domains.calendarResources.administratorsLabel"), { target: { value: admin } });
+  };
+  const createButton = () => screen.getByText("common.create").closest("button") as HTMLButtonElement;
+
+  it("creates the resource with the administrator typed but not added", async () => {
+    await fill("bob@open-paas.org");
+    fireEvent.click(createButton());
+
+    await vi.waitFor(() => expect(api.createResource).toHaveBeenCalledWith(
+      expect.objectContaining({ administrators: [{ email: "bob@open-paas.org" }] }),
+    ));
+  });
+
+  it("keeps Create disabled and says why while the typed administrator is unknown", async () => {
+    await fill("nobody@open-paas.org");
+
+    expect(createButton().disabled).toBe(true);
+    expect(screen.getByText("common.addOrClearPending")).toBeTruthy();
   });
 });

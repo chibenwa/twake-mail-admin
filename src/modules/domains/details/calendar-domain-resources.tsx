@@ -15,6 +15,7 @@ import ResourceIconPicker from "@/components/custom/resource-icon-picker";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useTranslation } from "react-i18next";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { StagedChangesNotice, blocksSave } from "@/components/custom/staged-changes";
 
 const searchable = (resource: Resource) => [resourceDisplayName(resource), resource.description];
 
@@ -80,9 +81,17 @@ export default function CalendarDomainResources({ domain, defaultOpen = false, r
     setNewAdministrators((prev) => prev.filter((a) => a.email !== email));
   };
 
+  // An administrator typed but not added is added on Create when it exists, and blocks Create otherwise
+  const pendingAdmin = newAdminInput.trim();
+  const pendingAdminAddable = adminInputStatus === "exists" && pendingAdmin !== "";
+  const pendingAdminBlocks = blocksSave(newAdminInput, pendingAdminAddable);
+
   const handleAdd = async () => {
     const name = newName.trim();
-    if (!name || !newCreator.trim() || creatorStatus !== "exists") return;
+    if (!name || !newCreator.trim() || creatorStatus !== "exists" || pendingAdminBlocks) return;
+    const administrators = pendingAdminAddable && !newAdministrators.some((a) => a.email === pendingAdmin)
+      ? [...newAdministrators, { email: pendingAdmin }]
+      : newAdministrators;
     try {
       await createResource({
         name,
@@ -90,7 +99,7 @@ export default function CalendarDomainResources({ domain, defaultOpen = false, r
         icon: newIcon.trim(),
         domain,
         creator: newCreator.trim(),
-        administrators: newAdministrators,
+        administrators,
       });
       toast({ title: t("domains.calendarResources.created") });
       setNewName("");
@@ -180,6 +189,7 @@ export default function CalendarDomainResources({ domain, defaultOpen = false, r
                   <button onClick={handleAddAdmin} disabled={adminInputStatus !== "exists"}
                     className="px-3 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">{t("common.add")}</button>
                 </div>
+                <StagedChangesNotice count={0} blocking={pendingAdminBlocks} />
                 {newAdministrators.length > 0 && (
                   <div className="mt-2 space-y-1">
                     {newAdministrators.map((a) => (
@@ -196,7 +206,7 @@ export default function CalendarDomainResources({ domain, defaultOpen = false, r
               <div className="flex justify-end gap-2">
                 <button onClick={() => setShowCreate(false)}
                   className="px-4 py-2 border rounded-md text-sm hover:bg-gray-100 transition">{t("common.cancel")}</button>
-                <button onClick={handleAdd} disabled={!newName.trim() || creatorStatus !== "exists"}
+                <button onClick={handleAdd} disabled={!newName.trim() || creatorStatus !== "exists" || pendingAdminBlocks}
                   className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">{t("common.create")}</button>
               </div>
             </div>

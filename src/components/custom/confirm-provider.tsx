@@ -43,6 +43,8 @@ export interface ConfirmOptions extends ConfirmAppearance {
   typeToConfirm?: string;
   /** Compares the typed text case-insensitively: user names, domains. */
   typeToConfirmIgnoreCase?: boolean;
+  /** Replaces "Cancel", e.g. with "Keep editing". */
+  cancelLabel?: string;
 }
 
 export interface ConfirmState extends ConfirmOptions {
@@ -212,7 +214,7 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
           )}
           {confirmState.error && <div role="alert" className="text-sm text-red-600">{confirmState.error}</div>}
           <DialogFooter>
-            <Button ref={cancelRef} variant="outline" disabled={confirmState.pending} onClick={handleCancel}>{t("common.cancel")}</Button>
+            <Button ref={cancelRef} variant="outline" disabled={confirmState.pending} onClick={handleCancel}>{confirmState.cancelLabel ?? t("common.cancel")}</Button>
             <Button
               className="mb-4 md:mb-0"
               variant={confirmState.destructive ? "destructive" : "default"}

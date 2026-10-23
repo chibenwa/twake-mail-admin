@@ -86,7 +86,13 @@
     "collapseAll": "Thu gọn tất cả",
     "skipToContent": "Chuyển đến nội dung",
     "sharedWith_other": "Đã chia sẻ với {{count}}",
-    "andMore": "+{{count}} người khác"
+    "andMore": "+{{count}} người khác",
+    "addOrClearPending": "Hãy thêm hoặc xóa địa chỉ ở trên trước khi lưu.",
+    "pendingChanges": "{{count}} thay đổi đang chờ: bấm Áp dụng để lưu.",
+    "discardTitle": "Bỏ các thay đổi?",
+    "discardMessage": "{{count}} thay đổi sẽ không được lưu.",
+    "discard": "Bỏ",
+    "keepEditing": "Tiếp tục chỉnh sửa"
   },
   "sidebar": {
     "application": "Ứng dụng",

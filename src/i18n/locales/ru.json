@@ -89,7 +89,13 @@
     "sharedWith_few": "Общий доступ: {{count}}",
     "sharedWith_many": "Общий доступ: {{count}}",
     "sharedWith_other": "Общий доступ: {{count}}",
-    "andMore": "ещё {{count}}"
+    "andMore": "ещё {{count}}",
+    "addOrClearPending": "Добавьте или очистите адрес выше перед сохранением.",
+    "pendingChanges": "Изменений в ожидании: {{count}}. Нажмите «Применить», чтобы сохранить.",
+    "discardTitle": "Отменить изменения?",
+    "discardMessage": "Изменения не будут сохранены: {{count}}.",
+    "discard": "Отменить",
+    "keepEditing": "Продолжить"
   },
   "sidebar": {
     "application": "Приложение",

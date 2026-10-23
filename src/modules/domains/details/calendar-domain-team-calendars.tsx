@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { StagedChangesNotice, blocksSave, useDiscardGuard } from "@/components/custom/staged-changes";
 
 const ROLE_OPTIONS: TeamCalendarMemberRole[] = ["viewer", "member", "manager"];
 
@@ -338,6 +339,12 @@ function MembersModal({
   const changedUsers = Object.keys(changes).filter((username) => !removals.has(username));
   const hasChanges = additions.length > 0 || removals.size > 0 || changedUsers.length > 0;
 
+  // An address typed but not added is added on Apply when valid, and blocks Apply otherwise
+  const pending = canAdd ? [{ username: trimmedUser, role: newRole }] : [];
+  const stagedCount = additions.length + removals.size + changedUsers.length;
+  const blocking = blocksSave(newUser, canAdd);
+  const requestClose = useDiscardGuard(stagedCount + pending.length, onClose);
+
   const handleStageAdd = () => {
     if (!canAdd) return;
     setAdditions((prev) => [...prev, { username: trimmedUser, role: newRole }]);
@@ -348,7 +355,7 @@ function MembersModal({
   const handleApply = async () => {
     const share: TeamCalendarShareUpdate = {};
     const setEntries = [
-      ...additions.map((a) => roleToShareEntry(`mailto:${a.username}`, a.role)),
+      ...[...additions, ...pending].map((a) => roleToShareEntry(`mailto:${a.username}`, a.role)),
       ...changedUsers.map((username) => roleToShareEntry(`mailto:${username}`, changes[username])),
     ];
     if (setEntries.length) share.set = setEntries;
@@ -373,7 +380,7 @@ function MembersModal({
   };
 
   return (
-    <Dialog open onOpenChange={(v) => { if (!v) onClose(); }}>
+    <Dialog open onOpenChange={(v) => { if (!v) requestClose(); }}>
       <DialogContent className="max-w-lg" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{t("domains.teamCalendars.members.title")} — {teamCalendar.displayName || teamCalendar.name}</DialogTitle>
@@ -485,15 +492,16 @@ function MembersModal({
                   <span className="text-xs text-red-600">{t("common.invalidUsername")}</span>
                 )}
               </div>
+              <StagedChangesNotice count={stagedCount} blocking={blocking} />
             </div>
           )}
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" size="sm" onClick={onClose}>
+            <Button variant="outline" size="sm" onClick={requestClose}>
               {t("common.cancel")}
             </Button>
             {canManage && (
-              <Button size="sm" onClick={handleApply} disabled={saving || !hasChanges}>
+              <Button size="sm" onClick={handleApply} disabled={saving || blocking || (!hasChanges && pending.length === 0)}>
                 {saving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Save className="w-4 h-4 mr-1" />}
                 {t("domains.teamCalendars.members.apply")}
               </Button>

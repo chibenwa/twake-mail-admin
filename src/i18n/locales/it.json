@@ -87,7 +87,13 @@
     "skipToContent": "Vai al contenuto",
     "sharedWith_one": "Condiviso con {{count}}",
     "sharedWith_other": "Condiviso con {{count}}",
-    "andMore": "+{{count}} altri"
+    "andMore": "+{{count}} altri",
+    "addOrClearPending": "Aggiungi o cancella l'indirizzo qui sopra prima di salvare.",
+    "pendingChanges": "{{count}} modifica/e in sospeso: fai clic su Applica per salvare.",
+    "discardTitle": "Scartare le modifiche?",
+    "discardMessage": "{{count}} modifica/e non verranno salvate.",
+    "discard": "Scarta",
+    "keepEditing": "Continua a modificare"
   },
   "sidebar": {
     "application": "Applicazione",

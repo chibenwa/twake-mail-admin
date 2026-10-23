@@ -87,7 +87,13 @@
     "skipToContent": "Ir al contenido",
     "sharedWith_one": "Compartido con {{count}}",
     "sharedWith_other": "Compartido con {{count}}",
-    "andMore": "+{{count}} más"
+    "andMore": "+{{count}} más",
+    "addOrClearPending": "Añada o borre la dirección de arriba antes de guardar.",
+    "pendingChanges": "{{count}} cambio(s) pendiente(s): haga clic en Aplicar para guardar.",
+    "discardTitle": "¿Descartar los cambios?",
+    "discardMessage": "{{count}} cambio(s) no se guardarán.",
+    "discard": "Descartar",
+    "keepEditing": "Seguir editando"
   },
   "sidebar": {
     "application": "Aplicación",
