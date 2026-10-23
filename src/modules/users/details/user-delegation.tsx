@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -34,8 +34,6 @@ export default function UserDelegation({ username }: Props) {
   const [open, setOpen, openContentId] = useSectionOpen("delegation");
   const [newUser, setNewUser] = useState("");
   const [showAddDialog, setShowAddDialog] = useState(false);
-  // Set when the unknown user is declined: the modal then stays open with the typed user
-  const keepAddDialog = useRef(false);
   const delegatedUserStatus = useCheckUserExists(newUser);
   const isSelfDelegation = newUser.trim().toLowerCase() === username.toLowerCase();
   const showUserStatus = !!newUser.trim() && !isSelfDelegation;
@@ -59,8 +57,8 @@ export default function UserDelegation({ username }: Props) {
   const handleAdd = async () => {
     const user = newUser.trim();
     if (delegatedUserStatus === "not_found" && !(await confirmUnknownUser(user))) {
-      keepAddDialog.current = true;
-      return;
+      // Declined: the modal stays open with the typed values
+      return false;
     }
     await addDelegatedUser(username, user);
     toast({ title: t("users.delegation.added") });
@@ -68,10 +66,7 @@ export default function UserDelegation({ username }: Props) {
     await refresh();
   };
 
-  const closeAddDialog = () => {
-    if (keepAddDialog.current) keepAddDialog.current = false;
-    else setShowAddDialog(false);
-  };
+  const closeAddDialog = () => setShowAddDialog(false);
 
   const handleRemove = async (delegatedUser: string) => {
     const confirmed = await confirm({

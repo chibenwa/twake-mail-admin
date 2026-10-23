@@ -1,4 +1,4 @@
-import { useCallback, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -36,8 +36,6 @@ export default function TeamMailboxExtraSenders({ domain, mailbox }: Props) {
   const [open, setOpen, openContentId] = useSectionOpen("extra-senders", true);
   const [page, setPage] = useState(1);
   const [showAdd, setShowAdd] = useState(false);
-  // Declining to add an unknown user leaves the modal open, the typed address kept
-  const keepAddOpen = useRef(false);
   const fieldId = useId();
   const [newSender, setNewSender] = useState("");
   const senderStatus = useCheckUserExists(newSender);
@@ -68,8 +66,8 @@ export default function TeamMailboxExtraSenders({ domain, mailbox }: Props) {
   const handleAdd = async () => {
     const username = newSender.trim();
     if (senderStatus === "not_found" && !(await confirmUnknownUser(username))) {
-      keepAddOpen.current = true;
-      return;
+      // Declined: the modal stays open with the typed values
+      return false;
     }
     await addTeamMailboxExtraSender(domain, mailbox, username);
     toast({ title: t("domains.extraSenders.added") });
@@ -77,13 +75,7 @@ export default function TeamMailboxExtraSenders({ domain, mailbox }: Props) {
     await refresh();
   };
 
-  const closeAdd = () => {
-    if (keepAddOpen.current) {
-      keepAddOpen.current = false;
-      return;
-    }
-    setShowAdd(false);
-  };
+  const closeAdd = () => setShowAdd(false);
 
   const handleRemove = async (username: string) => {
     const confirmed = await confirm({

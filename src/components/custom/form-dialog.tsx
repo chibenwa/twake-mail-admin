@@ -13,7 +13,8 @@ interface Props {
   submitDisabled?: boolean;
   // Checked before submitting: the message to show in the modal, or null when the values are fine
   validate?: () => string | null;
-  // Throws to keep the modal open with the typed values and show why
+  // Throws to keep the modal open with the typed values and show why; returns false to keep it
+  // open silently, e.g. when the operator declined a confirmation it asked for
   onSubmit: () => Promise<unknown> | unknown;
   children: ReactNode;
   className?: string;
@@ -45,7 +46,7 @@ export default function FormDialog({ open, onClose, title, submitLabel, submitDi
     setSubmitting(true);
     setError(null);
     try {
-      await onSubmit();
+      if ((await onSubmit()) === false) return;
       setError(null);
       onClose();
     } catch (err) {

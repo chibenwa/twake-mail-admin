@@ -239,7 +239,7 @@ export default function CalendarResourceDetail() {
                   )}
                 </div>
               ))}
-              {admins.length === 0 && <p className="mt-2 text-sm text-gray-500">No administrators.</p>}
+              {admins.length === 0 && <p className="mt-2 text-sm text-gray-500">{t("domains.calendarResources.noAdmins")}</p>}
             </div>
           </div>
         </>

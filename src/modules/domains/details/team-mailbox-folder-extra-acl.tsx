@@ -1,4 +1,4 @@
-import { useCallback, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -67,8 +67,6 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
   const [page, setPage] = useState(1);
 
   const [showAddForm, setShowAddForm] = useState(false);
-  // Declining to add an unknown user leaves the modal open, the typed values kept
-  const keepAddOpen = useRef(false);
   const fieldId = useId();
   const [newUser, setNewUser] = useState("");
   const [selectedRights, setSelectedRights] = useState<Set<string>>(new Set(["l", "r"]));
@@ -111,8 +109,8 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
   const handleAdd = async () => {
     const username = newUser.trim();
     if (userStatus === "not_found" && !(await confirmUnknownUser(username))) {
-      keepAddOpen.current = true;
-      return;
+      // Declined: the modal stays open with the typed values
+      return false;
     }
     await setTeamMailboxFolderExtraAclEntry(domain, mailbox, folder, username, rightsString);
     toast({ title: t("domains.extraAcl.entrySet") });
@@ -121,13 +119,7 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
     await refresh();
   };
 
-  const closeAdd = () => {
-    if (keepAddOpen.current) {
-      keepAddOpen.current = false;
-      return;
-    }
-    setShowAddForm(false);
-  };
+  const closeAdd = () => setShowAddForm(false);
 
   const handleRemove = async (username: string) => {
     const confirmed = await confirm({
