@@ -385,7 +385,7 @@ export default function Tasks() {
 
       {/* Detail dialog */}
       <Dialog open={!!selectedTask} onOpenChange={(v) => !v && setSelectedTask(null)}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" onCloseAutoFocus={restoreFocus}>
+        <DialogContent className="max-w-2xl" onCloseAutoFocus={restoreFocus}>
           <DialogHeader>
             <DialogTitle>{t("tasks.detailTitle", { taskId: selectedTask?.taskId })}</DialogTitle>
           </DialogHeader>

@@ -471,7 +471,7 @@ export default function MailRepositoryExtended() {
 
       {/* JSON Detail Dialog */}
       <Dialog open={!!selectedMail} onOpenChange={(v) => !v && setSelectedMail(null)}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" onCloseAutoFocus={restoreFocus}>
+        <DialogContent className="max-w-2xl" onCloseAutoFocus={restoreFocus}>
           <DialogHeader>
             <DialogTitle>{t("mailRepositories.mailDetailTitle", { name: selectedMail?.name })}</DialogTitle>
           </DialogHeader>

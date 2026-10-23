@@ -239,7 +239,7 @@ export default function ChannelGrid({
 
       {/* Detail dialog */}
       <Dialog open={!!selectedChannel} onOpenChange={(v) => !v && setSelectedChannel(null)}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" onCloseAutoFocus={restoreFocus}>
+        <DialogContent className="max-w-2xl" onCloseAutoFocus={restoreFocus}>
           <DialogHeader>
             <DialogTitle>{t("networkChannels.channelDetail", { address: selectedChannel?.remoteAddress })}</DialogTitle>
           </DialogHeader>
