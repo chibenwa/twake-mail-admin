@@ -1484,9 +1484,9 @@
   },
   "healthCheck": {
     "checking": "Vérification des composants, cela peut prendre un moment…",
-    "welcome": "Bienvenue dans l'administration de Twake Mail !",
+    "welcome": "Bienvenue dans la console d'administration de Twake Mail !",
     "description": "Cet outil facilite la gestion du webadmin de Twake Mail.",
-    "welcomeCalendar": "Bienvenue dans l'administration de Twake Calendar !",
+    "welcomeCalendar": "Bienvenue dans la console d'administration de Twake Calendar !",
     "descriptionCalendar": "Cet outil facilite la gestion du webadmin de Twake Calendar.",
     "status": {
       "healthy": "Sain",
