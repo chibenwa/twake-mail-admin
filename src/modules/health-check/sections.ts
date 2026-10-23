@@ -104,6 +104,8 @@ const COMPONENT_SCREENS: Record<string, string> = {
   EmptyErrorMailRepository: "/mail-repositories/repository/var%2Fmail%2Ferror",
   EventDeadLettersHealthCheck: "/event-dead-letter",
   "Tasks execution": "/tasks",
+  // Twake Calendar
+  UnsentMails: "/unsent-mails",
 };
 
 export const componentScreen = (componentName: string): string | undefined => COMPONENT_SCREENS[componentName];

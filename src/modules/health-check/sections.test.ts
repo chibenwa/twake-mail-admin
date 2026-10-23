@@ -101,6 +101,7 @@ describe("summarizeHealthChecks", () => {
 
   it("knows where the error mail repository is fixed", () => {
     expect(componentScreen("EmptyErrorMailRepository")).toBe("/mail-repositories/repository/var%2Fmail%2Ferror");
+    expect(componentScreen("UnsentMails")).toBe("/unsent-mails");
     expect(componentScreen("Redis")).toBeUndefined();
   });
 });
