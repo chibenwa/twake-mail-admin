@@ -1,6 +1,6 @@
 import { useCallback, useId, useMemo, useState } from "react";
 import { useParams } from "react-router";
-import { Pencil, Save, Trash2 } from "lucide-react";
+import { Pencil, Plus, Save, Trash2 } from "lucide-react";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { getResource, updateResource } from "../api-client";
 import { Resource } from "../types";
@@ -10,6 +10,7 @@ import { useCheckUserExists } from "@/hooks/use-check-user-exists";
 import ResourceIconPicker from "@/components/custom/resource-icon-picker";
 import { isKnownResourceIcon, resourceDisplayName } from "../resource-display";
 import ErrorDisplayer from "@/components/custom/error-displayer";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 import { useDomain } from "@/modules/domain-admin/domain-context";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useTranslation } from "react-i18next";
@@ -36,6 +37,7 @@ export default function CalendarResourceDetail() {
   const canEdit = useIsAllowed("PATCH", "/domains/{domain}/resources/{resourceId}");
 
   const [page, setPage] = useState(1);
+  const [showAddAdmin, setShowAddAdmin] = useState(false);
   const [newAdmin, setNewAdmin] = useState("");
   const adminStatus = useCheckUserExists(newAdmin);
 
@@ -58,24 +60,24 @@ export default function CalendarResourceDetail() {
     setPage(newPage);
   };
 
+  const trimmedAdmin = newAdmin.trim();
+  const isAlreadyAdmin = !!resource && resource.administrators.some((a) => a.email === trimmedAdmin);
+  const canAddAdmin = !!trimmedAdmin && !isAlreadyAdmin && adminStatus === "exists";
+
+  const closeAddAdmin = () => {
+    setShowAddAdmin(false);
+    setNewAdmin("");
+  };
+
+  // Throws on a refusal: the modal shows it and keeps the typed address
   const handleAddAdmin = async () => {
-    const email = newAdmin.trim();
-    if (!email || !resource) return;
-    const alreadyExists = resource.administrators.some((a) => a.email === email);
-    if (alreadyExists) {
-      toast({ title: t("domains.calendarResources.adminAlreadyExists") });
-      return;
-    }
-    try {
-      await updateResource(domain, resource.id, {
-        administrators: [...resource.administrators, { email }],
-      });
-      toast({ title: t("domains.calendarResources.adminAdded") });
-      setNewAdmin("");
-      await refresh();
-    } catch (err) {
-      toast({ title: t("domains.calendarResources.errorAddingAdmin"), description: <ErrorDisplayer error={err} /> });
-    }
+    if (!resource || !canAddAdmin) return;
+    await updateResource(domain, resource.id, {
+      administrators: [...resource.administrators, { email: trimmedAdmin }],
+    });
+    toast({ title: t("domains.calendarResources.adminAdded") });
+    closeAddAdmin();
+    await refresh();
   };
 
   const handleRemoveAdmin = async (email: string) => {
@@ -201,20 +203,14 @@ export default function CalendarResourceDetail() {
           )}
 
           <div className="mt-6">
-            <h4 id={`${idPrefix}-administrators`} className="text-md font-semibold">{t("domains.calendarResources.administratorsLabel")}</h4>
-            {canEdit && (
-            <div className="flex gap-2 mt-3 mb-4">
-              <input type="text" value={newAdmin} aria-labelledby={`${idPrefix}-administrators`} onChange={(e) => setNewAdmin(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAddAdmin()} placeholder="admin@domain.tld"
-                className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500" />
-              {adminStatus === "checking" && <span className="flex items-center text-xs text-gray-400 whitespace-nowrap">{t("common.checking")}</span>}
-              {adminStatus === "exists" && <span className="flex items-center gap-1 text-xs text-green-600 whitespace-nowrap"><span className="inline-block w-2 h-2 rounded-full bg-green-500" />{t("common.userExists")}</span>}
-              {adminStatus === "not_found" && <span className="flex items-center gap-1 text-xs text-orange-500 whitespace-nowrap"><span className="inline-block w-2 h-2 rounded-full bg-orange-400" />{t("common.userNotFound")}</span>}
-              {adminStatus === "invalid" && <span className="flex items-center gap-1 text-xs text-red-600 whitespace-nowrap"><span className="inline-block w-2 h-2 rounded-full bg-red-500" />{t("common.invalidUsername")}</span>}
-              <button onClick={handleAddAdmin} disabled={adminStatus !== "exists"}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">{t("common.add")}</button>
+            <div className="flex items-center gap-2 mb-2">
+              <h4 className="text-md font-semibold">{t("domains.calendarResources.administratorsLabel")}</h4>
+              {canEdit && (
+                <button onClick={() => setShowAddAdmin(true)} className="p-1 rounded-md hover:bg-gray-200 transition" title={t("domains.calendarResources.addAdminTooltip")}>
+                  <Plus className="w-4 h-4" />
+                </button>
+              )}
             </div>
-          )}
 
             {admins.length > PAGE_LIMIT && (
               <PaginationControls
@@ -249,6 +245,29 @@ export default function CalendarResourceDetail() {
         </>
       )}
     </div>
+
+    <FormDialog
+      open={showAddAdmin}
+      onClose={closeAddAdmin}
+      title={t("domains.calendarResources.addAdminTooltip")}
+      submitLabel={t("common.add")}
+      submitDisabled={!canAddAdmin}
+      onSubmit={handleAddAdmin}
+    >
+      <div>
+        {/* The only field: named by the action, the modal title */}
+        <input type="text" autoFocus value={newAdmin} aria-label={t("domains.calendarResources.addAdminTooltip")} onChange={(e) => setNewAdmin(e.target.value)}
+          placeholder="admin@domain.tld" className={FIELD_CLASS} />
+        {/* Reserved height: the status appearing does not resize the modal */}
+        <p className="h-4 mt-1 text-xs">
+          {trimmedAdmin && adminStatus === "checking" && <span className="text-gray-400">{t("common.checking")}</span>}
+          {isAlreadyAdmin && <span className="text-orange-600">{t("domains.calendarResources.adminAlreadyExists")}</span>}
+          {!isAlreadyAdmin && adminStatus === "exists" && <span className="text-green-700">{t("common.userExists")}</span>}
+          {adminStatus === "not_found" && <span className="text-orange-600">{t("common.userNotFound")}</span>}
+          {adminStatus === "invalid" && <span className="text-red-600">{t("common.invalidUsername")}</span>}
+        </p>
+      </div>
+    </FormDialog>
     </>
   );
 }

@@ -430,6 +430,7 @@
       "removeAdminTitle": "Quitar administrador",
       "removeAdminConfirm": "¿Quitar a «{{email}}» de los administradores?",
       "removeAdminTooltip": "Quitar administrador",
+      "addAdminTooltip": "Añadir administrador",
       "searchPlaceholder": "Buscar recursos...",
       "detailKind": "Calendario de recurso"
     },

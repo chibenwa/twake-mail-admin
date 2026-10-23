@@ -430,6 +430,7 @@
       "removeAdminTitle": "Администратор устгах",
       "removeAdminConfirm": "«{{email}}»-г администраторуудаас устгах уу?",
       "removeAdminTooltip": "Администратор устгах",
+      "addAdminTooltip": "Администратор нэмэх",
       "searchPlaceholder": "Нөөц хайх...",
       "detailKind": "Нөөцийн хуанли"
     },

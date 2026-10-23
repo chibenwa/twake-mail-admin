@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import type { Resource } from "../types";
 
 const api = vi.hoisted(() => ({
@@ -15,7 +15,8 @@ vi.mock("react-router", () => ({
 vi.mock("@/modules/domain-admin/domain-context", () => ({ useDomain: () => undefined }));
 vi.mock("@/lib/proxy-resolver-context", () => ({ useIsAllowed: () => true }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => async () => true }));
-vi.mock("@/hooks/use-check-user-exists", () => ({ useCheckUserExists: () => "idle" }));
+const userCheck = vi.hoisted(() => ({ status: "idle" }));
+vi.mock("@/hooks/use-check-user-exists", () => ({ useCheckUserExists: () => userCheck.status }));
 vi.mock("../api-client", () => api);
 
 import CalendarResourceDetail from "./calendar-resource-detail";
@@ -32,6 +33,8 @@ const resource: Resource = {
 };
 
 beforeEach(() => {
+  userCheck.status = "idle";
+  api.updateResource.mockReset().mockResolvedValue(undefined);
   api.getResource.mockReset();
   api.getResource.mockResolvedValue(resource);
 });
@@ -39,10 +42,34 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("CalendarResourceDetail", () => {
-  it("ties the administrator field to the Administrators heading", async () => {
+  it("adds an administrator from a modal opened by the + next to the Administrators heading", async () => {
+    userCheck.status = "exists";
     render(<CalendarResourceDetail />);
 
-    expect(await screen.findByRole("textbox", { name: "domains.calendarResources.administratorsLabel" })).toBeTruthy();
+    await screen.findByText("domains.calendarResources.administratorsLabel");
+    expect(screen.queryByRole("textbox")).toBeNull();
+    fireEvent.click(screen.getByTitle("domains.calendarResources.addAdminTooltip"));
+    const dialog = await screen.findByRole("dialog", { name: "domains.calendarResources.addAdminTooltip" });
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "domains.calendarResources.addAdminTooltip" }), { target: { value: "bob@open-paas.org" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "common.add" }));
+
+    await waitFor(() => expect(api.updateResource).toHaveBeenCalledWith("open-paas.org", "room-2", { administrators: [{ email: "bob@open-paas.org" }] }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("keeps the administrator modal open with the typed address and shows the refusal in it", async () => {
+    userCheck.status = "exists";
+    api.updateResource.mockRejectedValue(new Error("Forbidden"));
+    render(<CalendarResourceDetail />);
+
+    fireEvent.click(await screen.findByTitle("domains.calendarResources.addAdminTooltip"));
+    const dialog = await screen.findByRole("dialog");
+    const input = within(dialog).getByRole("textbox", { name: "domains.calendarResources.addAdminTooltip" });
+    fireEvent.change(input, { target: { value: "bob@open-paas.org" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "common.add" }));
+
+    expect((await within(dialog).findByRole("alert")).textContent).toContain("Forbidden");
+    expect(input).toHaveProperty("value", "bob@open-paas.org");
   });
 
   it("ties the Name and Description fields of the edit form to their labels", async () => {

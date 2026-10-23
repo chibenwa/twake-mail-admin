@@ -430,6 +430,7 @@
       "removeAdminTitle": "Retirer l'administrateur",
       "removeAdminConfirm": "Retirer « {{email}} » des administrateurs ?",
       "removeAdminTooltip": "Retirer l'administrateur",
+      "addAdminTooltip": "Ajouter un administrateur",
       "searchPlaceholder": "Rechercher des ressources…",
       "detailKind": "Calendrier de ressource"
     },

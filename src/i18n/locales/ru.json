@@ -432,6 +432,7 @@
       "removeAdminTitle": "Удалить администратора",
       "removeAdminConfirm": "Удалить «{{email}}» из администраторов?",
       "removeAdminTooltip": "Удалить администратора",
+      "addAdminTooltip": "Добавить администратора",
       "searchPlaceholder": "Поиск ресурсов...",
       "detailKind": "Календарь ресурса"
     },

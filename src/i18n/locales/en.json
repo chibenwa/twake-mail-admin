@@ -430,6 +430,7 @@
       "removeAdminTitle": "Remove Administrator",
       "removeAdminConfirm": "Remove \"{{email}}\" from administrators?",
       "removeAdminTooltip": "Remove administrator",
+      "addAdminTooltip": "Add administrator",
       "searchPlaceholder": "Search resources...",
       "detailKind": "Resource calendar"
     },

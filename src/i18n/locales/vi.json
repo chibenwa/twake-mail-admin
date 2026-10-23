@@ -429,6 +429,7 @@
       "removeAdminTitle": "Xóa quản trị viên",
       "removeAdminConfirm": "Xóa \"{{email}}\" khỏi danh sách quản trị viên?",
       "removeAdminTooltip": "Xóa quản trị viên",
+      "addAdminTooltip": "Thêm quản trị viên",
       "searchPlaceholder": "Tìm tài nguyên...",
       "detailKind": "Lịch tài nguyên"
     },
