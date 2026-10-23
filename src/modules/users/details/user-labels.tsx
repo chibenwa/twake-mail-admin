@@ -97,6 +97,8 @@ export default function UserLabels({ username }: Props) {
   const handleDelete = async (label: UserLabel) => {
     const confirmed = await confirm({
       header: t("users.labels.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("users.labels.deleteConfirm", { displayName: label.displayName }),
     });
     if (!confirmed) return;

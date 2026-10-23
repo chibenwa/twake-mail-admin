@@ -412,6 +412,8 @@ function MailingListDetailRow({ address }: { address: string }) {
         onRemove={async (member) => {
           const confirmed = await confirm({
             header: t("mailingLists.removeMemberTitle"),
+            destructive: true,
+            confirmLabel: t("common.remove"),
             message: t("mailingLists.removeMemberConfirm", { member, address }),
           });
           if (!confirmed) return;
@@ -439,6 +441,8 @@ function MailingListDetailRow({ address }: { address: string }) {
         onRemove={async (owner) => {
           const confirmed = await confirm({
             header: t("mailingLists.removeOwnerTitle"),
+            destructive: true,
+            confirmLabel: t("common.remove"),
             message: t("mailingLists.removeOwnerConfirm", { owner, address }),
           });
           if (!confirmed) return;
@@ -494,6 +498,8 @@ export default function MailingListsList({ domain }: Props) {
   const handleDelete = async (address: string) => {
     const confirmed = await confirm({
       header: t("mailingLists.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("mailingLists.deleteConfirm", { address }),
     });
     if (!confirmed) return;

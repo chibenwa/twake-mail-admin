@@ -361,6 +361,8 @@ export default function UserAddressBooks({ username }: Props) {
   const handleDelete = async (addressBook: UserAddressBook) => {
     const confirmed = await confirm({
       header: t("users.addressBooks.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("users.addressBooks.deleteConfirm", { name: addressBookName(addressBook, t) }),
     });
     if (!confirmed) return;

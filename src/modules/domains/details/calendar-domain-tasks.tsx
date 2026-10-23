@@ -36,6 +36,8 @@ export default function CalendarDomainTasks({ domain, defaultOpen = false }: Pro
   const handleDeleteAllUsersData = async () => {
     const confirmed = await confirm({
       header: t("domains.tasks.deleteAllDataTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("domains.tasks.deleteAllDataConfirm", { domain }),
     });
     if (!confirmed) return;

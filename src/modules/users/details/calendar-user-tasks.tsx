@@ -43,6 +43,8 @@ export default function CalendarUserTasks({ username }: Props) {
 
     await confirm({
       header: t("users.tasks.deleteDataTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: (
         <DeleteUserDataForm
           username={username}

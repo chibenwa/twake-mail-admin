@@ -108,6 +108,8 @@ export default function CalendarDomainResources({ domain, defaultOpen = false, r
   const handleRemove = async (resource: Resource) => {
     const confirmed = await confirm({
       header: t("domains.calendarResources.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("domains.calendarResources.deleteConfirm", { name: resourceDisplayName(resource) }),
     });
     if (!confirmed) return;

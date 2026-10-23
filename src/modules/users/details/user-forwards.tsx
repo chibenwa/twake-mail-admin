@@ -94,6 +94,8 @@ export default function UserForwards({ username }: Props) {
   const handleRemove = async (destination: string) => {
     const confirmed = await confirm({
       header: t("users.forwards.removeTitle"),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       message: t("users.forwards.removeConfirm", { destination, username }),
     });
     if (!confirmed) return;

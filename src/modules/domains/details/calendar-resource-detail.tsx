@@ -78,6 +78,8 @@ export default function CalendarResourceDetail() {
     if (!resource) return;
     const confirmed = await confirm({
       header: t("domains.calendarResources.removeAdminTitle"),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       message: t("domains.calendarResources.removeAdminConfirm", { email }),
     });
     if (!confirmed) return;

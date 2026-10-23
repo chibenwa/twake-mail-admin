@@ -119,6 +119,8 @@ export default function UnsentMailsList() {
     if (!selection) return;
     const confirmed = await confirm({
       header: t("unsentMails.deleteAllTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: selectionSummary
         ? t("unsentMails.deleteAllFilteredConfirm", { filters: selectionSummary })
         : t("unsentMails.deleteAllConfirm"),
@@ -160,6 +162,8 @@ export default function UnsentMailsList() {
     e.stopPropagation();
     const confirmed = await confirm({
       header: t("unsentMails.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("unsentMails.deleteConfirm", { id }),
     });
     if (!confirmed) return;

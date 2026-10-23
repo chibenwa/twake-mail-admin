@@ -67,6 +67,8 @@ export default function DomainTeamMailboxes({ domain, defaultOpen }: Props) {
   const handleRemove = async (name: string) => {
     const confirmed = await confirm({
       header: t("domains.teamMailboxes.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("domains.teamMailboxes.deleteConfirm", { name, domain }),
     });
     if (!confirmed) return;

@@ -211,6 +211,11 @@ export default function UserTasks({ username }: Props) {
   const handleDeleteAllMailboxes = async () => {
     const confirmed = await confirm({
       header: t("users.tasks.deleteAllMailboxesTitle"),
+      destructive: true,
+      confirmLabel: t("confirm.deleteMailboxes"),
+      consequence: t("confirm.consequence.deleteMailboxes", { user: username }),
+      typeToConfirm: username,
+      typeToConfirmIgnoreCase: true,
       message: (
         <ConfirmTaskContent
           message={<p>{t("users.tasks.deleteAllMailboxesConfirm", { username })}</p>}
@@ -281,6 +286,11 @@ export default function UserTasks({ username }: Props) {
 
     await confirm({
       header: t("users.tasks.deleteDataTitle"),
+      destructive: true,
+      confirmLabel: t("confirm.deleteUserData"),
+      consequence: t("confirm.consequence.deleteUserData", { user: username }),
+      typeToConfirm: username,
+      typeToConfirmIgnoreCase: true,
       message: (
         <FormTaskContent
           initialValues={currentFromStep}

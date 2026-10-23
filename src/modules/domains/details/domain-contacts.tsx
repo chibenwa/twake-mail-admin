@@ -139,6 +139,8 @@ export default function DomainContacts({ domain }: Props) {
   const handleDelete = async (email: string) => {
     const confirmed = await confirm({
       header: t("domains.contacts.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("domains.contacts.deleteConfirm", { email, domain }),
     });
     if (!confirmed) return;

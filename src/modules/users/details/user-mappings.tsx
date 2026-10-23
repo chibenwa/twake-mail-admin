@@ -73,6 +73,8 @@ export default function UserMappings({ username }: Props) {
     const label = typeLabel(type);
     const confirmed = await confirm({
       header: t("users.mappings.removeAllSources", { type: label }),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       message: t("users.mappings.removeAllSourcesConfirm", { type: label, username, sources: sources.join(", ") }),
     });
     if (!confirmed) return;

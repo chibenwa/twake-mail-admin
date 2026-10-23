@@ -2,7 +2,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useState } from "react";
-import { ConfirmProvider, ConfirmValidator } from "./confirm-provider";
+import { ConfirmOptions, ConfirmProvider, ConfirmValidator, matchesTypeToConfirm } from "./confirm-provider";
 import { useConfirm } from "@/hooks/use-confirm";
 
 function NameForm({ onChange }: { onChange: (value: string) => void }) {
@@ -231,5 +231,85 @@ describe("confirm dialog validation without message", () => {
     expect(screen.queryByRole("dialog")).not.toBeNull();
     expect(screen.getAllByRole("alert").map((alert) => alert.textContent)).toEqual(["Complete the criteria"]);
     expect(silentResults).toEqual([]);
+  });
+});
+
+describe("destructive confirm dialog", () => {
+  function DestructiveOpener({ options, onResult }: { options: Partial<ConfirmOptions>; onResult: (result: boolean) => void }) {
+    const confirm = useConfirm();
+    const open = async () => onResult(await confirm({ header: "Delete", message: "Sure?", destructive: true, ...options }));
+    return <button onClick={open}>open</button>;
+  }
+
+  const destructiveResults: boolean[] = [];
+  afterEach(() => { destructiveResults.length = 0; });
+
+  const openDestructive = async (options: Partial<ConfirmOptions> = {}) => {
+    render(
+      <ConfirmProvider>
+        <DestructiveOpener options={options} onResult={(result) => destructiveResults.push(result)} />
+      </ConfirmProvider>
+    );
+    fireEvent.click(screen.getByText("open"));
+    await screen.findByRole("dialog");
+  };
+
+  it("names the action on a red button and shows the consequence", async () => {
+    await openDestructive({ confirmLabel: "Delete user data", consequence: "Everything is lost" });
+
+    const button = screen.getByText("Delete user data");
+    expect(button.className).toContain("bg-destructive");
+    expect(screen.getByText("Everything is lost")).not.toBeNull();
+    expect(screen.queryByText("common.confirm")).toBeNull();
+  });
+
+  it("opens with the focus on Cancel", async () => {
+    await openDestructive();
+
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByText("common.cancel")));
+  });
+
+  it("keeps the blue Confirm of a routine confirmation", async () => {
+    await openDestructive({ destructive: false });
+
+    expect(screen.getByText("common.confirm").className).not.toContain("bg-destructive");
+  });
+
+  it("enables the confirm button only once the target is typed", async () => {
+    await openDestructive({ confirmLabel: "Delete", typeToConfirm: "bob@example.com", typeToConfirmIgnoreCase: true });
+    const button = () => screen.getAllByText("Delete").find((el) => el.tagName === "BUTTON") as HTMLButtonElement;
+    const field = screen.getByLabelText("confirm.typeToConfirm");
+
+    await waitFor(() => expect(document.activeElement).toBe(field));
+    expect(button().disabled).toBe(true);
+    fireEvent.change(field, { target: { value: "bob" } });
+    expect(button().disabled).toBe(true);
+    fireEvent.change(field, { target: { value: " BOB@example.com " } });
+    expect(button().disabled).toBe(false);
+    fireEvent.click(button());
+
+    await waitFor(() => expect(destructiveResults).toEqual([true]));
+  });
+
+  it("compares the typed text exactly unless told otherwise", async () => {
+    await openDestructive({ confirmLabel: "Delete", typeToConfirm: "INBOX" });
+    const button = () => screen.getAllByText("Delete").find((el) => el.tagName === "BUTTON") as HTMLButtonElement;
+    const field = screen.getByLabelText("confirm.typeToConfirm");
+
+    fireEvent.change(field, { target: { value: "inbox" } });
+    expect(button().disabled).toBe(true);
+    fireEvent.keyDown(field, { key: "Enter" });
+    expect(destructiveResults).toEqual([]);
+    fireEvent.change(field, { target: { value: "INBOX" } });
+    expect(button().disabled).toBe(false);
+  });
+});
+
+describe("matchesTypeToConfirm", () => {
+  it("ignores surrounding spaces, and the case only when asked", () => {
+    expect(matchesTypeToConfirm(" ux.org ", "ux.org")).toBe(true);
+    expect(matchesTypeToConfirm("UX.org", "ux.org")).toBe(false);
+    expect(matchesTypeToConfirm("UX.org", "ux.org", true)).toBe(true);
+    expect(matchesTypeToConfirm("", "ux.org", true)).toBe(false);
   });
 });

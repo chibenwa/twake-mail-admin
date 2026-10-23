@@ -68,6 +68,8 @@ export default function CalendarDomainAdmins({ domain, defaultOpen = false }: Pr
   const handleRemove = async (username: string) => {
     const confirmed = await confirm({
       header: t("domains.calendarAdmins.removeTitle"),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       message: t("domains.calendarAdmins.removeConfirm", { username, domain }),
     });
     if (!confirmed) return;

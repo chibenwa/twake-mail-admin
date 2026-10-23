@@ -126,6 +126,8 @@ export default function UserIdentities({ username }: Props) {
   const handleDelete = async (identity: JmapIdentity) => {
     const confirmed = await confirm({
       header: t("users.identities.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("users.identities.deleteConfirm", { name: identity.name, email: identity.email }),
     });
     if (!confirmed) return;

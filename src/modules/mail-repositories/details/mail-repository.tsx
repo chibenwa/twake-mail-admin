@@ -204,6 +204,8 @@ export default function MailRepositoryDetail() {
     try {
       const result = await confirm({
         header: t("mailRepositories.removeMailHeader"),
+        destructive: true,
+        confirmLabel: t("common.remove"),
         message: t("mailRepositories.removeMailConfirm", { mailKey, id }),
       });
       if (!result || !id) {

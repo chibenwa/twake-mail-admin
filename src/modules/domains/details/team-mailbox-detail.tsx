@@ -81,6 +81,8 @@ export default function TeamMailboxDetail() {
   const handleRemove = async (username: string) => {
     const confirmed = await confirm({
       header: t("domains.teamMailbox.removeMemberTitle"),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       message: t("domains.teamMailbox.removeMemberConfirm", { username, mailbox, domain }),
     });
     if (!confirmed) return;

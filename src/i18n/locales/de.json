@@ -77,7 +77,8 @@
     "refresh": "Aktualisieren",
     "close": "Schließen",
     "sizeLimit": "Größenlimit",
-    "sizeUnit": "Einheit"
+    "sizeUnit": "Einheit",
+    "remove": "Entfernen"
   },
   "sidebar": {
     "application": "Anwendung",
@@ -1078,7 +1079,7 @@
       "timeZoneInvalid": "Unbekannte Zeitzone: Wählen Sie eine aus der Liste, z. B. Europe/Paris.",
       "ruleRangeInvalid": "Die Endzeit muss nach der Startzeit liegen.",
       "rulesCount_one": "{{count}} Regel",
-      "rulesCount_other":"{{count}} Regeln",
+      "rulesCount_other": "{{count}} Regeln",
       "clearRules": "Alle Regeln entfernen",
       "clearRulesWarning": "Beim Speichern werden alle Regeln entfernt.",
       "deleteEventsTitle": "Zugehörige Termine löschen",
@@ -1717,5 +1718,19 @@
     "cancel": "Abbrechen",
     "authenticate": "Authentifizieren",
     "authenticating": "Authentifizierung läuft..."
+  },
+  "confirm": {
+    "deleteUserData": "Benutzerdaten löschen",
+    "deleteMailboxes": "Alle Postfächer löschen",
+    "clear": "Leeren",
+    "typeToConfirm": "Geben Sie {{value}} zur Bestätigung ein",
+    "consequence": {
+      "deleteUserData": "Alle Postfächer, Nachrichten, Identitäten, Labels, Abwesenheitsnotiz und Einstellungen von {{user}} werden endgültig gelöscht. Das Konto selbst bleibt bestehen. Dies kann nicht rückgängig gemacht werden.",
+      "deleteMailboxes": "Alle Postfächer von {{user}} und alle enthaltenen Nachrichten werden endgültig gelöscht. Dies kann nicht rückgängig gemacht werden.",
+      "deleteMailbox": "„{{mailbox}}“, seine Unterordner und alle Nachrichten werden endgültig gelöscht.",
+      "clearMailbox": "Alle Nachrichten in „{{mailbox}}“ werden endgültig gelöscht; der Ordner bleibt.",
+      "clearRepository": "Die {{count}} in {{path}} gespeicherten Mails werden endgültig gelöscht und können nicht mehr erneut verarbeitet werden.",
+      "clearGroup": "Die Ereignisse werden gelöscht, ohne erneut zugestellt zu werden: Was sie aktualisieren sollten, bleibt veraltet."
+    }
   }
 }

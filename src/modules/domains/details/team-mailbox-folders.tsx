@@ -77,6 +77,10 @@ export default function TeamMailboxFolders({ domain, mailbox }: Props) {
   const handleDelete = async (folderName: string) => {
     const confirmed = await confirm({
       header: t("domains.folders.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
+      consequence: t("confirm.consequence.deleteMailbox", { mailbox: folderName }),
+      typeToConfirm: folderName.toUpperCase() === "INBOX" ? folderName : undefined,
       message: t("domains.folders.deleteConfirm", { folderName }),
     });
     if (!confirmed) return;

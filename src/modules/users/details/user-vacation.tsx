@@ -83,6 +83,8 @@ export default function UserVacation({ username }: Props) {
   const handleDelete = async () => {
     const confirmed = await confirm({
       header: t("users.vacation.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("users.vacation.deleteConfirm", { username }),
     });
     if (!confirmed) return;

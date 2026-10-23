@@ -93,6 +93,8 @@ export default function DomainTasks({ domain, defaultOpen }: Props) {
   const handleDeleteAllUsersData = async () => {
     const confirmed = await confirm({
       header: t("domains.tasks.deleteAllDataTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: (
         <ConfirmTaskContent
           message={<p>{t("domains.tasks.deleteAllDataConfirm", { domain })}</p>}

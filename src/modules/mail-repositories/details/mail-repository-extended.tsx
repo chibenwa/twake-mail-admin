@@ -233,6 +233,8 @@ export default function MailRepositoryExtended() {
   const handleDelete = async (mailKey: string) => {
     const confirmed = await confirm({
       header: t("mailRepositories.deleteMailHeader"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("mailRepositories.deleteMailConfirm", { mailKey, id }),
     });
     if (!confirmed) return;

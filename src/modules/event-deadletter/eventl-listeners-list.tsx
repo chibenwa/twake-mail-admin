@@ -98,6 +98,9 @@ export default function EventListenersList() {
   const handleClearGroup = async (path: string) => {
     const result = await confirm({
       header: t("eventDeadletter.clearGroupTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
+      consequence: t("confirm.consequence.clearGroup"),
       message: t("eventDeadletter.clearGroup", { path }),
     });
     if (!result) return;

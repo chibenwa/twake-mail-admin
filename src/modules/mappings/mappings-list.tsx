@@ -90,6 +90,8 @@ export default function MappingsList() {
     const typeLabel = mapping.type.toLowerCase();
     const confirmed = await confirm({
       header: t("mappings.removeTitle", { type: mapping.type }),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       message: t("mappings.removeConfirm", { typeLabel, source: mapping.source, destination: mapping.destination }),
     });
     if (!confirmed) return;
@@ -109,6 +111,8 @@ export default function MappingsList() {
     if (deletablePageMappings.length === 0) return;
     const confirmed = await confirm({
       header: t("mappings.removePageTitle"),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       className: "max-w-2xl",
       message: (
         <div className="flex flex-col gap-3">

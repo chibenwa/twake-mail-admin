@@ -40,6 +40,9 @@ export default function UserChannels({ username }: Props) {
   const handleDisconnectAll = async () => {
     const confirmed = await confirm({
       header: t("users.channels.title"),
+      // Like Disconnect all: every open session of the user is closed
+      destructive: true,
+      confirmLabel: t("users.channels.disconnectAll"),
       message: t("networkChannels.disconnectUser", { username }),
     });
     if (!confirmed) return;

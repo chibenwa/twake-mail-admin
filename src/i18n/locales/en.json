@@ -77,7 +77,8 @@
     "refresh": "Refresh",
     "close": "Close",
     "sizeLimit": "Size limit",
-    "sizeUnit": "Unit"
+    "sizeUnit": "Unit",
+    "remove": "Remove"
   },
   "sidebar": {
     "application": "Application",
@@ -1078,7 +1079,7 @@
       "timeZoneInvalid": "Unknown time zone: pick one from the list, e.g. Europe/Paris.",
       "ruleRangeInvalid": "The end time must be after the start time.",
       "rulesCount_one": "{{count}} rule",
-      "rulesCount_other":"{{count}} rules",
+      "rulesCount_other": "{{count}} rules",
       "clearRules": "Remove all rules",
       "clearRulesWarning": "All rules will be removed on save.",
       "deleteEventsTitle": "Delete associated events",
@@ -1717,5 +1718,19 @@
     "cancel": "Cancel",
     "authenticate": "Authenticate",
     "authenticating": "Authenticating..."
+  },
+  "confirm": {
+    "deleteUserData": "Delete user data",
+    "deleteMailboxes": "Delete all mailboxes",
+    "clear": "Clear",
+    "typeToConfirm": "Type {{value}} to confirm",
+    "consequence": {
+      "deleteUserData": "All mailboxes, messages, identities, labels, vacation and settings of {{user}} are permanently deleted. The account itself is kept. This cannot be undone.",
+      "deleteMailboxes": "Every mailbox of {{user}} and all the messages they contain are permanently deleted. This cannot be undone.",
+      "deleteMailbox": "\"{{mailbox}}\", its sub-folders and all their messages are permanently deleted.",
+      "clearMailbox": "All messages of \"{{mailbox}}\" are permanently deleted; the folder is kept.",
+      "clearRepository": "The {{count}} mails stored in {{path}} are permanently deleted and can no longer be reprocessed.",
+      "clearGroup": "The dead-lettered events are deleted without being redelivered: what they would have updated stays out of date."
+    }
   }
 }

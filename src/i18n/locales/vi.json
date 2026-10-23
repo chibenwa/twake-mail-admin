@@ -77,7 +77,8 @@
     "refresh": "Làm mới",
     "close": "Đóng",
     "sizeLimit": "Giới hạn dung lượng",
-    "sizeUnit": "Đơn vị"
+    "sizeUnit": "Đơn vị",
+    "remove": "Gỡ bỏ"
   },
   "sidebar": {
     "application": "Ứng dụng",
@@ -1077,7 +1078,7 @@
       "timeZone": "Múi giờ",
       "timeZoneInvalid": "Múi giờ không xác định: hãy chọn một múi giờ trong danh sách, ví dụ Europe/Paris.",
       "ruleRangeInvalid": "Giờ kết thúc phải sau giờ bắt đầu.",
-      "rulesCount_other":"{{count}} quy tắc",
+      "rulesCount_other": "{{count}} quy tắc",
       "clearRules": "Xóa tất cả quy tắc",
       "clearRulesWarning": "Tất cả quy tắc sẽ bị xóa khi lưu.",
       "deleteEventsTitle": "Xóa các sự kiện liên quan",
@@ -1716,5 +1717,19 @@
     "cancel": "Hủy",
     "authenticate": "Xác thực",
     "authenticating": "Đang xác thực..."
+  },
+  "confirm": {
+    "deleteUserData": "Xóa dữ liệu",
+    "deleteMailboxes": "Xóa mọi hộp thư",
+    "clear": "Làm trống",
+    "typeToConfirm": "Nhập {{value}} để xác nhận",
+    "consequence": {
+      "deleteUserData": "Mọi hộp thư, thư, danh tính, nhãn, trả lời vắng mặt và cài đặt của {{user}} sẽ bị xóa vĩnh viễn. Tài khoản vẫn được giữ. Không thể hoàn tác.",
+      "deleteMailboxes": "Mọi hộp thư của {{user}} và toàn bộ thư bên trong sẽ bị xóa vĩnh viễn. Không thể hoàn tác.",
+      "deleteMailbox": "\"{{mailbox}}\", các thư mục con và toàn bộ thư sẽ bị xóa vĩnh viễn.",
+      "clearMailbox": "Mọi thư trong \"{{mailbox}}\" sẽ bị xóa vĩnh viễn; thư mục được giữ.",
+      "clearRepository": "{{count}} thư trong {{path}} sẽ bị xóa vĩnh viễn và không thể xử lý lại.",
+      "clearGroup": "Các sự kiện bị xóa mà không được gửi lại: những gì chúng cần cập nhật sẽ vẫn lỗi thời."
+    }
   }
 }

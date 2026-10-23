@@ -99,6 +99,11 @@ export default function UserMailboxes({ username }: Props) {
   const handleDelete = async (mailboxName: string) => {
     const confirmed = await confirm({
       header: t("users.mailboxes.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
+      consequence: t("confirm.consequence.deleteMailbox", { mailbox: mailboxName }),
+      // The INBOX can be deleted like any folder: make sure it is meant
+      typeToConfirm: mailboxName.toUpperCase() === "INBOX" ? mailboxName : undefined,
       message: t("users.mailboxes.deleteConfirm", { mailboxName }),
     });
     if (!confirmed) return;
@@ -117,6 +122,9 @@ export default function UserMailboxes({ username }: Props) {
   const handleClearMailbox = async (mailboxName: string) => {
     const confirmed = await confirm({
       header: t("users.mailboxes.clearTitle"),
+      destructive: true,
+      confirmLabel: t("confirm.clear"),
+      consequence: t("confirm.consequence.clearMailbox", { mailbox: mailboxName }),
       message: t("users.mailboxes.clearConfirm", { mailboxName }),
     });
     if (!confirmed) return;

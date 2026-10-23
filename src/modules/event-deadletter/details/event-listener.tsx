@@ -82,6 +82,9 @@ export default function EventListenersDetail() {
     try {
       const result = await confirm({
         header: t("eventDeadletter.deleteEventTitle"),
+        destructive: true,
+        confirmLabel: t("common.delete"),
+        consequence: t("confirm.consequence.clearGroup"),
         message: t("eventDeadletter.deleteEventConfirm", { insertionId, group: id }),
       });
       if (!result || !id) {

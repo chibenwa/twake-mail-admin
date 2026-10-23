@@ -75,6 +75,8 @@ export default function TeamMailboxExtraSenders({ domain, mailbox }: Props) {
   const handleRemove = async (username: string) => {
     const confirmed = await confirm({
       header: t("domains.extraSenders.removeTitle"),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       message: t("domains.extraSenders.removeConfirm", { username }),
     });
     if (!confirmed) return;

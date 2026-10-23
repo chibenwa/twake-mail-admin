@@ -71,6 +71,8 @@ export default function UserDelegation({ username }: Props) {
   const handleRemove = async (delegatedUser: string) => {
     const confirmed = await confirm({
       header: t("users.delegation.removeTitle"),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       message: t("users.delegation.removeConfirm", { delegatedUser, username }),
     });
     if (!confirmed) return;

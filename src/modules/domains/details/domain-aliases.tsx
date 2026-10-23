@@ -61,6 +61,8 @@ export default function DomainAliases({ domain, defaultOpen }: Props) {
   const handleRemove = async (source: string) => {
     const confirmed = await confirm({
       header: t("domains.aliases.removeTitle"),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       message: t("domains.aliases.removeConfirm", { source, domain }),
     });
     if (!confirmed) return;

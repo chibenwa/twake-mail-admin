@@ -422,6 +422,8 @@ export default function UserCalendars({ username, onCalendarsChanged }: Props) {
   const handleDelete = async (calendar: UserCalendar) => {
     const confirmed = await confirm({
       header: t("users.calendars.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("users.calendars.deleteConfirm", { name: calendar["dav:name"] }),
     });
     if (!confirmed) return;

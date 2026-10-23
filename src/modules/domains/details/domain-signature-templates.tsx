@@ -104,6 +104,8 @@ export default function DomainSignatureTemplates({ domain }: Props) {
   const handleDeleteAll = async () => {
     const confirmed = await confirm({
       header: t("domains.signatureTemplates.deleteAllTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("domains.signatureTemplates.deleteAllConfirm", { domain }),
     });
     if (!confirmed) return;

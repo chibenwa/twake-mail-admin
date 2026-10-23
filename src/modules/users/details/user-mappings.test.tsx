@@ -61,6 +61,8 @@ describe("user mappings: sources pointing to the user", () => {
     );
     expect(mocks.confirm).toHaveBeenCalledWith({
       header: "Remove all Alias sources",
+      destructive: true,
+      confirmLabel: "Remove",
       message: `Remove all Alias sources of ${EMMA} (${ALIAS})?`,
     });
     expect(mocks.api.deleteUserMappingSources).toHaveBeenCalledWith(EMMA, "alias");

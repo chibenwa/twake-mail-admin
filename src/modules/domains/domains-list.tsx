@@ -56,6 +56,8 @@ export default function DomainsList() {
   const handleDelete = async (domain: string) => {
     const confirmed = await confirm({
       header: t("domains.deleteDomain"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("domains.deleteConfirm", { domain }),
     });
     if (!confirmed) return;

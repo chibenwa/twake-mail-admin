@@ -131,6 +131,8 @@ export default function RegisteredUsersList() {
   const handleDelete = async (user: RegisteredUser) => {
     const confirmed = await confirm({
       header: t("registeredUsers.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("registeredUsers.deleteConfirm", { email: user.email }),
     });
     if (!confirmed) return;

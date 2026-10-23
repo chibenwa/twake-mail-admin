@@ -120,6 +120,8 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
   const handleRemove = async (username: string) => {
     const confirmed = await confirm({
       header: t("domains.extraAcl.removeTitle"),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       message: t("domains.extraAcl.removeConfirm", { username }),
     });
     if (!confirmed) return;
@@ -135,6 +137,8 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
   const handleClearAll = async () => {
     const confirmed = await confirm({
       header: t("domains.extraAcl.clearTitle"),
+      destructive: true,
+      confirmLabel: t("confirm.clear"),
       message: t("domains.extraAcl.clearConfirm"),
     });
     if (!confirmed) return;

@@ -44,6 +44,8 @@ export default function UnsentMailDetail() {
   const handleDelete = async () => {
     const confirmed = await confirm({
       header: t("unsentMails.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("unsentMails.deleteConfirm", { id }),
     });
     if (!confirmed) return;

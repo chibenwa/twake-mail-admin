@@ -68,6 +68,8 @@ export default function ChannelsList() {
   const handleDisconnectAll = async () => {
     const confirmed = await confirm({
       header: t("networkChannels.disconnectAllTitle"),
+      destructive: true,
+      confirmLabel: t("networkChannels.disconnectAll"),
       message: t("networkChannels.disconnectAllConfirm"),
     });
     if (!confirmed) return;

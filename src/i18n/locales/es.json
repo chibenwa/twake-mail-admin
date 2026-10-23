@@ -77,7 +77,8 @@
     "refresh": "Actualizar",
     "close": "Cerrar",
     "sizeLimit": "Límite de tamaño",
-    "sizeUnit": "Unidad"
+    "sizeUnit": "Unidad",
+    "remove": "Quitar"
   },
   "sidebar": {
     "application": "Aplicación",
@@ -1078,7 +1079,7 @@
       "timeZoneInvalid": "Zona horaria desconocida: elija una de la lista, p. ej. Europe/Paris.",
       "ruleRangeInvalid": "La hora de fin debe ser posterior a la hora de inicio.",
       "rulesCount_one": "{{count}} regla",
-      "rulesCount_other":"{{count}} reglas",
+      "rulesCount_other": "{{count}} reglas",
       "clearRules": "Quitar todas las reglas",
       "clearRulesWarning": "Todas las reglas se quitarán al guardar.",
       "deleteEventsTitle": "Eliminar los eventos asociados",
@@ -1717,5 +1718,19 @@
     "cancel": "Cancelar",
     "authenticate": "Autenticarse",
     "authenticating": "Autenticando..."
+  },
+  "confirm": {
+    "deleteUserData": "Eliminar datos",
+    "deleteMailboxes": "Eliminar todos los buzones",
+    "clear": "Vaciar",
+    "typeToConfirm": "Escriba {{value}} para confirmar",
+    "consequence": {
+      "deleteUserData": "Todos los buzones, mensajes, identidades, etiquetas, respuesta de ausencia y ajustes de {{user}} se eliminan definitivamente. La cuenta se conserva. No se puede deshacer.",
+      "deleteMailboxes": "Todos los buzones de {{user}} y sus mensajes se eliminan definitivamente. No se puede deshacer.",
+      "deleteMailbox": "«{{mailbox}}», sus subcarpetas y todos sus mensajes se eliminan definitivamente.",
+      "clearMailbox": "Todos los mensajes de «{{mailbox}}» se eliminan definitivamente; la carpeta se conserva.",
+      "clearRepository": "Los {{count}} correos de {{path}} se eliminan definitivamente y ya no podrán reprocesarse.",
+      "clearGroup": "Los eventos se eliminan sin reenviarse: lo que debían actualizar queda desactualizado."
+    }
   }
 }

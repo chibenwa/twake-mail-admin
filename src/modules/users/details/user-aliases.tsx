@@ -61,6 +61,8 @@ export default function UserAliases({ username }: Props) {
   const handleRemove = async (alias: string) => {
     const confirmed = await confirm({
       header: t("users.aliases.removeTitle"),
+      destructive: true,
+      confirmLabel: t("common.remove"),
       message: t("users.aliases.removeConfirm", { alias, username }),
     });
     if (!confirmed) return;

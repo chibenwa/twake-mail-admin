@@ -151,9 +151,12 @@ export default function MailRepositoriesList() {
     }
   };
 
-  const handleClearTask = async ({ path, repository }: MailRepository) => {
+  const handleClearTask = async ({ path, repository, size }: MailRepository & { size: number }) => {
     const result = await confirm({
       header: t("mailRepositories.runTaskHeader"),
+      destructive: true,
+      confirmLabel: t("confirm.clear"),
+      consequence: t("confirm.consequence.clearRepository", { count: size, path: repository }),
       message: t("mailRepositories.clearConfirm", { path: repository }),
     });
     if (!result) {

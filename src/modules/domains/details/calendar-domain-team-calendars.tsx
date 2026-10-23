@@ -117,6 +117,8 @@ export default function CalendarDomainTeamCalendars({ domain, defaultOpen = fals
   const handleRemove = async (teamCalendar: TeamCalendar) => {
     const confirmed = await confirm({
       header: t("domains.teamCalendars.deleteTitle"),
+      destructive: true,
+      confirmLabel: t("common.delete"),
       message: t("domains.teamCalendars.deleteConfirm", { name: teamCalendar.name }),
     });
     if (!confirmed) return;

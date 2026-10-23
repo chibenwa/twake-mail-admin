@@ -77,7 +77,8 @@
     "refresh": "Rafraîchir",
     "close": "Fermer",
     "sizeLimit": "Limite de taille",
-    "sizeUnit": "Unité"
+    "sizeUnit": "Unité",
+    "remove": "Retirer"
   },
   "sidebar": {
     "application": "Application",
@@ -1078,7 +1079,7 @@
       "timeZoneInvalid": "Fuseau horaire inconnu : choisissez-en un dans la liste, par ex. Europe/Paris.",
       "ruleRangeInvalid": "L'heure de fin doit être postérieure à l'heure de début.",
       "rulesCount_one": "{{count}} règle",
-      "rulesCount_other":"{{count}} règles",
+      "rulesCount_other": "{{count}} règles",
       "clearRules": "Supprimer toutes les règles",
       "clearRulesWarning": "Toutes les règles seront supprimées à la sauvegarde.",
       "deleteEventsTitle": "Supprimer les événements associés",
@@ -1717,5 +1718,19 @@
     "cancel": "Annuler",
     "authenticate": "S'authentifier",
     "authenticating": "Authentification…"
+  },
+  "confirm": {
+    "deleteUserData": "Supprimer les données",
+    "deleteMailboxes": "Supprimer toutes les boîtes",
+    "clear": "Vider",
+    "typeToConfirm": "Saisissez {{value}} pour confirmer",
+    "consequence": {
+      "deleteUserData": "Toutes les boîtes, messages, identités, étiquettes, réponse d'absence et paramètres de {{user}} sont définitivement supprimés. Le compte lui-même est conservé. Cette action est irréversible.",
+      "deleteMailboxes": "Toutes les boîtes de {{user}} et tous leurs messages sont définitivement supprimés. Cette action est irréversible.",
+      "deleteMailbox": "« {{mailbox}} », ses sous-dossiers et tous leurs messages sont définitivement supprimés.",
+      "clearMailbox": "Tous les messages de « {{mailbox}} » sont définitivement supprimés ; le dossier est conservé.",
+      "clearRepository": "Les {{count}} mails stockés dans {{path}} sont définitivement supprimés et ne pourront plus être retraités.",
+      "clearGroup": "Les événements en échec sont supprimés sans être rejoués : ce qu'ils devaient mettre à jour reste obsolète."
+    }
   }
 }
