@@ -931,7 +931,8 @@
       "republishContactsTitle": "Đăng lại liên hệ chung",
       "republishContactsButton": "Đăng lại liên hệ chung",
       "republishContactsDesc": "Đăng lại liên hệ của {{username}} lên bus liên hệ chung.",
-      "errorRepublishContacts": "Lỗi khi đăng lại liên hệ chung"
+      "errorRepublishContacts": "Lỗi khi đăng lại liên hệ chung",
+      "archiveAllWarning": "Chưa đặt tiêu chí: mọi sự kiện của {{username}} sẽ được chuyển sang lịch \"Archival\"."
     },
     "calendars": {
       "title": "Lịch",
@@ -1262,7 +1263,6 @@
     "days": "ngày",
     "invalidCleanupDays": "Nhập số ngày lớn hơn 0",
     "cleaningUpOldTasks": "Đang dọn các tác vụ cũ",
-    "runConfirm": "Bạn có muốn chạy tác vụ {{name}} không?",
     "errorRunTask": "Lỗi khi chạy {{name}}",
     "params": {
       "defaultPlaceholder": "Mặc định: {{value}}",
@@ -1435,7 +1435,9 @@
       "alarmRescheduling": "Khi lời nhắc sự kiện không được gửi. Lên lịch lại báo thức của mọi sự kiện.",
       "calendarEventArchival": "Chuyển các sự kiện khớp tiêu chí vào lịch \"Archival\" của mỗi người dùng.",
       "clearDomainMembersContacts": "Làm trống sổ địa chỉ \"Thành viên miền\" của mọi miền. Chạy đồng bộ để điền lại."
-    }
+    },
+    "archiveAllEvents": "Lưu trữ mọi sự kiện",
+    "archiveAllWarning": "Chưa đặt tiêu chí: mọi sự kiện của mọi người dùng đã đăng ký sẽ được chuyển sang lịch \"Archival\"."
   },
   "healthCheck": {
     "checking": "Đang kiểm tra các thành phần, việc này có thể mất một lúc…",
@@ -1907,9 +1909,8 @@
     "invalidDesc": "Nhập một số nguyên dương, -1 cho không giới hạn, hoặc để trống để dùng giới hạn mặc định."
   },
   "confirmTask": {
-    "modifyThese": "Bạn có thể sửa các tham số này:",
-    "modifyThis": "Bạn có thể sửa tham số này:",
-    "command": "Lệnh"
+    "command": "Lệnh",
+    "start": "Bắt đầu tác vụ"
   },
   "auth": {
     "title": "Yêu cầu xác thực",

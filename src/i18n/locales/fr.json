@@ -931,7 +931,8 @@
       "republishContactsTitle": "Republier les contacts communs",
       "republishContactsButton": "Republier les contacts communs",
       "republishContactsDesc": "Republie les contacts de {{username}} sur le bus des contacts communs.",
-      "errorRepublishContacts": "Erreur lors de la republication des contacts communs"
+      "errorRepublishContacts": "Erreur lors de la republication des contacts communs",
+      "archiveAllWarning": "Aucun critère : tous les événements de {{username}} seront déplacés dans un calendrier « Archival »."
     },
     "calendars": {
       "title": "Calendriers",
@@ -1263,7 +1264,6 @@
     "days": "jours",
     "invalidCleanupDays": "Saisissez un nombre de jours supérieur à 0",
     "cleaningUpOldTasks": "Nettoyage des anciennes tâches",
-    "runConfirm": "Voulez-vous exécuter la tâche {{name}} ?",
     "errorRunTask": "Erreur lors de l'exécution de {{name}}",
     "params": {
       "defaultPlaceholder": "Par défaut : {{value}}",
@@ -1436,7 +1436,9 @@
       "alarmRescheduling": "Quand les rappels d'événements ne partent pas. Reprogramme les alarmes de chaque événement.",
       "calendarEventArchival": "Déplace les événements correspondant aux critères dans un calendrier « Archival » de chaque utilisateur.",
       "clearDomainMembersContacts": "Vide le carnet « Membres du domaine » de chaque domaine. Lancez une synchronisation pour le remplir à nouveau."
-    }
+    },
+    "archiveAllEvents": "Archiver tous les événements",
+    "archiveAllWarning": "Aucun critère : tous les événements de tous les utilisateurs enregistrés seront déplacés dans un calendrier « Archival »."
   },
   "healthCheck": {
     "checking": "Vérification des composants, cela peut prendre un moment…",
@@ -1908,9 +1910,8 @@
     "invalidDesc": "Saisissez un entier positif, -1 pour illimité, ou laissez vide pour la limite par défaut."
   },
   "confirmTask": {
-    "modifyThese": "Vous pouvez modifier ces paramètres :",
-    "modifyThis": "Vous pouvez modifier ce paramètre :",
-    "command": "Commande"
+    "command": "Commande",
+    "start": "Lancer la tâche"
   },
   "auth": {
     "title": "Authentification requise",

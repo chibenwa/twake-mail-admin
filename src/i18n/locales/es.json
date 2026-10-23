@@ -931,7 +931,8 @@
       "republishContactsTitle": "Volver a publicar los contactos comunes",
       "republishContactsButton": "Volver a publicar los contactos comunes",
       "republishContactsDesc": "Volver a publicar los contactos de {{username}} en el bus de contactos comunes.",
-      "errorRepublishContacts": "Error al volver a publicar los contactos comunes"
+      "errorRepublishContacts": "Error al volver a publicar los contactos comunes",
+      "archiveAllWarning": "Sin criterios: todos los eventos de {{username}} se moverán a un calendario «Archival»."
     },
     "calendars": {
       "title": "Calendarios",
@@ -1263,7 +1264,6 @@
     "days": "días",
     "invalidCleanupDays": "Introduzca un número de días mayor que 0",
     "cleaningUpOldTasks": "Limpiando las tareas antiguas",
-    "runConfirm": "¿Desea ejecutar la tarea {{name}}?",
     "errorRunTask": "Error al ejecutar {{name}}",
     "params": {
       "defaultPlaceholder": "Predeterminado: {{value}}",
@@ -1436,7 +1436,9 @@
       "alarmRescheduling": "Cuando no se envían los recordatorios de eventos. Vuelve a programar las alarmas de cada evento.",
       "calendarEventArchival": "Mueve los eventos que cumplen los criterios a un calendario «Archival» de cada usuario.",
       "clearDomainMembersContacts": "Vacía la libreta «Miembros del dominio» de cada dominio. Ejecute una sincronización para volver a llenarla."
-    }
+    },
+    "archiveAllEvents": "Archivar todos los eventos",
+    "archiveAllWarning": "Sin criterios: todos los eventos de todos los usuarios registrados se moverán a un calendario «Archival»."
   },
   "healthCheck": {
     "checking": "Comprobando los componentes, esto puede tardar un poco…",
@@ -1908,9 +1910,8 @@
     "invalidDesc": "Introduzca un número entero positivo, -1 para ilimitado, o déjelo vacío para el límite predeterminado."
   },
   "confirmTask": {
-    "modifyThese": "Puede modificar estos parámetros:",
-    "modifyThis": "Puede modificar este parámetro:",
-    "command": "Comando"
+    "command": "Comando",
+    "start": "Iniciar tarea"
   },
   "auth": {
     "title": "Autenticación necesaria",

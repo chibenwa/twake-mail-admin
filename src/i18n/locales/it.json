@@ -931,7 +931,8 @@
       "republishContactsTitle": "Ripubblica i contatti comuni",
       "republishContactsButton": "Ripubblica i contatti comuni",
       "republishContactsDesc": "Ripubblica i contatti di {{username}} sul bus dei contatti comuni.",
-      "errorRepublishContacts": "Errore durante la ripubblicazione dei contatti comuni"
+      "errorRepublishContacts": "Errore durante la ripubblicazione dei contatti comuni",
+      "archiveAllWarning": "Nessun criterio: tutti gli eventi di {{username}} verranno spostati in un calendario «Archival»."
     },
     "calendars": {
       "title": "Calendari",
@@ -1263,7 +1264,6 @@
     "days": "giorni",
     "invalidCleanupDays": "Inserisci un numero di giorni maggiore di 0",
     "cleaningUpOldTasks": "Pulizia delle attività vecchie",
-    "runConfirm": "Vuoi eseguire l'attività {{name}}?",
     "errorRunTask": "Errore durante l'esecuzione di {{name}}",
     "params": {
       "defaultPlaceholder": "Predefinito: {{value}}",
@@ -1436,7 +1436,9 @@
       "alarmRescheduling": "Quando i promemoria degli eventi non vengono inviati. Riprogramma gli avvisi di ogni evento.",
       "calendarEventArchival": "Sposta gli eventi che soddisfano i criteri in un calendario «Archival» di ogni utente.",
       "clearDomainMembersContacts": "Svuota la rubrica «Membri del dominio» di ogni dominio. Esegui una sincronizzazione per riempirla di nuovo."
-    }
+    },
+    "archiveAllEvents": "Archivia tutti gli eventi",
+    "archiveAllWarning": "Nessun criterio: tutti gli eventi di tutti gli utenti registrati verranno spostati in un calendario «Archival»."
   },
   "healthCheck": {
     "checking": "Verifica dei componenti in corso, potrebbe richiedere un po' di tempo…",
@@ -1908,9 +1910,8 @@
     "invalidDesc": "Inserisci un numero intero positivo, -1 per illimitato, oppure lascia vuoto per il limite predefinito."
   },
   "confirmTask": {
-    "modifyThese": "Puoi modificare questi parametri:",
-    "modifyThis": "Puoi modificare questo parametro:",
-    "command": "Comando"
+    "command": "Comando",
+    "start": "Avvia attività"
   },
   "auth": {
     "title": "Autenticazione richiesta",

@@ -32,7 +32,7 @@ const openRepublishDialog = () => {
 };
 
 const contactsPerSecondInput = () => screen.getByLabelText("contactsPerSecond (common.optional)") as HTMLInputElement;
-const clickConfirm = () => fireEvent.click(screen.getByText("common.confirm"));
+const clickConfirm = () => fireEvent.click(screen.getByRole("button", { name: /^(confirmTask.start|commonTasks.archiveAllEvents)$/ }));
 
 afterEach(() => {
   cleanup();

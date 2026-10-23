@@ -362,7 +362,7 @@ function MailCommonTasks() {
       header: t("commonTasks.perUserReindex"),
       message: (
         <ConfirmTaskContent
-          message={<p>{t("commonTasks.runConfirm", { name: t("commonTasks.perUserReindex") })}</p>}
+          message={<p>{t(taskDescriptionKey("commonTasks.perUserReindex"))}</p>}
           command={`curl -XPOST /users?action=reindex&mode=rebuildAll&messagesPerSecond=50`}
           params={[{ key: "messagesPerSecond", defaultValue: "50", type: "input" }]}
           getParamValues={(key, value) => {

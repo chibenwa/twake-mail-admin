@@ -1,9 +1,9 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { TaskParam } from "../types";
 import TaskParamsModifier from "./task-prams-modifier";
 import { buildCommandPreview } from "./command-preview";
 import { useTranslation } from "react-i18next";
-import { useFocusCancelOnOpen } from "@/components/custom/confirm-provider";
+import { useConfirmAppearance, useFocusCancelOnOpen } from "@/components/custom/confirm-provider";
 
 interface Props {
   message: string | ReactNode;
@@ -32,6 +32,11 @@ const ConfirmTaskContent = ({
   const [customParams, setCustomParams] = useState<Record<string, string | boolean>>({});
   // Every parameter has a server default: the dialog opens on Cancel, unless one is required
   useFocusCancelOnOpen(!params?.some((param) => param.optional === false));
+  // The button says what it does, unless the dialog already named its action
+  const setAppearance = useConfirmAppearance();
+  useEffect(() => {
+    setAppearance((current) => (current.confirmLabel ? {} : { confirmLabel: t("confirmTask.start") }));
+  }, [setAppearance, t]);
 
   const handleChangeParam = (key: string, value: string | boolean) => {
     setCustomParams((prev) => ({ ...prev, [key]: value }));

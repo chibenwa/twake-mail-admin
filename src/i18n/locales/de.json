@@ -931,7 +931,8 @@
       "republishContactsTitle": "Gemeinsame Kontakte erneut veröffentlichen",
       "republishContactsButton": "Gemeinsame Kontakte erneut veröffentlichen",
       "republishContactsDesc": "Die Kontakte von {{username}} erneut auf dem Bus für gemeinsame Kontakte veröffentlichen.",
-      "errorRepublishContacts": "Fehler beim erneuten Veröffentlichen der gemeinsamen Kontakte"
+      "errorRepublishContacts": "Fehler beim erneuten Veröffentlichen der gemeinsamen Kontakte",
+      "archiveAllWarning": "Kein Kriterium gesetzt: Alle Termine von {{username}} werden in einen Kalender „Archival“ verschoben."
     },
     "calendars": {
       "title": "Kalender",
@@ -1263,7 +1264,6 @@
     "days": "Tage",
     "invalidCleanupDays": "Geben Sie eine Anzahl von Tagen größer als 0 ein",
     "cleaningUpOldTasks": "Alte Aufgaben werden bereinigt",
-    "runConfirm": "Möchten Sie die Aufgabe {{name}} ausführen?",
     "errorRunTask": "Fehler beim Ausführen von {{name}}",
     "params": {
       "defaultPlaceholder": "Standard: {{value}}",
@@ -1436,7 +1436,9 @@
       "alarmRescheduling": "Wenn Terminerinnerungen nicht gesendet werden. Plant die Alarme aller Termine neu.",
       "calendarEventArchival": "Verschiebt die Termine, die den Kriterien entsprechen, in einen Kalender „Archival“ jedes Benutzers.",
       "clearDomainMembersContacts": "Leert das Adressbuch „Domänenmitglieder“ jeder Domäne. Eine Synchronisierung füllt es wieder."
-    }
+    },
+    "archiveAllEvents": "Alle Termine archivieren",
+    "archiveAllWarning": "Kein Kriterium gesetzt: Alle Termine aller registrierten Benutzer werden in einen Kalender „Archival“ verschoben."
   },
   "healthCheck": {
     "checking": "Komponenten werden geprüft, dies kann eine Weile dauern…",
@@ -1908,9 +1910,8 @@
     "invalidDesc": "Geben Sie eine positive ganze Zahl ein, -1 für unbegrenzt, oder lassen Sie das Feld für das Standardlimit leer."
   },
   "confirmTask": {
-    "modifyThese": "Sie können diese Parameter ändern:",
-    "modifyThis": "Sie können diesen Parameter ändern:",
-    "command": "Befehl"
+    "command": "Befehl",
+    "start": "Aufgabe starten"
   },
   "auth": {
     "title": "Authentifizierung erforderlich",

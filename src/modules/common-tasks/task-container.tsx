@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { TaskProps, taskDescriptionKey } from "./types";
+import { TaskKey, TaskProps, taskDescriptionKey } from "./types";
+import ArchivalNotice from "./components/archival-notice";
 import TaskRow from "@/components/custom/task-row";
 import { useRunTask } from "@/hooks/use-run-task";
 import { useConfirm } from "@/hooks/use-confirm";
@@ -21,7 +22,7 @@ export default function TaskContainer({ nameKey, taskKey, mode, command, doc, pa
   const handleRunTask = async () => {
     const additionParams: any = {};
     await confirm({
-      header: t("common.run"),
+      header: name,
       ...(risk === "destructive" && {
         destructive: true,
         confirmLabel: t("confirm.deleteData"),
@@ -30,9 +31,12 @@ export default function TaskContainer({ nameKey, taskKey, mode, command, doc, pa
       }),
       message: (
         <ConfirmTaskContent
-          message={<p>{t("commonTasks.runConfirm", { name })}</p>}
+          message={<p>{t(taskDescriptionKey(nameKey))}</p>}
           command={command}
           params={params}
+          notice={taskKey === TaskKey.CALENDAR_EVENT_ARCHIVAL
+            ? (values) => <ArchivalNotice values={values} message={t("commonTasks.archiveAllWarning")} />
+            : undefined}
           getParamValues={(key, value) => {
             additionParams[key] = value;
           }}

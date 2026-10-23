@@ -58,7 +58,9 @@ export interface ConfirmContextType {
 
 export const ConfirmContext = createContext<ConfirmContextType | null>(null);
 
-const ConfirmAppearanceContext = createContext<((appearance: ConfirmAppearance) => void) | null>(null);
+type AppearanceUpdate = ConfirmAppearance | ((current: ConfirmAppearance) => ConfirmAppearance);
+
+const ConfirmAppearanceContext = createContext<((appearance: AppearanceUpdate) => void) | null>(null);
 
 const FocusCancelContext = createContext<(() => void) | null>(null);
 
@@ -78,7 +80,7 @@ export function useFocusCancelOnOpen(enabled = true): void {
  * Lets the content of a confirm dialog change its confirm button, e.g. turn it red with
  * another label while the typed parameters make the action irreversible.
  */
-export function useConfirmAppearance(): (appearance: ConfirmAppearance) => void {
+export function useConfirmAppearance(): (appearance: AppearanceUpdate) => void {
   return useContext(ConfirmAppearanceContext) ?? (() => {});
 }
 
@@ -111,8 +113,10 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
     });
   };
 
-  const setAppearance = (appearance: ConfirmAppearance) =>
-    setConfirmState((current) => (current.isOpen ? { ...current, ...appearance } : current));
+  const [setAppearance] = useState(() => (appearance: AppearanceUpdate) =>
+    setConfirmState((current) => (current.isOpen
+      ? { ...current, ...(typeof appearance === "function" ? appearance(current) : appearance) }
+      : current)));
 
   const handleClose = (result: boolean) => {
     confirmState.resolve?.(result);

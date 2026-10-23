@@ -7,6 +7,7 @@ import DeleteUserDataForm from "../components/delete-user-data-form";
 import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import ConfirmTaskContent from "@/modules/common-tasks/components/confirm-task-content";
+import ArchivalNotice from "@/modules/common-tasks/components/archival-notice";
 import { TaskParam } from "@/modules/common-tasks/types";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 
@@ -88,6 +89,7 @@ export default function CalendarUserTasks({ username, counts = {} }: Props) {
           message={<p>{t("users.calendarTasks.archiveDesc", { username })}</p>}
           command={`curl -XPOST /calendars/${username}?task=archive`}
           params={ARCHIVE_CALENDAR_PARAMS}
+          notice={(values) => <ArchivalNotice values={values} message={t("users.calendarTasks.archiveAllWarning", { username })} />}
           getParamValues={(key, value) => {
             additionalParams[key as keyof typeof additionalParams] = value as string;
           }}

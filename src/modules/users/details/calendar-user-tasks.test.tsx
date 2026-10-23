@@ -39,7 +39,7 @@ const paramInput = (key: string) => screen.getByLabelText(`${key} (common.option
 
 const typeInto = (key: string, value: string) => fireEvent.change(paramInput(key), { target: { value } });
 
-const clickConfirm = () => fireEvent.click(screen.getByText("common.confirm"));
+const clickConfirm = () => fireEvent.click(screen.getByRole("button", { name: /^(confirmTask.start|commonTasks.archiveAllEvents)$/ }));
 
 beforeEach(() => {
   api.archiveUserCalendarEvents.mockResolvedValue({ taskId: "task-1" });
@@ -94,5 +94,31 @@ describe("calendar user tasks: dialogs stay open until the request is accepted",
     expect(paramInput("contactsPerSecond").value).toBe("7");
     expect(api.republishUserContacts).toHaveBeenCalledWith(USERNAME, { contactsPerSecond: "7" });
     expect(toast).not.toHaveBeenCalled();
+  });
+});
+
+describe("calendar user tasks: archival without criteria", () => {
+  const archiveButton = () => screen.getByRole("button", { name: /^(confirmTask.start|commonTasks.archiveAllEvents)$/ });
+
+  it("warns that every event of the user moves, on a red Archive all events", async () => {
+    renderTasks();
+    runTask("users.calendarTasks.archiveButton");
+
+    expect((await screen.findByRole("status")).textContent).toBe("users.calendarTasks.archiveAllWarning");
+    await waitFor(() => expect(archiveButton().textContent).toBe("commonTasks.archiveAllEvents"));
+    expect(archiveButton().className).toContain("bg-destructive");
+  });
+
+  it("drops the warning once a criterion is set", async () => {
+    renderTasks();
+    runTask("users.calendarTasks.archiveButton");
+    await screen.findByRole("status");
+
+    typeInto("createdBefore", "30");
+
+    await waitFor(() => expect(screen.queryByRole("status")).toBeNull());
+    expect(archiveButton().textContent).toBe("confirmTask.start");
+    expect(archiveButton().className).not.toContain("bg-destructive");
+    expect(screen.getByText(/createdBefore=30d/)).not.toBeNull();
   });
 });
