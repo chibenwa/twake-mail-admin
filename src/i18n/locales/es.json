@@ -588,7 +588,6 @@
       "title": "Reenvíos",
       "placeholder": "destino@dominio.com",
       "added": "Reenvío añadido correctamente",
-      "errorAdding": "Error al añadir el reenvío",
       "removeTitle": "Quitar reenvío",
       "removeConfirm": "¿Quitar el reenvío a «{{destination}}» de {{username}}?",
       "removed": "Reenvío quitado correctamente",

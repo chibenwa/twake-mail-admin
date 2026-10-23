@@ -587,7 +587,6 @@
       "title": "Chuyển tiếp",
       "placeholder": "destination@domain.com",
       "added": "Đã thêm chuyển tiếp thành công",
-      "errorAdding": "Lỗi khi thêm chuyển tiếp",
       "removeTitle": "Xóa chuyển tiếp",
       "removeConfirm": "Xóa chuyển tiếp tới \"{{destination}}\" khỏi {{username}}?",
       "removed": "Đã xóa chuyển tiếp thành công",

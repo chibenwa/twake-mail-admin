@@ -588,7 +588,6 @@
       "title": "Redirections",
       "placeholder": "destination@domaine.com",
       "added": "Redirection ajoutée avec succès",
-      "errorAdding": "Erreur lors de l'ajout de la redirection",
       "removeTitle": "Supprimer la redirection",
       "removeConfirm": "Supprimer la redirection vers « {{destination}} » de {{username}} ?",
       "removed": "Redirection supprimée avec succès",

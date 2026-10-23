@@ -588,7 +588,6 @@
       "title": "Weiterleitungen",
       "placeholder": "destination@domain.com",
       "added": "Weiterleitung erfolgreich hinzugefügt",
-      "errorAdding": "Fehler beim Hinzufügen der Weiterleitung",
       "removeTitle": "Weiterleitung entfernen",
       "removeConfirm": "Weiterleitung an „{{destination}}“ von {{username}} entfernen?",
       "removed": "Weiterleitung erfolgreich entfernt",

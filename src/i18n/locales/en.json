@@ -588,7 +588,6 @@
       "title": "Forwards",
       "placeholder": "destination@domain.com",
       "added": "Forward added successfully",
-      "errorAdding": "Error adding forward",
       "removeTitle": "Remove Forward",
       "removeConfirm": "Remove forward to \"{{destination}}\" from {{username}}?",
       "removed": "Forward removed successfully",

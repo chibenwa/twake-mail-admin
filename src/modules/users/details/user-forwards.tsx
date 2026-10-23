@@ -11,6 +11,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { Checkbox } from "@/components/ui/checkbox";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 
 interface Props {
   username: string;
@@ -35,7 +36,7 @@ export default function UserForwards({ username }: Props) {
   const [open, setOpen, openContentId] = useSectionOpen("forwards");
   useSectionFact("forwards", forwards ?? undefined);
   const [newForward, setNewForward] = useState("");
-  const [showCreateInput, setShowCreateInput] = useState(false);
+  const [showAddDialog, setShowAddDialog] = useState(false);
 
   const sorted = useMemo(() => {
     if (!forwards) return [];
@@ -76,21 +77,12 @@ export default function UserForwards({ username }: Props) {
     }
   };
 
+  // A refusal throws: the modal shows it and keeps the typed destination
   const handleAdd = async () => {
-    const dest = newForward.trim();
-    if (!dest) return;
-    try {
-      await addUserForward(username, dest);
-      toast({ title: t("users.forwards.added") });
-      setNewForward("");
-      setShowCreateInput(false);
-      notifyMappingsChanged();
-    } catch (err) {
-      toast({
-        title: t("users.forwards.errorAdding"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    }
+    await addUserForward(username, newForward.trim());
+    toast({ title: t("users.forwards.added") });
+    setNewForward("");
+    notifyMappingsChanged();
   };
 
   const handleRemove = async (destination: string) => {
@@ -126,7 +118,8 @@ export default function UserForwards({ username }: Props) {
         </SectionToggle>
         {canAdd && (
           <button
-            onClick={() => { if (!open) { setOpen(true); setShowCreateInput(true); } else setShowCreateInput(!showCreateInput); }}
+            type="button"
+            onClick={() => { setOpen(true); setShowAddDialog(true); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("users.forwards.addTooltip")}
           >
@@ -135,29 +128,27 @@ export default function UserForwards({ username }: Props) {
         )}
       </div>
 
+      <FormDialog
+        open={showAddDialog}
+        onClose={() => setShowAddDialog(false)}
+        title={t("users.forwards.addTooltip")}
+        submitLabel={t("common.add")}
+        submitDisabled={!newForward.trim()}
+        onSubmit={handleAdd}
+      >
+        <input
+          type="text"
+          autoFocus
+          value={newForward}
+          onChange={(e) => setNewForward(e.target.value)}
+          aria-label={t("users.forwards.addTooltip")}
+          placeholder={t("users.forwards.placeholder")}
+          className={FIELD_CLASS}
+        />
+      </FormDialog>
+
       {open && (
         <div id={openContentId} className="mt-2">
-          {showCreateInput && (
-            <div className="flex gap-2 mt-2 mb-2">
-              <input
-                autoFocus
-                type="text"
-                value={newForward}
-                onChange={(e) => setNewForward(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-                placeholder={t("users.forwards.placeholder")}
-                className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                onClick={handleAdd}
-                disabled={!newForward.trim()}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {t("common.add")}
-              </button>
-            </div>
-          )}
-
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />

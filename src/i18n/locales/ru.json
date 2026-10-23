@@ -590,7 +590,6 @@
       "title": "Пересылки",
       "placeholder": "destination@domain.com",
       "added": "Пересылка успешно добавлена",
-      "errorAdding": "Ошибка при добавлении пересылки",
       "removeTitle": "Удалить пересылку",
       "removeConfirm": "Удалить пересылку на «{{destination}}» у {{username}}?",
       "removed": "Пересылка успешно удалена",

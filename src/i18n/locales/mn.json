@@ -588,7 +588,6 @@
       "title": "Дамжуулалт",
       "placeholder": "destination@domain.com",
       "added": "Дамжуулалт амжилттай нэмэгдлээ",
-      "errorAdding": "Дамжуулалт нэмэхэд алдаа гарлаа",
       "removeTitle": "Дамжуулалт устгах",
       "removeConfirm": "«{{destination}}» руу дамжуулахыг {{username}}-аас устгах уу?",
       "removed": "Дамжуулалт амжилттай устгагдлаа",

@@ -588,7 +588,6 @@
       "title": "Inoltri",
       "placeholder": "destinazione@dominio.com",
       "added": "Inoltro aggiunto correttamente",
-      "errorAdding": "Errore durante l'aggiunta dell'inoltro",
       "removeTitle": "Rimuovi inoltro",
       "removeConfirm": "Rimuovere l'inoltro a «{{destination}}» da {{username}}?",
       "removed": "Inoltro rimosso correttamente",
