@@ -1184,7 +1184,11 @@
     "additionalInfo": "Thông tin bổ sung",
     "cancelButton": "Hủy",
     "fullDetails": "Chi tiết đầy đủ",
-    "startedCompleted": "Bắt đầu / Hoàn thành"
+    "startedCompleted": "Bắt đầu / Hoàn thành",
+    "risk": {
+      "caution": "Thay đổi dữ liệu",
+      "destructive": "Xóa dữ liệu"
+    }
   },
   "commonTasks": {
     "title": "Tác vụ chung",

@@ -31,7 +31,7 @@ const renderTasks = () => {
 };
 
 const runTask = (label: string) => {
-  const row = screen.getByText(label).parentElement!;
+  const row = screen.getByText(label).closest("[data-task-row]") as HTMLElement;
   fireEvent.click(row.querySelector("button")!);
 };
 

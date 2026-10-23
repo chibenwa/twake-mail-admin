@@ -1,15 +1,14 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import TaskRow from "@/components/custom/task-row";
 import { deleteAllUsersData, applyDomainSignatureTemplates, provisionDomainTemplates } from "../api-client";
 import { useToast } from "@/hooks/use-toast";
 import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import ProvisionTemplatesForm, { ProvisionTemplatesValues } from "@/components/custom/provision-templates-form";
-import { Button } from "@/components/ui/button";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { appConfig } from "@/lib/config";
 import ConfirmTaskContent from "@/modules/common-tasks/components/confirm-task-content";
 import FormTaskContent from "@/modules/common-tasks/components/form-task-content";
@@ -135,85 +134,37 @@ export default function DomainTasks({ domain, defaultOpen }: Props) {
       {open && (
         <div className="mt-2 space-y-2">
           {showProvision && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <div>
-                <p className="text-sm font-medium">{t("domains.tasks.provisionTemplates")}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {t("domains.tasks.provisionTemplatesDesc")}
-                </p>
-              </div>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      className="bg-yellow-500 hover:bg-yellow-600 rounded-sm"
-                      onClick={handleProvisionTemplates}
-                    >
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {provisionDomainTemplatesCommand(domain, INITIAL_PROVISION_VALUES)}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("domains.tasks.provisionTemplates")}
+              description={t("domains.tasks.provisionTemplatesDesc")}
+              risk="caution"
+              command={provisionDomainTemplatesCommand(domain, INITIAL_PROVISION_VALUES)}
+              onRun={handleProvisionTemplates}
+            />
           )}
 
           {showApply && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <div>
-                <p className="text-sm font-medium">{t("domains.tasks.applySignatures")}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {t("domains.tasks.applySignaturesDesc")}
-                </p>
-              </div>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      className="bg-orange-500 hover:bg-orange-600 rounded-sm"
-                      onClick={handleApplySignatureTemplates}
-                      disabled={applyLoading}
-                    >
-                      {applyLoading && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    curl -XPOST /domains/{domain}/signature-templates?action=apply
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("domains.tasks.applySignatures")}
+              description={t("domains.tasks.applySignaturesDesc")}
+              risk="caution"
+              command={`curl -XPOST /domains/${domain}/signature-templates?action=apply`}
+              onRun={handleApplySignatureTemplates}
+              disabled={applyLoading}
+              loading={applyLoading}
+            />
           )}
 
           {canDeleteData && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <div>
-                <p className="text-sm font-medium">{t("domains.tasks.deleteAllData")}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {t("domains.tasks.deleteAllDataDesc")}
-                </p>
-              </div>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      className="bg-red-600 hover:bg-red-700 rounded-sm"
-                      onClick={handleDeleteAllUsersData}
-                      disabled={deleting}
-                    >
-                      {deleting && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    curl -XPOST /domains/{domain}?action=deleteData
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("domains.tasks.deleteAllData")}
+              description={t("domains.tasks.deleteAllDataDesc")}
+              risk="destructive"
+              command={`curl -XPOST /domains/${domain}?action=deleteData`}
+              onRun={handleDeleteAllUsersData}
+              disabled={deleting}
+              loading={deleting}
+            />
           )}
         </div>
       )}

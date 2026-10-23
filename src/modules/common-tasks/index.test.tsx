@@ -39,7 +39,7 @@ describe("common tasks: platform-wide cleanup gates", () => {
     ["commonTasks.cleanupSpamAll", `curl -XDELETE "/messages?olderThan=5d&mailbox=Spam&useSavedDate"`],
   ])("shows in the Run tooltip of %s the command its dialog previews", async (label, command) => {
     renderWith([{ verb: ["DELETE"], endpoint: "/messages" }]);
-    const row = screen.getByText(label).parentElement!;
+    const row = screen.getByText(label).closest("[data-task-row]") as HTMLElement;
     fireEvent.focus(within(row).getByRole("button", { name: "common.run" }));
 
     expect((await screen.findByRole("tooltip")).textContent).toBe(command);
@@ -65,8 +65,8 @@ describe("parseCleanupDays", () => {
 describe("common tasks: cleaning up old tasks validation", () => {
   const cleanupRow = () => {
     renderWith([{ verb: ["DELETE"], endpoint: "/tasks" }]);
-    const input = screen.getByPlaceholderText("commonTasks.days") as HTMLInputElement;
-    const row = input.closest("div.flex.justify-between") as HTMLElement;
+    const input = screen.getByLabelText("commonTasks.days") as HTMLInputElement;
+    const row = input.closest("[data-task-row]") as HTMLElement;
     return { input, runButton: within(row).getByRole("button", { name: "common.run" }) };
   };
 

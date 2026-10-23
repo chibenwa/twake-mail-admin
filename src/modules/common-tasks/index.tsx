@@ -1,5 +1,4 @@
 import { Fragment, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { ReIndexMode, TaskKey, TaskProps } from "./types";
@@ -10,9 +9,8 @@ import ConfirmTaskContent from "./components/confirm-task-content";
 import { defaultCommand } from "./components/command-preview";
 import { TaskParam } from "./types";
 import TaskContainer from "./task-container";
+import TaskRow from "@/components/custom/task-row";
 import Header from "@/components/custom/header";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useToast } from "@/hooks/use-toast";
 import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
@@ -191,6 +189,7 @@ const CALENDAR_TASKS: TaskProps[] = [
       { key: 'eventsPerSecond', defaultValue: '100', type: 'input' },
     ],
     doc: calendarWebadminDoc('calendar-event-archival'),
+    risk: 'caution',
   },
   {
     nameKey: 'commonTasks.alarmRescheduling',
@@ -227,7 +226,7 @@ const CALENDAR_TASKS: TaskProps[] = [
       { key: 'ignoredDomains', defaultValue: '', type: 'input' },
     ],
     doc: calendarWebadminDoc('delete-domain-members-contacts'),
-    danger: true,
+    risk: 'destructive',
     consequenceKey: 'confirm.consequence.clearDomainMembersContacts',
     typeToConfirmKey: 'confirm.deleteWord',
   },
@@ -239,7 +238,7 @@ export default function CommonTasks() {
     return (
       <div className="p-4 relative w-fit max-w-full">
         <Header headerTitle={t("commonTasks.title")} headerSubTitle={t("commonTasks.subtitleCalendar")} docuUrl={CALENDAR_WEBADMIN_DOC_URL} />
-        <div className="grid grid-cols-1 gap-4 mt-4">
+        <div className="grid grid-cols-1 gap-2 mt-4">
           {CALENDAR_TASKS.map((task) => (
             <TaskContainer {...task} key={task.nameKey} />
           ))}
@@ -385,141 +384,83 @@ function MailCommonTasks() {
         docuUrl={docuUrl}
       />
 
-      {/* Like TaskContainer: the command tooltips open on the side of their Run button, not over its neighbours */}
-      <div className="grid grid-cols-1 gap-4 mt-4">
+      <div className="grid grid-cols-1 gap-2 mt-4">
         {TASKS.map((task) => (
           <Fragment key={task.nameKey}>
             <TaskContainer {...task} />
             {task.nameKey === "commonTasks.reindexRebuildAll" && canReindexUsers && (
-              <div className="flex justify-between items-center gap-4">
-                <p>{t("commonTasks.perUserReindex")}</p>
-                <TooltipProvider>
-                  <Tooltip delayDuration={0} disableHoverableContent>
-                    <TooltipTrigger asChild>
-                      <Button className="bg-green-400 hover:bg-green-500 rounded-sm" onClick={handlePerUserReindex}>
-                        {t("common.run")}
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="left">
-                      curl -XPOST /users?action=reindex&amp;mode=rebuildAll&amp;messagesPerSecond=50
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
+              <TaskRow
+                title={t("commonTasks.perUserReindex")}
+                command="curl -XPOST /users?action=reindex&mode=rebuildAll&messagesPerSecond=50"
+                onRun={handlePerUserReindex}
+              />
             )}
           </Fragment>
         ))}
         {canReloadCerts && (
-          <div className="flex justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <p>{t("commonTasks.reloadCertificates")}</p>
-              <input
-                type="text"
-                placeholder={t("commonTasks.portOptional")}
-                value={reloadPort}
-                onChange={(e) => setReloadPort(e.target.value)}
-                className="border rounded px-2 py-1 text-sm w-32"
-              />
-            </div>
-            <TooltipProvider>
-              <Tooltip delayDuration={0} disableHoverableContent>
-                <TooltipTrigger asChild>
-                  <Button className="bg-green-400 hover:bg-green-500 rounded-sm" onClick={handleReloadCertificates}>
-                    {reloadLoading && <Loader2 className="animate-spin" />}
-                    {t("common.run")}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">
-                  curl -XPOST /servers?reload-certificate
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <TaskRow
+            title={t("commonTasks.reloadCertificates")}
+            command="curl -XPOST /servers?reload-certificate"
+            onRun={handleReloadCertificates}
+            loading={reloadLoading}
+          >
+            <input
+              type="text"
+              aria-label={t("commonTasks.portOptional")}
+              placeholder={t("commonTasks.portOptional")}
+              value={reloadPort}
+              onChange={(e) => setReloadPort(e.target.value)}
+              className="border rounded px-2 py-1 text-sm w-32"
+            />
+          </TaskRow>
         )}
         {canRepositionRights && (
-          <div className="flex justify-between items-center gap-4">
-            <p>{t("commonTasks.repositionSystemRights")}</p>
-            <TooltipProvider>
-              <Tooltip delayDuration={0} disableHoverableContent>
-                <TooltipTrigger asChild>
-                  <Button className="bg-green-400 hover:bg-green-500 rounded-sm" onClick={handleRepositionSystemRights}>
-                    {repositionLoading && <Loader2 className="animate-spin" />}
-                    {t("common.run")}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">
-                  curl -XPOST /team-mailboxes?action=repositionSystemRights
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <TaskRow
+            title={t("commonTasks.repositionSystemRights")}
+            command="curl -XPOST /team-mailboxes?action=repositionSystemRights"
+            onRun={handleRepositionSystemRights}
+            loading={repositionLoading}
+          />
         )}
         {canCleanupMailbox && (
-          <div className="flex justify-between items-center gap-4">
-            <p>{t("commonTasks.cleanupTrashAll")}</p>
-            <TooltipProvider>
-              <Tooltip delayDuration={0} disableHoverableContent>
-                <TooltipTrigger asChild>
-                  <Button className="bg-yellow-500 hover:bg-yellow-600 rounded-sm" onClick={() => handleCleanupMailbox("Trash")}>
-                    {t("common.run")}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">
-                  {defaultCommand(cleanupCommand("Trash"), CLEANUP_PARAMS)}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <TaskRow
+            title={t("commonTasks.cleanupTrashAll")}
+            risk="caution"
+            command={defaultCommand(cleanupCommand("Trash"), CLEANUP_PARAMS)}
+            onRun={() => handleCleanupMailbox("Trash")}
+          />
         )}
         {canCleanupMailbox && (
-          <div className="flex justify-between items-center gap-4">
-            <p>{t("commonTasks.cleanupSpamAll")}</p>
-            <TooltipProvider>
-              <Tooltip delayDuration={0} disableHoverableContent>
-                <TooltipTrigger asChild>
-                  <Button className="bg-yellow-500 hover:bg-yellow-600 rounded-sm" onClick={() => handleCleanupMailbox("Spam")}>
-                    {t("common.run")}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">
-                  {defaultCommand(cleanupCommand("Spam"), CLEANUP_PARAMS)}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <TaskRow
+            title={t("commonTasks.cleanupSpamAll")}
+            risk="caution"
+            command={defaultCommand(cleanupCommand("Spam"), CLEANUP_PARAMS)}
+            onRun={() => handleCleanupMailbox("Spam")}
+          />
         )}
         {canCleanupOldTasks && (
-          <div className="flex justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <p>{t("commonTasks.cleaningUpOldTasks")}</p>
-              <input
-                type="number"
-                min="1"
-                placeholder={t("commonTasks.days")}
-                value={cleanupDays}
-                onChange={(e) => setCleanupDays(e.target.value)}
-                className="border rounded px-2 py-1 text-sm w-24"
-              />
-              <span className="text-sm text-gray-500">{t("commonTasks.days")}</span>
-              {cleanupDaysValue === null && (
-                <span role="alert" className="text-sm text-red-500">{t("commonTasks.invalidCleanupDays")}</span>
-              )}
-            </div>
-            <TooltipProvider>
-              <Tooltip delayDuration={0} disableHoverableContent>
-                <TooltipTrigger asChild>
-                  <Button className="bg-orange-500 hover:bg-orange-600 rounded-sm" onClick={handleCleanupOldTasks} disabled={cleanupDaysValue === null || cleanupLoading}>
-                    {cleanupLoading && <Loader2 className="animate-spin" />}
-                    {t("common.run")}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">
-                  {/* The request run with the days of the field, as sent by cleanupOldTasks */}
-                  curl -XDELETE /tasks?olderThan={cleanupDaysValue ?? "N"}day
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <TaskRow
+            title={t("commonTasks.cleaningUpOldTasks")}
+            risk="caution"
+            // The request run with the days of the field, as sent by cleanupOldTasks
+            command={`curl -XDELETE /tasks?olderThan=${cleanupDaysValue ?? "N"}day`}
+            onRun={handleCleanupOldTasks}
+            disabled={cleanupDaysValue === null || cleanupLoading}
+            loading={cleanupLoading}
+          >
+            <input
+              type="number"
+              min="1"
+              aria-label={t("commonTasks.days")}
+              value={cleanupDays}
+              onChange={(e) => setCleanupDays(e.target.value)}
+              className="border rounded px-2 py-1 text-sm w-24"
+            />
+            <span className="text-sm text-gray-500">{t("commonTasks.days")}</span>
+            {cleanupDaysValue === null && (
+              <span role="alert" className="text-sm text-red-500">{t("commonTasks.invalidCleanupDays")}</span>
+            )}
+          </TaskRow>
         )}
       </div>
     </div>

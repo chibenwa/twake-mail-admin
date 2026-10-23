@@ -1185,7 +1185,11 @@
     "additionalInfo": "Additional Information",
     "cancelButton": "Cancel",
     "fullDetails": "Full Details",
-    "startedCompleted": "Started / Completed"
+    "startedCompleted": "Started / Completed",
+    "risk": {
+      "caution": "Modifies data",
+      "destructive": "Deletes data"
+    }
   },
   "commonTasks": {
     "title": "Common Tasks",

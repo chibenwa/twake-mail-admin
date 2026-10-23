@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from "react";
 import { Loader2, RefreshCw, Map, MonitorSmartphone } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import { RunTaskButton } from "@/components/custom/run-task-button";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { getAllChannels, disconnectAllChannels } from "./api-client";
 import { NetworkChannel, ChannelQueryParams } from "./types";
@@ -102,15 +103,14 @@ export default function ChannelsList() {
           {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
         </Button>
         {canDisconnectAll && (
-          <Button
-            className="bg-orange-500 hover:bg-orange-600 rounded-sm"
+          <RunTaskButton
+            risk="caution"
             size="sm"
             onClick={handleDisconnectAll}
             disabled={disconnecting}
-          >
-            {disconnecting && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
-            {t("networkChannels.disconnectAll")}
-          </Button>
+            loading={disconnecting}
+            label={t("networkChannels.disconnectAll")}
+          />
         )}
       </div>
 

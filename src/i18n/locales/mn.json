@@ -1185,7 +1185,11 @@
     "additionalInfo": "Нэмэлт мэдээлэл",
     "cancelButton": "Цуцлах",
     "fullDetails": "Бүрэн дэлгэрэнгүй",
-    "startedCompleted": "Эхэлсэн / Дууссан"
+    "startedCompleted": "Эхэлсэн / Дууссан",
+    "risk": {
+      "caution": "Өгөгдөл өөрчилнө",
+      "destructive": "Өгөгдөл устгана"
+    }
   },
   "commonTasks": {
     "title": "Нийтлэг даалгаврууд",

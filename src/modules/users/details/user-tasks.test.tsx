@@ -64,7 +64,7 @@ describe("user tasks: cleanup mailbox gates", () => {
 describe("user tasks: confirmation dialogs preview their command", () => {
   const openDialog = async (label: string) => {
     renderWithResolver({ isAllowed: () => true });
-    const row = screen.getByText(label).parentElement!;
+    const row = screen.getByText(label).closest("[data-task-row]") as HTMLElement;
     fireEvent.click(within(row).getByRole("button"));
     await waitFor(() => expect(dialog.message).not.toBeNull());
     cleanup();
@@ -112,7 +112,7 @@ describe("user tasks: Run tooltips show the command run with the default paramet
     ["users.tasks.restoreDeleted", `curl -XPOST /deletedMessages/users/bob@linagora.com?action=restore -d '{"combinator":"and","criteria":[]}'`],
   ])("%s", async (label, command) => {
     renderWithResolver({ isAllowed: () => true });
-    const row = screen.getByText(label).parentElement!;
+    const row = screen.getByText(label).closest("[data-task-row]") as HTMLElement;
     fireEvent.focus(within(row).getByRole("button"));
 
     expect((await screen.findByRole("tooltip")).textContent).toBe(command);

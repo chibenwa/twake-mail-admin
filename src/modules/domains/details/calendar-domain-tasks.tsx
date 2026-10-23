@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { deleteAllUsersData, republishDomainContacts, syncDomainMembers } from "../api-client";
 import { useToast } from "@/hooks/use-toast";
 import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
@@ -7,9 +7,9 @@ import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import ConfirmTaskContent from "@/modules/common-tasks/components/confirm-task-content";
 import { TaskParam } from "@/modules/common-tasks/types";
-import { Button } from "@/components/ui/button";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useTranslation } from "react-i18next";
+import TaskRow from "@/components/custom/task-row";
 
 const REPUBLISH_CONTACTS_PARAMS: TaskParam[] = [
   { key: "contactsPerSecond", defaultValue: "100", type: "input" },
@@ -105,49 +105,35 @@ export default function CalendarDomainTasks({ domain, defaultOpen = false }: Pro
       </button>
 
       {open && (canSyncMembers || canRepublishContacts || canDeleteData) && (
-        <div className="mt-2 p-4 bg-gray-50 rounded-2 space-y-4">
+        <div className="mt-2 space-y-2">
           {canSyncMembers && (
-            <>
-              <Button
-                className="bg-green-400 hover:bg-green-500 rounded-sm w-full"
-                onClick={handleSyncDomainMembers}
-                disabled={syncing}
-              >
-                {syncing && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
-                {t("domains.calendarTasks.syncButton")}
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                {t("domains.calendarTasks.syncDesc")}
-              </p>
-            </>
+            <TaskRow
+              title={t("domains.calendarTasks.syncButton")}
+              description={t("domains.calendarTasks.syncDesc")}
+              command={`curl -XPOST /addressbook/domain-members/${domain}?task=sync`}
+              onRun={handleSyncDomainMembers}
+              disabled={syncing}
+              loading={syncing}
+            />
           )}
           {canRepublishContacts && (
-            <>
-              <Button
-                className="bg-green-400 hover:bg-green-500 rounded-sm w-full"
-                onClick={handleRepublishContacts}
-              >
-                {t("domains.calendarTasks.republishContactsButton")}
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                {t("domains.calendarTasks.republishContactsDesc")}
-              </p>
-            </>
+            <TaskRow
+              title={t("domains.calendarTasks.republishContactsButton")}
+              description={t("domains.calendarTasks.republishContactsDesc")}
+              command={`curl -XPOST /domains/${domain}/contacts?action=republish`}
+              onRun={handleRepublishContacts}
+            />
           )}
           {canDeleteData && (
-            <>
-              <Button
-                className="bg-red-600 hover:bg-red-700 rounded-sm w-full"
-                onClick={handleDeleteAllUsersData}
-                disabled={deleting}
-              >
-                {deleting && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
-                {t("domains.tasks.deleteAllData")}
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                {t("domains.tasks.deleteAllDataDesc")}
-              </p>
-            </>
+            <TaskRow
+              title={t("domains.tasks.deleteAllData")}
+              description={t("domains.tasks.deleteAllDataDesc")}
+              risk="destructive"
+              command={`curl -XPOST /domains/${domain}?action=deleteData`}
+              onRun={handleDeleteAllUsersData}
+              disabled={deleting}
+              loading={deleting}
+            />
           )}
         </div>
       )}

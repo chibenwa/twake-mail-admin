@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import TaskRow from "@/components/custom/task-row";
 import { deleteUserData, archiveUserCalendarEvents, republishUserContacts } from "../api-client";
 import DeleteUserDataForm from "../components/delete-user-data-form";
 import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import ConfirmTaskContent from "@/modules/common-tasks/components/confirm-task-content";
 import { TaskParam } from "@/modules/common-tasks/types";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 
 const ARCHIVE_CALENDAR_PARAMS: TaskParam[] = [
@@ -135,55 +134,28 @@ export default function CalendarUserTasks({ username, counts = {} }: Props) {
       {open && (
         <div className="mt-2 space-y-2">
           {canArchiveCalendar && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.calendarTasks.archiveButton")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-green-400 hover:bg-green-500 rounded-sm" onClick={handleArchiveCalendarEvents}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    curl -XPOST /calendars/{username}?task=archive
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.calendarTasks.archiveButton")}
+              risk="caution"
+              command={`curl -XPOST /calendars/${username}?task=archive`}
+              onRun={handleArchiveCalendarEvents}
+            />
           )}
           {canRepublishContacts && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.calendarTasks.republishContactsButton")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-green-400 hover:bg-green-500 rounded-sm" onClick={handleRepublishContacts}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    curl -XPOST /users/{username}/contacts?action=republish
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.calendarTasks.republishContactsButton")}
+              risk="safe"
+              command={`curl -XPOST /users/${username}/contacts?action=republish`}
+              onRun={handleRepublishContacts}
+            />
           )}
           {canDeleteData && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.deleteData")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-red-600 hover:bg-red-700 rounded-sm" onClick={handleDeleteUserData}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    curl -XPOST /users/{username}?action=deleteData
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.deleteData")}
+              risk="destructive"
+              command={`curl -XPOST /users/${username}?action=deleteData`}
+              onRun={handleDeleteUserData}
+            />
           )}
         </div>
       )}

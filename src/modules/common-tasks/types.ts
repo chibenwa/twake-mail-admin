@@ -69,7 +69,7 @@ export type TaskProps = {
   doc: string;
   params?: TaskParam[];
   allowanceCheck?: { verb: import("@/lib/proxy-resolver").HttpVerb; pattern: string };
-  danger?: boolean;
+  risk?: import("@/components/custom/run-task-button").TaskRisk;
   // Irreversible task: what it deletes, and the word to type before it can run.
   consequenceKey?: string;
   typeToConfirmKey?: string;

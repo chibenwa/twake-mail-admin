@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -10,6 +9,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import Header from "@/components/custom/header";
 import { Button } from "@/components/ui/button";
+import { RunTaskButton } from "@/components/custom/run-task-button";
 
 const docuUrl = "https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_cassandra_schema_upgrades";
 
@@ -89,14 +89,14 @@ export default function Cassandra() {
                 {t("cassandra.alreadyLatest")}
               </Button>
             ) : canUpgrade ? (
-              <Button
-                className="bg-blue-500 hover:bg-blue-600 rounded-sm"
+              // Migrates the schema: modifies data, like the caution tasks
+              <RunTaskButton
+                risk="caution"
                 onClick={handleUpgrade}
                 disabled={upgrading}
-              >
-                {upgrading && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
-                {t("cassandra.upgradeButton", { version: data.latest.version })}
-              </Button>
+                loading={upgrading}
+                label={t("cassandra.upgradeButton", { version: data.latest.version })}
+              />
             ) : null}
           </div>
         )}

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, within, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { ConfirmProvider } from "@/components/custom/confirm-provider";
 
@@ -27,7 +27,8 @@ const openRepublishDialog = () => {
       </ConfirmProvider>
     </MemoryRouter>
   );
-  fireEvent.click(screen.getByText("domains.calendarTasks.republishContactsButton"));
+  const row = screen.getByText("domains.calendarTasks.republishContactsButton").closest("[data-task-row]") as HTMLElement;
+  fireEvent.click(within(row).getByRole("button", { name: "common.run" }));
 };
 
 const contactsPerSecondInput = () => screen.getByLabelText("contactsPerSecond:") as HTMLInputElement;

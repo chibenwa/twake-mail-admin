@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import TaskRow from "@/components/custom/task-row";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { reindexUserMailboxes, subscribeAllUserMailboxes, recomputeFastViewProjection, deleteAllUserMailboxes, restoreDeletedMessages, renameUser, deleteUserData, cleanupUserMailbox, tierUserData, provisionUserTemplates } from "../api-client";
 import RestoreCriteriaBuilder from "../components/restore-criteria-builder";
@@ -26,8 +27,6 @@ import {
 } from "./user-task-commands";
 import { TaskParam } from "@/modules/common-tasks/types";
 import { defaultCommand } from "@/modules/common-tasks/components/command-preview";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const REINDEX_PARAMS: TaskParam[] = [
   { key: "messagesPerSecond", defaultValue: "50", type: "input" },
@@ -345,192 +344,93 @@ export default function UserTasks({ username }: Props) {
       {open && (
         <div className="mt-2 space-y-2">
           {canReindex && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.reindexAll")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-green-400 hover:bg-green-500 rounded-sm" onClick={handleReindex}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {defaultCommand(reindexCommand, REINDEX_PARAMS)}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.reindexAll")}
+              risk="safe"
+              command={defaultCommand(reindexCommand, REINDEX_PARAMS)}
+              onRun={handleReindex}
+            />
           )}
           {canSubscribeAll && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.subscribeAll")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-green-400 hover:bg-green-500 rounded-sm" onClick={handleSubscribeAll}>
-                      {subscribeLoading && <Loader2 className="animate-spin" />}
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {subscribeAllCommand(username)}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.subscribeAll")}
+              risk="safe"
+              command={subscribeAllCommand(username)}
+              onRun={handleSubscribeAll}
+              loading={subscribeLoading}
+            />
           )}
           {canRecomputeFastView && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.fastView")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-green-400 hover:bg-green-500 rounded-sm" onClick={handleRecomputeFastView}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {defaultCommand(fastViewCommand, FAST_VIEW_PARAMS)}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.fastView")}
+              risk="safe"
+              command={defaultCommand(fastViewCommand, FAST_VIEW_PARAMS)}
+              onRun={handleRecomputeFastView}
+            />
           )}
           {canRestoreDeleted && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.restoreDeleted")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-green-400 hover:bg-green-500 rounded-sm" onClick={handleRestoreDeletedMessages}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {restoreDeletedMessagesCommand(username, buildRestoreRequest([], undefined))}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.restoreDeleted")}
+              risk="safe"
+              command={restoreDeletedMessagesCommand(username, buildRestoreRequest([], undefined))}
+              onRun={handleRestoreDeletedMessages}
+            />
           )}
           {canCleanupTrash && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.cleanupTrash")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-yellow-500 hover:bg-yellow-600 rounded-sm" onClick={() => handleCleanupMailbox("Trash")}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {defaultCommand(cleanupCommand("Trash"), CLEANUP_PARAMS)}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.cleanupTrash")}
+              risk="caution"
+              command={defaultCommand(cleanupCommand("Trash"), CLEANUP_PARAMS)}
+              onRun={() => handleCleanupMailbox("Trash")}
+            />
           )}
           {canCleanupSpam && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.cleanupSpam")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-yellow-500 hover:bg-yellow-600 rounded-sm" onClick={() => handleCleanupMailbox("Spam")}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {defaultCommand(cleanupCommand("Spam"), CLEANUP_PARAMS)}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.cleanupSpam")}
+              risk="caution"
+              command={defaultCommand(cleanupCommand("Spam"), CLEANUP_PARAMS)}
+              onRun={() => handleCleanupMailbox("Spam")}
+            />
           )}
           {canProvisionTemplates && appConfig.application === 'MAIL' && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.provisionTemplates")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-yellow-500 hover:bg-yellow-600 rounded-sm" onClick={handleProvisionTemplates}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {provisionTemplatesCommand(username, INITIAL_PROVISION_VALUES)}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.provisionTemplates")}
+              risk="caution"
+              command={provisionTemplatesCommand(username, INITIAL_PROVISION_VALUES)}
+              onRun={handleProvisionTemplates}
+            />
           )}
           {canTierData && appConfig.application === 'MAIL' && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.tierData")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-yellow-500 hover:bg-yellow-600 rounded-sm" onClick={handleTierData}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {defaultCommand(tierCommand, TIER_PARAMS)}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.tierData")}
+              risk="caution"
+              command={defaultCommand(tierCommand, TIER_PARAMS)}
+              onRun={handleTierData}
+            />
           )}
           {canRename && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.renameUser")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-orange-500 hover:bg-orange-600 rounded-sm" onClick={handleRenameUser}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {renameUserCommand(username, INITIAL_RENAME_VALUES)}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.renameUser")}
+              risk="caution"
+              command={renameUserCommand(username, INITIAL_RENAME_VALUES)}
+              onRun={handleRenameUser}
+            />
           )}
           {canDeleteAllMailboxes && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.deleteAllMailboxes")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-red-600 hover:bg-red-700 rounded-sm" onClick={handleDeleteAllMailboxes}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {deleteAllMailboxesCommand(username)}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.deleteAllMailboxes")}
+              risk="destructive"
+              command={deleteAllMailboxesCommand(username)}
+              onRun={handleDeleteAllMailboxes}
+            />
           )}
           {canDeleteData && (
-            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-2">
-              <p>{t("users.tasks.deleteData")}</p>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button className="bg-red-600 hover:bg-red-700 rounded-sm" onClick={handleDeleteUserData}>
-                      {t("common.run")}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {deleteUserDataCommand(username, "")}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <TaskRow
+              title={t("users.tasks.deleteData")}
+              risk="destructive"
+              command={deleteUserDataCommand(username, "")}
+              onRun={handleDeleteUserData}
+            />
           )}
         </div>
       )}
