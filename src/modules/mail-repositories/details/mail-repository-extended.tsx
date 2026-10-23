@@ -27,6 +27,7 @@ import { formatByteSize } from "@/i18n/format-size";
 import { EXTENDED_PAGE_LIMIT } from "./page-limits";
 import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
+import EmptyState from "@/components/custom/empty-state";
 
 const PAGE_LIMIT = EXTENDED_PAGE_LIMIT;
 
@@ -451,7 +452,7 @@ export default function MailRepositoryExtended() {
       )}
 
       {!loading && mails.length === 0 && mailKeys.length === 0 && (
-        <p className="text-sm text-gray-500 mt-4">{t("mailRepositories.noMails")}</p>
+        <EmptyState title={t("mailRepositories.noMails")} />
       )}
 
       {/* Pagination */}

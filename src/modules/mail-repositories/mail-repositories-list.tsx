@@ -192,14 +192,16 @@ export default function MailRepositoriesList() {
                     {result.repository} ({result.size})
                   </Link>
                 </h4>
-                <p className="text-sm text-muted-foreground">{result.path}</p>
               </div>
 
               <div className="flex gap-2">
                 {canReprocess && (
                   <button
-                    className="p-2 rounded-md hover:bg-gray-200"
-                    title={t("mailRepositories.reprocessAll")}
+                    className="p-2 rounded-md hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                    // Nothing to reprocess, move or clear in an empty repository
+                    disabled={result.size === 0}
+                    title={result.size === 0 ? t("mailRepositories.emptyActionDisabled") : t("mailRepositories.reprocessAll")}
+                    aria-label={t("mailRepositories.reprocessAll")}
                     onClick={() => {
                       handleReprocessTask(result);
                     }}
@@ -210,8 +212,11 @@ export default function MailRepositoriesList() {
 
                 {canMove && (
                   <button
-                    className="p-2 rounded-md hover:bg-gray-200"
-                    title={t("mailRepositories.moveAll")}
+                    className="p-2 rounded-md hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                    // Nothing to reprocess, move or clear in an empty repository
+                    disabled={result.size === 0}
+                    title={result.size === 0 ? t("mailRepositories.emptyActionDisabled") : t("mailRepositories.moveAll")}
+                    aria-label={t("mailRepositories.moveAll")}
                     onClick={() => {
                       handleMoveAll(result);
                     }}
@@ -222,8 +227,11 @@ export default function MailRepositoriesList() {
 
                 {canClear && (
                   <button
-                    className="p-2 rounded-md hover:bg-gray-200"
-                    title={t("mailRepositories.clearAll")}
+                    className="p-2 rounded-md hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                    // Nothing to reprocess, move or clear in an empty repository
+                    disabled={result.size === 0}
+                    title={result.size === 0 ? t("mailRepositories.emptyActionDisabled") : t("mailRepositories.clearAll")}
+                    aria-label={t("mailRepositories.clearAll")}
                     onClick={() => {
                       handleClearTask(result);
                     }}

@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import ConfirmTaskContent from "../common-tasks/components/confirm-task-content";
+import EmptyState from "@/components/custom/empty-state";
 
 const REDELIVER_PARAM_KEYS = ["limit", "maxRetries"] as const;
 type RedeliverParamKey = (typeof REDELIVER_PARAM_KEYS)[number];
@@ -121,6 +122,10 @@ export default function EventListenersList() {
             <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
             <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
           </div>
+        )}
+
+        {listenerGroupsResult && listenerGroupsResult.length === 0 && (
+          <EmptyState title={t("eventDeadletter.emptyTitle")} text={t("eventDeadletter.emptyText")} />
         )}
 
         <div>

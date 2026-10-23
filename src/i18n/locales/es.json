@@ -1608,7 +1608,9 @@
     "redeliverGroupAction": "Reenviar los eventos del grupo",
     "clearGroupAction": "Vaciar el grupo",
     "deleteEventAction": "Eliminar el evento",
-    "invalidPositiveInteger": "{{key}} debe ser un número entero positivo, o dejarse vacío."
+    "invalidPositiveInteger": "{{key}} debe ser un número entero positivo, o dejarse vacío.",
+    "emptyTitle": "Ningún evento fallido",
+    "emptyText": "Todos los listeners han procesado sus eventos. Los eventos fallidos se guardan aquí para poder reenviarlos."
   },
   "mailRepositories": {
     "pathLabel": "Ruta del repositorio",
@@ -1638,7 +1640,6 @@
     "copiedToClipboard": "Copiado en el portapapeles",
     "loadingMails": "Cargando los correos...",
     "noMails": "No se han encontrado correos.",
-    "pageInfo": "Página {{page}} / {{totalPages}}",
     "filtersLabel": "Filtros",
     "filtersActive": "{{count}} filtro(s) activo(s)",
     "filterSender": "Remitente",
@@ -1683,7 +1684,8 @@
     "removeMailSuccess": "Correo quitado correctamente",
     "runTaskHeader": "Ejecutar tarea",
     "subtitle": "Los repositorios de correo almacenan los correos junto con su contexto de procesamiento, lo que permite reanudar su procesamiento más adelante.",
-    "detailKind": "Repositorio de correo"
+    "detailKind": "Repositorio de correo",
+    "emptyActionDisabled": "Este repositorio está vacío"
   },
   "mappings": {
     "addAddress": "Añadir asignación de dirección",

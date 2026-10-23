@@ -1608,7 +1608,9 @@
     "redeliverGroupAction": "Riconsegna gli eventi del gruppo",
     "clearGroupAction": "Svuota il gruppo",
     "deleteEventAction": "Elimina l'evento",
-    "invalidPositiveInteger": "{{key}} deve essere un numero intero positivo, oppure lasciato vuoto."
+    "invalidPositiveInteger": "{{key}} deve essere un numero intero positivo, oppure lasciato vuoto.",
+    "emptyTitle": "Nessun evento non recapitato",
+    "emptyText": "Tutti i listener hanno elaborato i propri eventi. Gli eventi falliti sono conservati qui per poterli riconsegnare."
   },
   "mailRepositories": {
     "pathLabel": "Percorso del repository",
@@ -1638,7 +1640,6 @@
     "copiedToClipboard": "Copiato negli appunti",
     "loadingMails": "Caricamento delle email...",
     "noMails": "Nessuna email trovata.",
-    "pageInfo": "Pagina {{page}} / {{totalPages}}",
     "filtersLabel": "Filtri",
     "filtersActive": "{{count}} filtro/i attivo/i",
     "filterSender": "Mittente",
@@ -1683,7 +1684,8 @@
     "removeMailSuccess": "Email rimossa correttamente",
     "runTaskHeader": "Esegui attività",
     "subtitle": "I repository di posta conservano le email insieme al loro contesto di elaborazione, consentendo di riprenderne l'elaborazione in seguito.",
-    "detailKind": "Repository di posta"
+    "detailKind": "Repository di posta",
+    "emptyActionDisabled": "Questo repository è vuoto"
   },
   "mappings": {
     "addAddress": "Aggiungi mappatura di indirizzo",

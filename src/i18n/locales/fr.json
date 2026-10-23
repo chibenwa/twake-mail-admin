@@ -1608,7 +1608,9 @@
     "redeliverGroupAction": "Relivrer les événements du groupe",
     "clearGroupAction": "Vider le groupe",
     "deleteEventAction": "Supprimer l'événement",
-    "invalidPositiveInteger": "{{key}} doit être un entier positif, ou laissé vide."
+    "invalidPositiveInteger": "{{key}} doit être un entier positif, ou laissé vide.",
+    "emptyTitle": "Aucun événement en échec",
+    "emptyText": "Tous les écouteurs ont traité leurs événements. Les événements en échec sont conservés ici pour pouvoir être rejoués."
   },
   "mailRepositories": {
     "pathLabel": "Chemin du dépôt",
@@ -1638,7 +1640,6 @@
     "copiedToClipboard": "Copié dans le presse-papiers",
     "loadingMails": "Chargement des emails…",
     "noMails": "Aucun email trouvé.",
-    "pageInfo": "Page {{page}} / {{totalPages}}",
     "filtersLabel": "Filtres",
     "filtersActive": "{{count}} filtre(s) actif(s)",
     "filterSender": "Expéditeur",
@@ -1683,7 +1684,8 @@
     "removeMailSuccess": "Email retiré avec succès",
     "runTaskHeader": "Exécuter la tâche",
     "subtitle": "Les dépôts de courrier stockent les emails avec leur contexte de traitement, permettant de reprendre le traitement ultérieurement.",
-    "detailKind": "Dépôt de mails"
+    "detailKind": "Dépôt de mails",
+    "emptyActionDisabled": "Ce dépôt est vide"
   },
   "mappings": {
     "addAddress": "Ajouter une correspondance d'adresse",

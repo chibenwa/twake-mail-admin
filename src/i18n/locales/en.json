@@ -1608,7 +1608,9 @@
     "redeliverGroupAction": "Redeliver group events",
     "clearGroupAction": "Clear group",
     "deleteEventAction": "Delete event",
-    "invalidPositiveInteger": "{{key}} must be a positive integer, or left empty."
+    "invalidPositiveInteger": "{{key}} must be a positive integer, or left empty.",
+    "emptyTitle": "No dead-lettered events",
+    "emptyText": "Every event listener has processed its events. Events that fail are kept here so that they can be redelivered."
   },
   "mailRepositories": {
     "pathLabel": "Repository path",
@@ -1638,7 +1640,6 @@
     "copiedToClipboard": "Copied to clipboard",
     "loadingMails": "Loading emails...",
     "noMails": "No emails found.",
-    "pageInfo": "Page {{page}} / {{totalPages}}",
     "filtersLabel": "Filters",
     "filtersActive": "{{count}} filter(s) active",
     "filterSender": "Sender",
@@ -1683,7 +1684,8 @@
     "removeMailSuccess": "Email removed successfully",
     "runTaskHeader": "Run Task",
     "subtitle": "Mail repositories store emails along with their processing context, allowing to later resume the mail processing.",
-    "detailKind": "Mail repository"
+    "detailKind": "Mail repository",
+    "emptyActionDisabled": "This repository is empty"
   },
   "mappings": {
     "addAddress": "Add Address Mapping",

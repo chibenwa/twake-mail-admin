@@ -187,3 +187,20 @@ describe("event dead letter groups", () => {
     );
   });
 });
+
+describe("event dead letter groups: all clear", () => {
+  it("says that no event failed when there is no group", async () => {
+    api.getMailboxListenerGroups.mockResolvedValueOnce([]);
+    renderList();
+
+    expect(await screen.findByText("eventDeadletter.emptyTitle")).not.toBeNull();
+    expect(screen.getByText("eventDeadletter.emptyText")).not.toBeNull();
+  });
+
+  it("lists the groups, without the empty state, when some exist", async () => {
+    renderList();
+
+    expect(await screen.findByRole("button", { name: "eventDeadletter.redeliverGroupAction" })).not.toBeNull();
+    expect(screen.queryByText("eventDeadletter.emptyTitle")).toBeNull();
+  });
+});

@@ -1608,7 +1608,9 @@
     "redeliverGroupAction": "Ereignisse der Gruppe erneut zustellen",
     "clearGroupAction": "Gruppe leeren",
     "deleteEventAction": "Ereignis löschen",
-    "invalidPositiveInteger": "{{key}} muss eine positive ganze Zahl sein oder leer bleiben."
+    "invalidPositiveInteger": "{{key}} muss eine positive ganze Zahl sein oder leer bleiben.",
+    "emptyTitle": "Keine fehlgeschlagenen Ereignisse",
+    "emptyText": "Alle Listener haben ihre Ereignisse verarbeitet. Fehlgeschlagene Ereignisse werden hier aufbewahrt, damit sie erneut zugestellt werden können."
   },
   "mailRepositories": {
     "pathLabel": "Repository-Pfad",
@@ -1638,7 +1640,6 @@
     "copiedToClipboard": "In die Zwischenablage kopiert",
     "loadingMails": "E-Mails werden geladen...",
     "noMails": "Keine E-Mails gefunden.",
-    "pageInfo": "Seite {{page}} / {{totalPages}}",
     "filtersLabel": "Filter",
     "filtersActive": "{{count}} Filter aktiv",
     "filterSender": "Absender",
@@ -1683,7 +1684,8 @@
     "removeMailSuccess": "E-Mail erfolgreich entfernt",
     "runTaskHeader": "Aufgabe ausführen",
     "subtitle": "Mail-Repositorys speichern E-Mails zusammen mit ihrem Verarbeitungskontext, sodass die Verarbeitung später fortgesetzt werden kann.",
-    "detailKind": "Mail-Repository"
+    "detailKind": "Mail-Repository",
+    "emptyActionDisabled": "Dieses Repository ist leer"
   },
   "mappings": {
     "addAddress": "Adresszuordnung hinzufügen",

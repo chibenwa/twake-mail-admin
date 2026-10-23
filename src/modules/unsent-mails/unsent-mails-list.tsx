@@ -21,6 +21,7 @@ import {
 import { bulkSelection, matchesFilters } from "./filters";
 import type { UnsentMailId, UnsentMail } from "./types";
 import { currentLocale } from "@/i18n/locale";
+import EmptyState from "@/components/custom/empty-state";
 
 const PAGE_SIZE = 50;
 const BULK_HINT_ID = "unsent-mails-bulk-hint";
@@ -262,10 +263,9 @@ export default function UnsentMailsList() {
 
       {isLoading && <p className="text-gray-500">{t("common.loading")}</p>}
       {error && <p className="text-red-500">{error}</p>}
-      {!isLoading && !error && ids && filtered.length === 0 && (
-        <p className="text-sm text-gray-500 mt-4">
-          {isFiltering ? t("unsentMails.noMatch") : t("unsentMails.empty")}
-        </p>
+      {!isLoading && !error && ids && filtered.length === 0 && (isFiltering
+        ? <p className="text-sm text-gray-500 mt-4">{t("unsentMails.noMatch")}</p>
+        : <EmptyState title={t("unsentMails.empty")} />
       )}
 
       {filtered.length > 0 && (

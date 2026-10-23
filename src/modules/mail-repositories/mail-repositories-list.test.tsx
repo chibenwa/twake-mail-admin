@@ -148,3 +148,28 @@ describe("mail repositories list: move all mails", () => {
     expect(screen.getByLabelText("mailRepositories.moveConfirm").tagName).toBe("SELECT");
   });
 });
+
+describe("mail repositories list: empty repositories", () => {
+  it("disables reprocess, move and clear on an empty repository and says why", async () => {
+    api.getRepositoryInfo.mockResolvedValue({ size: 0 });
+    render(
+      <MemoryRouter>
+        <MailRepositoriesList />
+      </MemoryRouter>
+    );
+
+    const buttons = await screen.findAllByTitle("mailRepositories.emptyActionDisabled");
+    expect(buttons.length).toBeGreaterThanOrEqual(3);
+    for (const button of buttons) expect((button as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("does not repeat the URL-encoded path of a repository", async () => {
+    render(
+      <MemoryRouter>
+        <MailRepositoriesList />
+      </MemoryRouter>
+    );
+    await screen.findAllByTitle("mailRepositories.reprocessAll");
+    expect(screen.queryByText(/%2F/)).toBeNull();
+  });
+});

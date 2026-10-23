@@ -1606,7 +1606,9 @@
     "redeliverGroupAction": "Gửi lại các sự kiện của nhóm",
     "clearGroupAction": "Xóa nhóm",
     "deleteEventAction": "Xóa sự kiện",
-    "invalidPositiveInteger": "{{key}} phải là số nguyên dương hoặc để trống."
+    "invalidPositiveInteger": "{{key}} phải là số nguyên dương hoặc để trống.",
+    "emptyTitle": "Không có sự kiện lỗi",
+    "emptyText": "Mọi bộ lắng nghe đã xử lý sự kiện của mình. Các sự kiện lỗi được giữ ở đây để có thể gửi lại."
   },
   "mailRepositories": {
     "pathLabel": "Đường dẫn kho",
@@ -1636,7 +1638,6 @@
     "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm",
     "loadingMails": "Đang tải email...",
     "noMails": "Không tìm thấy email.",
-    "pageInfo": "Trang {{page}} / {{totalPages}}",
     "filtersLabel": "Bộ lọc",
     "filtersActive": "{{count}} bộ lọc đang hoạt động",
     "filterSender": "Người gửi",
@@ -1681,7 +1682,8 @@
     "removeMailSuccess": "Đã xóa email thành công",
     "runTaskHeader": "Chạy tác vụ",
     "subtitle": "Kho lưu trữ thư lưu các email cùng với bối cảnh xử lý của chúng, cho phép tiếp tục xử lý thư sau này.",
-    "detailKind": "Kho thư"
+    "detailKind": "Kho thư",
+    "emptyActionDisabled": "Kho này trống"
   },
   "mappings": {
     "addAddress": "Thêm ánh xạ địa chỉ",
