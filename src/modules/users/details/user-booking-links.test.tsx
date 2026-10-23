@@ -62,7 +62,7 @@ const typeDuration = (value: string) => fireEvent.change(durationField(), { targ
 
 const openCreate = async () => {
   await openSection();
-  fireEvent.click(screen.getByText("users.bookingLinks.create"));
+  fireEvent.click(screen.getByTitle("users.bookingLinks.create"));
   fireEvent.change(screen.getByPlaceholderText("/calendars/..."), { target: { value: CALENDAR_URL } });
 };
 
@@ -136,7 +136,7 @@ describe("booking link dialog: field labels", () => {
       _embedded: { "dav:calendar": [{ "dav:name": "Work", _links: { self: { href: "/calendars/bob/work.json" } } }] },
     });
     await openSection();
-    fireEvent.click(screen.getByText("users.bookingLinks.create"));
+    fireEvent.click(screen.getByTitle("users.bookingLinks.create"));
     await screen.findByRole("option", { name: "Work" });
   };
 
@@ -212,7 +212,7 @@ describe("booking link dialogs: calendar list", () => {
   it("offers the current calendars in the create dialog", async () => {
     await expandSection();
 
-    fireEvent.click(screen.getByText("users.bookingLinks.create"));
+    fireEvent.click(screen.getByTitle("users.bookingLinks.create"));
 
     await waitFor(() => expect(offeredCalendars()).toEqual(["New"]));
   });
@@ -433,7 +433,7 @@ describe("UserBookingLinks calendar of a delegated calendar", () => {
 
   it("is told apart from the user's own calendar of the same name by its owner", async () => {
     await openSection();
-    fireEvent.click(screen.getByText("users.bookingLinks.create"));
+    fireEvent.click(screen.getByTitle("users.bookingLinks.create"));
 
     await screen.findByRole("option", { name: 'users.calendars.mainCalendarOf {"owner":"charlotte@open-paas.org"}' });
     expect(screen.getByRole("option", { name: "users.calendars.mainCalendar" })).toBeTruthy();

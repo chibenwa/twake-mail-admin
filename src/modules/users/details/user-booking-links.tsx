@@ -632,26 +632,29 @@ export default function UserBookingLinks({ username, calendarsVersion }: Props) 
 
   return (
     <div className="mt-6">
-      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
-        {t("users.bookingLinks.title")}
-        {data && (
-          <span className="text-sm font-normal text-gray-500">({links.length})</span>
+      {/* Like the other sections: the + sits next to the title, and opens the section */}
+      <div className="flex items-center gap-2">
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
+          {t("users.bookingLinks.title")}
+          {data && (
+            <span className="text-sm font-normal text-gray-500">({links.length})</span>
+          )}
+        </SectionToggle>
+        {canCreate && (
+          <button
+            onClick={() => { setOpen(true); openCreate(); }}
+            className="p-1 rounded-md hover:bg-gray-200 transition"
+            title={t("users.bookingLinks.create")}
+          >
+            <Plus className="w-4 h-4" />
+          </button>
         )}
-      </SectionToggle>
+      </div>
 
       {open && (
         <div id={openContentId} className="mt-2 space-y-1">
           {isLoading && <div className="h-[40px] rounded-2 animate-pulse bg-gray-200" />}
           {error && <p className="text-red-500">{t("common.errorPrefix", { message: error })}</p>}
-
-          {canCreate && (
-            <div className="mb-2">
-              <Button variant="outline" size="sm" onClick={openCreate}>
-                <Plus className="w-4 h-4 mr-1" />
-                {t("users.bookingLinks.create")}
-              </Button>
-            </div>
-          )}
 
           {data && links.length === 0 && (
             <p className="text-sm text-gray-500">{t("users.bookingLinks.empty")}</p>
@@ -683,7 +686,7 @@ export default function UserBookingLinks({ username, calendarsVersion }: Props) 
         open={showCreate}
         onOpenChange={(v) => { if (!v) closeCreate(); }}
       >
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
+        <DialogContent className="max-w-2xl" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t("users.bookingLinks.create")}</DialogTitle>
           </DialogHeader>
@@ -783,7 +786,7 @@ export default function UserBookingLinks({ username, calendarsVersion }: Props) 
 
       {/* Edit dialog */}
       <Dialog open={!!editLink} onOpenChange={(v) => { if (!v) setEditLink(null); }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
+        <DialogContent className="max-w-2xl" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t("users.bookingLinks.editTitle")}</DialogTitle>
           </DialogHeader>
