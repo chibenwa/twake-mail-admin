@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useCheckUserExists } from "@/hooks/use-check-user-exists";
 import ErrorDisplayer from "@/components/custom/error-displayer";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
@@ -78,19 +79,20 @@ export default function CalendarDomainTeamCalendars({ domain, defaultOpen = fals
 
   if (!canView) return null;
 
+  const closeCreate = () => {
+    setShowCreate(false);
+    setNewName("");
+    setNewDisplayName("");
+  };
+
+  // Throws on a refusal: the modal shows it and keeps the typed values
   const handleAdd = async () => {
     const name = newName.trim();
     if (!name) return;
-    try {
-      await createTeamCalendar(domain, { name, displayName: newDisplayName.trim() || name });
-      toast({ title: t("domains.teamCalendars.created") });
-      setNewName("");
-      setNewDisplayName("");
-      setShowCreate(false);
-      await refresh();
-    } catch (err) {
-      toast({ title: t("domains.teamCalendars.errorCreating"), description: <ErrorDisplayer error={err} /> });
-    }
+    await createTeamCalendar(domain, { name, displayName: newDisplayName.trim() || name });
+    toast({ title: t("domains.teamCalendars.created") });
+    closeCreate();
+    await refresh();
   };
 
   const startEdit = (teamCalendar: TeamCalendar) => {
@@ -144,7 +146,7 @@ export default function CalendarDomainTeamCalendars({ domain, defaultOpen = fals
         </SectionToggle>
         {canCreate && (
           <button
-            onClick={() => { if (!open) { setOpen(true); setShowCreate(true); } else setShowCreate(!showCreate); }} className="p-1 rounded-md hover:bg-gray-200 transition" title={t("domains.teamCalendars.addTooltip")}>
+            onClick={() => { setOpen(true); setShowCreate(true); }} className="p-1 rounded-md hover:bg-gray-200 transition" title={t("domains.teamCalendars.addTooltip")}>
             <Plus className="w-4 h-4" />
           </button>
         )}
@@ -152,30 +154,6 @@ export default function CalendarDomainTeamCalendars({ domain, defaultOpen = fals
 
       {open && (
         <div id={openContentId} className="mt-2">
-          {showCreate && (
-            <div className="p-4 bg-blue-50 rounded-2 mb-2 space-y-2">
-              <h5 className="text-sm font-semibold">{t("domains.teamCalendars.newTitle")}</h5>
-              <div>
-                <label htmlFor={`${idPrefix}-newName`} className="text-xs font-medium text-gray-500">{t("domains.teamCalendars.nameLabel")} <span className="text-red-500">*</span></label>
-                <input id={`${idPrefix}-newName`} type="text" value={newName} onChange={(e) => setNewName(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAdd()} placeholder={t("domains.teamCalendars.namePlaceholder")}
-                  className="mt-1 w-full px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div>
-                <label htmlFor={`${idPrefix}-newDisplayName`} className="text-xs font-medium text-gray-500">{t("domains.teamCalendars.displayNameLabel")}</label>
-                <input id={`${idPrefix}-newDisplayName`} type="text" value={newDisplayName} onChange={(e) => setNewDisplayName(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAdd()} placeholder={t("domains.teamCalendars.displayNamePlaceholder")}
-                  className="mt-1 w-full px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div className="flex justify-end gap-2">
-                <button onClick={() => setShowCreate(false)}
-                  className="px-4 py-2 border rounded-md text-sm hover:bg-gray-100 transition">{t("common.cancel")}</button>
-                <button onClick={handleAdd} disabled={!newName.trim()}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">{t("common.create")}</button>
-              </div>
-            </div>
-          )}
-
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -278,6 +256,26 @@ export default function CalendarDomainTeamCalendars({ domain, defaultOpen = fals
           onClose={() => setMembersCalendar(null)}
         />
       )}
+
+      <FormDialog
+        open={showCreate}
+        onClose={closeCreate}
+        title={t("domains.teamCalendars.newTitle")}
+        submitLabel={t("common.create")}
+        submitDisabled={!newName.trim()}
+        onSubmit={handleAdd}
+      >
+        <div>
+          <label htmlFor={`${idPrefix}-newName`} className="text-sm font-medium">{t("domains.teamCalendars.nameLabel")} <span className="text-red-500">*</span></label>
+          <input id={`${idPrefix}-newName`} autoFocus type="text" value={newName} onChange={(e) => setNewName(e.target.value)}
+            placeholder={t("domains.teamCalendars.namePlaceholder")} className={FIELD_CLASS} />
+        </div>
+        <div>
+          <label htmlFor={`${idPrefix}-newDisplayName`} className="text-sm font-medium">{t("domains.teamCalendars.displayNameLabel")}</label>
+          <input id={`${idPrefix}-newDisplayName`} type="text" value={newDisplayName} onChange={(e) => setNewDisplayName(e.target.value)}
+            placeholder={t("domains.teamCalendars.displayNamePlaceholder")} className={FIELD_CLASS} />
+        </div>
+      </FormDialog>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -11,13 +11,14 @@ vi.mock("@/lib/proxy-resolver-context", () => ({ useIsAllowed: () => true }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: vi.fn() }) }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => async () => false }));
 vi.mock("@/hooks/use-check-user-exists", () => ({ useCheckUserExists: () => "idle" }));
+const createTeamCalendar = vi.hoisted(() => vi.fn());
 vi.mock("../api-client", () => ({
   getTeamCalendars: async () => [{
     id: "sales", domainId: "1", domainName: "example.com", name: "sales", displayName: "Sales", creation: "", updated: "",
   }],
   getTeamCalendarMembers: async () => [{ username: "alice@example.com", role: "member", davRight: "" }],
   getTeamCalendarEventCount: async () => ({ count: 0 }),
-  createTeamCalendar: vi.fn(),
+  createTeamCalendar,
   updateTeamCalendar: vi.fn(),
   deleteTeamCalendar: vi.fn(),
   updateTeamCalendarMembers: vi.fn(),
@@ -63,6 +64,36 @@ describe("team calendars: field labels", () => {
     const email = await screen.findByRole("textbox", { name: "domains.teamCalendars.members.email" });
     expect(email.parentElement!.className).toContain("flex-wrap");
     expect(email.className).toContain("min-w-0");
+  });
+});
+
+describe("team calendars: creation modal", () => {
+  it("opens the closed section and a modal from the +, then creates the team calendar and closes", async () => {
+    createTeamCalendar.mockResolvedValue(undefined);
+    render(<CalendarDomainTeamCalendars domain="example.com" />);
+
+    fireEvent.click(screen.getByTitle("domains.teamCalendars.addTooltip"));
+    const dialog = await screen.findByRole("dialog", { name: "domains.teamCalendars.newTitle" });
+    expect(await screen.findByText("Sales")).toBeTruthy();
+    fireEvent.change(within(dialog).getByLabelText("domains.teamCalendars.nameLabel", { exact: false }), { target: { value: "support" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "common.create" }));
+
+    await vi.waitFor(() => expect(createTeamCalendar).toHaveBeenCalledWith("example.com", { name: "support", displayName: "support" }));
+    await vi.waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("keeps the modal open with the typed values and shows the refusal in it", async () => {
+    createTeamCalendar.mockRejectedValue(new Error("Already exists"));
+    await openSection();
+
+    fireEvent.click(screen.getByTitle("domains.teamCalendars.addTooltip"));
+    const dialog = await screen.findByRole("dialog", { name: "domains.teamCalendars.newTitle" });
+    const name = within(dialog).getByLabelText("domains.teamCalendars.nameLabel", { exact: false });
+    fireEvent.change(name, { target: { value: "support" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "common.create" }));
+
+    expect((await within(dialog).findByRole("alert")).textContent).toContain("Already exists");
+    expect(name).toHaveProperty("value", "support");
   });
 });
 
