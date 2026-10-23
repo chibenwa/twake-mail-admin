@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -55,6 +56,7 @@ export default function DomainContacts({ domain }: Props) {
   const { toast } = useToast();
   const confirm = useConfirm();
   const editIdPrefix = useId();
+  const createIdPrefix = useId();
   const canView = useIsAllowed("GET", "/domains/{domain}/contacts");
   const canCreate = useIsAllowed("POST", "/domains/{domain}/contacts");
   const canEdit = useIsAllowed("PUT", "/domains/{domain}/contacts/{username}");
@@ -74,7 +76,6 @@ export default function DomainContacts({ domain }: Props) {
   const [createEmail, setCreateEmail] = useState("");
   const [createFirstname, setCreateFirstname] = useState("");
   const [createSurname, setCreateSurname] = useState("");
-  const [creating, setCreating] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
@@ -112,29 +113,18 @@ export default function DomainContacts({ domain }: Props) {
   // Extract username part from email (part before @)
   const usernameFromEmail = (email: string) => email.split("@")[0] || email;
 
+  // A refusal is shown in the modal, which then stays open with the typed values
   const handleCreate = async () => {
     const email = createEmail.trim();
-    if (!email) return;
-    setCreating(true);
-    try {
-      const payload: { emailAddress: string; firstname?: string; surname?: string } = { emailAddress: email };
-      if (createFirstname.trim()) payload.firstname = createFirstname.trim();
-      if (createSurname.trim()) payload.surname = createSurname.trim();
-      await createDomainContact(domain, payload);
-      toast({ title: t("domains.contacts.created") });
-      setCreateEmail("");
-      setCreateFirstname("");
-      setCreateSurname("");
-      setShowCreate(false);
-      setLocalChanges((changes) => withAdded(changes, email));
-    } catch (err) {
-      toast({
-        title: t("domains.contacts.errorCreating"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    } finally {
-      setCreating(false);
-    }
+    const payload: { emailAddress: string; firstname?: string; surname?: string } = { emailAddress: email };
+    if (createFirstname.trim()) payload.firstname = createFirstname.trim();
+    if (createSurname.trim()) payload.surname = createSurname.trim();
+    await createDomainContact(domain, payload);
+    toast({ title: t("domains.contacts.created") });
+    setCreateEmail("");
+    setCreateFirstname("");
+    setCreateSurname("");
+    setLocalChanges((changes) => withAdded(changes, email));
   };
 
   const handleDelete = async (email: string) => {
@@ -230,7 +220,7 @@ export default function DomainContacts({ domain }: Props) {
         </SectionToggle>
         {canCreate && (
           <button
-            onClick={() => { if (!open) { setOpen(true); setShowCreate(true); } else setShowCreate(!showCreate); }}
+            onClick={() => { setOpen(true); setShowCreate(true); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("domains.contacts.createButton")}
           >
@@ -245,50 +235,6 @@ export default function DomainContacts({ domain }: Props) {
             <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
             <span>{t("domains.contacts.ldapNotice")}</span>
           </div>
-
-          {showCreate && (
-            <div className="p-4 bg-blue-50 rounded-2 mb-2 space-y-2">
-              <h5 className="text-sm font-semibold">{t("domains.contacts.newTitle")}</h5>
-              <input
-                autoFocus
-                type="email"
-                value={createEmail}
-                onChange={(e) => setCreateEmail(e.target.value)}
-                placeholder={t("domains.contacts.emailPlaceholder")}
-                className="w-full px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-              />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  value={createFirstname}
-                  onChange={(e) => setCreateFirstname(e.target.value)}
-                  placeholder={t("domains.contacts.firstnamePlaceholder")}
-                  className="px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="text"
-                  value={createSurname}
-                  onChange={(e) => setCreateSurname(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-                  placeholder={t("domains.contacts.surnamePlaceholder")}
-                  className="px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" size="sm" onClick={() => setShowCreate(false)}>
-                  {t("common.cancel")}
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleCreate}
-                  disabled={creating || !createEmail.trim()}
-                >
-                  {creating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
-                  {t("common.create")}
-                </Button>
-              </div>
-            </div>
-          )}
 
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
@@ -369,6 +315,50 @@ export default function DomainContacts({ domain }: Props) {
           )}
         </div>
       )}
+
+      <FormDialog
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+        title={t("domains.contacts.newTitle")}
+        submitLabel={t("common.create")}
+        submitDisabled={!createEmail.trim()}
+        onSubmit={handleCreate}
+      >
+        <div>
+          <label htmlFor={`${createIdPrefix}-email`} className="text-sm font-medium">{t("domains.contacts.email")}</label>
+          <input
+            id={`${createIdPrefix}-email`}
+            type="email"
+            autoFocus
+            value={createEmail}
+            onChange={(e) => setCreateEmail(e.target.value)}
+            placeholder={t("domains.contacts.emailPlaceholder")}
+            className={FIELD_CLASS}
+          />
+        </div>
+        <div>
+          <label htmlFor={`${createIdPrefix}-firstname`} className="text-sm font-medium">{t("domains.contacts.firstname")}</label>
+          <input
+            id={`${createIdPrefix}-firstname`}
+            type="text"
+            value={createFirstname}
+            onChange={(e) => setCreateFirstname(e.target.value)}
+            placeholder={t("domains.contacts.firstnamePlaceholder")}
+            className={FIELD_CLASS}
+          />
+        </div>
+        <div>
+          <label htmlFor={`${createIdPrefix}-surname`} className="text-sm font-medium">{t("domains.contacts.surname")}</label>
+          <input
+            id={`${createIdPrefix}-surname`}
+            type="text"
+            value={createSurname}
+            onChange={(e) => setCreateSurname(e.target.value)}
+            placeholder={t("domains.contacts.surnamePlaceholder")}
+            className={FIELD_CLASS}
+          />
+        </div>
+      </FormDialog>
 
       {/* View modal */}
       <Dialog open={!!viewContact || viewLoading} onOpenChange={(v) => { if (!v) { setViewContact(null); setViewLoading(false); } }}>

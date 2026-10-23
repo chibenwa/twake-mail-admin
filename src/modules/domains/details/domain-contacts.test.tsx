@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { ProxyResolver } from "@/lib/proxy-resolver";
 
 const proxy = vi.hoisted(() => ({ resolver: null as { isAllowed: (verb: never, pattern: string) => boolean } | null }));
@@ -40,6 +40,30 @@ afterEach(cleanup);
 const counter = () => screen.getByText(/^\(\d+\)$/).textContent;
 
 describe("domain contacts", () => {
+  it("creates the contact typed in the modal of the + button", async () => {
+    fireEvent.click(screen.getByTitle("domains.contacts.createButton"));
+    const dialog = screen.getByRole("dialog");
+    fireEvent.change(within(dialog).getByLabelText("domains.contacts.email"), { target: { value: "carol@example.com" } });
+    fireEvent.change(within(dialog).getByLabelText("domains.contacts.surname"), { target: { value: "Doe" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "common.create" }));
+
+    await waitFor(() =>
+      expect(api.createDomainContact).toHaveBeenCalledWith("example.com", { emailAddress: "carol@example.com", surname: "Doe" })
+    );
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("keeps the modal open with the typed address when the creation is refused", async () => {
+    api.createDomainContact.mockRejectedValue(new Error("Contact already exists"));
+    fireEvent.click(screen.getByTitle("domains.contacts.createButton"));
+    const dialog = screen.getByRole("dialog");
+    fireEvent.change(within(dialog).getByLabelText("domains.contacts.email"), { target: { value: "alice@example.com" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "common.create" }));
+
+    expect(await within(dialog).findByText("Contact already exists")).not.toBeNull();
+    expect((within(dialog).getByLabelText("domains.contacts.email") as HTMLInputElement).value).toBe("alice@example.com");
+  });
+
   it("lists a created contact even though the listing is not yet up to date", async () => {
     fireEvent.click(screen.getByTitle("domains.contacts.createButton"));
     fireEvent.change(screen.getByPlaceholderText("domains.contacts.emailPlaceholder"), {
