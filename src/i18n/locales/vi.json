@@ -666,7 +666,6 @@
       "htmlSignature": "Chữ ký HTML",
       "sortOrder": "Thứ tự sắp xếp",
       "created": "Đã tạo danh tính",
-      "errorCreating": "Lỗi khi tạo danh tính",
       "updated": "Đã cập nhật danh tính",
       "errorUpdating": "Lỗi khi cập nhật danh tính",
       "deleteTitle": "Xóa danh tính",

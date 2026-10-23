@@ -667,7 +667,6 @@
       "htmlSignature": "Firma HTML",
       "sortOrder": "Ordinamento",
       "created": "Identità creata",
-      "errorCreating": "Errore durante la creazione dell'identità",
       "updated": "Identità aggiornata",
       "errorUpdating": "Errore durante l'aggiornamento dell'identità",
       "deleteTitle": "Elimina identità",

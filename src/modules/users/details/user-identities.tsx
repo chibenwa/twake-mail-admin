@@ -20,6 +20,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 
 interface Props {
   username: string;
@@ -50,7 +51,6 @@ export default function UserIdentities({ username }: Props) {
   const [open, setOpen, openContentId] = useSectionOpen("identities");
   const [showCreate, setShowCreate] = useState(false);
   const [createForm, setCreateForm] = useState<JmapIdentityCreatePayload>({ ...EMPTY_CREATE });
-  const [creating, setCreating] = useState(false);
 
   // Detail modal (read-only)
   const [viewIdentity, setViewIdentity] = useState<JmapIdentity | null>(null);
@@ -65,23 +65,12 @@ export default function UserIdentities({ username }: Props) {
 
   if (!canView) return null;
 
+  // A refusal throws: the modal shows it and keeps the typed values
   const handleCreate = async () => {
-    if (!createForm.name.trim() || !createForm.email.trim()) return;
-    setCreating(true);
-    try {
-      await createUserIdentity(username, createForm);
-      toast({ title: t("users.identities.created") });
-      setCreateForm({ ...EMPTY_CREATE });
-      setShowCreate(false);
-      await refresh();
-    } catch (err) {
-      toast({
-        title: t("users.identities.errorCreating"),
-        description: <ErrorDisplayer error={err} />,
-      });
-    } finally {
-      setCreating(false);
-    }
+    await createUserIdentity(username, createForm);
+    toast({ title: t("users.identities.created") });
+    setCreateForm({ ...EMPTY_CREATE });
+    await refresh();
   };
 
   const openView = (identity: JmapIdentity) => {
@@ -158,7 +147,8 @@ export default function UserIdentities({ username }: Props) {
         </SectionToggle>
         {canCreate && (
           <button
-            onClick={() => { if (!open) { setOpen(true); setShowCreate(true); } else setShowCreate(!showCreate); }}
+            type="button"
+            onClick={() => { setOpen(true); setShowCreate(true); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("users.identities.createButton")}
           >
@@ -167,83 +157,72 @@ export default function UserIdentities({ username }: Props) {
         )}
       </div>
 
+      {/* The address is checked by the server, as before */}
+      <FormDialog
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+        title={t("users.identities.newTitle")}
+        submitLabel={t("common.create")}
+        submitDisabled={!createForm.name.trim() || !createForm.email.trim()}
+        onSubmit={handleCreate}
+      >
+        <div>
+          <label htmlFor={`${idPrefix}-create-name`} className="text-sm font-medium">{t("users.identities.name")}</label>
+          <input
+            autoFocus
+            id={`${idPrefix}-create-name`}
+            type="text"
+            value={createForm.name}
+            onChange={(e) => setCreateForm((f) => ({ ...f, name: e.target.value }))}
+            placeholder={t("users.identities.namePlaceholder")}
+            className={FIELD_CLASS}
+          />
+        </div>
+        <div>
+          <label htmlFor={`${idPrefix}-create-email`} className="text-sm font-medium">{t("users.identities.email")}</label>
+          <input
+            id={`${idPrefix}-create-email`}
+            type="email"
+            value={createForm.email}
+            onChange={(e) => setCreateForm((f) => ({ ...f, email: e.target.value }))}
+            placeholder={t("users.identities.emailPlaceholder")}
+            className={FIELD_CLASS}
+          />
+        </div>
+        <div>
+          <label htmlFor={`${idPrefix}-create-text-signature`} className="text-sm font-medium">{t("users.identities.textSignature")}</label>
+          <textarea
+            id={`${idPrefix}-create-text-signature`}
+            value={createForm.textSignature ?? ""}
+            onChange={(e) => setCreateForm((f) => ({ ...f, textSignature: e.target.value }))}
+            rows={2}
+            className={FIELD_CLASS}
+          />
+        </div>
+        <div>
+          <label htmlFor={`${idPrefix}-create-html-signature`} className="text-sm font-medium">{t("users.identities.htmlSignature")}</label>
+          <textarea
+            id={`${idPrefix}-create-html-signature`}
+            value={createForm.htmlSignature ?? ""}
+            onChange={(e) => setCreateForm((f) => ({ ...f, htmlSignature: e.target.value }))}
+            rows={2}
+            className={FIELD_CLASS}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor={`${idPrefix}-create-sort-order`} className="text-sm font-medium">{t("users.identities.sortOrder")}</label>
+          <input
+            id={`${idPrefix}-create-sort-order`}
+            type="number"
+            value={createForm.sortOrder ?? 0}
+            onChange={(e) => setCreateForm((f) => ({ ...f, sortOrder: parseInt(e.target.value) || 0 }))}
+            className="w-20 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </FormDialog>
+
       {open && (
         <div id={openContentId} className="mt-2">
-          {showCreate && (
-            // A form, so that Enter in a field submits like Create; the address is checked by the server, as before
-            <form
-              noValidate
-              className="p-4 bg-blue-50 rounded-2 mb-2 space-y-2"
-              onSubmit={(e) => { e.preventDefault(); if (!creating) handleCreate(); }}
-            >
-              <h5 className="text-sm font-semibold">{t("users.identities.newTitle")}</h5>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <input
-                  autoFocus
-                  type="text"
-                  value={createForm.name}
-                  onChange={(e) => setCreateForm((f) => ({ ...f, name: e.target.value }))}
-                  placeholder={t("users.identities.namePlaceholder")}
-                  aria-label={t("users.identities.name")}
-                  className="px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="email"
-                  value={createForm.email}
-                  onChange={(e) => setCreateForm((f) => ({ ...f, email: e.target.value }))}
-                  placeholder={t("users.identities.emailPlaceholder")}
-                  aria-label={t("users.identities.email")}
-                  className="px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <div>
-                  <label htmlFor={`${idPrefix}-create-text-signature`} className="text-xs text-gray-500">{t("users.identities.textSignature")}</label>
-                  <textarea
-                    id={`${idPrefix}-create-text-signature`}
-                    value={createForm.textSignature ?? ""}
-                    onChange={(e) => setCreateForm((f) => ({ ...f, textSignature: e.target.value }))}
-                    rows={2}
-                    className="w-full px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label htmlFor={`${idPrefix}-create-html-signature`} className="text-xs text-gray-500">{t("users.identities.htmlSignature")}</label>
-                  <textarea
-                    id={`${idPrefix}-create-html-signature`}
-                    value={createForm.htmlSignature ?? ""}
-                    onChange={(e) => setCreateForm((f) => ({ ...f, htmlSignature: e.target.value }))}
-                    rows={2}
-                    className="w-full px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <label htmlFor={`${idPrefix}-create-sort-order`} className="text-xs text-gray-500">{t("users.identities.sortOrder")}</label>
-                <input
-                  id={`${idPrefix}-create-sort-order`}
-                  type="number"
-                  value={createForm.sortOrder ?? 0}
-                  onChange={(e) => setCreateForm((f) => ({ ...f, sortOrder: parseInt(e.target.value) || 0 }))}
-                  className="w-20 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setShowCreate(false)}>
-                  {t("common.cancel")}
-                </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={creating || !createForm.name.trim() || !createForm.email.trim()}
-                >
-                  {creating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
-                  {t("common.create")}
-                </Button>
-              </div>
-            </form>
-          )}
-
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />

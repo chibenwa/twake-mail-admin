@@ -112,13 +112,29 @@ describe("user identities: long values", () => {
   });
 });
 
+describe("user identities: create modal", () => {
+  it("opens the section and a modal from the +, and creates the typed identity", async () => {
+    render(<UserIdentities username="bob@example.com" />);
+    fireEvent.click(screen.getByTitle("users.identities.createButton"));
+
+    const dialog = await screen.findByRole("dialog");
+    expect(screen.getByText("users.identities.title").closest("button")?.getAttribute("aria-expanded")).toBe("true");
+    fireEvent.change(screen.getByLabelText("users.identities.name"), { target: { value: "Bob Sales" } });
+    fireEvent.change(screen.getByLabelText("users.identities.email"), { target: { value: "sales@example.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "common.create" }));
+
+    await waitFor(() => expect(createUserIdentity).toHaveBeenCalledWith("bob@example.com", expect.objectContaining({ name: "Bob Sales", email: "sales@example.com" })));
+    await waitFor(() => expect(dialog.isConnected).toBe(false));
+  });
+});
+
 describe("user identities: Enter in a field", () => {
   // jsdom does not submit a form on Enter: submitting the field's form is what the browser does then
   it("creates the identity, like Create", async () => {
     openSection();
     fireEvent.click(screen.getByTitle("users.identities.createButton"));
 
-    fireEvent.change(screen.getByLabelText("users.identities.name"), { target: { value: "Bob QA" } });
+    fireEvent.change(await screen.findByLabelText("users.identities.name"), { target: { value: "Bob QA" } });
     const email = screen.getByLabelText("users.identities.email") as HTMLInputElement;
     fireEvent.change(email, { target: { value: "bob@example.com" } });
     fireEvent.submit(email.form!);
