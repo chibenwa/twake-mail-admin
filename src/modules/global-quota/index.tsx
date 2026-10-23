@@ -95,7 +95,8 @@ export default function GlobalQuota() {
 
   return (
     <SectionsProvider page="globalQuota">
-    <div className="p-4 w-fit max-w-full">
+    {/* Full width: Expand all must not move as the sections open */}
+    <div className="p-4">
       <Header headerTitle={t("globalQuota.title")} headerSubTitle={t("globalQuota.subtitle")} docuUrl={docuUrl} actions={<ExpandCollapseAll />} />
 
       <div className="mt-4">

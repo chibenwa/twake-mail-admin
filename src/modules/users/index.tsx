@@ -13,7 +13,8 @@ export default function Users() {
   const subtitleKey = appConfig.application === 'CALENDAR' ? "users.subtitleCalendar" : "users.subtitle";
 
   return (
-    <div className="p-4 w-fit max-w-full">
+    // A detail page takes the full width: opening its sections must not move its header
+    <div className={username ? "p-4" : "p-4 w-fit max-w-full"}>
       {/* A detail page heads itself with its object and a breadcrumb back here */}
       {!username && (
         <Header

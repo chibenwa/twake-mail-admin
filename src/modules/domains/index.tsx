@@ -13,7 +13,8 @@ export default function Domains() {
   const subtitleKey = appConfig.application === 'CALENDAR' ? "domains.subtitleCalendar" : "domains.subtitleMail";
 
   return (
-    <div className="p-4 w-fit max-w-full">
+    // A detail page takes the full width: opening its sections must not move its header
+    <div className={domain ? "p-4" : "p-4 w-fit max-w-full"}>
       {/* A detail page heads itself with its object and a breadcrumb back here */}
       {!domain && (
         <Header
