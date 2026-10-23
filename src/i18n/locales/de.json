@@ -1481,7 +1481,14 @@
       "core": "Kernkomponenten",
       "rabbitmq": "RabbitMQ-spezifische Prüfungen",
       "other": "Sonstige"
-    }
+    },
+    "summary": {
+      "healthy": "Alle {{count}} Komponenten sind fehlerfrei.",
+      "problems": "{{unhealthy}} fehlerhaft, {{degraded}} beeinträchtigt von {{count}} Komponenten."
+    },
+    "checkedAt": "Geprüft um {{time}}",
+    "refresh": "Erneut prüfen",
+    "open": "Öffnen"
   },
   "resourceIcons": {
     "access-point": "Access Point",

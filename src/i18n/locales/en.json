@@ -1481,7 +1481,14 @@
       "core": "Core components",
       "rabbitmq": "RabbitMQ specific checks",
       "other": "Other"
-    }
+    },
+    "summary": {
+      "healthy": "All {{count}} components are healthy.",
+      "problems": "{{unhealthy}} unhealthy, {{degraded}} degraded out of {{count}} components."
+    },
+    "checkedAt": "Checked at {{time}}",
+    "refresh": "Check again",
+    "open": "Open"
   },
   "resourceIcons": {
     "access-point": "Access point",

@@ -1481,7 +1481,14 @@
       "core": "Үндсэн бүрэлдэхүүн",
       "rabbitmq": "RabbitMQ-ийн тусгай шалгалтууд",
       "other": "Бусад"
-    }
+    },
+    "summary": {
+      "healthy": "Бүх {{count}} бүрэлдэхүүн хэвийн.",
+      "problems": "{{count}} бүрэлдэхүүнээс {{unhealthy}} алдаатай, {{degraded}} доголдолтой."
+    },
+    "checkedAt": "{{time}}-д шалгасан",
+    "refresh": "Дахин шалгах",
+    "open": "Нээх"
   },
   "resourceIcons": {
     "access-point": "Хандалтын цэг",

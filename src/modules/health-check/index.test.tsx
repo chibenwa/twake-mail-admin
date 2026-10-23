@@ -1,16 +1,21 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string, options?: { message?: string }) => (options?.message ? `${key}: ${options.message}` : key) }),
+  useTranslation: () => ({
+    t: (key: string, options?: Record<string, unknown>) =>
+      options?.message ? `${key}: ${options.message}` : options && "count" in options ? `${key} ${JSON.stringify(options)}` : key,
+  }),
 }));
 vi.mock("@/lib/config", () => ({ appConfig: { application: "MAIL" } }));
 const api = vi.hoisted(() => ({ getHealthCheck: vi.fn() }));
 vi.mock("./api-client", () => api);
 
 import HealthCheck from "./index";
+
+const banner = async () => (await screen.findByText(/healthCheck\.summary\./)).closest('[role="status"]') as HTMLElement;
 
 afterEach(cleanup);
 
@@ -28,15 +33,64 @@ describe("health check: component status", () => {
     api.getHealthCheck.mockReset().mockResolvedValue(answer);
   });
 
+  const card = async (component: string) => {
+    await banner();
+    const sections = Array.from(document.querySelectorAll("section"));
+    const name = sections.flatMap((section) => within(section).queryAllByText(component))[0];
+    return name.closest(".rounded-lg") as HTMLElement;
+  };
+
   it.each([
     ["Cassandra backend", "healthCheck.status.healthy"],
-    ["EventDeadLettersHealthCheck", "healthCheck.status.degraded"],
+    ["EventDeadLettersHealthCheck", "healthCheck.status.degradedEventDeadLetters contain events.healthCheck.open →"],
     ["Redis", "healthCheck.status.unhealthy"],
-  ])("writes out the status of %s, not only its card colour", async (component, status) => {
+  ])("writes out the status of %s, and its cause, not only its card colour", async (component, rest) => {
     render(<MemoryRouter><HealthCheck /></MemoryRouter>);
 
-    const card = (await screen.findByText(component)).closest(".rounded-lg") as HTMLElement;
-    expect(card.textContent).toBe(`${component}${status}`);
+    expect((await card(component)).textContent).toBe(`${component}${rest}`);
+  });
+
+  it("links a card to the screen that fixes its component", async () => {
+    render(<MemoryRouter><HealthCheck /></MemoryRouter>);
+
+    expect((await card("EventDeadLettersHealthCheck")).closest("a")?.getAttribute("href")).toBe("/event-dead-letter");
+    expect((await card("Cassandra backend")).closest("a")).toBeNull();
+  });
+
+  it("states how many components need attention, and why, with where to go", async () => {
+    render(<MemoryRouter><HealthCheck /></MemoryRouter>);
+
+    const summary = await banner();
+    expect(summary.textContent).toContain('healthCheck.summary.problems {"unhealthy":1,"degraded":1,"count":3}');
+    const lines = within(summary).getAllByRole("listitem").map((li) => li.textContent);
+    expect(lines).toEqual([
+      "Redis — healthCheck.status.unhealthy",
+      "EventDeadLettersHealthCheck — healthCheck.status.degraded — EventDeadLetters contain events. healthCheck.open →",
+    ]);
+    expect(within(summary).getByRole("link").getAttribute("href")).toBe("/event-dead-letter");
+  });
+
+  it("checks again on demand, keeping the cards meanwhile", async () => {
+    render(<MemoryRouter><HealthCheck /></MemoryRouter>);
+    await banner();
+    api.getHealthCheck.mockReturnValue(new Promise(() => {}));
+
+    fireEvent.click(screen.getByText("healthCheck.refresh"));
+
+    await waitFor(() => expect(api.getHealthCheck).toHaveBeenCalledTimes(2));
+    expect(screen.getAllByText("Cassandra backend").length).toBeGreaterThan(0);
+  });
+});
+
+describe("health check: all healthy", () => {
+  it("says so in a single line", async () => {
+    api.getHealthCheck.mockReset().mockResolvedValue({
+      status: "healthy",
+      checks: [{ componentName: "Redis", escapedComponentName: "Redis", status: "healthy" }],
+    });
+    render(<MemoryRouter><HealthCheck /></MemoryRouter>);
+
+    expect((await banner()).textContent).toContain('healthCheck.summary.healthy {"count":1}');
   });
 });
 

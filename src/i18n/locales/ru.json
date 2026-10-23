@@ -1485,7 +1485,14 @@
       "core": "Основные компоненты",
       "rabbitmq": "Проверки RabbitMQ",
       "other": "Прочее"
-    }
+    },
+    "summary": {
+      "healthy": "Все компоненты ({{count}}) исправны.",
+      "problems": "Неисправно: {{unhealthy}}, с деградацией: {{degraded}} из {{count}} компонентов."
+    },
+    "checkedAt": "Проверено в {{time}}",
+    "refresh": "Проверить снова",
+    "open": "Открыть"
   },
   "resourceIcons": {
     "access-point": "Точка доступа",

@@ -1481,7 +1481,14 @@
       "core": "Composants principaux",
       "rabbitmq": "Contrôles spécifiques à RabbitMQ",
       "other": "Autres"
-    }
+    },
+    "summary": {
+      "healthy": "Les {{count}} composants sont sains.",
+      "problems": "{{unhealthy}} en échec, {{degraded}} dégradé(s) sur {{count}} composants."
+    },
+    "checkedAt": "Vérifié à {{time}}",
+    "refresh": "Vérifier à nouveau",
+    "open": "Ouvrir"
   },
   "resourceIcons": {
     "access-point": "Point d'accès",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { groupHealthChecks } from "./sections";
+import { componentScreen, groupHealthChecks, summarizeHealthChecks } from "./sections";
 import { HealthCheckType, HealthStatuses } from "./types";
 
 const check = (componentName: string): HealthCheckType => ({
@@ -75,5 +75,32 @@ describe("groupHealthChecks", () => {
 
   it("returns no section when there is no check", () => {
     expect(groupHealthChecks([], false)).toEqual([]);
+  });
+});
+
+describe("groupHealthChecks: attention first", () => {
+  it("lists the non-healthy checks of a section before the healthy ones", () => {
+    const [storage] = groupHealthChecks([
+      { componentName: "Cassandra backend", escapedComponentName: "", status: HealthStatuses.HEALTHY },
+      { componentName: "Redis", escapedComponentName: "", status: HealthStatuses.DEGRADED },
+    ], false);
+    expect(storage.checks.map((c) => c.componentName)).toEqual(["Redis", "Cassandra backend"]);
+  });
+});
+
+describe("summarizeHealthChecks", () => {
+  it("counts the problems, unhealthy first", () => {
+    const summary = summarizeHealthChecks([
+      { componentName: "A", escapedComponentName: "", status: HealthStatuses.HEALTHY },
+      { componentName: "B", escapedComponentName: "", status: HealthStatuses.DEGRADED },
+      { componentName: "C", escapedComponentName: "", status: HealthStatuses.UNHEALTHY },
+    ]);
+    expect(summary).toMatchObject({ count: 3, unhealthy: 1, degraded: 1 });
+    expect(summary.problems.map((c) => c.componentName)).toEqual(["C", "B"]);
+  });
+
+  it("knows where the error mail repository is fixed", () => {
+    expect(componentScreen("EmptyErrorMailRepository")).toBe("/mail-repositories/repository/var%2Fmail%2Ferror");
+    expect(componentScreen("Redis")).toBeUndefined();
   });
 });

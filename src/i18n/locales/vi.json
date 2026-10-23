@@ -1479,7 +1479,14 @@
       "core": "Thành phần cốt lõi",
       "rabbitmq": "Kiểm tra riêng của RabbitMQ",
       "other": "Khác"
-    }
+    },
+    "summary": {
+      "healthy": "Cả {{count}} thành phần đều ổn định.",
+      "problems": "{{unhealthy}} lỗi, {{degraded}} suy giảm trên {{count}} thành phần."
+    },
+    "checkedAt": "Đã kiểm tra lúc {{time}}",
+    "refresh": "Kiểm tra lại",
+    "open": "Mở"
   },
   "resourceIcons": {
     "access-point": "Điểm truy cập",
