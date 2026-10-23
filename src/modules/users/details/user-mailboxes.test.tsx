@@ -48,7 +48,7 @@ describe("user mailboxes: create a mailbox", () => {
 
     const dialog = await screen.findByRole("dialog");
     expect(screen.getByText("users.mailboxes.title").closest("button")?.getAttribute("aria-expanded")).toBe("true");
-    fireEvent.change(screen.getByPlaceholderText("users.mailboxes.namePlaceholder"), { target: { value: " INBOX.work " } });
+    fireEvent.change(screen.getByLabelText("users.mailboxes.nameLabel"), { target: { value: " INBOX.work " } });
     fireEvent.click(screen.getByRole("button", { name: "common.create" }));
 
     await waitFor(() => expect(mocks.api.createUserMailbox).toHaveBeenCalledWith(ALICE, "INBOX.work"));
@@ -60,11 +60,11 @@ describe("user mailboxes: create a mailbox", () => {
     mocks.api.createUserMailbox.mockRejectedValue(new Error("Mailbox already exists"));
     renderMailboxes();
     fireEvent.click(screen.getByTitle("users.mailboxes.createTooltip"));
-    fireEvent.change(await screen.findByPlaceholderText("users.mailboxes.namePlaceholder"), { target: { value: "INBOX" } });
+    fireEvent.change(await screen.findByLabelText("users.mailboxes.nameLabel"), { target: { value: "INBOX" } });
     fireEvent.click(screen.getByRole("button", { name: "common.create" }));
 
     expect(await screen.findByRole("alert")).toBeTruthy();
-    expect((screen.getByPlaceholderText("users.mailboxes.namePlaceholder") as HTMLInputElement).value).toBe("INBOX");
+    expect((screen.getByLabelText("users.mailboxes.nameLabel") as HTMLInputElement).value).toBe("INBOX");
     expect(mocks.toast).not.toHaveBeenCalled();
   });
 });

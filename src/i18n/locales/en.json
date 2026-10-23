@@ -578,7 +578,8 @@
       "errorRemoving": "Error removing alias",
       "empty": "No aliases configured.",
       "addTooltip": "Add alias",
-      "removeTooltip": "Remove alias"
+      "removeTooltip": "Remove alias",
+      "fieldLabel": "Alias address"
     },
     "quota": {
       "title": "Quota",
@@ -601,13 +602,13 @@
       "removeTooltip": "Remove forward",
       "removedFromDestinations": "User removed from forward destinations",
       "addedToDestinations": "User added to forward destinations",
-      "errorUpdating": "Error updating forward"
+      "errorUpdating": "Error updating forward",
+      "fieldLabel": "Destination address"
     },
     "mailboxes": {
       "title": "Mailboxes",
       "searchPlaceholder": "Search mailboxes...",
       "createTooltip": "Create mailbox",
-      "namePlaceholder": "New mailbox name (use . for nesting, e.g. INBOX.work)",
       "created": "Mailbox created successfully",
       "deleteTitle": "Delete Mailbox",
       "deleteConfirm": "Are you sure you want to delete mailbox \"{{mailboxName}}\" and all its children?",
@@ -622,7 +623,10 @@
       "creationDate": "Creation date:",
       "searchMessages": "Search messages",
       "reindexButton": "Reindex mailboxes",
-      "subscribeAll": "Subscribe all"
+      "subscribeAll": "Subscribe all",
+      "nameLabel": "Mailbox name",
+      "nameHelp": "Use a dot to nest it under another mailbox.",
+      "nameExample": "e.g. INBOX.work"
     },
     "vacation": {
       "title": "Vacation",
@@ -657,7 +661,8 @@
       "removeTooltip": "Remove delegated user",
       "selfDelegation": "You cannot delegate a user to themself",
       "unknownUserTitle": "Unknown user",
-      "unknownUserConfirm": "\"{{delegatedUser}}\" does not exist and will not be able to log in. Add it as delegated user anyway?"
+      "unknownUserConfirm": "\"{{delegatedUser}}\" does not exist and will not be able to log in. Add it as delegated user anyway?",
+      "fieldLabel": "Delegated user"
     },
     "identities": {
       "title": "JMAP Identities",
@@ -1148,8 +1153,8 @@
       "vacationOn": "Vacation: on",
       "vacationOff": "Vacation: off",
       "calendars": "Calendars: {{count}}",
-      "addressBooks": "Address books: {{count}}",
-      "bookingLinks": "Booking links: {{count}}"
+      "addressBooks": "Address Books: {{count}}",
+      "bookingLinks": "Booking Links: {{count}}"
     }
   },
   "mailboxCounts": {
@@ -1713,8 +1718,6 @@
     "emptyActionDisabled": "This repository is empty"
   },
   "mappings": {
-    "addAddress": "Add Address Mapping",
-    "addRegex": "Add Regex Mapping",
     "sourcePlaceholder": "Source (e.g. user@domain.com)",
     "destinationPlaceholder": "Destination (e.g. alias@domain.com)",
     "mappingSourcePlaceholder": "Mapping source (e.g. user@domain.com)",
@@ -1728,7 +1731,6 @@
     "errorCreatingAddress": "Error creating address mapping",
     "regexCreated": "Regex mapping created successfully",
     "errorCreatingRegex": "Error creating regex mapping",
-    "addDomain": "Add Domain Mapping",
     "domainSourcePlaceholder": "Source domain (e.g. sourceDomain.tld)",
     "domainDestinationPlaceholder": "Destination domain (e.g. destination.tld)",
     "domainHint": "Mail addressed to the source domain will be rewritten to the destination domain. No loop check is performed.",
@@ -1745,7 +1747,13 @@
     "removedPage": "{{total}} mapping(s) removed successfully",
     "errorRemovingPage": "{{failed}} mapping(s) could not be removed ({{removed}} removed)",
     "empty": "No mappings found.",
-    "subtitle": "View all recipients rewrite mappings (aliases, groups, domains, forwards)."
+    "subtitle": "View all recipients rewrite mappings (aliases, groups, domains, forwards).",
+    "addTitle": "Add a mapping",
+    "kinds": {
+      "address": "Address",
+      "regex": "Regular expression",
+      "domain": "Domain"
+    }
   },
   "mailingLists": {
     "subtitle": "Browse LDAP-backed mailing lists and manage their members and owners.",

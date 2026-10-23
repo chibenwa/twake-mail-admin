@@ -136,15 +136,18 @@ export default function UserForwards({ username }: Props) {
         submitDisabled={!newForward.trim()}
         onSubmit={handleAdd}
       >
-        <input
-          type="text"
-          autoFocus
-          value={newForward}
-          onChange={(e) => setNewForward(e.target.value)}
-          aria-label={t("users.forwards.addTooltip")}
-          placeholder={t("users.forwards.placeholder")}
-          className={FIELD_CLASS}
-        />
+        <div>
+          <label htmlFor="add-forward-destination" className="text-sm font-medium">{t("users.forwards.fieldLabel")}</label>
+          <input
+            type="text"
+            autoFocus
+            value={newForward}
+            onChange={(e) => setNewForward(e.target.value)}
+            id="add-forward-destination"
+            placeholder={t("users.forwards.placeholder")}
+            className={FIELD_CLASS}
+          />
+        </div>
       </FormDialog>
 
       {open && (

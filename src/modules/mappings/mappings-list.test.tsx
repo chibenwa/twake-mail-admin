@@ -25,15 +25,15 @@ import MappingsList from "./mappings-list";
 afterEach(cleanup);
 
 describe("mappings list: one toolbar line", () => {
-  it("puts the search and the add buttons on one line, adding in a modal", async () => {
+  it("puts the search and one Add button on one line, the kind chosen in the modal", async () => {
     render(<MemoryRouter><MappingsList /></MemoryRouter>);
     await screen.findByText("alice@example.com");
     const toolbar = screen.getByPlaceholderText("mappings.searchPlaceholder").closest("[data-list-toolbar]")!;
-    const add = screen.getByRole("button", { name: "mappings.addAddress" });
+    const add = screen.getByRole("button", { name: "mappings.addTitle" });
     expect(toolbar.contains(add)).toBe(true);
-    expect(toolbar.contains(screen.getByRole("button", { name: "mappings.addRegex" }))).toBe(true);
 
     fireEvent.click(add);
+    expect(Array.from((screen.getByLabelText("mappings.type") as HTMLSelectElement).options).map((o) => o.value)).toEqual(["address", "regex", "domain"]);
     fireEvent.change(screen.getByLabelText("mappings.source"), { target: { value: "a@example.com" } });
     fireEvent.change(screen.getByLabelText("mappings.destination"), { target: { value: "b@example.com" } });
     fireEvent.submit(screen.getByLabelText("mappings.source").closest("form")!);

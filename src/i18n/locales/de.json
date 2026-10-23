@@ -578,7 +578,8 @@
       "errorRemoving": "Fehler beim Entfernen des Alias",
       "empty": "Keine Aliasse konfiguriert.",
       "addTooltip": "Alias hinzufügen",
-      "removeTooltip": "Alias entfernen"
+      "removeTooltip": "Alias entfernen",
+      "fieldLabel": "Alias-Adresse"
     },
     "quota": {
       "title": "Kontingent",
@@ -601,13 +602,13 @@
       "removeTooltip": "Weiterleitung entfernen",
       "removedFromDestinations": "Benutzer aus den Weiterleitungszielen entfernt",
       "addedToDestinations": "Benutzer zu den Weiterleitungszielen hinzugefügt",
-      "errorUpdating": "Fehler beim Aktualisieren der Weiterleitung"
+      "errorUpdating": "Fehler beim Aktualisieren der Weiterleitung",
+      "fieldLabel": "Zieladresse"
     },
     "mailboxes": {
       "title": "Postfächer",
       "searchPlaceholder": "Postfächer suchen...",
       "createTooltip": "Postfach erstellen",
-      "namePlaceholder": "Neuer Postfachname (. für Unterordner, z. B. INBOX.work)",
       "created": "Postfach erfolgreich erstellt",
       "deleteTitle": "Postfach löschen",
       "deleteConfirm": "Möchten Sie das Postfach „{{mailboxName}}“ und alle untergeordneten Postfächer wirklich löschen?",
@@ -622,7 +623,10 @@
       "creationDate": "Erstellungsdatum:",
       "searchMessages": "Nachrichten suchen",
       "reindexButton": "Postfächer neu indizieren",
-      "subscribeAll": "Alle abonnieren"
+      "subscribeAll": "Alle abonnieren",
+      "nameLabel": "Name des Postfachs",
+      "nameHelp": "Mit einem Punkt wird es unter einem anderen Postfach verschachtelt.",
+      "nameExample": "z. B. INBOX.Arbeit"
     },
     "vacation": {
       "title": "Abwesenheit",
@@ -657,7 +661,8 @@
       "removeTooltip": "Delegierten Benutzer entfernen",
       "selfDelegation": "Ein Benutzer kann nicht an sich selbst delegiert werden",
       "unknownUserTitle": "Unbekannter Benutzer",
-      "unknownUserConfirm": "\"{{delegatedUser}}\" existiert nicht und kann sich nicht anmelden. Trotzdem als delegierten Benutzer hinzufügen?"
+      "unknownUserConfirm": "\"{{delegatedUser}}\" existiert nicht und kann sich nicht anmelden. Trotzdem als delegierten Benutzer hinzufügen?",
+      "fieldLabel": "Delegierter Benutzer"
     },
     "identities": {
       "title": "JMAP-Identitäten",
@@ -1713,8 +1718,6 @@
     "emptyActionDisabled": "Dieses Repository ist leer"
   },
   "mappings": {
-    "addAddress": "Adresszuordnung hinzufügen",
-    "addRegex": "Regex-Zuordnung hinzufügen",
     "sourcePlaceholder": "Quelle (z. B. user@domain.com)",
     "destinationPlaceholder": "Ziel (z. B. alias@domain.com)",
     "mappingSourcePlaceholder": "Zuordnungsquelle (z. B. user@domain.com)",
@@ -1728,7 +1731,6 @@
     "errorCreatingAddress": "Fehler beim Erstellen der Adresszuordnung",
     "regexCreated": "Regex-Zuordnung erfolgreich erstellt",
     "errorCreatingRegex": "Fehler beim Erstellen der Regex-Zuordnung",
-    "addDomain": "Domain-Zuordnung hinzufügen",
     "domainSourcePlaceholder": "Quell-Domain (z. B. sourceDomain.tld)",
     "domainDestinationPlaceholder": "Ziel-Domain (z. B. destination.tld)",
     "domainHint": "An die Quell-Domain adressierte E-Mails werden auf die Ziel-Domain umgeschrieben. Es erfolgt keine Schleifenprüfung.",
@@ -1745,7 +1747,13 @@
     "removedPage": "{{total}} Zuordnung(en) erfolgreich entfernt",
     "errorRemovingPage": "{{failed}} Zuordnung(en) konnten nicht entfernt werden ({{removed}} entfernt)",
     "empty": "Keine Zuordnungen gefunden.",
-    "subtitle": "Alle Umschreibungszuordnungen für Empfänger anzeigen (Aliasse, Gruppen, Domains, Weiterleitungen)."
+    "subtitle": "Alle Umschreibungszuordnungen für Empfänger anzeigen (Aliasse, Gruppen, Domains, Weiterleitungen).",
+    "addTitle": "Zuordnung hinzufügen",
+    "kinds": {
+      "address": "Adresse",
+      "regex": "Regulärer Ausdruck",
+      "domain": "Domäne"
+    }
   },
   "mailingLists": {
     "subtitle": "LDAP-basierte Mailinglisten durchsuchen und ihre Mitglieder und Eigentümer verwalten.",

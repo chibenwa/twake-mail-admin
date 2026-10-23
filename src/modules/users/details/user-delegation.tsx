@@ -120,15 +120,18 @@ export default function UserDelegation({ username }: Props) {
         onSubmit={handleAdd}
       >
         <div>
-          <input
-            type="text"
-            autoFocus
-            value={newUser}
-            onChange={(e) => setNewUser(e.target.value)}
-            aria-label={t("users.delegation.addTooltip")}
-            placeholder={t("users.delegation.placeholder")}
-            className={FIELD_CLASS}
-          />
+          <div>
+            <label htmlFor="add-delegated-user" className="text-sm font-medium">{t("users.delegation.fieldLabel")}</label>
+            <input
+              type="text"
+              autoFocus
+              value={newUser}
+              onChange={(e) => setNewUser(e.target.value)}
+              id="add-delegated-user"
+              placeholder={t("users.delegation.placeholder")}
+              className={FIELD_CLASS}
+            />
+          </div>
           {/* Reserved height: the status appearing does not resize the modal */}
           <p className="h-4 mt-1 text-xs">
             {isSelfDelegation && <span className="text-red-600">{t("users.delegation.selfDelegation")}</span>}

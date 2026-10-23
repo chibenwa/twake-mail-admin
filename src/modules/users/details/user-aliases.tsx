@@ -103,15 +103,18 @@ export default function UserAliases({ username }: Props) {
         submitDisabled={!newAlias.trim()}
         onSubmit={handleAdd}
       >
-        <input
-          type="text"
-          autoFocus
-          value={newAlias}
-          onChange={(e) => setNewAlias(e.target.value)}
-          aria-label={t("users.aliases.addTooltip")}
-          placeholder={t("users.aliases.placeholder")}
-          className={FIELD_CLASS}
-        />
+        <div>
+          <label htmlFor="add-alias-address" className="text-sm font-medium">{t("users.aliases.fieldLabel")}</label>
+          <input
+            type="text"
+            autoFocus
+            value={newAlias}
+            onChange={(e) => setNewAlias(e.target.value)}
+            id="add-alias-address"
+            placeholder={t("users.aliases.placeholder")}
+            className={FIELD_CLASS}
+          />
+        </div>
       </FormDialog>
 
       {open && (

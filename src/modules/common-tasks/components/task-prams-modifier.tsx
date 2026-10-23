@@ -138,7 +138,7 @@ const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
             value={(formData[param.key] as string) || EMPTY_OPTION}
             onValueChange={value => handleChange(param.key, value === EMPTY_OPTION ? "" : value)}
           >
-            <SelectTrigger id={fieldId(param.key)} aria-describedby={describedBy} className="w-full sm:w-[250px]">
+            <SelectTrigger id={fieldId(param.key)} aria-describedby={describedBy} className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -158,7 +158,7 @@ const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
               aria-describedby={describedBy}
               type="number"
               min="0"
-              className="w-[110px]"
+              className="flex-1 min-w-20"
               placeholder={t("commonTasks.params.noLimit")}
               value={durationParts[param.key]?.amount ?? ""}
               onChange={e => handleDurationChange(param.key, e.target.value, durationParts[param.key]?.unit ?? "d")}
@@ -167,7 +167,7 @@ const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
               value={durationParts[param.key]?.unit ?? "d"}
               onValueChange={unit => handleDurationChange(param.key, durationParts[param.key]?.amount ?? "", unit)}
             >
-              <SelectTrigger className="w-[130px]" aria-label={t("commonTasks.durationUnit", { key: label(param) })}>
+              <SelectTrigger className="w-32 shrink-0" aria-label={t("commonTasks.durationUnit", { key: label(param) })}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -194,7 +194,7 @@ const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
   };
 
   const renderRows = (rows: TaskParam[]) => (
-    <div className="grid grid-cols-1 sm:grid-cols-[minmax(11rem,auto)_1fr] gap-x-3 gap-y-1 sm:gap-y-3 items-start">
+    <div className="grid grid-cols-1 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)] gap-x-3 gap-y-1 sm:gap-y-3 items-start">
       {rows.map(param => (
         <div key={param.key} className="contents">
           <div className="pt-0 sm:pt-2 mt-2 sm:mt-0">
@@ -217,7 +217,8 @@ const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
   const advanced = params?.filter(param => param.advanced) ?? [];
 
   return (
-    <div className="space-y-3">
+    // Marks the dialog that holds it, which then widens to fit the label and field columns
+    <div data-task-params className="space-y-3">
       {basic.length > 0 && renderRows(basic)}
       {advanced.length > 0 && (
         <details className="text-sm">

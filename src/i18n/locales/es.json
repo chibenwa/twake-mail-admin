@@ -578,7 +578,8 @@
       "errorRemoving": "Error al quitar el alias",
       "empty": "No hay alias configurados.",
       "addTooltip": "Añadir alias",
-      "removeTooltip": "Quitar alias"
+      "removeTooltip": "Quitar alias",
+      "fieldLabel": "Dirección del alias"
     },
     "quota": {
       "title": "Cuota",
@@ -601,13 +602,13 @@
       "removeTooltip": "Quitar reenvío",
       "removedFromDestinations": "Usuario quitado de los destinos de reenvío",
       "addedToDestinations": "Usuario añadido a los destinos de reenvío",
-      "errorUpdating": "Error al actualizar el reenvío"
+      "errorUpdating": "Error al actualizar el reenvío",
+      "fieldLabel": "Dirección de destino"
     },
     "mailboxes": {
       "title": "Buzones",
       "searchPlaceholder": "Buscar buzones...",
       "createTooltip": "Crear buzón",
-      "namePlaceholder": "Nombre del nuevo buzón (use . para anidar, p. ej. INBOX.work)",
       "created": "Buzón creado correctamente",
       "deleteTitle": "Eliminar buzón",
       "deleteConfirm": "¿Seguro que desea eliminar el buzón «{{mailboxName}}» y todos sus buzones secundarios?",
@@ -622,7 +623,10 @@
       "creationDate": "Fecha de creación:",
       "searchMessages": "Buscar mensajes",
       "reindexButton": "Reindexar los buzones",
-      "subscribeAll": "Suscribirse a todos"
+      "subscribeAll": "Suscribirse a todos",
+      "nameLabel": "Nombre del buzón",
+      "nameHelp": "Use un punto para anidarlo en otro buzón.",
+      "nameExample": "p. ej. INBOX.trabajo"
     },
     "vacation": {
       "title": "Ausencia",
@@ -657,7 +661,8 @@
       "removeTooltip": "Quitar usuario delegado",
       "selfDelegation": "No se puede delegar un usuario a sí mismo",
       "unknownUserTitle": "Usuario desconocido",
-      "unknownUserConfirm": "\"{{delegatedUser}}\" no existe y no podrá iniciar sesión. ¿Añadirlo de todos modos como usuario delegado?"
+      "unknownUserConfirm": "\"{{delegatedUser}}\" no existe y no podrá iniciar sesión. ¿Añadirlo de todos modos como usuario delegado?",
+      "fieldLabel": "Usuario delegado"
     },
     "identities": {
       "title": "Identidades JMAP",
@@ -1713,8 +1718,6 @@
     "emptyActionDisabled": "Este repositorio está vacío"
   },
   "mappings": {
-    "addAddress": "Añadir asignación de dirección",
-    "addRegex": "Añadir asignación por expresión regular",
     "sourcePlaceholder": "Origen (p. ej. user@domain.com)",
     "destinationPlaceholder": "Destino (p. ej. alias@domain.com)",
     "mappingSourcePlaceholder": "Origen de la asignación (p. ej. user@domain.com)",
@@ -1728,7 +1731,6 @@
     "errorCreatingAddress": "Error al crear la asignación de dirección",
     "regexCreated": "Asignación por expresión regular creada correctamente",
     "errorCreatingRegex": "Error al crear la asignación por expresión regular",
-    "addDomain": "Añadir asignación de dominio",
     "domainSourcePlaceholder": "Dominio de origen (p. ej. sourceDomain.tld)",
     "domainDestinationPlaceholder": "Dominio de destino (p. ej. destination.tld)",
     "domainHint": "Los correos dirigidos al dominio de origen se reescribirán al dominio de destino. No se realiza ninguna comprobación de bucles.",
@@ -1745,7 +1747,13 @@
     "removedPage": "{{total}} asignación(es) quitada(s) correctamente",
     "errorRemovingPage": "No se pudieron quitar {{failed}} asignación(es) ({{removed}} quitada(s))",
     "empty": "No se han encontrado asignaciones.",
-    "subtitle": "Ver todas las asignaciones de reescritura de destinatarios (alias, grupos, dominios, reenvíos)."
+    "subtitle": "Ver todas las asignaciones de reescritura de destinatarios (alias, grupos, dominios, reenvíos).",
+    "addTitle": "Añadir una asignación",
+    "kinds": {
+      "address": "Dirección",
+      "regex": "Expresión regular",
+      "domain": "Dominio"
+    }
   },
   "mailingLists": {
     "subtitle": "Explore las listas de distribución basadas en LDAP y gestione sus miembros y propietarios.",

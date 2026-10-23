@@ -577,7 +577,8 @@
       "errorRemoving": "Lỗi khi xóa bí danh",
       "empty": "Chưa cấu hình bí danh nào.",
       "addTooltip": "Thêm bí danh",
-      "removeTooltip": "Xóa bí danh"
+      "removeTooltip": "Xóa bí danh",
+      "fieldLabel": "Địa chỉ bí danh"
     },
     "quota": {
       "title": "Hạn ngạch",
@@ -600,13 +601,13 @@
       "removeTooltip": "Xóa chuyển tiếp",
       "removedFromDestinations": "Đã xóa người dùng khỏi đích chuyển tiếp",
       "addedToDestinations": "Đã thêm người dùng vào đích chuyển tiếp",
-      "errorUpdating": "Lỗi khi cập nhật chuyển tiếp"
+      "errorUpdating": "Lỗi khi cập nhật chuyển tiếp",
+      "fieldLabel": "Địa chỉ đích"
     },
     "mailboxes": {
       "title": "Hộp thư",
       "searchPlaceholder": "Tìm hộp thư...",
       "createTooltip": "Tạo hộp thư",
-      "namePlaceholder": "Tên hộp thư mới (dùng . để lồng cấp, vd INBOX.work)",
       "created": "Đã tạo hộp thư thành công",
       "deleteTitle": "Xóa hộp thư",
       "deleteConfirm": "Bạn có chắc muốn xóa hộp thư \"{{mailboxName}}\" và tất cả hộp thư con của nó?",
@@ -621,7 +622,10 @@
       "creationDate": "Ngày tạo:",
       "searchMessages": "Tìm thư",
       "reindexButton": "Lập chỉ mục lại hộp thư",
-      "subscribeAll": "Đăng ký tất cả"
+      "subscribeAll": "Đăng ký tất cả",
+      "nameLabel": "Tên hộp thư",
+      "nameHelp": "Dùng dấu chấm để lồng vào hộp thư khác.",
+      "nameExample": "ví dụ INBOX.congviec"
     },
     "vacation": {
       "title": "Vắng mặt",
@@ -656,7 +660,8 @@
       "removeTooltip": "Xóa người dùng được ủy quyền",
       "selfDelegation": "Không thể ủy quyền người dùng cho chính họ",
       "unknownUserTitle": "Người dùng không xác định",
-      "unknownUserConfirm": "\"{{delegatedUser}}\" không tồn tại và sẽ không thể đăng nhập. Vẫn thêm làm người dùng được ủy quyền?"
+      "unknownUserConfirm": "\"{{delegatedUser}}\" không tồn tại và sẽ không thể đăng nhập. Vẫn thêm làm người dùng được ủy quyền?",
+      "fieldLabel": "Người dùng được ủy quyền"
     },
     "identities": {
       "title": "Danh tính JMAP",
@@ -1711,8 +1716,6 @@
     "emptyActionDisabled": "Kho này trống"
   },
   "mappings": {
-    "addAddress": "Thêm ánh xạ địa chỉ",
-    "addRegex": "Thêm ánh xạ biểu thức chính quy",
     "sourcePlaceholder": "Nguồn (vd. user@domain.com)",
     "destinationPlaceholder": "Đích (vd. alias@domain.com)",
     "mappingSourcePlaceholder": "Nguồn ánh xạ (vd. user@domain.com)",
@@ -1726,7 +1729,6 @@
     "errorCreatingAddress": "Lỗi khi tạo ánh xạ địa chỉ",
     "regexCreated": "Đã tạo ánh xạ biểu thức chính quy thành công",
     "errorCreatingRegex": "Lỗi khi tạo ánh xạ biểu thức chính quy",
-    "addDomain": "Thêm ánh xạ tên miền",
     "domainSourcePlaceholder": "Tên miền nguồn (vd. sourceDomain.tld)",
     "domainDestinationPlaceholder": "Tên miền đích (vd. destination.tld)",
     "domainHint": "Thư gửi đến tên miền nguồn sẽ được viết lại thành tên miền đích. Không kiểm tra vòng lặp.",
@@ -1743,7 +1745,13 @@
     "removedPage": "Đã xóa {{total}} ánh xạ thành công",
     "errorRemovingPage": "Không thể xóa {{failed}} ánh xạ (đã xóa {{removed}})",
     "empty": "Không tìm thấy ánh xạ.",
-    "subtitle": "Xem tất cả ánh xạ viết lại người nhận (bí danh, nhóm, tên miền, chuyển tiếp)."
+    "subtitle": "Xem tất cả ánh xạ viết lại người nhận (bí danh, nhóm, tên miền, chuyển tiếp).",
+    "addTitle": "Thêm ánh xạ",
+    "kinds": {
+      "address": "Địa chỉ",
+      "regex": "Biểu thức chính quy",
+      "domain": "Miền"
+    }
   },
   "mailingLists": {
     "subtitle": "Duyệt và quản lý các danh sách gửi thư LDAP cùng thành viên và chủ sở hữu.",

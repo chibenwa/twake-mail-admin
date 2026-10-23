@@ -172,15 +172,20 @@ export default function UserMailboxes({ username }: Props) {
         submitDisabled={!newMailbox.trim()}
         onSubmit={handleCreate}
       >
-        <input
-          type="text"
-          autoFocus
-          value={newMailbox}
-          onChange={(e) => setNewMailbox(e.target.value)}
-          aria-label={t("users.mailboxes.createTooltip")}
-          placeholder={t("users.mailboxes.namePlaceholder")}
-          className={FIELD_CLASS}
-        />
+        <div>
+          <label htmlFor="add-mailbox-name" className="text-sm font-medium">{t("users.mailboxes.nameLabel")}</label>
+          <input
+            type="text"
+            autoFocus
+            value={newMailbox}
+            onChange={(e) => setNewMailbox(e.target.value)}
+            id="add-mailbox-name"
+            aria-describedby="add-mailbox-name-help"
+            placeholder={t("users.mailboxes.nameExample")}
+            className={FIELD_CLASS}
+          />
+          <p id="add-mailbox-name-help" className="text-xs text-muted-foreground mt-1">{t("users.mailboxes.nameHelp")}</p>
+        </div>
       </FormDialog>
 
       {open && (

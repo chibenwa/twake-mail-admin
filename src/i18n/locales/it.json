@@ -578,7 +578,8 @@
       "errorRemoving": "Errore durante la rimozione dell'alias",
       "empty": "Nessun alias configurato.",
       "addTooltip": "Aggiungi alias",
-      "removeTooltip": "Rimuovi alias"
+      "removeTooltip": "Rimuovi alias",
+      "fieldLabel": "Indirizzo dell'alias"
     },
     "quota": {
       "title": "Quota",
@@ -601,13 +602,13 @@
       "removeTooltip": "Rimuovi inoltro",
       "removedFromDestinations": "Utente rimosso dalle destinazioni di inoltro",
       "addedToDestinations": "Utente aggiunto alle destinazioni di inoltro",
-      "errorUpdating": "Errore durante l'aggiornamento dell'inoltro"
+      "errorUpdating": "Errore durante l'aggiornamento dell'inoltro",
+      "fieldLabel": "Indirizzo di destinazione"
     },
     "mailboxes": {
       "title": "Caselle di posta",
       "searchPlaceholder": "Cerca caselle di posta...",
       "createTooltip": "Crea casella di posta",
-      "namePlaceholder": "Nome della nuova casella (usa . per annidare, ad es. INBOX.work)",
       "created": "Casella di posta creata correttamente",
       "deleteTitle": "Elimina casella di posta",
       "deleteConfirm": "Vuoi davvero eliminare la casella «{{mailboxName}}» e tutte le sue sottocaselle?",
@@ -622,7 +623,10 @@
       "creationDate": "Data di creazione:",
       "searchMessages": "Cerca messaggi",
       "reindexButton": "Reindicizza le caselle di posta",
-      "subscribeAll": "Iscriviti a tutte"
+      "subscribeAll": "Iscriviti a tutte",
+      "nameLabel": "Nome della casella",
+      "nameHelp": "Usa un punto per annidarla in un'altra casella.",
+      "nameExample": "es. INBOX.lavoro"
     },
     "vacation": {
       "title": "Assenza",
@@ -657,7 +661,8 @@
       "removeTooltip": "Rimuovi utente delegato",
       "selfDelegation": "Non è possibile delegare un utente a sé stesso",
       "unknownUserTitle": "Utente sconosciuto",
-      "unknownUserConfirm": "\"{{delegatedUser}}\" non esiste e non potrà accedere. Aggiungerlo comunque come utente delegato?"
+      "unknownUserConfirm": "\"{{delegatedUser}}\" non esiste e non potrà accedere. Aggiungerlo comunque come utente delegato?",
+      "fieldLabel": "Utente delegato"
     },
     "identities": {
       "title": "Identità JMAP",
@@ -1141,7 +1146,7 @@
     "summary": {
       "quota": "Quota: {{used}} / {{limit}} ({{percent}})",
       "quotaUnlimited": "Quota: {{used}}, illimitata",
-      "mailboxes": "Caselle: {{count}}",
+      "mailboxes": "Caselle di posta: {{count}}",
       "aliases": "Alias: {{count}}",
       "forwards": "Inoltri: {{count}}",
       "forwardsTo": "Inoltra a {{address}}",
@@ -1713,8 +1718,6 @@
     "emptyActionDisabled": "Questo repository è vuoto"
   },
   "mappings": {
-    "addAddress": "Aggiungi mappatura di indirizzo",
-    "addRegex": "Aggiungi mappatura regex",
     "sourcePlaceholder": "Origine (ad es. user@domain.com)",
     "destinationPlaceholder": "Destinazione (ad es. alias@domain.com)",
     "mappingSourcePlaceholder": "Origine della mappatura (ad es. user@domain.com)",
@@ -1728,7 +1731,6 @@
     "errorCreatingAddress": "Errore durante la creazione della mappatura di indirizzo",
     "regexCreated": "Mappatura regex creata correttamente",
     "errorCreatingRegex": "Errore durante la creazione della mappatura regex",
-    "addDomain": "Aggiungi mappatura di dominio",
     "domainSourcePlaceholder": "Dominio di origine (ad es. sourceDomain.tld)",
     "domainDestinationPlaceholder": "Dominio di destinazione (ad es. destination.tld)",
     "domainHint": "Le email indirizzate al dominio di origine verranno riscritte verso il dominio di destinazione. Non viene effettuato alcun controllo dei cicli.",
@@ -1745,7 +1747,13 @@
     "removedPage": "{{total}} mappatura/e rimossa/e correttamente",
     "errorRemovingPage": "Impossibile rimuovere {{failed}} mappatura/e ({{removed}} rimossa/e)",
     "empty": "Nessuna mappatura trovata.",
-    "subtitle": "Visualizza tutte le mappature di riscrittura dei destinatari (alias, gruppi, domini, inoltri)."
+    "subtitle": "Visualizza tutte le mappature di riscrittura dei destinatari (alias, gruppi, domini, inoltri).",
+    "addTitle": "Aggiungi una mappatura",
+    "kinds": {
+      "address": "Indirizzo",
+      "regex": "Espressione regolare",
+      "domain": "Dominio"
+    }
   },
   "mailingLists": {
     "subtitle": "Sfoglia le liste di distribuzione basate su LDAP e gestisci i loro membri e proprietari.",

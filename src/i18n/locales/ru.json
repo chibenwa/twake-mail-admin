@@ -580,7 +580,8 @@
       "errorRemoving": "Ошибка при удалении псевдонима",
       "empty": "Псевдонимы не настроены.",
       "addTooltip": "Добавить псевдоним",
-      "removeTooltip": "Удалить псевдоним"
+      "removeTooltip": "Удалить псевдоним",
+      "fieldLabel": "Адрес псевдонима"
     },
     "quota": {
       "title": "Квота",
@@ -603,13 +604,13 @@
       "removeTooltip": "Удалить пересылку",
       "removedFromDestinations": "Пользователь удалён из адресатов пересылки",
       "addedToDestinations": "Пользователь добавлен в адресаты пересылки",
-      "errorUpdating": "Ошибка при обновлении пересылки"
+      "errorUpdating": "Ошибка при обновлении пересылки",
+      "fieldLabel": "Адрес назначения"
     },
     "mailboxes": {
       "title": "Почтовые ящики",
       "searchPlaceholder": "Поиск почтовых ящиков...",
       "createTooltip": "Создать почтовый ящик",
-      "namePlaceholder": "Имя нового почтового ящика (используйте . для вложенности, напр. INBOX.work)",
       "created": "Почтовый ящик успешно создан",
       "deleteTitle": "Удалить почтовый ящик",
       "deleteConfirm": "Вы уверены, что хотите удалить почтовый ящик «{{mailboxName}}» и все его дочерние ящики?",
@@ -624,7 +625,10 @@
       "creationDate": "Дата создания:",
       "searchMessages": "Поиск сообщений",
       "reindexButton": "Переиндексировать почтовые ящики",
-      "subscribeAll": "Подписаться на все"
+      "subscribeAll": "Подписаться на все",
+      "nameLabel": "Имя ящика",
+      "nameHelp": "Используйте точку, чтобы вложить ящик в другой.",
+      "nameExample": "например, INBOX.работа"
     },
     "vacation": {
       "title": "Автоответчик",
@@ -659,7 +663,8 @@
       "removeTooltip": "Удалить делегированного пользователя",
       "selfDelegation": "Нельзя делегировать пользователя самому себе",
       "unknownUserTitle": "Неизвестный пользователь",
-      "unknownUserConfirm": "«{{delegatedUser}}» не существует и не сможет войти. Всё равно добавить как делегированного пользователя?"
+      "unknownUserConfirm": "«{{delegatedUser}}» не существует и не сможет войти. Всё равно добавить как делегированного пользователя?",
+      "fieldLabel": "Делегированный пользователь"
     },
     "identities": {
       "title": "Идентичности JMAP",
@@ -1145,15 +1150,15 @@
     "summary": {
       "quota": "Квота: {{used}} / {{limit}} ({{percent}})",
       "quotaUnlimited": "Квота: {{used}}, без ограничений",
-      "mailboxes": "Ящики: {{count}}",
+      "mailboxes": "Почтовые ящики: {{count}}",
       "aliases": "Псевдонимы: {{count}}",
       "forwards": "Пересылки: {{count}}",
       "forwardsTo": "Пересылает на {{address}}",
-      "vacationOn": "Автоответ: включён",
-      "vacationOff": "Автоответ: выключен",
+      "vacationOn": "Автоответчик: включён",
+      "vacationOff": "Автоответчик: выключен",
       "calendars": "Календари: {{count}}",
       "addressBooks": "Адресные книги: {{count}}",
-      "bookingLinks": "Ссылки для бронирования: {{count}}"
+      "bookingLinks": "Ссылки для записи: {{count}}"
     }
   },
   "mailboxCounts": {
@@ -1717,8 +1722,6 @@
     "emptyActionDisabled": "Это хранилище пусто"
   },
   "mappings": {
-    "addAddress": "Добавить адресное сопоставление",
-    "addRegex": "Добавить регулярное сопоставление",
     "sourcePlaceholder": "Источник (напр. user@domain.com)",
     "destinationPlaceholder": "Назначение (напр. alias@domain.com)",
     "mappingSourcePlaceholder": "Источник сопоставления (напр. user@domain.com)",
@@ -1732,7 +1735,6 @@
     "errorCreatingAddress": "Ошибка при создании адресного сопоставления",
     "regexCreated": "Регулярное сопоставление успешно создано",
     "errorCreatingRegex": "Ошибка при создании регулярного сопоставления",
-    "addDomain": "Добавить сопоставление домена",
     "domainSourcePlaceholder": "Исходный домен (напр. sourceDomain.tld)",
     "domainDestinationPlaceholder": "Домен назначения (напр. destination.tld)",
     "domainHint": "Почта, адресованная исходному домену, будет перенаправлена на домен назначения. Проверка на циклы не выполняется.",
@@ -1749,7 +1751,13 @@
     "removedPage": "Удалено сопоставлений: {{total}}",
     "errorRemovingPage": "Не удалось удалить сопоставлений: {{failed}} (удалено: {{removed}})",
     "empty": "Сопоставления не найдены.",
-    "subtitle": "Просмотр всех сопоставлений перезаписи получателей (псевдонимы, группы, домены, пересылки)."
+    "subtitle": "Просмотр всех сопоставлений перезаписи получателей (псевдонимы, группы, домены, пересылки).",
+    "addTitle": "Добавить сопоставление",
+    "kinds": {
+      "address": "Адрес",
+      "regex": "Регулярное выражение",
+      "domain": "Домен"
+    }
   },
   "mailingLists": {
     "subtitle": "Просмотр списков рассылки LDAP и управление их участниками и владельцами.",

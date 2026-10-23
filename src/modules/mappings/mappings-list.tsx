@@ -51,7 +51,7 @@ export default function MappingsList() {
 
 
   const [deletingPage, setDeletingPage] = useState(false);
-  const [creatingKind, setCreatingKind] = useState<MappingKind | null>(null);
+  const [creating, setCreating] = useState(false);
   const { toast } = useToast();
   const confirm = useConfirm();
 
@@ -192,25 +192,20 @@ export default function MappingsList() {
     setPage(newPage);
   };
 
+  // One "Add" for the three kinds of mapping: the kind is chosen in the modal
+  const creatableKinds: MappingKind[] = [
+    ...(canAddAddress ? ["address" as const] : []),
+    ...(canAddRegex ? ["regex" as const] : []),
+    ...(canAddDomain ? ["domain" as const] : []),
+  ];
+
   return (
     <div>
       <ListToolbar search={search} onSearch={(value) => { setSearch(value); setPage(1); }} placeholder={t("mappings.searchPlaceholder")}>
-        {canAddAddress && (
-          <Button variant="outline" onClick={() => setCreatingKind("address")}>
+        {creatableKinds.length > 0 && (
+          <Button onClick={() => setCreating(true)}>
             <Plus className="w-4 h-4" aria-hidden="true" />
-            {t("mappings.addAddress")}
-          </Button>
-        )}
-        {canAddRegex && (
-          <Button variant="outline" onClick={() => setCreatingKind("regex")}>
-            <Plus className="w-4 h-4" aria-hidden="true" />
-            {t("mappings.addRegex")}
-          </Button>
-        )}
-        {canAddDomain && (
-          <Button variant="outline" onClick={() => setCreatingKind("domain")}>
-            <Plus className="w-4 h-4" aria-hidden="true" />
-            {t("mappings.addDomain")}
+            {t("mappings.addTitle")}
           </Button>
         )}
         {deletablePageMappings.length > 0 && (
@@ -227,7 +222,7 @@ export default function MappingsList() {
           </Button>
         )}
       </ListToolbar>
-      <CreateMappingDialog kind={creatingKind} onClose={() => setCreatingKind(null)} onCreated={refresh} />
+      <CreateMappingDialog open={creating} kinds={creatableKinds} onClose={() => setCreating(false)} onCreated={refresh} />
 
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">

@@ -578,7 +578,8 @@
       "errorRemoving": "Erreur lors de la suppression de l'alias",
       "empty": "Aucun alias configuré.",
       "addTooltip": "Ajouter un alias",
-      "removeTooltip": "Supprimer l'alias"
+      "removeTooltip": "Supprimer l'alias",
+      "fieldLabel": "Adresse de l'alias"
     },
     "quota": {
       "title": "Quota",
@@ -601,13 +602,13 @@
       "removeTooltip": "Supprimer la redirection",
       "removedFromDestinations": "Utilisateur retiré des destinations",
       "addedToDestinations": "Utilisateur ajouté aux destinations",
-      "errorUpdating": "Erreur lors de la mise à jour de la redirection"
+      "errorUpdating": "Erreur lors de la mise à jour de la redirection",
+      "fieldLabel": "Adresse de destination"
     },
     "mailboxes": {
       "title": "Boîtes aux lettres",
       "searchPlaceholder": "Rechercher des boîtes…",
       "createTooltip": "Créer une boîte",
-      "namePlaceholder": "Nom de la boîte (utiliser . pour l'imbrication, ex. INBOX.travail)",
       "created": "Boîte créée avec succès",
       "deleteTitle": "Supprimer la boîte",
       "deleteConfirm": "Supprimer la boîte « {{mailboxName}} » et tous ses enfants ?",
@@ -622,7 +623,10 @@
       "creationDate": "Date de création :",
       "searchMessages": "Rechercher des messages",
       "reindexButton": "Réindexer les boîtes",
-      "subscribeAll": "S'abonner à toutes"
+      "subscribeAll": "S'abonner à toutes",
+      "nameLabel": "Nom de la boîte",
+      "nameHelp": "Utilisez un point pour l'imbriquer dans une autre boîte.",
+      "nameExample": "ex. INBOX.travail"
     },
     "vacation": {
       "title": "Absence",
@@ -657,7 +661,8 @@
       "removeTooltip": "Retirer l'utilisateur délégué",
       "selfDelegation": "Un utilisateur ne peut pas être délégué à lui-même",
       "unknownUserTitle": "Utilisateur inconnu",
-      "unknownUserConfirm": "« {{delegatedUser}} » n'existe pas et ne pourra pas se connecter. L'ajouter quand même comme utilisateur délégué ?"
+      "unknownUserConfirm": "« {{delegatedUser}} » n'existe pas et ne pourra pas se connecter. L'ajouter quand même comme utilisateur délégué ?",
+      "fieldLabel": "Utilisateur délégué"
     },
     "identities": {
       "title": "Identités JMAP",
@@ -1141,10 +1146,10 @@
     "summary": {
       "quota": "Quota : {{used}} / {{limit}} ({{percent}})",
       "quotaUnlimited": "Quota : {{used}}, illimité",
-      "mailboxes": "Boîtes : {{count}}",
+      "mailboxes": "Boîtes aux lettres : {{count}}",
       "aliases": "Alias : {{count}}",
-      "forwards": "Transferts : {{count}}",
-      "forwardsTo": "Transfère vers {{address}}",
+      "forwards": "Redirections : {{count}}",
+      "forwardsTo": "Redirige vers {{address}}",
       "vacationOn": "Absence : activée",
       "vacationOff": "Absence : désactivée",
       "calendars": "Calendriers : {{count}}",
@@ -1713,8 +1718,6 @@
     "emptyActionDisabled": "Ce dépôt est vide"
   },
   "mappings": {
-    "addAddress": "Ajouter une réécriture d'adresse",
-    "addRegex": "Ajouter une réécriture d'adresse par regex",
     "sourcePlaceholder": "Source (ex. utilisateur@domaine.com)",
     "destinationPlaceholder": "Destination (ex. alias@domaine.com)",
     "mappingSourcePlaceholder": "Source (ex. utilisateur@domaine.com)",
@@ -1728,7 +1731,6 @@
     "errorCreatingAddress": "Erreur lors de la création de la réécriture d'adresse",
     "regexCreated": "Réécriture d'adresse par regex créée",
     "errorCreatingRegex": "Erreur lors de la création de la réécriture d'adresse par regex",
-    "addDomain": "Ajouter une réécriture de domaine",
     "domainSourcePlaceholder": "Domaine source (ex. domaineSource.tld)",
     "domainDestinationPlaceholder": "Domaine de destination (ex. destination.tld)",
     "domainHint": "Le courrier adressé au domaine source sera réécrit vers le domaine de destination. Aucune vérification de boucle n'est effectuée.",
@@ -1745,7 +1747,13 @@
     "removedPage": "{{total}} réécriture(s) d'adresse supprimée(s)",
     "errorRemovingPage": "{{failed}} réécriture(s) d'adresse n'ont pas pu être supprimées ({{removed}} supprimée(s))",
     "empty": "Aucune réécriture d'adresse trouvée.",
-    "subtitle": "Voir toutes les réécritures d'adresses des destinataires (alias, groupes, domaines, redirections)."
+    "subtitle": "Voir toutes les réécritures d'adresses des destinataires (alias, groupes, domaines, redirections).",
+    "addTitle": "Ajouter une réécriture d'adresse",
+    "kinds": {
+      "address": "Adresse",
+      "regex": "Expression régulière",
+      "domain": "Domaine"
+    }
   },
   "mailingLists": {
     "subtitle": "Parcourez les listes de diffusion LDAP et gérez leurs membres et propriétaires.",

@@ -578,7 +578,8 @@
       "errorRemoving": "Өөр нэр устгахад алдаа гарлаа",
       "empty": "Өөр нэр тохируулаагүй байна.",
       "addTooltip": "Өөр нэр нэмэх",
-      "removeTooltip": "Өөр нэр устгах"
+      "removeTooltip": "Өөр нэр устгах",
+      "fieldLabel": "Алиас хаяг"
     },
     "quota": {
       "title": "Квота",
@@ -601,13 +602,13 @@
       "removeTooltip": "Дамжуулалт устгах",
       "removedFromDestinations": "Хэрэглэгч дамжуулах хаягуудаас хасагдлаа",
       "addedToDestinations": "Хэрэглэгч дамжуулах хаягуудад нэмэгдлээ",
-      "errorUpdating": "Дамжуулалт шинэчлэхэд алдаа гарлаа"
+      "errorUpdating": "Дамжуулалт шинэчлэхэд алдаа гарлаа",
+      "fieldLabel": "Хүлээн авах хаяг"
     },
     "mailboxes": {
       "title": "Шуудангийн хайрцгууд",
       "searchPlaceholder": "Шуудангийн хайрцаг хайх...",
       "createTooltip": "Шуудангийн хайрцаг үүсгэх",
-      "namePlaceholder": "Шинэ шуудангийн хайрцгийн нэр (үүрлэхдээ . ашиглана, жнь INBOX.work)",
       "created": "Шуудангийн хайрцаг амжилттай үүслээ",
       "deleteTitle": "Шуудангийн хайрцаг устгах",
       "deleteConfirm": "«{{mailboxName}}» шуудангийн хайрцаг болон түүний бүх дэд хайрцгийг устгахдаа итгэлтэй байна уу?",
@@ -622,7 +623,10 @@
       "creationDate": "Үүсгэсэн огноо:",
       "searchMessages": "Захидал хайх",
       "reindexButton": "Шуудангийн хайрцгуудыг дахин индексжүүлэх",
-      "subscribeAll": "Бүгдэд бүртгүүлэх"
+      "subscribeAll": "Бүгдэд бүртгүүлэх",
+      "nameLabel": "Хайрцгийн нэр",
+      "nameHelp": "Өөр хайрцаг дотор байрлуулахын тулд цэг ашиглана уу.",
+      "nameExample": "ж. INBOX.ажил"
     },
     "vacation": {
       "title": "Амралт",
@@ -657,7 +661,8 @@
       "removeTooltip": "Эрх шилжүүлсэн хэрэглэгч устгах",
       "selfDelegation": "Хэрэглэгчийг өөрт нь төлөөлүүлэх боломжгүй",
       "unknownUserTitle": "Үл мэдэгдэх хэрэглэгч",
-      "unknownUserConfirm": "\"{{delegatedUser}}\" байхгүй тул нэвтэрч чадахгүй. Гэсэн ч төлөөлөгч хэрэглэгчээр нэмэх үү?"
+      "unknownUserConfirm": "\"{{delegatedUser}}\" байхгүй тул нэвтэрч чадахгүй. Гэсэн ч төлөөлөгч хэрэглэгчээр нэмэх үү?",
+      "fieldLabel": "Төлөөлөгдсөн хэрэглэгч"
     },
     "identities": {
       "title": "JMAP таних тэмдэгүүд",
@@ -1141,15 +1146,15 @@
     "summary": {
       "quota": "Квот: {{used}} / {{limit}} ({{percent}})",
       "quotaUnlimited": "Квот: {{used}}, хязгааргүй",
-      "mailboxes": "Хайрцаг: {{count}}",
-      "aliases": "Алиас: {{count}}",
+      "mailboxes": "Шуудангийн хайрцгууд: {{count}}",
+      "aliases": "Өөр нэрс: {{count}}",
       "forwards": "Дамжуулалт: {{count}}",
       "forwardsTo": "{{address}} руу дамжуулна",
       "vacationOn": "Амралт: асаалттай",
       "vacationOff": "Амралт: унтраалттай",
-      "calendars": "Хуанли: {{count}}",
-      "addressBooks": "Хаягийн дэвтэр: {{count}}",
-      "bookingLinks": "Захиалгын холбоос: {{count}}"
+      "calendars": "Календарууд: {{count}}",
+      "addressBooks": "Хаягийн дэвтрүүд: {{count}}",
+      "bookingLinks": "Захиалгын холбоосууд: {{count}}"
     }
   },
   "mailboxCounts": {
@@ -1713,8 +1718,6 @@
     "emptyActionDisabled": "Энэ агуулах хоосон байна"
   },
   "mappings": {
-    "addAddress": "Хаягийн зураглал нэмэх",
-    "addRegex": "Regex зураглал нэмэх",
     "sourcePlaceholder": "Эх (жнь user@domain.com)",
     "destinationPlaceholder": "Хүрэх газар (жнь alias@domain.com)",
     "mappingSourcePlaceholder": "Зураглалын эх (жнь user@domain.com)",
@@ -1728,7 +1731,6 @@
     "errorCreatingAddress": "Хаягийн зураглал үүсгэхэд алдаа гарлаа",
     "regexCreated": "Regex зураглал амжилттай үүслээ",
     "errorCreatingRegex": "Regex зураглал үүсгэхэд алдаа гарлаа",
-    "addDomain": "Домэйн зураглал нэмэх",
     "domainSourcePlaceholder": "Эх домэйн (жнь sourceDomain.tld)",
     "domainDestinationPlaceholder": "Зорилтот домэйн (жнь destination.tld)",
     "domainHint": "Эх домэйн руу илгээсэн шуудан зорилтот домэйн руу дахин бичигдэнэ. Давталтын шалгалт хийгдэхгүй.",
@@ -1745,7 +1747,13 @@
     "removedPage": "{{total}} зураглал амжилттай устгагдлаа",
     "errorRemovingPage": "{{failed}} зураглалыг устгаж чадсангүй ({{removed}} устгагдсан)",
     "empty": "Зураглал олдсонгүй.",
-    "subtitle": "Хүлээн авагчийг дахин бичих бүх зураглалыг харах (өөр нэр, бүлэг, домэйн, дамжуулалт)."
+    "subtitle": "Хүлээн авагчийг дахин бичих бүх зураглалыг харах (өөр нэр, бүлэг, домэйн, дамжуулалт).",
+    "addTitle": "Харгалзуулалт нэмэх",
+    "kinds": {
+      "address": "Хаяг",
+      "regex": "Тогтмол илэрхийлэл",
+      "domain": "Домэйн"
+    }
   },
   "mailingLists": {
     "subtitle": "LDAP мэйл жагсаалтыг үзэж, гишүүд болон эзэмшигчдийг удирдах.",

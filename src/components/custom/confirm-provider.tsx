@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useReturnFocus } from "@/hooks/use-return-focus";
 import ErrorDisplayer from "./error-displayer";
+import { cn } from "@/lib/utils";
 
 /**
  * Checks the dialog content when "Confirm" is clicked. Returns the error to show in the
@@ -177,7 +178,7 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
     <ConfirmContext.Provider value={confirm}>
       {children}
       <Dialog open={confirmState.isOpen} onOpenChange={(open) => !open && handleCancel()}>
-        <DialogContent className={confirmState.className} onOpenAutoFocus={handleOpenAutoFocus} onCloseAutoFocus={restoreFocus}>
+        <DialogContent className={cn("has-[[data-task-params]]:max-w-2xl", confirmState.className)} onOpenAutoFocus={handleOpenAutoFocus} onCloseAutoFocus={restoreFocus}>
           <DialogHeader>
             <DialogTitle>{confirmState.header}</DialogTitle>
           </DialogHeader>
