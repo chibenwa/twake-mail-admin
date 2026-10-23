@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useId, useMemo, useRef, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -13,24 +13,25 @@ import {
   clearTeamMailboxFolderExtraAcl,
 } from "../api-client";
 import ErrorDisplayer from "@/components/custom/error-displayer";
-import { Button } from "@/components/ui/button";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
+// The i18n key of the label of each right, under domains.extraAcl
 const RIGHTS: { key: string; label: string }[] = [
-  { key: "l", label: "Lookup" },
-  { key: "r", label: "Read" },
-  { key: "s", label: "Write Seen Flag" },
-  { key: "w", label: "Write" },
-  { key: "i", label: "Insert" },
-  { key: "p", label: "Post" },
-  { key: "k", label: "Create Mailbox" },
-  { key: "t", label: "Delete Messages" },
-  { key: "e", label: "Perform Expunge" },
-  { key: "x", label: "Delete Mailbox" },
-  { key: "a", label: "Administer" },
+  { key: "l", label: "lookup" },
+  { key: "r", label: "read" },
+  { key: "s", label: "writeSeenFlag" },
+  { key: "w", label: "write" },
+  { key: "i", label: "insert" },
+  { key: "p", label: "post" },
+  { key: "k", label: "createMailbox" },
+  { key: "t", label: "deleteMessages" },
+  { key: "e", label: "performExpunge" },
+  { key: "x", label: "deleteMailbox" },
+  { key: "a", label: "administer" },
 ];
 
 const RIGHTS_ORDER = RIGHTS.map((r) => r.key);
@@ -66,6 +67,9 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
   const [page, setPage] = useState(1);
 
   const [showAddForm, setShowAddForm] = useState(false);
+  // Declining to add an unknown user leaves the modal open, the typed values kept
+  const keepAddOpen = useRef(false);
+  const fieldId = useId();
   const [newUser, setNewUser] = useState("");
   const [selectedRights, setSelectedRights] = useState<Set<string>>(new Set(["l", "r"]));
   const userStatus = useCheckUserExists(newUser);
@@ -103,20 +107,26 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
       message: t("common.unknownUserConfirm", { username }),
     });
 
+  // A refusal is shown in the modal, which then stays open with the typed values
   const handleAdd = async () => {
-    if (!canSubmit) return;
     const username = newUser.trim();
-    if (userStatus === "not_found" && !(await confirmUnknownUser(username))) return;
-    try {
-      await setTeamMailboxFolderExtraAclEntry(domain, mailbox, folder, username, rightsString);
-      toast({ title: "ACL entry set" });
-      setNewUser("");
-      setSelectedRights(new Set(["l", "r"]));
-      setShowAddForm(false);
-      await refresh();
-    } catch (err) {
-      toast({ title: "Error setting ACL entry", description: <ErrorDisplayer error={err} /> });
+    if (userStatus === "not_found" && !(await confirmUnknownUser(username))) {
+      keepAddOpen.current = true;
+      return;
     }
+    await setTeamMailboxFolderExtraAclEntry(domain, mailbox, folder, username, rightsString);
+    toast({ title: t("domains.extraAcl.entrySet") });
+    setNewUser("");
+    setSelectedRights(new Set(["l", "r"]));
+    await refresh();
+  };
+
+  const closeAdd = () => {
+    if (keepAddOpen.current) {
+      keepAddOpen.current = false;
+      return;
+    }
+    setShowAddForm(false);
   };
 
   const handleRemove = async (username: string) => {
@@ -129,10 +139,10 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
     if (!confirmed) return;
     try {
       await removeTeamMailboxFolderExtraAclEntry(domain, mailbox, folder, username);
-      toast({ title: "ACL entry removed" });
+      toast({ title: t("domains.extraAcl.entryRemoved") });
       await refresh();
     } catch (err) {
-      toast({ title: "Error removing ACL entry", description: <ErrorDisplayer error={err} /> });
+      toast({ title: t("domains.extraAcl.errorRemoving"), description: <ErrorDisplayer error={err} /> });
     }
   };
 
@@ -146,10 +156,10 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
     if (!confirmed) return;
     try {
       await clearTeamMailboxFolderExtraAcl(domain, mailbox, folder);
-      toast({ title: "All extra ACL entries removed" });
+      toast({ title: t("domains.extraAcl.allRemoved") });
       await refresh();
     } catch (err) {
-      toast({ title: "Error clearing ACL entries", description: <ErrorDisplayer error={err} /> });
+      toast({ title: t("domains.extraAcl.errorClearing"), description: <ErrorDisplayer error={err} /> });
     }
   };
 
@@ -157,116 +167,33 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
     <div className="mt-6">
       <div className="flex items-center gap-2">
         <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
-          Extra ACL
+          {t("domains.extraAcl.title")}
           {acl && (
             <span className="text-sm font-normal text-gray-500">({entries.length})</span>
           )}
         </SectionToggle>
-        {open && (
-          <div id={openContentId} className="flex items-center gap-1 shrink-0">
-            {canAddAcl && (
-              <button
-                onClick={() => setShowAddForm(!showAddForm)}
-                className="p-1 rounded-md hover:bg-gray-200 transition"
-                title={t("domains.extraAcl.addEntry")}
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-            )}
-            {canClearAcl && entries.length > 0 && (
-              <button
-                onClick={handleClearAll}
-                className="p-1 rounded-md hover:bg-gray-200 transition"
-                title={t("domains.extraAcl.clearAll")}
-              >
-                <Trash2 className="w-4 h-4 text-red-500" />
-              </button>
-            )}
-          </div>
+        {canAddAcl && (
+          <button
+            onClick={() => { setOpen(true); setShowAddForm(true); }}
+            className="p-1 rounded-md hover:bg-gray-200 transition"
+            title={t("domains.extraAcl.addEntry")}
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        )}
+        {open && canClearAcl && entries.length > 0 && (
+          <button
+            onClick={handleClearAll}
+            className="p-1 rounded-md hover:bg-gray-200 transition"
+            title={t("domains.extraAcl.clearAll")}
+          >
+            <Trash2 className="w-4 h-4 text-red-500" />
+          </button>
         )}
       </div>
 
       {open && (
-        <div className="mt-2">
-          {/* Add form */}
-          {showAddForm && (
-            <div className="p-4 bg-gray-50 rounded-2 mb-4 space-y-3">
-              {/* Username input */}
-              <div className="flex gap-2 items-center">
-                <input
-                  autoFocus
-                  type="text"
-                  value={newUser}
-                  onChange={(e) => setNewUser(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-                  placeholder="user@domain.tld"
-                  className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                />
-                {userStatus === "checking" && (
-                  <span className="text-xs text-gray-400 whitespace-nowrap">Checking...</span>
-                )}
-                {userStatus === "exists" && (
-                  <span className="flex items-center gap-1 text-xs text-green-600 whitespace-nowrap">
-                    <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
-                    User exists
-                  </span>
-                )}
-                {userStatus === "not_found" && (
-                  <span className="flex items-center gap-1 text-xs text-orange-500 whitespace-nowrap">
-                    <span className="inline-block w-2 h-2 rounded-full bg-orange-400" />
-                    User not found
-                  </span>
-                )}
-                {userStatus === "invalid" && (
-                  <span className="flex items-center gap-1 text-xs text-red-600 whitespace-nowrap">
-                    <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
-                    Invalid username
-                  </span>
-                )}
-              </div>
-
-              {/* Rights checkboxes */}
-              <div className="flex flex-wrap gap-2">
-                {RIGHTS.map(({ key, label }) => (
-                  <label
-                    key={key}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border cursor-pointer text-sm transition-colors select-none has-focus-visible:ring-2 has-focus-visible:ring-blue-500 ${
-                      selectedRights.has(key)
-                        ? "bg-blue-100 border-blue-400 text-blue-800"
-                        : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
-                    }`}
-                  >
-                    {/* sr-only rather than hidden: keeps the checkbox focusable and announced */}
-                    <input
-                      type="checkbox"
-                      className="sr-only"
-                      checked={selectedRights.has(key)}
-                      onChange={() => toggleRight(key)}
-                    />
-                    <span className="font-mono text-xs font-bold">{key}</span>
-                    {label}
-                  </label>
-                ))}
-              </div>
-
-              {rightsString && (
-                <p className="text-xs text-gray-400">
-                  Rights string: <span className="font-mono font-semibold text-gray-600">{rightsString}</span>
-                </p>
-              )}
-
-              <div className="flex justify-end">
-                <Button
-                  onClick={handleAdd}
-                  disabled={!canSubmit}
-                  className="rounded-sm"
-                >
-                  Add
-                </Button>
-              </div>
-            </div>
-          )}
-
+        <div id={openContentId} className="mt-2">
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -307,7 +234,7 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
                             key={label}
                             className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs font-medium"
                           >
-                            {label}
+                            {t(`domains.extraAcl.${label}`)}
                           </span>
                         ))}
                       </div>
@@ -326,12 +253,74 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
               </div>
 
               {entries.length === 0 && (
-                <p className="mt-2 text-sm text-gray-500">No extra ACL entries.</p>
+                <p className="mt-2 text-sm text-gray-500">{t("domains.extraAcl.empty")}</p>
               )}
             </>
           )}
         </div>
       )}
+
+      <FormDialog
+        open={showAddForm}
+        onClose={closeAdd}
+        title={t("domains.extraAcl.addEntry")}
+        submitLabel={t("common.add")}
+        submitDisabled={!canSubmit}
+        onSubmit={handleAdd}
+        className="max-w-xl"
+      >
+        <div>
+          <label htmlFor={fieldId} className="text-sm font-medium">{t("domains.teamMailbox.user")}</label>
+          <input
+            id={fieldId}
+            type="text"
+            autoFocus
+            value={newUser}
+            onChange={(e) => setNewUser(e.target.value)}
+            placeholder="user@domain.tld"
+            className={FIELD_CLASS}
+          />
+          {/* Reserved height: the status appearing does not resize the modal */}
+          <p className="h-4 mt-1 text-xs">
+            {userStatus === "checking" && <span className="text-gray-400">{t("common.checking")}</span>}
+            {userStatus === "exists" && <span className="text-green-700">{t("common.userExists")}</span>}
+            {userStatus === "not_found" && <span className="text-orange-600">{t("common.userNotFound")}</span>}
+            {userStatus === "invalid" && <span className="text-red-600">{t("common.invalidUsername")}</span>}
+          </p>
+        </div>
+
+        {/* Rights checkboxes */}
+        <div className="flex flex-wrap gap-2">
+          {RIGHTS.map(({ key, label }) => (
+            <label
+              key={key}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border cursor-pointer text-sm transition-colors select-none has-focus-visible:ring-2 has-focus-visible:ring-blue-500 ${
+                selectedRights.has(key)
+                  ? "bg-blue-100 border-blue-400 text-blue-800"
+                  : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              {/* sr-only rather than hidden: keeps the checkbox focusable and announced */}
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={selectedRights.has(key)}
+                onChange={() => toggleRight(key)}
+              />
+              <span className="font-mono text-xs font-bold">{key}</span>
+              {t(`domains.extraAcl.${label}`)}
+            </label>
+          ))}
+        </div>
+
+        <p className="h-4 text-xs text-gray-400">
+          {rightsString && (
+            <>
+              {t("domains.extraAcl.rightsString")} <span className="font-mono font-semibold text-gray-600">{rightsString}</span>
+            </>
+          )}
+        </p>
+      </FormDialog>
     </div>
   );
 }

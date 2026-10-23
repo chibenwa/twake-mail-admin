@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import type { UserExistsStatus } from "@/hooks/use-check-user-exists";
 
 const api = vi.hoisted(() => ({
@@ -9,32 +9,40 @@ const api = vi.hoisted(() => ({
   removeTeamMailboxFolderExtraAclEntry: vi.fn(),
   clearTeamMailboxFolderExtraAcl: vi.fn(),
 }));
-const mocks = vi.hoisted(() => ({ confirm: vi.fn(), userStatus: vi.fn() }));
+const mocks = vi.hoisted(() => ({ confirm: vi.fn(), toast: vi.fn(), userStatus: vi.fn() }));
 
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string, options?: Record<string, unknown>) => (options ? `${key} ${JSON.stringify(options)}` : key),
+  }),
+}));
 vi.mock("@/lib/proxy-resolver-context", () => ({ useIsAllowed: () => true }));
 vi.mock("@/hooks/use-check-user-exists", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/hooks/use-check-user-exists")>()),
   useCheckUserExists: mocks.userStatus,
 }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => mocks.confirm }));
-vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: vi.fn() }) }));
+vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: mocks.toast }) }));
 vi.mock("../api-client", () => api);
 
 import TeamMailboxFolderExtraAcl from "./team-mailbox-folder-extra-acl";
 
+// The + next to the section title opens the section and the modal holding the add form
 function openAddForm() {
   render(<TeamMailboxFolderExtraAcl domain="example.com" mailbox="sales" folder="INBOX" />);
-  fireEvent.click(screen.getByText("Extra ACL"));
   fireEvent.click(screen.getByTitle("domains.extraAcl.addEntry"));
 }
+
+const dialog = () => screen.getByRole("dialog");
+const input = () => within(dialog()).getByLabelText("domains.teamMailbox.user") as HTMLInputElement;
 
 const typeUser = (user: string, status: UserExistsStatus) => {
   mocks.userStatus.mockReturnValue(status);
   openAddForm();
-  fireEvent.change(screen.getByPlaceholderText("user@domain.tld"), { target: { value: user } });
+  fireEvent.change(input(), { target: { value: user } });
 };
 
-const addButton = () => screen.getByText("Add") as HTMLButtonElement;
+const addButton = () => within(dialog()).getByRole("button", { name: "common.add" }) as HTMLButtonElement;
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -57,7 +65,7 @@ describe("team mailbox folder extra ACL rights", () => {
   it("toggles a right from its checkbox, as the keyboard Space key does", () => {
     openAddForm();
 
-    const write = screen.getByRole("checkbox", { name: /Write$/ }) as HTMLInputElement;
+    const write = screen.getByRole("checkbox", { name: /extraAcl\.write$/ }) as HTMLInputElement;
     expect(write.checked).toBe(false);
 
     fireEvent.click(write);
@@ -68,21 +76,34 @@ describe("team mailbox folder extra ACL rights", () => {
 });
 
 describe("team mailbox folder extra ACL: add an entry", () => {
-  it("adds an existing user without confirmation", async () => {
+  it("opens the section and adds the entry typed in the modal of the + button, without confirmation", async () => {
     typeUser("alice@example.com", "exists");
     fireEvent.click(addButton());
 
+    expect(await screen.findByText("domains.extraAcl.empty")).not.toBeNull();
     await waitFor(() =>
       expect(api.setTeamMailboxFolderExtraAclEntry).toHaveBeenCalledWith("example.com", "sales", "INBOX", "alice@example.com", "lr")
     );
     expect(mocks.confirm).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(mocks.toast).toHaveBeenCalledWith({ title: "domains.extraAcl.entrySet" });
+  });
+
+  it("keeps the modal open with the typed user when the entry is refused", async () => {
+    api.setTeamMailboxFolderExtraAclEntry.mockRejectedValue(new Error("Not allowed"));
+    typeUser("alice@example.com", "exists");
+    fireEvent.click(addButton());
+
+    expect(await within(dialog()).findByText("Not allowed")).not.toBeNull();
+    expect(input().value).toBe("alice@example.com");
+    expect(mocks.toast).not.toHaveBeenCalled();
   });
 
   it.each<UserExistsStatus>(["invalid", "checking"])("disables Add while the user is %s", (status) => {
     typeUser("a@b@c", status);
 
     expect(addButton().disabled).toBe(true);
-    fireEvent.keyDown(screen.getByPlaceholderText("user@domain.tld"), { key: "Enter" });
+    fireEvent.submit(input());
     expect(api.setTeamMailboxFolderExtraAclEntry).not.toHaveBeenCalled();
   });
 
@@ -102,5 +123,8 @@ describe("team mailbox folder extra ACL: add an entry", () => {
 
     await waitFor(() => expect(mocks.confirm).toHaveBeenCalled());
     expect(api.setTeamMailboxFolderExtraAclEntry).not.toHaveBeenCalled();
+    // Still there, to correct the address
+    await waitFor(() => expect(addButton().disabled).toBe(false));
+    expect(input().value).toBe("ghost@example.com");
   });
 });
