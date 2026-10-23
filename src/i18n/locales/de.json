@@ -240,6 +240,7 @@
       "removed": "Zusätzlicher Absender entfernt",
       "errorRemoving": "Fehler beim Entfernen des zusätzlichen Absenders",
       "empty": "Keine zusätzlichen Absender.",
+      "addTooltip": "Zusätzlichen Absender hinzufügen",
       "removeTooltip": "Zusätzlichen Absender entfernen"
     },
     "folders": {

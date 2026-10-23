@@ -239,6 +239,7 @@
       "removed": "Đã xóa người gửi bổ sung",
       "errorRemoving": "Lỗi khi xóa người gửi bổ sung",
       "empty": "Không có người gửi bổ sung.",
+      "addTooltip": "Thêm người gửi bổ sung",
       "removeTooltip": "Xóa người gửi bổ sung"
     },
     "folders": {

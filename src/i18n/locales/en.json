@@ -240,6 +240,7 @@
       "removed": "Extra sender removed",
       "errorRemoving": "Error removing extra sender",
       "empty": "No extra senders.",
+      "addTooltip": "Add extra sender",
       "removeTooltip": "Remove extra sender"
     },
     "folders": {

@@ -240,6 +240,7 @@
       "removed": "Remitente adicional quitado",
       "errorRemoving": "Error al quitar el remitente adicional",
       "empty": "No hay remitentes adicionales.",
+      "addTooltip": "Añadir remitente adicional",
       "removeTooltip": "Quitar remitente adicional"
     },
     "folders": {

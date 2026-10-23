@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import type { UserExistsStatus } from "@/hooks/use-check-user-exists";
 
 const mocks = vi.hoisted(() => ({
@@ -30,12 +30,15 @@ vi.mock("../api-client", () => mocks.api);
 
 import TeamMailboxExtraSenders from "./team-mailbox-extra-senders";
 
-const input = () => screen.getByPlaceholderText("user@domain.tld");
-const addButton = () => screen.getByText("common.add") as HTMLButtonElement;
+const dialog = () => screen.getByRole("dialog");
+const input = () => within(dialog()).getByLabelText("domains.teamMailbox.user") as HTMLInputElement;
+const addButton = () => within(dialog()).getByRole("button", { name: "common.add" }) as HTMLButtonElement;
 
+// The + next to the section title opens the modal holding the add form
 const typeSender = (user: string, status: UserExistsStatus) => {
   mocks.userStatus.mockReturnValue(status);
   render(<TeamMailboxExtraSenders domain="example.com" mailbox="sales" />);
+  fireEvent.click(screen.getByTitle("domains.extraSenders.addTooltip"));
   fireEvent.change(input(), { target: { value: user } });
 };
 
@@ -48,7 +51,7 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("team mailbox extra senders: add a sender", () => {
-  it("adds an existing user without confirmation", async () => {
+  it("adds an existing user typed in the modal of the + button, without confirmation", async () => {
     typeSender("alice@example.com", "exists");
     fireEvent.click(addButton());
 
@@ -56,13 +59,25 @@ describe("team mailbox extra senders: add a sender", () => {
       expect(mocks.api.addTeamMailboxExtraSender).toHaveBeenCalledWith("example.com", "sales", "alice@example.com")
     );
     expect(mocks.confirm).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(mocks.toast).toHaveBeenCalledWith({ title: "domains.extraSenders.added" });
+  });
+
+  it("keeps the modal open with the typed user when the addition is refused", async () => {
+    mocks.api.addTeamMailboxExtraSender.mockRejectedValue(new Error("Not allowed"));
+    typeSender("alice@example.com", "exists");
+    fireEvent.click(addButton());
+
+    expect(await within(dialog()).findByText("Not allowed")).not.toBeNull();
+    expect(input().value).toBe("alice@example.com");
+    expect(mocks.toast).not.toHaveBeenCalled();
   });
 
   it.each<UserExistsStatus>(["invalid", "checking"])("disables Add while the user is %s", (status) => {
     typeSender("a@b@c", status);
 
     expect(addButton().disabled).toBe(true);
-    fireEvent.keyDown(input(), { key: "Enter" });
+    fireEvent.submit(input());
     expect(mocks.api.addTeamMailboxExtraSender).not.toHaveBeenCalled();
   });
 
@@ -84,5 +99,8 @@ describe("team mailbox extra senders: add a sender", () => {
 
     await waitFor(() => expect(mocks.confirm).toHaveBeenCalled());
     expect(mocks.api.addTeamMailboxExtraSender).not.toHaveBeenCalled();
+    // Still there, to correct the address
+    await waitFor(() => expect(addButton().disabled).toBe(false));
+    expect(input().value).toBe("ghost@example.com");
   });
 });

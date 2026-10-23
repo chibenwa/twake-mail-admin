@@ -240,6 +240,7 @@
       "removed": "Mittente aggiuntivo rimosso",
       "errorRemoving": "Errore durante la rimozione del mittente aggiuntivo",
       "empty": "Nessun mittente aggiuntivo.",
+      "addTooltip": "Aggiungi mittente aggiuntivo",
       "removeTooltip": "Rimuovi mittente aggiuntivo"
     },
     "folders": {

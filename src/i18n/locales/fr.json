@@ -240,6 +240,7 @@
       "removed": "Expéditeur supplémentaire retiré",
       "errorRemoving": "Erreur lors du retrait de l'expéditeur",
       "empty": "Aucun expéditeur supplémentaire.",
+      "addTooltip": "Ajouter un expéditeur supplémentaire",
       "removeTooltip": "Retirer l'expéditeur"
     },
     "folders": {

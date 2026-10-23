@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState } from "react";
-import { Trash2 } from "lucide-react";
+import { useCallback, useId, useMemo, useRef, useState } from "react";
+import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -10,6 +10,7 @@ import { getTeamMailboxExtraSenders, addTeamMailboxExtraSender, removeTeamMailbo
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -34,6 +35,10 @@ export default function TeamMailboxExtraSenders({ domain, mailbox }: Props) {
 
   const [open, setOpen, openContentId] = useSectionOpen("extra-senders", true);
   const [page, setPage] = useState(1);
+  const [showAdd, setShowAdd] = useState(false);
+  // Declining to add an unknown user leaves the modal open, the typed address kept
+  const keepAddOpen = useRef(false);
+  const fieldId = useId();
   const [newSender, setNewSender] = useState("");
   const senderStatus = useCheckUserExists(newSender);
   const canSubmit = !!newSender.trim() && isSubmittableUserStatus(senderStatus);
@@ -59,18 +64,25 @@ export default function TeamMailboxExtraSenders({ domain, mailbox }: Props) {
       message: t("common.unknownUserConfirm", { username }),
     });
 
+  // A refusal is shown in the modal, which then stays open with the typed address
   const handleAdd = async () => {
-    if (!canSubmit) return;
     const username = newSender.trim();
-    if (senderStatus === "not_found" && !(await confirmUnknownUser(username))) return;
-    try {
-      await addTeamMailboxExtraSender(domain, mailbox, username);
-      toast({ title: t("domains.extraSenders.added") });
-      setNewSender("");
-      await refresh();
-    } catch (err) {
-      toast({ title: t("domains.extraSenders.errorAdding"), description: <ErrorDisplayer error={err} /> });
+    if (senderStatus === "not_found" && !(await confirmUnknownUser(username))) {
+      keepAddOpen.current = true;
+      return;
     }
+    await addTeamMailboxExtraSender(domain, mailbox, username);
+    toast({ title: t("domains.extraSenders.added") });
+    setNewSender("");
+    await refresh();
+  };
+
+  const closeAdd = () => {
+    if (keepAddOpen.current) {
+      keepAddOpen.current = false;
+      return;
+    }
+    setShowAdd(false);
   };
 
   const handleRemove = async (username: string) => {
@@ -92,52 +104,23 @@ export default function TeamMailboxExtraSenders({ domain, mailbox }: Props) {
 
   return (
     <div className="mt-6">
-      <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
-        {t("domains.extraSenders.title")}
-        {senders && <span className="text-sm font-normal text-gray-500">({senders.length})</span>}
-      </SectionToggle>
+      <div className="flex items-center gap-2">
+        <SectionToggle open={open} onToggle={() => setOpen(!open)} controls={openContentId}>
+          {t("domains.extraSenders.title")}
+          {senders && <span className="text-sm font-normal text-gray-500">({senders.length})</span>}
+        </SectionToggle>
+        {canAdd && (
+          <button
+            onClick={() => { setOpen(true); setShowAdd(true); }}
+            className="p-1 rounded-md hover:bg-gray-200 transition"
+            title={t("domains.extraSenders.addTooltip")}
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        )}
+      </div>
 
       {open && (<div id={openContentId}>
-        {/* Add sender */}
-        {canAdd && (<div className="flex flex-wrap gap-2 mt-3 mb-4">
-          <input
-            type="text"
-            value={newSender}
-            onChange={(e) => setNewSender(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            placeholder="user@domain.tld"
-            className="flex-1 min-w-48 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-          />
-          {senderStatus === "checking" && (
-            <span className="flex items-center text-xs text-gray-400 whitespace-nowrap">{t("common.checking")}</span>
-          )}
-          {senderStatus === "exists" && (
-            <span className="flex items-center gap-1 text-xs text-green-600 whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
-              {t("common.userExists")}
-            </span>
-          )}
-          {senderStatus === "not_found" && (
-            <span className="flex items-center gap-1 text-xs text-orange-500 whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-orange-400" />
-              {t("common.userNotFound")}
-            </span>
-          )}
-          {senderStatus === "invalid" && (
-            <span className="flex items-center gap-1 text-xs text-red-600 whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
-              {t("common.invalidUsername")}
-            </span>
-          )}
-          <button
-            onClick={handleAdd}
-            disabled={!canSubmit}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {t("common.add")}
-          </button>
-        </div>)}
-
         {isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -187,6 +170,35 @@ export default function TeamMailboxExtraSenders({ domain, mailbox }: Props) {
           )}
         </div>
       </div>)}
+
+      <FormDialog
+        open={showAdd}
+        onClose={closeAdd}
+        title={t("domains.extraSenders.addTooltip")}
+        submitLabel={t("common.add")}
+        submitDisabled={!canSubmit}
+        onSubmit={handleAdd}
+      >
+        <div>
+          <label htmlFor={fieldId} className="text-sm font-medium">{t("domains.teamMailbox.user")}</label>
+          <input
+            id={fieldId}
+            type="text"
+            autoFocus
+            value={newSender}
+            onChange={(e) => setNewSender(e.target.value)}
+            placeholder="user@domain.tld"
+            className={FIELD_CLASS}
+          />
+          {/* Reserved height: the status appearing does not resize the modal */}
+          <p className="h-4 mt-1 text-xs">
+            {senderStatus === "checking" && <span className="text-gray-400">{t("common.checking")}</span>}
+            {senderStatus === "exists" && <span className="text-green-700">{t("common.userExists")}</span>}
+            {senderStatus === "not_found" && <span className="text-orange-600">{t("common.userNotFound")}</span>}
+            {senderStatus === "invalid" && <span className="text-red-600">{t("common.invalidUsername")}</span>}
+          </p>
+        </div>
+      </FormDialog>
     </div>
   );
 }
