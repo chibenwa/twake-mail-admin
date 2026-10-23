@@ -82,3 +82,15 @@ describe("unsent mails list: empty state", () => {
     expect(screen.queryByText("unsentMails.noMatch")).toBeNull();
   });
 });
+
+describe("unsent mails: bulk actions without unsent mail", () => {
+  it("disables Resend all and Delete all when there is no unsent mail", async () => {
+    getUnsentMailIds.mockImplementation(async () => []);
+    renderList();
+
+    await screen.findByText("unsentMails.empty");
+    for (const label of ["unsentMails.resendAll", "unsentMails.deleteAll"]) {
+      expect((screen.getByText(label).closest("button") as HTMLButtonElement).disabled).toBe(true);
+    }
+  });
+});

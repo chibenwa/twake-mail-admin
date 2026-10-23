@@ -199,6 +199,8 @@ export default function UnsentMailsList() {
   };
 
   const resetPage = () => setPage(1);
+  // Nothing to resend or delete: the bulk buttons wait for an unsent mail
+  const noUnsentMail = !ids || ids.length === 0;
 
   return (
     <div>
@@ -207,7 +209,8 @@ export default function UnsentMailsList() {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={handleResendAll}
-              disabled={!selection}
+              disabled={!selection || noUnsentMail}
+              title={noUnsentMail ? t("unsentMails.empty") : undefined}
               aria-describedby={selection ? undefined : BULK_HINT_ID}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500"
             >
@@ -216,7 +219,8 @@ export default function UnsentMailsList() {
             </button>
             <button
               onClick={handleDeleteAll}
-              disabled={!selection}
+              disabled={!selection || noUnsentMail}
+              title={noUnsentMail ? t("unsentMails.empty") : undefined}
               aria-describedby={selection ? undefined : BULK_HINT_ID}
               className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-600"
             >
