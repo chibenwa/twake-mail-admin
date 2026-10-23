@@ -182,7 +182,7 @@ export default function MailRepositoriesList() {
           {repositoriesWithSize?.map((result) => (
             <div
               key={result.repository}
-              className="space-y-1 p-4 bg-white rounded-2 my-4 p-4 flex justify-between items-center"
+              className="space-y-1 p-4 bg-white rounded-2 my-4 p-4 flex justify-between items-center transition-colors hover:bg-gray-50"
             >
               <div>
                 <h4 className="text-sm font-medium leading-none">

@@ -172,7 +172,7 @@ export default function CalendarDomainResources({ domain, defaultOpen = false, r
                 goToPage={goToPage}
               />
               {paginated.map((resource, index) => (
-                <div key={resource.id} className="p-4 bg-gray-50 rounded-2 my-2 flex flex-wrap justify-between items-center gap-2">
+                <div key={resource.id} className="p-4 bg-gray-50 rounded-2 my-2 flex flex-wrap justify-between items-center gap-2 transition-colors hover:bg-gray-100">
                   {/* Wide enough to stay readable: on a phone the actions wrap under the name instead of squeezing it */}
                   <h4 className="flex-1 min-w-48 text-sm font-medium leading-snug break-words">
                     <span className="text-gray-500 mr-2">{offset + index + 1}/</span>

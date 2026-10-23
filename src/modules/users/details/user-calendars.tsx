@@ -155,7 +155,7 @@ function CalendarRow({
   const [countKey, setCountKey] = useState(0);
 
   return (
-    <div className="group flex items-start gap-3 py-1">
+    <div className="group flex items-start gap-3 py-1 -mx-2 px-2 rounded-md transition-colors hover:bg-gray-50">
       <span
         className="inline-block w-4 h-4 rounded-full border border-gray-200 shrink-0 mt-0.5"
         style={{ backgroundColor: color || "#cccccc" }}

@@ -124,7 +124,7 @@ export default function DomainTeamMailboxes({ domain, defaultOpen }: Props) {
               {paginated.map((mb, index) => (
                 <div
                   key={mb.name}
-                  className="space-y-1 p-4 bg-gray-50 rounded-2 my-2 flex justify-between items-center gap-2"
+                  className="space-y-1 p-4 bg-gray-50 rounded-2 my-2 flex justify-between items-center gap-2 transition-colors hover:bg-gray-100"
                 >
                   <h4 className="min-w-0 text-sm font-medium leading-none break-all">
                     {/* Text separators, not only margins: the heading is read as one string */}

@@ -46,7 +46,7 @@ export default function UserAllowedFrom({ username }: Props) {
               {headers.map((header, index) => (
                 <div
                   key={header}
-                  className="p-4 bg-gray-50 rounded-2 my-2"
+                  className="p-4 bg-gray-50 rounded-2 my-2 transition-colors hover:bg-gray-100"
                 >
                   <h4 className="text-sm font-medium leading-none">
                     <span className="text-gray-500 mr-2">{index + 1}/</span>

@@ -132,7 +132,7 @@ export default function EventListenersList() {
           {listenerGroupsResult?.map((group) => (
             <div
               key={group}
-              className="space-y-1 p-4 bg-white rounded-2 my-4 p-4 flex justify-between items-center gap-2"
+              className="space-y-1 p-4 bg-white rounded-2 my-4 p-4 flex justify-between items-center gap-2 transition-colors hover:bg-gray-50"
             >
               <div className="min-w-0">
                 <h4 className="text-sm font-medium leading-none break-all">

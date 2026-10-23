@@ -76,7 +76,7 @@ export function PagedUsersList({ source, domain, domainChoices = [] }: PagedUser
       )}
       <div>
         {pages.usernames.map((username, index) => (
-          <div key={username} className="space-y-1 p-4 bg-white rounded-2 my-4 flex justify-between items-center">
+          <div key={username} className="space-y-1 p-4 bg-white rounded-2 my-4 flex justify-between items-center transition-colors hover:bg-gray-50">
             <h4 className="min-w-0 text-sm font-medium leading-none break-all">
               <span className="text-gray-500 mr-2">{pages.offset + index + 1}/</span>
               <Link to={`/users/user/${encodeURIComponent(username)}`} className="text-blue-600 hover:underline">

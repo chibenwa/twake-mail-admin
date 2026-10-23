@@ -174,7 +174,7 @@ export default function LiveMetrics() {
                   <table className="w-full text-sm">
                     <tbody>
                       {family.lines.map((line, i) => (
-                        <tr key={i} className="border-b last:border-0 border-gray-100">
+                        <tr key={i} className="border-b last:border-0 border-gray-100 hover:bg-gray-50">
                           <td className="py-1 pr-2 font-mono text-xs text-muted-foreground truncate max-w-[500px]">
                             {line.labels || "{}"}
                           </td>

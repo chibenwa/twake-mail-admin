@@ -192,7 +192,7 @@ export default function RegisteredUsersList() {
         {paginated.map((user, index) => (
           <div
             key={user.id}
-            className="space-y-1 p-4 bg-white rounded-2 my-4 flex justify-between items-center"
+            className="space-y-1 p-4 bg-white rounded-2 my-4 flex justify-between items-center transition-colors hover:bg-gray-50"
           >
             <div>
               <h4 className="min-w-0 text-sm font-medium leading-none break-all">

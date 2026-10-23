@@ -173,7 +173,7 @@ export default function CalendarDomainTeamCalendars({ domain, defaultOpen = fals
                 goToPage={goToPage}
               />
               {paginated.map((teamCalendar, index) => (
-                <div key={teamCalendar.id} className="p-4 bg-gray-50 rounded-2 my-2 flex flex-wrap justify-between items-center gap-2">
+                <div key={teamCalendar.id} className="p-4 bg-gray-50 rounded-2 my-2 flex flex-wrap justify-between items-center gap-2 transition-colors hover:bg-gray-100">
                   {/* Wide enough to stay readable: on a phone the actions wrap under the name instead of squeezing it */}
                   <div className="flex-1 min-w-48">
                     {editingId === teamCalendar.id ? (

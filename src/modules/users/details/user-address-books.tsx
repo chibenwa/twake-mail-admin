@@ -146,7 +146,7 @@ function AddressBookRow({
   const [countKey, setCountKey] = useState(0);
 
   return (
-    <div className="group flex items-start gap-3 py-1">
+    <div className="group flex items-start gap-3 py-1 -mx-2 px-2 rounded-md transition-colors hover:bg-gray-50">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <p className="font-medium min-w-0 break-words">{name}</p>

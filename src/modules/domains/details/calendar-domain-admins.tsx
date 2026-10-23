@@ -132,7 +132,7 @@ export default function CalendarDomainAdmins({ domain, defaultOpen = false }: Pr
                 goToPage={goToPage}
               />
               {paginated.map((admin, index) => (
-                <div key={admin} className="space-y-1 p-4 bg-gray-50 rounded-2 my-2 flex justify-between items-center gap-2">
+                <div key={admin} className="space-y-1 p-4 bg-gray-50 rounded-2 my-2 flex justify-between items-center gap-2 transition-colors hover:bg-gray-100">
                   <h4 className="min-w-0 text-sm font-medium leading-none break-all">
                     <span className="text-gray-500 mr-2">{offset + index + 1}/</span>
                     {admin}

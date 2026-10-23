@@ -86,7 +86,7 @@ export default function UserTeamMailboxes({ username }: Props) {
               {sorted.map((mb, index) => (
                 <div
                   key={mb.emailAddress}
-                  className="space-y-1 p-4 bg-gray-50 rounded-2 my-2 flex justify-between items-center gap-2"
+                  className="space-y-1 p-4 bg-gray-50 rounded-2 my-2 flex justify-between items-center gap-2 transition-colors hover:bg-gray-100"
                 >
                   <h4 className="min-w-0 text-sm font-medium leading-none break-all">
                     <span className="text-gray-500 mr-2">{index + 1}/</span>

@@ -228,7 +228,7 @@ export default function UserMailboxes({ username }: Props) {
                 {paginated.map((mailbox, index) => (
                   <div
                     key={mailbox.mailboxName}
-                    className="space-y-1 p-4 bg-gray-50 rounded-2 my-2 flex flex-wrap justify-between items-center gap-2"
+                    className="space-y-1 p-4 bg-gray-50 rounded-2 my-2 flex flex-wrap justify-between items-center gap-2 transition-colors hover:bg-gray-100"
                   >
                     <div className="min-w-0 break-all">
                       <h4 className="text-sm font-medium leading-none">

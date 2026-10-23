@@ -23,7 +23,7 @@ interface TaskRowProps {
 export default function TaskRow({ title, description, doc, risk = "safe", command, onRun, disabled, loading, children }: TaskRowProps) {
   const button = <RunTaskButton risk={risk} loading={loading} disabled={disabled} onClick={onRun} />;
   return (
-    <div data-task-row className="flex justify-between items-center gap-4 p-4 bg-gray-50 rounded-2">
+    <div data-task-row className="flex justify-between items-center gap-4 p-4 bg-gray-50 rounded-2 transition-colors hover:bg-gray-100">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <p className="font-medium">
