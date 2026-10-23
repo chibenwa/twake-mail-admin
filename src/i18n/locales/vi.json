@@ -78,7 +78,9 @@
     "close": "Đóng",
     "sizeLimit": "Giới hạn dung lượng",
     "sizeUnit": "Đơn vị",
-    "remove": "Gỡ bỏ"
+    "remove": "Gỡ bỏ",
+    "optional": "không bắt buộc",
+    "advancedOptions": "Tùy chọn nâng cao"
   },
   "sidebar": {
     "application": "Ứng dụng",
@@ -1116,7 +1118,8 @@
     "targetMustExist": "Tên người dùng mới phải là một tài khoản đã tồn tại: việc đổi tên chỉ chuyển dữ liệu của người dùng hiện tại sang tài khoản đó.",
     "force": "Bắt buộc",
     "fromStep": "Tiếp tục từ bước",
-    "fromStepPlaceholder": "e.g. MailboxUsernameChangeTaskStep"
+    "fromStepPlaceholder": "e.g. MailboxUsernameChangeTaskStep",
+    "fromStepHelp": "Chỉ dùng để tiếp tục lần đổi tên bị lỗi giữa chừng: sao chép tên bước từ tác vụ bị lỗi."
   },
   "deleteUserDataForm": {
     "fromStep": "Tiếp tục từ bước",
@@ -1244,7 +1247,142 @@
     "invalidCleanupDays": "Nhập số ngày lớn hơn 0",
     "cleaningUpOldTasks": "Đang dọn các tác vụ cũ",
     "runConfirm": "Bạn có muốn chạy tác vụ {{name}} không?",
-    "errorRunTask": "Lỗi khi chạy {{name}}"
+    "errorRunTask": "Lỗi khi chạy {{name}}",
+    "params": {
+      "defaultPlaceholder": "Mặc định: {{value}}",
+      "noLimit": "Không giới hạn",
+      "empty": {
+        "any": "Bất kỳ",
+        "all": "Tất cả",
+        "serverDefault": "Mặc định của máy chủ"
+      },
+      "messagesPerSecond": {
+        "label": "Giới hạn tốc độ",
+        "help": "Số thư mỗi giây; giảm xuống để giảm tải cho máy chủ.",
+        "unit": "thư/giây"
+      },
+      "eventsPerSecond": {
+        "label": "Sự kiện mỗi giây",
+        "help": "Giảm xuống để giảm tải cho máy chủ lịch."
+      },
+      "usersPerSecond": {
+        "label": "Người dùng mỗi giây",
+        "help": "Số người dùng được xử lý mỗi giây; giảm xuống để giảm tải."
+      },
+      "contactsPerSecond": {
+        "label": "Liên hệ mỗi giây",
+        "help": "Giảm xuống để giảm tải cho máy chủ danh bạ."
+      },
+      "queue": {
+        "label": "Hàng đợi đích",
+        "help": "Hàng đợi thư nơi thư được đưa trở lại. Mặc định: spool."
+      },
+      "processor": {
+        "label": "Bộ xử lý đích",
+        "help": "Bộ xử lý mailet xử lý lại thư. root nghĩa là xử lý đầy đủ."
+      },
+      "consume": {
+        "label": "Xóa khỏi kho sau khi xử lý lại",
+        "help": "Không chọn: một bản sao vẫn ở lại trong kho."
+      },
+      "limit": {
+        "label": "Số thư tối đa",
+        "help": "Để trống: tất cả thư."
+      },
+      "maxRetries": {
+        "label": "Bỏ qua thư đã thử lại quá",
+        "help": "Thư đã được xử lý lại chừng ấy lần sẽ ở lại trong kho. Để trống: không giới hạn.",
+        "unit": "lần"
+      },
+      "olderThan": {
+        "label": "Cũ hơn",
+        "help": "Chỉ xóa những gì cũ hơn, ví dụ 5d (ngày), 12h (giờ), 2w (tuần)."
+      },
+      "tiering": {
+        "label": "Thư cũ hơn",
+        "help": "Các thư này được chuyển sang tầng lưu trữ rẻ hơn."
+      },
+      "mode": {
+        "label": "Chế độ lập chỉ mục lại",
+        "help": "Sửa tài liệu lỗi thời nhanh hơn; dựng lại toàn bộ thì đầy đủ nhưng nặng.",
+        "values": {
+          "fixOutdated": "Chỉ sửa tài liệu lỗi thời",
+          "rebuildAll": "Dựng lại toàn bộ"
+        }
+      },
+      "maxIterations": {
+        "label": "Số lượt tối đa",
+        "help": "Số lần chạy lại việc sửa khi vẫn còn bất nhất."
+      },
+      "autoMerge": {
+        "label": "Gộp các hộp thư trùng lặp",
+        "help": "Đã chọn: các hộp thư cùng tên được gộp thay vì chỉ được báo cáo."
+      },
+      "trustMessageProjection": {
+        "label": "Tin cậy bản chiếu thư",
+        "help": "Nhanh hơn: đếm từ bản chiếu thay vì từng thư. Để trống nếu bản chiếu có thể sai."
+      },
+      "quotaComponent": {
+        "label": "Thành phần hạn mức",
+        "values": {
+          "MAILBOX": "Hộp thư",
+          "SIEVE": "Tập lệnh Sieve",
+          "JMAP_UPLOADS": "Tải lên JMAP"
+        }
+      },
+      "associatedProbability": {
+        "label": "Tỷ lệ dương tính giả",
+        "help": "Tỷ lệ blob không được tham chiếu mà bộ lọc Bloom có thể giữ nhầm. Thấp hơn thì kỹ hơn nhưng tốn bộ nhớ hơn."
+      },
+      "expectedBlobCount": {
+        "label": "Số blob dự kiến",
+        "help": "Số blob lưu trữ ước tính, dùng để định cỡ bộ lọc Bloom."
+      },
+      "dryRun": {
+        "label": "Chạy thử",
+        "help": "Đã chọn: báo cáo những gì sẽ làm mà không thay đổi gì."
+      },
+      "createdBefore": {
+        "label": "Được tạo cách đây hơn",
+        "help": "… Để trống: không giới hạn."
+      },
+      "lastModifiedBefore": {
+        "label": "Sửa lần cuối cách đây hơn",
+        "help": "… Để trống: không giới hạn."
+      },
+      "masterDtStartBefore": {
+        "label": "Bắt đầu cách đây hơn",
+        "help": "… Để trống: không giới hạn."
+      },
+      "isRejected": {
+        "label": "Bị người tham dự từ chối"
+      },
+      "isNotRecurring": {
+        "label": "Chỉ không lặp lại"
+      },
+      "ignoredDomains": {
+        "label": "Các miền bỏ qua",
+        "help": "Phân tách bằng dấu phẩy, ví dụ a.org,b.org"
+      },
+      "ldapFilter": {
+        "label": "Bộ lọc LDAP",
+        "help": "Chỉ các mục LDAP khớp bộ lọc được đồng bộ. Để trống: tất cả."
+      },
+      "scope": {
+        "label": "Phạm vi",
+        "values": {
+          "domain": "Liên hệ của miền",
+          "user": "Liên hệ của người dùng"
+        }
+      }
+    },
+    "units": {
+      "h": "Giờ",
+      "d": "Ngày",
+      "w": "Tuần",
+      "m": "Tháng",
+      "y": "Năm"
+    }
   },
   "healthCheck": {
     "checking": "Đang kiểm tra các thành phần, việc này có thể mất một lúc…",

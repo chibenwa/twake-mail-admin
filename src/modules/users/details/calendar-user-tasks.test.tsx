@@ -35,7 +35,7 @@ const runTask = (label: string) => {
   fireEvent.click(row.querySelector("button")!);
 };
 
-const paramInput = (key: string) => screen.getByLabelText(`${key}:`) as HTMLInputElement;
+const paramInput = (key: string) => screen.getByLabelText(`${key} (common.optional)`) as HTMLInputElement;
 
 const typeInto = (key: string, value: string) => fireEvent.change(paramInput(key), { target: { value } });
 

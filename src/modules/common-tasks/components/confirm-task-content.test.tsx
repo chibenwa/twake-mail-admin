@@ -122,6 +122,17 @@ describe("ConfirmTaskContent: no parameter", () => {
     const { container } = render(<ConfirmTaskContent message={<p>message</p>} command={COMMAND} params={[]} />);
 
     // "Command:" is the untranslated fallback of confirmTask.command
-    expect(container.textContent).toBe(`messageCommand:: ${COMMAND}`);
+    expect(container.textContent).toBe(`messageconfirmTask.command: ${COMMAND}`);
+  });
+});
+
+describe("ConfirmTaskContent: boxes ticked by default", () => {
+  it("previews an unticked box as false", () => {
+    renderWith([{ key: "consume", defaultValue: true, type: "checkbox" }]);
+    expect(preview()).not.toContain("consume=false");
+
+    fireEvent.click(screen.getByRole("checkbox"));
+
+    expect(preview()).toContain(`${COMMAND}?consume=false`);
   });
 });

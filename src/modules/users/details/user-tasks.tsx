@@ -30,7 +30,7 @@ import { defaultCommand } from "@/modules/common-tasks/components/command-previe
 
 const REINDEX_PARAMS: TaskParam[] = [
   { key: "messagesPerSecond", defaultValue: "50", type: "input" },
-  { key: "mode", values: ["rebuildAll", "fixOutdated"], type: "select" },
+  { key: "mode", values: ["", "fixOutdated", "rebuildAll"], type: "select" },
 ];
 
 const FAST_VIEW_PARAMS: TaskParam[] = [

@@ -78,7 +78,9 @@
     "close": "Chiudi",
     "sizeLimit": "Limite di dimensione",
     "sizeUnit": "Unità",
-    "remove": "Rimuovi"
+    "remove": "Rimuovi",
+    "optional": "facoltativo",
+    "advancedOptions": "Opzioni avanzate"
   },
   "sidebar": {
     "application": "Applicazione",
@@ -1117,7 +1119,8 @@
     "targetMustExist": "Il nuovo nome utente deve essere un account esistente: la ridenominazione migra solo i dati dell'utente attuale verso di esso.",
     "force": "Forza",
     "fromStep": "Riprendi dal passaggio",
-    "fromStepPlaceholder": "ad es. MailboxUsernameChangeTaskStep"
+    "fromStepPlaceholder": "ad es. MailboxUsernameChangeTaskStep",
+    "fromStepHelp": "Solo per riprendere una ridenominazione interrotta: copia il nome del passo dall'attività fallita."
   },
   "deleteUserDataForm": {
     "fromStep": "Riprendi dal passaggio",
@@ -1245,7 +1248,142 @@
     "invalidCleanupDays": "Inserisci un numero di giorni maggiore di 0",
     "cleaningUpOldTasks": "Pulizia delle attività vecchie",
     "runConfirm": "Vuoi eseguire l'attività {{name}}?",
-    "errorRunTask": "Errore durante l'esecuzione di {{name}}"
+    "errorRunTask": "Errore durante l'esecuzione di {{name}}",
+    "params": {
+      "defaultPlaceholder": "Predefinito: {{value}}",
+      "noLimit": "Nessun limite",
+      "empty": {
+        "any": "Qualsiasi",
+        "all": "Tutto",
+        "serverDefault": "Predefinito del server"
+      },
+      "messagesPerSecond": {
+        "label": "Limite di velocità",
+        "help": "Messaggi al secondo; abbassalo per ridurre il carico sui server.",
+        "unit": "messaggi/s"
+      },
+      "eventsPerSecond": {
+        "label": "Eventi al secondo",
+        "help": "Abbassalo per ridurre il carico sul server calendario."
+      },
+      "usersPerSecond": {
+        "label": "Utenti al secondo",
+        "help": "Quanti utenti vengono elaborati al secondo; abbassalo per ridurre il carico."
+      },
+      "contactsPerSecond": {
+        "label": "Contatti al secondo",
+        "help": "Abbassalo per ridurre il carico sul server contatti."
+      },
+      "queue": {
+        "label": "Coda di destinazione",
+        "help": "Coda di posta in cui vengono reinseriti i messaggi. Predefinito: spool."
+      },
+      "processor": {
+        "label": "Processore di destinazione",
+        "help": "Processore di mailet che rielabora i messaggi. root: elaborazione completa."
+      },
+      "consume": {
+        "label": "Rimuovi dal repository dopo la rielaborazione",
+        "help": "Non selezionato: una copia resta nel repository."
+      },
+      "limit": {
+        "label": "Numero massimo di messaggi",
+        "help": "Vuoto: tutti i messaggi."
+      },
+      "maxRetries": {
+        "label": "Salta i messaggi ritentati più di",
+        "help": "I messaggi già rielaborati tante volte restano nel repository. Vuoto: nessun limite.",
+        "unit": "volte"
+      },
+      "olderThan": {
+        "label": "Più vecchio di",
+        "help": "Viene eliminato solo ciò che è più vecchio, es. 5d (giorni), 12h (ore), 2w (settimane)."
+      },
+      "tiering": {
+        "label": "Messaggi più vecchi di",
+        "help": "Questi messaggi passano allo storage più economico."
+      },
+      "mode": {
+        "label": "Modalità di reindicizzazione",
+        "help": "Correggere i documenti obsoleti è più rapido; ricostruire tutto è completo ma pesante.",
+        "values": {
+          "fixOutdated": "Correggi solo i documenti obsoleti",
+          "rebuildAll": "Ricostruisci tutto"
+        }
+      },
+      "maxIterations": {
+        "label": "Passaggi massimi",
+        "help": "Quante volte la correzione viene rieseguita finché restano incoerenze."
+      },
+      "autoMerge": {
+        "label": "Unisci le caselle duplicate",
+        "help": "Selezionato: le caselle con lo stesso nome vengono unite invece di essere solo segnalate."
+      },
+      "trustMessageProjection": {
+        "label": "Fidati della proiezione dei messaggi",
+        "help": "Più rapido: conta dalla proiezione invece che da ogni messaggio. Lascia deselezionato se la proiezione può essere errata."
+      },
+      "quotaComponent": {
+        "label": "Componente della quota",
+        "values": {
+          "MAILBOX": "Caselle",
+          "SIEVE": "Script Sieve",
+          "JMAP_UPLOADS": "Caricamenti JMAP"
+        }
+      },
+      "associatedProbability": {
+        "label": "Tasso di falsi positivi",
+        "help": "Quota di blob non referenziati che il filtro di Bloom può tenere per errore. Più basso: più completo, più memoria."
+      },
+      "expectedBlobCount": {
+        "label": "Numero di blob previsto",
+        "help": "Numero approssimativo di blob archiviati, per dimensionare il filtro di Bloom."
+      },
+      "dryRun": {
+        "label": "Simulazione",
+        "help": "Selezionato: indica cosa verrebbe fatto senza modificare nulla."
+      },
+      "createdBefore": {
+        "label": "Creati più di",
+        "help": "… fa. Vuoto: nessun limite."
+      },
+      "lastModifiedBefore": {
+        "label": "Modificati più di",
+        "help": "… fa. Vuoto: nessun limite."
+      },
+      "masterDtStartBefore": {
+        "label": "Che iniziano più di",
+        "help": "… fa. Vuoto: nessun limite."
+      },
+      "isRejected": {
+        "label": "Rifiutati dal partecipante"
+      },
+      "isNotRecurring": {
+        "label": "Solo non ricorrenti"
+      },
+      "ignoredDomains": {
+        "label": "Domini da saltare",
+        "help": "Separati da virgole, es. a.org,b.org"
+      },
+      "ldapFilter": {
+        "label": "Filtro LDAP",
+        "help": "Vengono sincronizzate solo le voci LDAP corrispondenti. Vuoto: tutte."
+      },
+      "scope": {
+        "label": "Ambito",
+        "values": {
+          "domain": "Contatti di dominio",
+          "user": "Contatti utente"
+        }
+      }
+    },
+    "units": {
+      "h": "Ore",
+      "d": "Giorni",
+      "w": "Settimane",
+      "m": "Mesi",
+      "y": "Anni"
+    }
   },
   "healthCheck": {
     "checking": "Verifica dei componenti in corso, potrebbe richiedere un po' di tempo…",

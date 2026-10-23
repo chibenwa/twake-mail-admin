@@ -108,6 +108,14 @@ export interface TaskParam {
   defaultValue?: string | boolean;
   type: "input" | "checkbox" | "select" | "duration";
   values?: string[];
+  // Label and help are looked up by key in PARAM_DESCRIPTIONS (param-descriptions.ts);
+  // these override them for a dialog where the parameter means something else.
+  labelKey?: string;
+  helpKey?: string;
+  // Every WebAdmin task parameter has a server default: optional unless told otherwise.
+  optional?: boolean;
+  // Rarely needed: shown in a closed "Advanced options" section.
+  advanced?: boolean;
 }
 
 export interface CommonTask {

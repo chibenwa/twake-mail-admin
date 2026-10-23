@@ -86,7 +86,7 @@ describe("user tasks: confirmation dialogs preview their command", () => {
 
   it("follows the values typed in the form", async () => {
     await openDialog("users.tasks.renameUser");
-    fireEvent.change(screen.getByLabelText("renameUserForm.newUsername:"), { target: { value: "alice@linagora.com" } });
+    fireEvent.change(screen.getByLabelText("renameUserForm.newUsername"), { target: { value: "alice@linagora.com" } });
     expect(screen.getByText("curl -XPOST /users/bob@linagora.com/rename/alice@linagora.com?action=rename", { exact: false })).not.toBeNull();
   });
 

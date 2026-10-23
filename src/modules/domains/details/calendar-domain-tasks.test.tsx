@@ -31,7 +31,7 @@ const openRepublishDialog = () => {
   fireEvent.click(within(row).getByRole("button", { name: "common.run" }));
 };
 
-const contactsPerSecondInput = () => screen.getByLabelText("contactsPerSecond:") as HTMLInputElement;
+const contactsPerSecondInput = () => screen.getByLabelText("contactsPerSecond (common.optional)") as HTMLInputElement;
 const clickConfirm = () => fireEvent.click(screen.getByText("common.confirm"));
 
 afterEach(() => {

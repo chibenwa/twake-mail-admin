@@ -78,7 +78,9 @@
     "close": "Close",
     "sizeLimit": "Size limit",
     "sizeUnit": "Unit",
-    "remove": "Remove"
+    "remove": "Remove",
+    "optional": "optional",
+    "advancedOptions": "Advanced options"
   },
   "sidebar": {
     "application": "Application",
@@ -1117,7 +1119,8 @@
     "targetMustExist": "The new username must be an existing account: renaming only migrates the data of the current user to it.",
     "force": "Force",
     "fromStep": "Resume from step",
-    "fromStepPlaceholder": "e.g. MailboxUsernameChangeTaskStep"
+    "fromStepPlaceholder": "e.g. MailboxUsernameChangeTaskStep",
+    "fromStepHelp": "Only to resume a rename that failed midway: copy the step name from the failed task."
   },
   "deleteUserDataForm": {
     "fromStep": "Resume from step",
@@ -1245,7 +1248,142 @@
     "invalidCleanupDays": "Enter a number of days greater than 0",
     "cleaningUpOldTasks": "Cleaning up old tasks",
     "runConfirm": "Do you want to run task {{name}}?",
-    "errorRunTask": "Error running {{name}}"
+    "errorRunTask": "Error running {{name}}",
+    "params": {
+      "defaultPlaceholder": "Default: {{value}}",
+      "noLimit": "No limit",
+      "empty": {
+        "any": "Any",
+        "all": "All",
+        "serverDefault": "Server default"
+      },
+      "messagesPerSecond": {
+        "label": "Speed limit",
+        "help": "Messages per second; lower it to reduce the load on the servers.",
+        "unit": "messages/s"
+      },
+      "eventsPerSecond": {
+        "label": "Events per second",
+        "help": "Lower it to reduce the load on the calendar server."
+      },
+      "usersPerSecond": {
+        "label": "Users per second",
+        "help": "How many users are processed per second; lower it to reduce the load."
+      },
+      "contactsPerSecond": {
+        "label": "Contacts per second",
+        "help": "Lower it to reduce the load on the contacts server."
+      },
+      "queue": {
+        "label": "Target queue",
+        "help": "Mail queue the mails are put back in. Default: spool."
+      },
+      "processor": {
+        "label": "Target processor",
+        "help": "Mailet processor that handles the mails again. root means full processing."
+      },
+      "consume": {
+        "label": "Remove from the repository once reprocessed",
+        "help": "Unticked: a copy stays in the repository."
+      },
+      "limit": {
+        "label": "Maximum number of mails",
+        "help": "Empty: all mails."
+      },
+      "maxRetries": {
+        "label": "Skip mails retried more than",
+        "help": "Mails already reprocessed this many times are left in the repository. Empty: no limit.",
+        "unit": "times"
+      },
+      "olderThan": {
+        "label": "Older than",
+        "help": "Only what is older than this is deleted, e.g. 5d (days), 12h (hours), 2w (weeks)."
+      },
+      "tiering": {
+        "label": "Messages older than",
+        "help": "These messages move to the cheaper storage tier."
+      },
+      "mode": {
+        "label": "Reindex mode",
+        "help": "Fixing outdated documents is quicker; rebuilding everything is complete but heavy.",
+        "values": {
+          "fixOutdated": "Fix outdated documents only",
+          "rebuildAll": "Rebuild everything"
+        }
+      },
+      "maxIterations": {
+        "label": "Maximum passes",
+        "help": "How many times the fix runs again while inconsistencies remain."
+      },
+      "autoMerge": {
+        "label": "Merge duplicate mailboxes",
+        "help": "Ticked: mailboxes sharing a name are merged instead of only being reported."
+      },
+      "trustMessageProjection": {
+        "label": "Trust the message projection",
+        "help": "Faster: counts from the projection rather than from every message. Leave unticked if the projection may be wrong."
+      },
+      "quotaComponent": {
+        "label": "Quota component",
+        "values": {
+          "MAILBOX": "Mailboxes",
+          "SIEVE": "Sieve scripts",
+          "JMAP_UPLOADS": "JMAP uploads"
+        }
+      },
+      "associatedProbability": {
+        "label": "False positive rate",
+        "help": "Share of unreferenced blobs the Bloom filter may keep by mistake. Lower is more thorough but uses more memory."
+      },
+      "expectedBlobCount": {
+        "label": "Expected number of blobs",
+        "help": "Rough number of stored blobs, used to size the Bloom filter."
+      },
+      "dryRun": {
+        "label": "Dry run",
+        "help": "Ticked: reports what would be done without changing anything."
+      },
+      "createdBefore": {
+        "label": "Created more than",
+        "help": "… ago. Leave empty for no limit."
+      },
+      "lastModifiedBefore": {
+        "label": "Last modified more than",
+        "help": "… ago. Leave empty for no limit."
+      },
+      "masterDtStartBefore": {
+        "label": "Starting more than",
+        "help": "… ago. Leave empty for no limit."
+      },
+      "isRejected": {
+        "label": "Declined by the attendee"
+      },
+      "isNotRecurring": {
+        "label": "Non-recurring only"
+      },
+      "ignoredDomains": {
+        "label": "Domains to skip",
+        "help": "Comma-separated, e.g. a.org,b.org"
+      },
+      "ldapFilter": {
+        "label": "LDAP filter",
+        "help": "Only the LDAP entries matching this filter are synchronized. Empty: all."
+      },
+      "scope": {
+        "label": "Scope",
+        "values": {
+          "domain": "Domain contacts",
+          "user": "User contacts"
+        }
+      }
+    },
+    "units": {
+      "h": "Hours",
+      "d": "Days",
+      "w": "Weeks",
+      "m": "Months",
+      "y": "Years"
+    }
   },
   "healthCheck": {
     "checking": "Checking the components, this can take a while…",

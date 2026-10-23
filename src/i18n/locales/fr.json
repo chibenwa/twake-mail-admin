@@ -78,7 +78,9 @@
     "close": "Fermer",
     "sizeLimit": "Limite de taille",
     "sizeUnit": "Unité",
-    "remove": "Retirer"
+    "remove": "Retirer",
+    "optional": "facultatif",
+    "advancedOptions": "Options avancées"
   },
   "sidebar": {
     "application": "Application",
@@ -1117,7 +1119,8 @@
     "targetMustExist": "Le nouveau nom d'utilisateur doit être un compte existant : le renommage ne fait que migrer les données de l'utilisateur actuel vers ce compte.",
     "force": "Forcer",
     "fromStep": "Reprendre depuis l'étape",
-    "fromStepPlaceholder": "ex. MailboxUsernameChangeTaskStep"
+    "fromStepPlaceholder": "ex. MailboxUsernameChangeTaskStep",
+    "fromStepHelp": "Uniquement pour reprendre un renommage interrompu : copiez le nom de l'étape depuis la tâche en échec."
   },
   "deleteUserDataForm": {
     "fromStep": "Reprendre depuis l'étape",
@@ -1245,7 +1248,142 @@
     "invalidCleanupDays": "Saisissez un nombre de jours supérieur à 0",
     "cleaningUpOldTasks": "Nettoyage des anciennes tâches",
     "runConfirm": "Voulez-vous exécuter la tâche {{name}} ?",
-    "errorRunTask": "Erreur lors de l'exécution de {{name}}"
+    "errorRunTask": "Erreur lors de l'exécution de {{name}}",
+    "params": {
+      "defaultPlaceholder": "Par défaut : {{value}}",
+      "noLimit": "Sans limite",
+      "empty": {
+        "any": "Indifférent",
+        "all": "Tout",
+        "serverDefault": "Valeur par défaut du serveur"
+      },
+      "messagesPerSecond": {
+        "label": "Débit maximal",
+        "help": "Messages par seconde ; réduire pour soulager les serveurs.",
+        "unit": "messages/s"
+      },
+      "eventsPerSecond": {
+        "label": "Événements par seconde",
+        "help": "Réduire pour soulager le serveur calendrier."
+      },
+      "usersPerSecond": {
+        "label": "Utilisateurs par seconde",
+        "help": "Nombre d'utilisateurs traités par seconde ; réduire pour alléger la charge."
+      },
+      "contactsPerSecond": {
+        "label": "Contacts par seconde",
+        "help": "Réduire pour soulager le serveur de contacts."
+      },
+      "queue": {
+        "label": "File cible",
+        "help": "File où les mails sont réinjectés. Par défaut : spool."
+      },
+      "processor": {
+        "label": "Processeur cible",
+        "help": "Processeur de mailets qui retraite les mails. root : traitement complet."
+      },
+      "consume": {
+        "label": "Retirer du dépôt une fois retraités",
+        "help": "Décoché : une copie reste dans le dépôt."
+      },
+      "limit": {
+        "label": "Nombre maximal de mails",
+        "help": "Vide : tous les mails."
+      },
+      "maxRetries": {
+        "label": "Ignorer les mails retentés plus de",
+        "help": "Les mails déjà retraités autant de fois restent dans le dépôt. Vide : sans limite.",
+        "unit": "fois"
+      },
+      "olderThan": {
+        "label": "Plus ancien que",
+        "help": "Seul ce qui est plus ancien est supprimé, ex. 5d (jours), 12h (heures), 2w (semaines)."
+      },
+      "tiering": {
+        "label": "Messages plus anciens que",
+        "help": "Ces messages passent sur le stockage le moins coûteux."
+      },
+      "mode": {
+        "label": "Mode de réindexation",
+        "help": "Corriger les documents obsolètes est plus rapide ; tout reconstruire est complet mais lourd.",
+        "values": {
+          "fixOutdated": "Corriger uniquement les documents obsolètes",
+          "rebuildAll": "Tout reconstruire"
+        }
+      },
+      "maxIterations": {
+        "label": "Nombre maximal de passes",
+        "help": "Nombre de fois où la correction est relancée tant qu'il reste des incohérences."
+      },
+      "autoMerge": {
+        "label": "Fusionner les boîtes en double",
+        "help": "Coché : les boîtes de même nom sont fusionnées au lieu d'être seulement signalées."
+      },
+      "trustMessageProjection": {
+        "label": "Se fier à la projection des messages",
+        "help": "Plus rapide : compte à partir de la projection plutôt que de chaque message. Laisser décoché si la projection peut être fausse."
+      },
+      "quotaComponent": {
+        "label": "Composant de quota",
+        "values": {
+          "MAILBOX": "Boîtes aux lettres",
+          "SIEVE": "Scripts Sieve",
+          "JMAP_UPLOADS": "Envois JMAP"
+        }
+      },
+      "associatedProbability": {
+        "label": "Taux de faux positifs",
+        "help": "Part des blobs non référencés que le filtre de Bloom peut garder par erreur. Plus bas : plus complet, plus de mémoire."
+      },
+      "expectedBlobCount": {
+        "label": "Nombre de blobs attendu",
+        "help": "Nombre approximatif de blobs stockés, pour dimensionner le filtre de Bloom."
+      },
+      "dryRun": {
+        "label": "Simulation",
+        "help": "Coché : indique ce qui serait fait sans rien modifier."
+      },
+      "createdBefore": {
+        "label": "Créés il y a plus de",
+        "help": "… Laisser vide : aucune limite."
+      },
+      "lastModifiedBefore": {
+        "label": "Modifiés il y a plus de",
+        "help": "… Laisser vide : aucune limite."
+      },
+      "masterDtStartBefore": {
+        "label": "Commençant il y a plus de",
+        "help": "… Laisser vide : aucune limite."
+      },
+      "isRejected": {
+        "label": "Refusés par le participant"
+      },
+      "isNotRecurring": {
+        "label": "Non récurrents uniquement"
+      },
+      "ignoredDomains": {
+        "label": "Domaines à ignorer",
+        "help": "Séparés par des virgules, ex. a.org,b.org"
+      },
+      "ldapFilter": {
+        "label": "Filtre LDAP",
+        "help": "Seules les entrées LDAP correspondant à ce filtre sont synchronisées. Vide : toutes."
+      },
+      "scope": {
+        "label": "Portée",
+        "values": {
+          "domain": "Contacts de domaine",
+          "user": "Contacts utilisateur"
+        }
+      }
+    },
+    "units": {
+      "h": "Heures",
+      "d": "Jours",
+      "w": "Semaines",
+      "m": "Mois",
+      "y": "Années"
+    }
   },
   "healthCheck": {
     "checking": "Vérification des composants, cela peut prendre un moment…",

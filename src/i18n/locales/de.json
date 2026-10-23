@@ -78,7 +78,9 @@
     "close": "Schließen",
     "sizeLimit": "Größenlimit",
     "sizeUnit": "Einheit",
-    "remove": "Entfernen"
+    "remove": "Entfernen",
+    "optional": "optional",
+    "advancedOptions": "Erweiterte Optionen"
   },
   "sidebar": {
     "application": "Anwendung",
@@ -1117,7 +1119,8 @@
     "targetMustExist": "Der neue Benutzername muss ein bestehendes Konto sein: Das Umbenennen migriert nur die Daten des aktuellen Benutzers dorthin.",
     "force": "Erzwingen",
     "fromStep": "Ab Schritt fortsetzen",
-    "fromStepPlaceholder": "z. B. MailboxUsernameChangeTaskStep"
+    "fromStepPlaceholder": "z. B. MailboxUsernameChangeTaskStep",
+    "fromStepHelp": "Nur um eine abgebrochene Umbenennung fortzusetzen: Kopieren Sie den Schrittnamen aus der fehlgeschlagenen Aufgabe."
   },
   "deleteUserDataForm": {
     "fromStep": "Ab Schritt fortsetzen",
@@ -1245,7 +1248,142 @@
     "invalidCleanupDays": "Geben Sie eine Anzahl von Tagen größer als 0 ein",
     "cleaningUpOldTasks": "Alte Aufgaben werden bereinigt",
     "runConfirm": "Möchten Sie die Aufgabe {{name}} ausführen?",
-    "errorRunTask": "Fehler beim Ausführen von {{name}}"
+    "errorRunTask": "Fehler beim Ausführen von {{name}}",
+    "params": {
+      "defaultPlaceholder": "Standard: {{value}}",
+      "noLimit": "Keine Grenze",
+      "empty": {
+        "any": "Beliebig",
+        "all": "Alle",
+        "serverDefault": "Serverstandard"
+      },
+      "messagesPerSecond": {
+        "label": "Geschwindigkeitsbegrenzung",
+        "help": "Nachrichten pro Sekunde; senken, um die Server zu entlasten.",
+        "unit": "Nachrichten/s"
+      },
+      "eventsPerSecond": {
+        "label": "Ereignisse pro Sekunde",
+        "help": "Senken, um den Kalenderserver zu entlasten."
+      },
+      "usersPerSecond": {
+        "label": "Benutzer pro Sekunde",
+        "help": "Wie viele Benutzer pro Sekunde verarbeitet werden; senken, um die Last zu verringern."
+      },
+      "contactsPerSecond": {
+        "label": "Kontakte pro Sekunde",
+        "help": "Senken, um den Kontaktserver zu entlasten."
+      },
+      "queue": {
+        "label": "Ziel-Warteschlange",
+        "help": "Mail-Warteschlange, in die die Mails zurückgelegt werden. Standard: spool."
+      },
+      "processor": {
+        "label": "Ziel-Prozessor",
+        "help": "Mailet-Prozessor, der die Mails erneut verarbeitet. root bedeutet vollständige Verarbeitung."
+      },
+      "consume": {
+        "label": "Nach der Verarbeitung aus dem Repository entfernen",
+        "help": "Nicht angehakt: Eine Kopie bleibt im Repository."
+      },
+      "limit": {
+        "label": "Höchstzahl an Mails",
+        "help": "Leer: alle Mails."
+      },
+      "maxRetries": {
+        "label": "Mails überspringen, die öfter versucht wurden als",
+        "help": "Mails, die schon so oft verarbeitet wurden, bleiben im Repository. Leer: keine Grenze.",
+        "unit": "Mal"
+      },
+      "olderThan": {
+        "label": "Älter als",
+        "help": "Nur Älteres wird gelöscht, z. B. 5d (Tage), 12h (Stunden), 2w (Wochen)."
+      },
+      "tiering": {
+        "label": "Nachrichten älter als",
+        "help": "Diese Nachrichten wandern in die günstigere Speicherstufe."
+      },
+      "mode": {
+        "label": "Reindizierungsmodus",
+        "help": "Veraltete Dokumente zu korrigieren geht schneller; alles neu aufbauen ist vollständig, aber aufwendig.",
+        "values": {
+          "fixOutdated": "Nur veraltete Dokumente korrigieren",
+          "rebuildAll": "Alles neu aufbauen"
+        }
+      },
+      "maxIterations": {
+        "label": "Maximale Durchläufe",
+        "help": "Wie oft die Korrektur erneut läuft, solange Inkonsistenzen bleiben."
+      },
+      "autoMerge": {
+        "label": "Doppelte Postfächer zusammenführen",
+        "help": "Angehakt: Gleichnamige Postfächer werden zusammengeführt statt nur gemeldet."
+      },
+      "trustMessageProjection": {
+        "label": "Der Nachrichtenprojektion vertrauen",
+        "help": "Schneller: zählt aus der Projektion statt aus jeder Nachricht. Nicht anhaken, wenn die Projektion falsch sein kann."
+      },
+      "quotaComponent": {
+        "label": "Quota-Komponente",
+        "values": {
+          "MAILBOX": "Postfächer",
+          "SIEVE": "Sieve-Skripte",
+          "JMAP_UPLOADS": "JMAP-Uploads"
+        }
+      },
+      "associatedProbability": {
+        "label": "Falsch-Positiv-Rate",
+        "help": "Anteil unreferenzierter Blobs, die der Bloom-Filter versehentlich behalten darf. Niedriger ist gründlicher, braucht aber mehr Speicher."
+      },
+      "expectedBlobCount": {
+        "label": "Erwartete Anzahl Blobs",
+        "help": "Ungefähre Zahl gespeicherter Blobs, zur Dimensionierung des Bloom-Filters."
+      },
+      "dryRun": {
+        "label": "Probelauf",
+        "help": "Angehakt: meldet, was getan würde, ohne etwas zu ändern."
+      },
+      "createdBefore": {
+        "label": "Erstellt vor mehr als",
+        "help": "… Leer lassen: keine Grenze."
+      },
+      "lastModifiedBefore": {
+        "label": "Zuletzt geändert vor mehr als",
+        "help": "… Leer lassen: keine Grenze."
+      },
+      "masterDtStartBefore": {
+        "label": "Beginnend vor mehr als",
+        "help": "… Leer lassen: keine Grenze."
+      },
+      "isRejected": {
+        "label": "Vom Teilnehmer abgelehnt"
+      },
+      "isNotRecurring": {
+        "label": "Nur nicht wiederkehrende"
+      },
+      "ignoredDomains": {
+        "label": "Zu überspringende Domänen",
+        "help": "Durch Kommas getrennt, z. B. a.org,b.org"
+      },
+      "ldapFilter": {
+        "label": "LDAP-Filter",
+        "help": "Nur passende LDAP-Einträge werden synchronisiert. Leer: alle."
+      },
+      "scope": {
+        "label": "Bereich",
+        "values": {
+          "domain": "Domänenkontakte",
+          "user": "Benutzerkontakte"
+        }
+      }
+    },
+    "units": {
+      "h": "Stunden",
+      "d": "Tage",
+      "w": "Wochen",
+      "m": "Monate",
+      "y": "Jahre"
+    }
   },
   "healthCheck": {
     "checking": "Komponenten werden geprüft, dies kann eine Weile dauern…",

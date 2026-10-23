@@ -78,7 +78,9 @@
     "close": "Cerrar",
     "sizeLimit": "Límite de tamaño",
     "sizeUnit": "Unidad",
-    "remove": "Quitar"
+    "remove": "Quitar",
+    "optional": "opcional",
+    "advancedOptions": "Opciones avanzadas"
   },
   "sidebar": {
     "application": "Aplicación",
@@ -1117,7 +1119,8 @@
     "targetMustExist": "El nuevo nombre de usuario debe ser una cuenta existente: el cambio de nombre solo migra los datos del usuario actual a ella.",
     "force": "Forzar",
     "fromStep": "Reanudar desde el paso",
-    "fromStepPlaceholder": "p. ej. MailboxUsernameChangeTaskStep"
+    "fromStepPlaceholder": "p. ej. MailboxUsernameChangeTaskStep",
+    "fromStepHelp": "Solo para reanudar un cambio de nombre que falló a medias: copie el nombre del paso de la tarea fallida."
   },
   "deleteUserDataForm": {
     "fromStep": "Reanudar desde el paso",
@@ -1245,7 +1248,142 @@
     "invalidCleanupDays": "Introduzca un número de días mayor que 0",
     "cleaningUpOldTasks": "Limpiando las tareas antiguas",
     "runConfirm": "¿Desea ejecutar la tarea {{name}}?",
-    "errorRunTask": "Error al ejecutar {{name}}"
+    "errorRunTask": "Error al ejecutar {{name}}",
+    "params": {
+      "defaultPlaceholder": "Predeterminado: {{value}}",
+      "noLimit": "Sin límite",
+      "empty": {
+        "any": "Cualquiera",
+        "all": "Todo",
+        "serverDefault": "Valor predeterminado del servidor"
+      },
+      "messagesPerSecond": {
+        "label": "Límite de velocidad",
+        "help": "Mensajes por segundo; redúzcalo para aliviar la carga de los servidores.",
+        "unit": "mensajes/s"
+      },
+      "eventsPerSecond": {
+        "label": "Eventos por segundo",
+        "help": "Redúzcalo para aliviar el servidor de calendario."
+      },
+      "usersPerSecond": {
+        "label": "Usuarios por segundo",
+        "help": "Cuántos usuarios se procesan por segundo; redúzcalo para aliviar la carga."
+      },
+      "contactsPerSecond": {
+        "label": "Contactos por segundo",
+        "help": "Redúzcalo para aliviar el servidor de contactos."
+      },
+      "queue": {
+        "label": "Cola de destino",
+        "help": "Cola de correo donde se vuelven a poner los correos. Predeterminado: spool."
+      },
+      "processor": {
+        "label": "Procesador de destino",
+        "help": "Procesador de mailets que vuelve a tratar los correos. root: procesamiento completo."
+      },
+      "consume": {
+        "label": "Quitar del repositorio una vez reprocesados",
+        "help": "Sin marcar: queda una copia en el repositorio."
+      },
+      "limit": {
+        "label": "Número máximo de correos",
+        "help": "Vacío: todos los correos."
+      },
+      "maxRetries": {
+        "label": "Omitir correos reintentados más de",
+        "help": "Los correos ya reprocesados tantas veces quedan en el repositorio. Vacío: sin límite.",
+        "unit": "veces"
+      },
+      "olderThan": {
+        "label": "Más antiguo que",
+        "help": "Solo se elimina lo más antiguo, p. ej. 5d (días), 12h (horas), 2w (semanas)."
+      },
+      "tiering": {
+        "label": "Mensajes más antiguos que",
+        "help": "Estos mensajes pasan al almacenamiento más económico."
+      },
+      "mode": {
+        "label": "Modo de reindexación",
+        "help": "Corregir los documentos obsoletos es más rápido; reconstruirlo todo es completo pero pesado.",
+        "values": {
+          "fixOutdated": "Corregir solo los documentos obsoletos",
+          "rebuildAll": "Reconstruirlo todo"
+        }
+      },
+      "maxIterations": {
+        "label": "Pasadas máximas",
+        "help": "Cuántas veces se vuelve a ejecutar la corrección mientras queden incoherencias."
+      },
+      "autoMerge": {
+        "label": "Fusionar buzones duplicados",
+        "help": "Marcado: los buzones con el mismo nombre se fusionan en lugar de solo notificarse."
+      },
+      "trustMessageProjection": {
+        "label": "Confiar en la proyección de mensajes",
+        "help": "Más rápido: cuenta a partir de la proyección y no de cada mensaje. Déjelo sin marcar si la proyección puede ser errónea."
+      },
+      "quotaComponent": {
+        "label": "Componente de cuota",
+        "values": {
+          "MAILBOX": "Buzones",
+          "SIEVE": "Scripts Sieve",
+          "JMAP_UPLOADS": "Subidas JMAP"
+        }
+      },
+      "associatedProbability": {
+        "label": "Tasa de falsos positivos",
+        "help": "Proporción de blobs sin referencia que el filtro de Bloom puede conservar por error. Más bajo: más completo, más memoria."
+      },
+      "expectedBlobCount": {
+        "label": "Número de blobs esperado",
+        "help": "Número aproximado de blobs almacenados, para dimensionar el filtro de Bloom."
+      },
+      "dryRun": {
+        "label": "Simulación",
+        "help": "Marcado: indica lo que se haría sin cambiar nada."
+      },
+      "createdBefore": {
+        "label": "Creados hace más de",
+        "help": "… Vacío: sin límite."
+      },
+      "lastModifiedBefore": {
+        "label": "Modificados hace más de",
+        "help": "… Vacío: sin límite."
+      },
+      "masterDtStartBefore": {
+        "label": "Que empiezan hace más de",
+        "help": "… Vacío: sin límite."
+      },
+      "isRejected": {
+        "label": "Rechazados por el participante"
+      },
+      "isNotRecurring": {
+        "label": "Solo no recurrentes"
+      },
+      "ignoredDomains": {
+        "label": "Dominios a omitir",
+        "help": "Separados por comas, p. ej. a.org,b.org"
+      },
+      "ldapFilter": {
+        "label": "Filtro LDAP",
+        "help": "Solo se sincronizan las entradas LDAP que coinciden. Vacío: todas."
+      },
+      "scope": {
+        "label": "Alcance",
+        "values": {
+          "domain": "Contactos de dominio",
+          "user": "Contactos de usuario"
+        }
+      }
+    },
+    "units": {
+      "h": "Horas",
+      "d": "Días",
+      "w": "Semanas",
+      "m": "Meses",
+      "y": "Años"
+    }
   },
   "healthCheck": {
     "checking": "Comprobando los componentes, esto puede tardar un poco…",

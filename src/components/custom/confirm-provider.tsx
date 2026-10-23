@@ -1,4 +1,4 @@
-import { createContext, useContext, useId, useRef, useState, ReactNode } from "react";
+import { createContext, useContext, useId, useLayoutEffect, useRef, useState, ReactNode } from "react";
 import { Loader2, TriangleAlert } from "lucide-react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -60,6 +60,20 @@ export const ConfirmContext = createContext<ConfirmContextType | null>(null);
 
 const ConfirmAppearanceContext = createContext<((appearance: ConfirmAppearance) => void) | null>(null);
 
+const FocusCancelContext = createContext<(() => void) | null>(null);
+
+/**
+ * Called by a dialog content whose fields are all optional, e.g. task parameters: the
+ * dialog opens with the focus on "Cancel" rather than in the first field.
+ */
+export function useFocusCancelOnOpen(enabled = true): void {
+  const request = useContext(FocusCancelContext);
+  // Before the dialog moves its initial focus, which happens in an effect of an ancestor
+  useLayoutEffect(() => {
+    if (enabled) request?.();
+  }, [enabled, request]);
+}
+
 /**
  * Lets the content of a confirm dialog change its confirm button, e.g. turn it red with
  * another label while the typed parameters make the action irreversible.
@@ -85,10 +99,13 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
   const cancelRef = useRef<HTMLButtonElement>(null);
   const typeRef = useRef<HTMLInputElement>(null);
   const typeId = useId();
+  const focusCancel = useRef(false);
+  const [requestFocusCancel] = useState(() => () => { focusCancel.current = true; });
 
   const confirm: ConfirmContextType = (options: ConfirmOptions) => {
     rememberFocus();
     setTyped("");
+    focusCancel.current = false;
     return new Promise<boolean>((resolve) => {
       setConfirmState({ ...options, isOpen: true, pending: false, error: null, resolve });
     });
@@ -143,7 +160,7 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
   // A destructive dialog never opens with the focus on a field or on the confirm button
   const handleOpenAutoFocus = (event: Event) => {
     const target = confirmState.typeToConfirm !== undefined ? typeRef.current
-      : confirmState.destructive ? cancelRef.current
+      : confirmState.destructive || focusCancel.current ? cancelRef.current
       : null;
     if (!target) return;
     event.preventDefault();
@@ -165,9 +182,11 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
             </div>
           )}
           <ConfirmAppearanceContext.Provider value={setAppearance}>
-            <div className="contents" onChange={clearError}>
-              { typeof confirmState.message === 'string' ? <p>{confirmState.message}</p> : confirmState.message }
-            </div>
+            <FocusCancelContext.Provider value={requestFocusCancel}>
+              <div className="contents" onChange={clearError}>
+                { typeof confirmState.message === 'string' ? <p>{confirmState.message}</p> : confirmState.message }
+              </div>
+            </FocusCancelContext.Provider>
           </ConfirmAppearanceContext.Provider>
           {confirmState.typeToConfirm !== undefined && (
             <div>

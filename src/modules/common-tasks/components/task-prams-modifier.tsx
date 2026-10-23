@@ -6,17 +6,22 @@ import { useEffect, useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import {
+  PARAM_DESCRIPTIONS,
+  paramEmptyKey,
+  paramHelpKey,
+  paramLabelKey,
+  paramUnitKey,
+  paramValueKey,
+} from "../param-descriptions";
 
-const DURATION_UNITS = [
-  { value: "h", label: "Hours" },
-  { value: "d", label: "Days" },
-  { value: "w", label: "Weeks" },
-  { value: "m", label: "Months" },
-  { value: "y", label: "Years" },
-];
+const DURATION_UNITS = ["h", "d", "w", "m", "y"] as const;
 
 const DEFAULT_DURATION_UNIT = "d";
 const DURATION_PATTERN = /^(\d+)([hdwmy])$/;
+
+// Radix forbids an empty item value: the "no value" option of a select goes through this one.
+const EMPTY_OPTION = "__empty__";
 
 // Splits a duration default such as "30d" into the amount and unit shown by the
 // duration field, so that the field and the command preview agree from the start.
@@ -32,10 +37,15 @@ interface Props {
   handleChangeParam: (key: string, value: string | boolean) => void;
 }
 
+/**
+ * The parameters of a task as a labelled form: translated label, "(optional)", raw query
+ * key, field, unit and help. Rarely needed parameters go into a closed "Advanced options".
+ */
 const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const idPrefix = useId();
   const fieldId = (key: string) => `${idPrefix}-${key}`;
+  const helpId = (key: string) => `${idPrefix}-${key}-help`;
   const [formData, setFormData] = useState<Record<string, string | boolean>>(() => {
     const initialData: Record<string, string | boolean> = {};
     params?.forEach(param => {
@@ -70,96 +80,151 @@ const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
     setFormData(prev => ({ ...prev, [key]: combined }));
   };
 
-  const handleRemove = (key: string) => {
-    setFormData(prev => ({ ...prev, [key]: "" }));
-  };
-
   const handleRemoveDuration = (key: string) => {
     setDurationParts(prev => ({ ...prev, [key]: { amount: "", unit: DEFAULT_DURATION_UNIT } }));
     setFormData(prev => ({ ...prev, [key]: "" }));
   };
 
-  return (
-    <div className="space-y-3">
-      {params?.map(param => (
-        <div key={param.key} className="flex items-center space-x-2">
-          <label htmlFor={fieldId(param.key)} className="font-medium">{param.key}:</label>
-          {param.type === "input" && (
+  // An unknown parameter keeps showing its key, rather than a missing translation
+  const label = (param: TaskParam) => {
+    const key = param.labelKey ?? paramLabelKey(param.key);
+    return i18n?.exists?.(key) ? t(key) : param.key;
+  };
+  const help = (param: TaskParam): string | null => {
+    if (param.helpKey) return t(param.helpKey);
+    return PARAM_DESCRIPTIONS[param.key]?.help ? t(paramHelpKey(param.key)) : null;
+  };
+  const unit = (param: TaskParam): string | null =>
+    PARAM_DESCRIPTIONS[param.key]?.unit ? t(paramUnitKey(param.key)) : null;
+  const optionLabel = (param: TaskParam, value: string) => {
+    if (value === "") return t(paramEmptyKey(PARAM_DESCRIPTIONS[param.key]?.empty ?? "any"));
+    const description = PARAM_DESCRIPTIONS[param.key];
+    return description?.values || value === "true" || value === "false" ? t(paramValueKey(param.key, value)) : value;
+  };
+  const defaultPlaceholder = (param: TaskParam) =>
+    typeof param.defaultValue === "string" && param.defaultValue
+      ? t("commonTasks.params.defaultPlaceholder", { value: param.defaultValue })
+      : undefined;
+
+  const renderField = (param: TaskParam) => {
+    const helpText = help(param);
+    const describedBy = helpText ? helpId(param.key) : undefined;
+    const unitText = unit(param);
+    return (
+      <div className="min-w-0">
+        {param.type === "input" && (
+          <div className="flex items-center gap-2">
             <Input
               id={fieldId(param.key)}
+              aria-describedby={describedBy}
               value={formData[param.key] as string}
+              placeholder={defaultPlaceholder(param)}
               onChange={e => handleChange(param.key, e.target.value)}
             />
-          )}
-          {param.type === "checkbox" && (
-            <Checkbox
+            {unitText && <span className="text-sm text-muted-foreground whitespace-nowrap">{unitText}</span>}
+          </div>
+        )}
+        {param.type === "checkbox" && (
+          <Checkbox
+            id={fieldId(param.key)}
+            aria-describedby={describedBy}
+            className="mt-1"
+            checked={formData[param.key] as boolean}
+            onCheckedChange={checked => handleChange(param.key, checked === true)}
+          />
+        )}
+        {param.type === "select" && param.values && (
+          <Select
+            value={(formData[param.key] as string) || EMPTY_OPTION}
+            onValueChange={value => handleChange(param.key, value === EMPTY_OPTION ? "" : value)}
+          >
+            <SelectTrigger id={fieldId(param.key)} aria-describedby={describedBy} className="w-full sm:w-[250px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {/* Without a value, the server applies its default: a real option, not a placeholder */}
+              {[...(param.values.includes("") ? [] : [""]), ...param.values].map(option => (
+                <SelectItem key={option || EMPTY_OPTION} value={option || EMPTY_OPTION}>
+                  {optionLabel(param, option)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+        {param.type === "duration" && (
+          <div className="flex items-center gap-2">
+            <Input
               id={fieldId(param.key)}
-              checked={formData[param.key] as boolean}
-              onCheckedChange={checked => handleChange(param.key, checked)}
+              aria-describedby={describedBy}
+              type="number"
+              min="0"
+              className="w-[110px]"
+              placeholder={t("commonTasks.params.noLimit")}
+              value={durationParts[param.key]?.amount ?? ""}
+              onChange={e => handleDurationChange(param.key, e.target.value, durationParts[param.key]?.unit ?? "d")}
             />
-          )}
-          {param.type === "select" && param.values && (
-            <div className="flex items-center space-x-2">
-              <Select value={formData[param.key] as string} onValueChange={value => handleChange(param.key, value)}>
-                <SelectTrigger id={fieldId(param.key)} className="w-[250px]">
-                  <SelectValue placeholder={(formData[param.key] as string) || "Select an option"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {param.values.filter(v => v !== "").map(option => (
-                    <SelectItem key={option} value={option}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("commonTasks.clearParam", { key: param.key })}
-                onClick={() => handleRemove(param.key)}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          )}
-          {param.type === "duration" && (
-            <div className="flex items-center space-x-2">
-              <Input
-                id={fieldId(param.key)}
-                type="number"
-                min="0"
-                className="w-[100px]"
-                placeholder="0"
-                value={durationParts[param.key]?.amount ?? ""}
-                onChange={e => handleDurationChange(param.key, e.target.value, durationParts[param.key]?.unit ?? "d")}
-              />
-              <Select
-                value={durationParts[param.key]?.unit ?? "d"}
-                onValueChange={unit => handleDurationChange(param.key, durationParts[param.key]?.amount ?? "", unit)}
-              >
-                <SelectTrigger className="w-[130px]" aria-label={t("commonTasks.durationUnit", { key: param.key })}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {DURATION_UNITS.map(u => (
-                    <SelectItem key={u.value} value={u.value}>
-                      {u.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t("commonTasks.clearParam", { key: param.key })}
-                onClick={() => handleRemoveDuration(param.key)}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          )}
+            <Select
+              value={durationParts[param.key]?.unit ?? "d"}
+              onValueChange={unit => handleDurationChange(param.key, durationParts[param.key]?.amount ?? "", unit)}
+            >
+              <SelectTrigger className="w-[130px]" aria-label={t("commonTasks.durationUnit", { key: label(param) })}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {DURATION_UNITS.map(u => (
+                  <SelectItem key={u} value={u}>
+                    {t(`commonTasks.units.${u}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t("commonTasks.clearParam", { key: label(param) })}
+              onClick={() => handleRemoveDuration(param.key)}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+        {helpText && <p id={helpId(param.key)} className="text-xs text-muted-foreground mt-1">{helpText}</p>}
+      </div>
+    );
+  };
+
+  const renderRows = (rows: TaskParam[]) => (
+    <div className="grid grid-cols-1 sm:grid-cols-[minmax(11rem,auto)_1fr] gap-x-3 gap-y-1 sm:gap-y-3 items-start">
+      {rows.map(param => (
+        <div key={param.key} className="contents">
+          <div className="pt-0 sm:pt-2 mt-2 sm:mt-0">
+            <label htmlFor={fieldId(param.key)} className="text-sm font-medium">
+              {label(param)}
+              {param.optional !== false && (
+                <span className="font-normal text-muted-foreground"> ({t("common.optional")})</span>
+              )}
+            </label>
+            {/* Keeps the link with the command preview and the WebAdmin documentation */}
+            <div className="font-mono text-xs text-muted-foreground">{param.key}</div>
+          </div>
+          {renderField(param)}
         </div>
       ))}
+    </div>
+  );
+
+  const basic = params?.filter(param => !param.advanced) ?? [];
+  const advanced = params?.filter(param => param.advanced) ?? [];
+
+  return (
+    <div className="space-y-3">
+      {basic.length > 0 && renderRows(basic)}
+      {advanced.length > 0 && (
+        <details className="text-sm">
+          <summary className="cursor-pointer text-muted-foreground">{t("common.advancedOptions")}</summary>
+          <div className="mt-2">{renderRows(advanced)}</div>
+        </details>
+      )}
     </div>
   );
 };
