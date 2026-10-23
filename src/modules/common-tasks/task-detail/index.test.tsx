@@ -176,3 +176,13 @@ describe("task detail: readable summary", () => {
     }
   });
 });
+
+describe("task detail: status shown once", () => {
+  it("states the status only in the summary", async () => {
+    api.getTaskDetail.mockResolvedValue({ taskId: TASK_ID, type: "full-reindexing", status: TaskStatus.COMPLETED });
+    renderTaskDetail();
+
+    await screen.findByText("tasks.type");
+    expect(screen.getAllByText("tasks.completed").filter((el) => el.className.includes("rounded-full"))).toHaveLength(1);
+  });
+});

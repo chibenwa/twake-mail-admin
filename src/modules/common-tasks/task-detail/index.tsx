@@ -11,7 +11,7 @@ import { Tooltip } from "@radix-ui/react-tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { TaskDetailResponse, TaskStatus } from "../types";
-import { isRunning, StatusPill, TaskDetails, TaskSummary } from "@/modules/tasks/task-summary";
+import { isRunning, TaskDetails, TaskSummary } from "@/modules/tasks/task-summary";
 
 // A running task is read again this often, until it is over
 const AUTO_REFRESH_MS = 2000;
@@ -112,15 +112,13 @@ export default function TaskDetail() {
 
       {taskDetail && (
         <div className="space-y-4 max-w-3xl">
-          <div className="flex flex-wrap items-center gap-3">
-            <StatusPill status={taskDetail.status} />
-            {running && (
-              <span role="status" className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
-                {t("tasks.autoRefresh")}
-              </span>
-            )}
-          </div>
+          {/* The status itself is the first line of the summary */}
+          {running && (
+            <p role="status" className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+              <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
+              {t("tasks.autoRefresh")}
+            </p>
+          )}
           <TaskSummary task={taskDetail} />
           <TaskDetails task={taskDetail} raw={taskDetail} />
         </div>
