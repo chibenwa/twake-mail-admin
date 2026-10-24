@@ -24,36 +24,62 @@ interface Props {
  * The modal every "create" or "add" action of a list opens: its fields, Enter to submit,
  * and a refusal shown in it, the typed values kept, instead of a toast that loses them.
  */
-export default function FormDialog({ open, onClose, title, submitLabel, submitDisabled, validate, onSubmit, children, className }: Props) {
-  const { t } = useTranslation();
+/**
+ * The submission of a form: checked first, then sent, a refusal kept to be shown. `submit`
+ * resolves true once the form can close.
+ */
+function useSubmission(validate: Props["validate"], onSubmit: Props["onSubmit"]) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [invalid, setInvalid] = useState<string | null>(null);
 
-  const close = () => {
-    if (submitting) return;
+  const clear = () => {
     setError(null);
     setInvalid(null);
+  };
+
+  const submit = async (): Promise<boolean> => {
+    const problem = validate?.() ?? null;
+    setInvalid(problem);
+    if (problem) return false;
+    setSubmitting(true);
+    setError(null);
+    try {
+      return (await onSubmit()) !== false;
+    } catch (err) {
+      setError(err);
+      return false;
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return { submitting, error, invalid, clear, submit };
+}
+
+function Problems({ invalid, error }: { invalid: string | null; error: unknown }) {
+  return (
+    <>
+      {invalid && <p role="alert" className="text-sm text-red-600">{invalid}</p>}
+      {error !== null && <div role="alert" className="text-sm text-red-600"><ErrorDisplayer error={error} /></div>}
+    </>
+  );
+}
+
+export default function FormDialog({ open, onClose, title, submitLabel, submitDisabled, validate, onSubmit, children, className }: Props) {
+  const { t } = useTranslation();
+  const { submitting, error, invalid, clear, submit } = useSubmission(validate, onSubmit);
+
+  const close = () => {
+    if (submitting) return;
+    clear();
     onClose();
   };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (submitDisabled || submitting) return;
-    const problem = validate?.() ?? null;
-    setInvalid(problem);
-    if (problem) return;
-    setSubmitting(true);
-    setError(null);
-    try {
-      if ((await onSubmit()) === false) return;
-      setError(null);
-      onClose();
-    } catch (err) {
-      setError(err);
-    } finally {
-      setSubmitting(false);
-    }
+    if (await submit()) onClose();
   };
 
   return (
@@ -63,10 +89,9 @@ export default function FormDialog({ open, onClose, title, submitLabel, submitDi
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         {/* Our own messages rather than the browser's validation bubbles */}
-        <form noValidate onSubmit={handleSubmit} onChange={() => { setError(null); setInvalid(null); }} className="space-y-3">
+        <form noValidate onSubmit={handleSubmit} onChange={clear} className="space-y-3">
           {children}
-          {invalid && <p role="alert" className="text-sm text-red-600">{invalid}</p>}
-          {error !== null && <div role="alert" className="text-sm text-red-600"><ErrorDisplayer error={error} /></div>}
+          <Problems invalid={invalid} error={error} />
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={close} disabled={submitting}>{t("common.cancel")}</Button>
             <Button type="submit" disabled={submitting || submitDisabled}>

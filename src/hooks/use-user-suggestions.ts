@@ -10,6 +10,13 @@ export const MAX_USER_SUGGESTIONS = 5;
 export const MIN_SUGGEST_LENGTH = 3;
 const SUGGEST_DEBOUNCE_MS = 250;
 
+// Backends ignoring the parameters return everything: filtered and capped here too
+const fetchSuggestions = async (query: string, domain: string) =>
+  applyUsersRequest(
+    await listUsernames({ query, domain: domain || undefined, limit: MAX_USER_SUGGESTIONS }),
+    { query, domain, limit: MAX_USER_SUGGESTIONS },
+  );
+
 /**
  * Up to five usernames starting with what the admin typed, from `GET /users?query&limit`
  * (scoped to the domain in DOMAIN mode). Only a suggestion: nothing is suggested without
@@ -20,21 +27,18 @@ export function useUserSuggestions(text: string, enabled = true): string[] {
   const canList = useIsAllowed("GET", domain ? "/users?domain={domain}&{params}" : "/users");
   const query = useDebouncedValue(text.trim(), SUGGEST_DEBOUNCE_MS);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const wanted = enabled && canList && query.length >= MIN_SUGGEST_LENGTH;
 
   useEffect(() => {
-    if (!enabled || !canList || query.length < MIN_SUGGEST_LENGTH) {
+    if (!wanted) {
       setSuggestions([]);
       return;
     }
     let current = true;
-    const request = { query, domain, limit: MAX_USER_SUGGESTIONS };
-    Promise.resolve()
-      .then(() => listUsernames({ query, domain: domain || undefined, limit: MAX_USER_SUGGESTIONS }))
-      // Backends ignoring the parameters return everything: filtered and capped here too
-      .then((usernames) => { if (current) setSuggestions(applyUsersRequest(usernames, request)); })
-      .catch(() => { if (current) setSuggestions([]); });
+    const show = (usernames: string[]) => { if (current) setSuggestions(usernames); };
+    fetchSuggestions(query, domain).then(show, () => show([]));
     return () => { current = false; };
-  }, [query, domain, canList, enabled]);
+  }, [query, domain, wanted]);
 
   return suggestions;
 }

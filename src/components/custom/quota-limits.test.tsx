@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import "@/test/resize-observer";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 vi.mock("react-i18next", () => ({
@@ -12,9 +13,6 @@ const toast = vi.hoisted(() => vi.fn());
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast }) }));
 
 import QuotaLimits, { QuotaLimitValues, toSizeField } from "./quota-limits";
-
-// The Radix checkbox measures itself; jsdom has no ResizeObserver
-globalThis.ResizeObserver ??= class { observe() {} unobserve() {} disconnect() {} } as unknown as typeof ResizeObserver;
 
 const MB = 1024 * 1024;
 const api = { putCount: vi.fn(), deleteCount: vi.fn(), putSize: vi.fn(), deleteSize: vi.fn() };
@@ -40,6 +38,12 @@ function renderLimits(current: QuotaLimitValues) {
   );
 }
 
+const openLimits = (current: QuotaLimitValues) => {
+  renderLimits(current);
+  fireEvent.click(screen.getByRole("button", { name: "quotaLimits.edit" }));
+};
+const save = () => fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+
 beforeEach(() => {
   Object.values(api).forEach((fn) => fn.mockReset().mockResolvedValue(undefined));
   onChanged.mockReset();
@@ -58,8 +62,7 @@ describe("quota limits: size field", () => {
 
 describe("quota limits: dialog", () => {
   it("opens prefilled with both current limits, and sends only the changed one", async () => {
-    renderLimits({ count: 1000, size: 50 * MB });
-    fireEvent.click(screen.getByRole("button", { name: "quotaLimits.edit" }));
+    openLimits({ count: 1000, size: 50 * MB });
 
     const count = screen.getByLabelText("quotaLimits.count") as HTMLInputElement;
     expect(count.value).toBe("1000");
@@ -67,7 +70,7 @@ describe("quota limits: dialog", () => {
     expect((screen.getByLabelText("common.sizeUnit") as HTMLSelectElement).value).toBe("MB");
 
     fireEvent.change(count, { target: { value: "2000" } });
-    fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+    save();
 
     await waitFor(() => expect(api.putCount).toHaveBeenCalledWith(2000));
     expect(api.putSize).not.toHaveBeenCalled();
@@ -76,10 +79,9 @@ describe("quota limits: dialog", () => {
   });
 
   it("removes a limit whose field is emptied", async () => {
-    renderLimits({ count: 1000, size: 50 * MB });
-    fireEvent.click(screen.getByRole("button", { name: "quotaLimits.edit" }));
+    openLimits({ count: 1000, size: 50 * MB });
     fireEvent.change(screen.getByLabelText("quotaLimits.size"), { target: { value: "" } });
-    fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+    save();
 
     await waitFor(() => expect(api.deleteSize).toHaveBeenCalled());
     expect(api.putCount).not.toHaveBeenCalled();
@@ -95,10 +97,9 @@ describe("quota limits: dialog", () => {
   });
 
   it("stores -1 when unlimited is ticked", async () => {
-    renderLimits({ count: null, size: null });
-    fireEvent.click(screen.getByRole("button", { name: "quotaLimits.edit" }));
+    openLimits({ count: null, size: null });
     fireEvent.click(screen.getAllByRole("checkbox", { name: "quotaLimits.unlimited" })[0]);
-    fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+    save();
 
     await waitFor(() => expect(api.putCount).toHaveBeenCalledWith(-1));
   });

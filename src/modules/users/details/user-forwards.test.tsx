@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import "@/test/resize-observer";
 import { cleanup, fireEvent, render as renderComponent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { ReactElement } from "react";
@@ -29,9 +30,6 @@ import UserForwards from "./user-forwards";
 // The destinations link to their user pages
 const render = (ui: ReactElement) => renderComponent(<MemoryRouter>{ui}</MemoryRouter>);
 
-// The Radix checkbox measures itself; jsdom has no ResizeObserver
-globalThis.ResizeObserver ??= class { observe() {} unobserve() {} disconnect() {} } as unknown as typeof ResizeObserver;
-
 const ALICE = "alice@example.com";
 
 beforeEach(() => {
@@ -41,16 +39,22 @@ beforeEach(() => {
 
 afterEach(cleanup);
 
+// Opens "Add forward" from the + and types a destination
+const typeDestination = async (destination = "bob@example.com") => {
+  fireEvent.click(screen.getByTitle("users.forwards.addTooltip"));
+  fireEvent.change(await screen.findByPlaceholderText("users.forwards.placeholder"), { target: { value: destination } });
+};
+const submit = () => fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+
 describe("user forwards: add a forward", () => {
   it("opens the section and a modal from the +, and adds the typed destination", async () => {
     mocks.api.addUserForward.mockResolvedValue(undefined);
     render(<UserForwards username={ALICE} />);
-    fireEvent.click(screen.getByTitle("users.forwards.addTooltip"));
+    await typeDestination(" bob@example.com ");
 
-    const dialog = await screen.findByRole("dialog");
+    const dialog = screen.getByRole("dialog");
     expect(screen.getByText("users.forwards.title").closest("button")?.getAttribute("aria-expanded")).toBe("true");
-    fireEvent.change(screen.getByPlaceholderText("users.forwards.placeholder"), { target: { value: " bob@example.com " } });
-    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    submit();
 
     await waitFor(() => expect(mocks.api.addUserForward).toHaveBeenCalledWith(ALICE, "bob@example.com"));
     // A copy is kept by default: alice is added as a destination too
@@ -62,9 +66,8 @@ describe("user forwards: add a forward", () => {
   it("keeps the modal open with the typed destination when the forward is refused", async () => {
     mocks.api.addUserForward.mockRejectedValue(new Error("Forbidden"));
     render(<UserForwards username={ALICE} />);
-    fireEvent.click(screen.getByTitle("users.forwards.addTooltip"));
-    fireEvent.change(await screen.findByPlaceholderText("users.forwards.placeholder"), { target: { value: "bob@example.com" } });
-    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    await typeDestination();
+    submit();
 
     expect(await screen.findByRole("alert")).toBeTruthy();
     expect((screen.getByPlaceholderText("users.forwards.placeholder") as HTMLInputElement).value).toBe("bob@example.com");
@@ -73,19 +76,15 @@ describe("user forwards: add a forward", () => {
 });
 
 describe("user forwards: keep a copy", () => {
-  const addThroughDialog = async () => {
-    fireEvent.click(screen.getByTitle("users.forwards.addTooltip"));
-    fireEvent.change(await screen.findByPlaceholderText("users.forwards.placeholder"), { target: { value: "bob@example.com" } });
-  };
 
   it("only forwards when the copy is unticked, and says so", async () => {
     mocks.api.addUserForward.mockResolvedValue(undefined);
     render(<UserForwards username={ALICE} />);
-    await addThroughDialog();
+    await typeDestination();
 
     fireEvent.click(screen.getByRole("checkbox", { name: /users.forwards.keepCopyIn/ }));
     expect(screen.getByText(/users.forwards.onlyForwardedHint/)).not.toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    submit();
 
     await waitFor(() => expect(mocks.toast).toHaveBeenCalledWith({ title: "users.forwards.added" }));
     expect(mocks.api.addUserForward).toHaveBeenCalledTimes(1);
@@ -95,7 +94,7 @@ describe("user forwards: keep a copy", () => {
   it("does not ask again when a copy is already kept", async () => {
     mocks.api.getUserForwards.mockResolvedValue([{ mailAddress: ALICE }, { mailAddress: "emma@example.com" }]);
     render(<UserForwards username={ALICE} />);
-    await addThroughDialog();
+    await typeDestination();
 
     expect(screen.queryByRole("checkbox", { name: /users.forwards.keepCopyIn/ })).toBeNull();
   });
@@ -105,8 +104,8 @@ describe("user forwards: keep a copy", () => {
       if (destination === ALICE) throw new Error("Forbidden");
     });
     render(<UserForwards username={ALICE} />);
-    await addThroughDialog();
-    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    await typeDestination();
+    submit();
 
     expect(await screen.findByRole("alert")).toBeTruthy();
     expect(mocks.toast).not.toHaveBeenCalled();

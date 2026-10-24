@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { ReactNode, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -61,13 +61,75 @@ function parse(field: LimitField, multiplier = 1): number | null | undefined {
   return Math.round(n * multiplier);
 }
 
+// Sent only when the limit changed: a value is put, an emptied field removes the limit
+async function sendChange(next: number | null | undefined, current: number | null, put: (n: number) => Promise<void>, remove: () => Promise<void>) {
+  if (next === undefined || next === current) return;
+  await (next === null ? remove() : put(next));
+}
+
+// The size field of a limit: its value in the most readable unit, MB when there is none
+function sizeFieldOf(size: number | null): { field: LimitField; unit: Unit } {
+  if (size === null || size === -1) return { field: { value: "", unlimited: size === -1 }, unit: "MB" };
+  const { value, unit } = toSizeField(size);
+  return { field: { value, unlimited: false }, unit };
+}
+
+// KB and B only when the current limit needs them
+const unitChoices = (unit: Unit): readonly Unit[] => (unit === "B" || unit === "KB" ? ["B", "KB", "MB", "GB"] : ["MB", "GB"]);
+
+type Parents = { label: string; values: QuotaLimitValues }[];
+
+// What an emptied field falls back to: the nearest level setting this limit, if any
+const inheritedFrom = (parents: Parents, key: keyof QuotaLimitValues) => parents.find((p) => p.values[key] !== null);
+
+interface LimitRowProps {
+  id: string;
+  label: string;
+  field: LimitField;
+  onChange: (field: LimitField) => void;
+  hint: string;
+  unitSelect?: ReactNode;
+}
+
+/** One limit: its value (and unit), an Unlimited box, and what applies when it is left empty. */
+function LimitRow({ id, label, field, onChange, hint, unitSelect }: LimitRowProps) {
+  const { t } = useTranslation();
+  return (
+    <fieldset className="space-y-1">
+      <legend className="text-sm font-medium">{label}</legend>
+      <div className="flex flex-wrap items-center gap-2">
+        <input
+          id={id}
+          type="number"
+          min="1"
+          aria-label={label}
+          value={field.value}
+          disabled={field.unlimited}
+          onChange={(e) => onChange({ ...field, value: e.target.value })}
+          className="flex-1 min-w-32 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+        />
+        {unitSelect}
+        <div className="flex items-center gap-1">
+          <Checkbox
+            id={`${id}-unlimited`}
+            checked={field.unlimited}
+            onCheckedChange={(checked) => onChange({ ...field, unlimited: checked === true })}
+          />
+          <label htmlFor={`${id}-unlimited`} className="text-sm cursor-pointer select-none">{t("quotaLimits.unlimited")}</label>
+        </div>
+      </div>
+      <p className="text-xs text-gray-500">{hint}</p>
+    </fieldset>
+  );
+}
+
 interface Props {
   // Named in the dialog title: the user, the domain, the team mailbox, "all users"
   target: string;
   // The limits set at this level
   current: QuotaLimitValues;
   // The levels a limit is inherited from when none is set here, nearest first (none at the global level)
-  parents?: { label: string; values: QuotaLimitValues }[];
+  parents?: Parents;
   api: QuotaLimitsApi;
   canEditCount: boolean;
   canEditSize: boolean;
@@ -92,41 +154,34 @@ export default function QuotaLimits({ target, current, parents = [], api, canEdi
   const [size, setSize] = useState<LimitField>({ value: "", unlimited: false });
   const [unit, setUnit] = useState<Unit>("MB");
 
-  const hasSpecificLimit = current.count !== null || current.size !== null;
+  const canEdit = canEditCount || canEditSize;
+  const canRemoveHere = canRemove && (current.count !== null || current.size !== null);
 
   const openDialog = () => {
     setCount(fieldOf(current.count, String));
-    const sizeField = current.size !== null && current.size !== -1 ? toSizeField(current.size) : null;
-    setSize({ value: sizeField?.value ?? "", unlimited: current.size === -1 });
-    setUnit(sizeField?.unit ?? "MB");
+    const sizeField = sizeFieldOf(current.size);
+    setSize(sizeField.field);
+    setUnit(sizeField.unit);
     setOpen(true);
   };
 
-  const validate = () =>
-    (canEditCount && parse(count) === undefined) || (canEditSize && parse(size, UNITS[unit]) === undefined)
-      ? t("quotaLimits.invalid")
-      : null;
+  const nextCount = () => (canEditCount ? parse(count) : current.count);
+  const nextSize = () => (canEditSize ? parse(size, UNITS[unit]) : current.size);
 
-  // Each limit that changed is sent on its own: a value is put, an emptied field removes it
+  const validate = () => ([nextCount(), nextSize()].includes(undefined) ? t("quotaLimits.invalid") : null);
+
   const handleSave = async () => {
-    const nextCount = parse(count);
-    const nextSize = parse(size, UNITS[unit]);
-    if (canEditCount && nextCount !== undefined && nextCount !== current.count) {
-      await (nextCount === null ? api.deleteCount() : api.putCount(nextCount));
-    }
-    if (canEditSize && nextSize !== undefined && nextSize !== current.size) {
-      await (nextSize === null ? api.deleteSize() : api.putSize(nextSize));
-    }
+    await sendChange(nextCount(), current.count, api.putCount, api.deleteCount);
+    await sendChange(nextSize(), current.size, api.putSize, api.deleteSize);
     toast({ title: t("quotaLimits.updated") });
     onChanged();
   };
 
   const handleRemove = async () => {
-    const confirmed = await confirm({ header: removeLabel, message: removeConfirm });
-    if (!confirmed) return;
+    if (!(await confirm({ header: removeLabel, message: removeConfirm }))) return;
     try {
-      if (current.count !== null) await api.deleteCount();
-      if (current.size !== null) await api.deleteSize();
+      await sendChange(null, current.count, api.putCount, api.deleteCount);
+      await sendChange(null, current.size, api.putSize, api.deleteSize);
       toast({ title: t("quotaLimits.removed") });
       onChanged();
     } catch (err) {
@@ -134,59 +189,19 @@ export default function QuotaLimits({ target, current, parents = [], api, canEdi
     }
   };
 
-  // What an emptied field falls back to: the nearest level setting this limit, or no limit at all
-  const inheritHint = (key: "count" | "size", format: (n: number) => string) => {
-    const parent = parents.find((p) => p.values[key] !== null);
+  const inheritHint = (key: keyof QuotaLimitValues, format: (n: number) => string) => {
+    const parent = inheritedFrom(parents, key);
     if (!parent) return t("quotaLimits.noLimitHint");
     const limit = parent.values[key]!;
     return t("quotaLimits.inheritHint", { parent: parent.label, value: limit === -1 ? t("common.unlimited") : format(limit) });
   };
 
-  const row = (
-    key: "count" | "size",
-    label: string,
-    field: LimitField,
-    setField: (f: LimitField) => void,
-    hint: string,
-    unitSelect?: React.ReactNode,
-  ) => (
-    <fieldset className="space-y-1">
-      <legend className="text-sm font-medium">{label}</legend>
-      <div className="flex flex-wrap items-center gap-2">
-        <input
-          id={`${id}-${key}`}
-          type="number"
-          min="1"
-          aria-label={label}
-          value={field.value}
-          disabled={field.unlimited}
-          onChange={(e) => setField({ ...field, value: e.target.value })}
-          className="flex-1 min-w-32 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-        />
-        {unitSelect}
-        <div className="flex items-center gap-1">
-          <Checkbox
-            id={`${id}-${key}-unlimited`}
-            checked={field.unlimited}
-            onCheckedChange={(checked) => setField({ ...field, unlimited: checked === true })}
-          />
-          <label htmlFor={`${id}-${key}-unlimited`} className="text-sm cursor-pointer select-none">{t("quotaLimits.unlimited")}</label>
-        </div>
-      </div>
-      <p className="text-xs text-gray-500">{hint}</p>
-    </fieldset>
-  );
-
-  if (!canEditCount && !canEditSize && !(canRemove && hasSpecificLimit)) return null;
+  if (!canEdit && !canRemoveHere) return null;
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      {(canEditCount || canEditSize) && (
-        <Button variant="outline" className="rounded-sm" onClick={openDialog}>{t("quotaLimits.edit")}</Button>
-      )}
-      {canRemove && hasSpecificLimit && (
-        <Button variant="outline" className="rounded-sm" onClick={handleRemove}>{removeLabel}</Button>
-      )}
+      {canEdit && <Button variant="outline" className="rounded-sm" onClick={openDialog}>{t("quotaLimits.edit")}</Button>}
+      {canRemoveHere && <Button variant="outline" className="rounded-sm" onClick={handleRemove}>{removeLabel}</Button>}
       <FormDialog
         open={open}
         onClose={() => setOpen(false)}
@@ -195,22 +210,24 @@ export default function QuotaLimits({ target, current, parents = [], api, canEdi
         validate={validate}
         onSubmit={handleSave}
       >
-        {canEditCount && row("count", t("quotaLimits.count"), count, setCount,
-          inheritHint("count", (n) => n.toLocaleString(currentLocale())))}
-        {canEditSize && row("size", t("quotaLimits.size"), size, setSize,
-          inheritHint("size", formatByteSize),
-          <select
-            aria-label={t("common.sizeUnit")}
-            value={unit}
-            disabled={size.unlimited}
-            onChange={(e) => setUnit(e.target.value as Unit)}
-            className="px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-          >
-            {/* KB and B only when the current limit needs them */}
-            {(unit === "B" || unit === "KB" ? (["B", "KB", "MB", "GB"] as const) : (["MB", "GB"] as const)).map((u) => (
-              <option key={u} value={u}>{t(UNIT_LABEL_KEYS[u])}</option>
-            ))}
-          </select>
+        {canEditCount && (
+          <LimitRow id={`${id}-count`} label={t("quotaLimits.count")} field={count} onChange={setCount}
+            hint={inheritHint("count", (n) => n.toLocaleString(currentLocale()))} />
+        )}
+        {canEditSize && (
+          <LimitRow id={`${id}-size`} label={t("quotaLimits.size")} field={size} onChange={setSize}
+            hint={inheritHint("size", formatByteSize)}
+            unitSelect={
+              <select
+                aria-label={t("common.sizeUnit")}
+                value={unit}
+                disabled={size.unlimited}
+                onChange={(e) => setUnit(e.target.value as Unit)}
+                className="px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              >
+                {unitChoices(unit).map((u) => <option key={u} value={u}>{t(UNIT_LABEL_KEYS[u])}</option>)}
+              </select>
+            } />
         )}
       </FormDialog>
     </div>

@@ -3,7 +3,7 @@ import { UserPlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
-import { useCheckUserExists } from "@/hooks/use-check-user-exists";
+import { useCheckUserExists, UserExistsStatus } from "@/hooks/use-check-user-exists";
 import { useToast } from "@/hooks/use-toast";
 import { createRegisteredUser } from "./api-client";
 import { RegisteredUser } from "./types";
@@ -17,6 +17,28 @@ interface Props {
   onRegistered: () => void;
 }
 
+// What the typed account is, as the line under the field says it
+type AccountState = UserExistsStatus | "registered";
+
+const ACCOUNT_LINES: Partial<Record<AccountState, { key: string; className: string }>> = {
+  checking: { key: "common.checking", className: "text-gray-400" },
+  registered: { key: "registeredUsers.alreadyRegistered", className: "text-orange-600" },
+  exists: { key: "common.userExists", className: "text-green-700" },
+  not_found: { key: "common.userNotFound", className: "text-orange-600" },
+  invalid: { key: "common.invalidUsername", className: "text-red-600" },
+};
+
+function AccountLine({ state }: { state: AccountState }) {
+  const { t } = useTranslation();
+  const line = ACCOUNT_LINES[state];
+  // Reserved height: the status appearing does not move the fields below
+  return <p className="h-4 mt-1 text-xs">{line && <span className={line.className}>{t(line.key)}</span>}</p>;
+}
+
+// The DAV server refuses to register a user twice: tell it before sending
+const isRegistered = (registered: RegisteredUser[], email: string) =>
+  registered.some((u) => (u.email ?? "").toLowerCase() === email.toLowerCase());
+
 /** "Register a user", next to the search: the account, then its names, in one modal. */
 export default function RegisterUserButton({ registered, domain, onRegistered }: Props) {
   const { t } = useTranslation();
@@ -27,9 +49,8 @@ export default function RegisterUserButton({ registered, domain, onRegistered }:
   const [names, setNames] = useState(defaultRegisteredUserNames(""));
   const status = useCheckUserExists(username);
   const trimmed = username.trim();
-  // The DAV server refuses to register a user twice: tell it before sending
-  const alreadyRegistered = !!trimmed && registered.some((u) => (u.email ?? "").toLowerCase() === trimmed.toLowerCase());
-  const accountReady = !!trimmed && status === "exists" && !alreadyRegistered;
+  const state: AccountState = !trimmed ? "idle" : isRegistered(registered, trimmed) ? "registered" : status;
+  const accountReady = state === "exists";
 
   const close = () => {
     setOpen(false);
@@ -69,14 +90,7 @@ export default function RegisterUserButton({ registered, domain, onRegistered }:
             placeholder={t("registeredUsers.placeholder")}
             className={FIELD_CLASS}
           />
-          {/* Reserved height: the status appearing does not move the fields below */}
-          <p className="h-4 mt-1 text-xs">
-            {trimmed && status === "checking" && <span className="text-gray-400">{t("common.checking")}</span>}
-            {alreadyRegistered && <span className="text-orange-600">{t("registeredUsers.alreadyRegistered")}</span>}
-            {!alreadyRegistered && trimmed && status === "exists" && <span className="text-green-700">{t("common.userExists")}</span>}
-            {trimmed && status === "not_found" && <span className="text-orange-600">{t("common.userNotFound")}</span>}
-            {trimmed && status === "invalid" && <span className="text-red-600">{t("common.invalidUsername")}</span>}
-          </p>
+          <AccountLine state={state} />
         </div>
         {accountReady && (
           // Remounted per account, so that the suggested firstname follows the typed address

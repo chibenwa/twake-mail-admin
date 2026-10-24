@@ -31,6 +31,42 @@ const Strip = ({ children }: { children: ReactNode }) => (
 
 const countOf = (value: unknown) => (typeof value === "number" ? value : undefined);
 
+function QuotaFact({ quota }: { quota: UserQuota }) {
+  const { t } = useTranslation();
+  const limit = quota.computed?.size;
+  const used = formatByteSize(quota.occupation.size);
+  if (limit == null || limit < 0) return <Fact section="quota">{t("users.summary.quotaUnlimited", { used })}</Fact>;
+  const ratio = quota.occupation.ratio.size;
+  return (
+    <Fact section="quota">
+      <span className="flex flex-col gap-1">
+        <span>{t("users.summary.quota", { used, limit: formatByteSize(limit), percent: formatPercent(ratio) })}</span>
+        <span className="block h-1 w-full rounded-full bg-gray-200" aria-hidden="true">
+          <span className={`block h-1 rounded-full ${quotaBarClass(ratio)}`} style={{ width: `${Math.min(ratio * 100, 100)}%` }} />
+        </span>
+      </span>
+    </Fact>
+  );
+}
+
+function ForwardsFactChip({ forwards }: { forwards: ForwardsFact }) {
+  const { t } = useTranslation();
+  const { destinations, copyKept } = forwards;
+  const label = !copyKept
+    ? t("users.summary.forwardsNoCopy", { count: destinations.length })
+    : destinations.length === 1
+      ? t("users.summary.forwardsTo", { address: destinations[0].mailAddress })
+      : t("users.summary.forwards", { count: destinations.length });
+  return <Fact section="forwards">{label}</Fact>;
+}
+
+// A fact read from the section of the page that counted it
+function CountFact({ section, count, labelKey }: { section: string; count: unknown; labelKey: string }) {
+  const { t } = useTranslation();
+  const value = countOf(count);
+  return value === undefined ? null : <Fact section={section}>{t(labelKey, { count: value })}</Fact>;
+}
+
 /** The essential facts of a mail user, each opening and scrolling to its section. */
 export function MailUserSummary({ username, forwardsOnly = false }: { username: string; forwardsOnly?: boolean }) {
   const { t } = useTranslation();
@@ -42,37 +78,14 @@ export function MailUserSummary({ username, forwardsOnly = false }: { username: 
   const fetchVacation = useCallback(() => getUserVacation(username), [username]);
   const { data: quota } = useFetchData<UserQuota>(canQuota ? fetchQuota : null);
   const { data: vacation } = useFetchData<VacationSettings>(canVacation ? fetchVacation : null);
-
-  const mailboxes = forwardsOnly ? undefined : countOf(facts["mailboxes"]);
-  const aliases = forwardsOnly ? undefined : countOf(facts["aliases"]);
   const forwards = facts["forwards"] as ForwardsFact | undefined;
-  const limit = quota?.computed?.size;
 
   return (
     <Strip>
-      {quota && (
-        <Fact section="quota">
-          {limit != null && limit >= 0 ? (
-            <span className="flex flex-col gap-1">
-              <span>{t("users.summary.quota", { used: formatByteSize(quota.occupation.size), limit: formatByteSize(limit), percent: formatPercent(quota.occupation.ratio.size) })}</span>
-              <span className="block h-1 w-full rounded-full bg-gray-200" aria-hidden="true">
-                <span className={`block h-1 rounded-full ${quotaBarClass(quota.occupation.ratio.size)}`} style={{ width: `${Math.min(quota.occupation.ratio.size * 100, 100)}%` }} />
-              </span>
-            </span>
-          ) : t("users.summary.quotaUnlimited", { used: formatByteSize(quota.occupation.size) })}
-        </Fact>
-      )}
-      {mailboxes !== undefined && <Fact section="mailboxes">{t("users.summary.mailboxes", { count: mailboxes })}</Fact>}
-      {aliases !== undefined && <Fact section="aliases">{t("users.summary.aliases", { count: aliases })}</Fact>}
-      {forwards !== undefined && (
-        <Fact section="forwards">
-          {!forwards.copyKept
-            ? t("users.summary.forwardsNoCopy", { count: forwards.destinations.length })
-            : forwards.destinations.length === 1
-              ? t("users.summary.forwardsTo", { address: forwards.destinations[0].mailAddress })
-              : t("users.summary.forwards", { count: forwards.destinations.length })}
-        </Fact>
-      )}
+      {quota && <QuotaFact quota={quota} />}
+      {!forwardsOnly && <CountFact section="mailboxes" count={facts["mailboxes"]} labelKey="users.summary.mailboxes" />}
+      {!forwardsOnly && <CountFact section="aliases" count={facts["aliases"]} labelKey="users.summary.aliases" />}
+      {forwards && <ForwardsFactChip forwards={forwards} />}
       {vacation && (
         <Fact section="vacation">{vacation.enabled ? t("users.summary.vacationOn") : t("users.summary.vacationOff")}</Fact>
       )}
@@ -82,16 +95,12 @@ export function MailUserSummary({ username, forwardsOnly = false }: { username: 
 
 /** The calendar counterpart: what the sections of the page counted. */
 export function CalendarUserSummary() {
-  const { t } = useTranslation();
   const facts = useSectionFacts();
-  const calendars = countOf(facts["calendars"]);
-  const addressBooks = countOf(facts["address-books"]);
-  const bookingLinks = countOf(facts["booking-links"]);
   return (
     <Strip>
-      {calendars !== undefined && <Fact section="calendars">{t("users.summary.calendars", { count: calendars })}</Fact>}
-      {addressBooks !== undefined && <Fact section="address-books">{t("users.summary.addressBooks", { count: addressBooks })}</Fact>}
-      {bookingLinks !== undefined && <Fact section="booking-links">{t("users.summary.bookingLinks", { count: bookingLinks })}</Fact>}
+      <CountFact section="calendars" count={facts["calendars"]} labelKey="users.summary.calendars" />
+      <CountFact section="address-books" count={facts["address-books"]} labelKey="users.summary.addressBooks" />
+      <CountFact section="booking-links" count={facts["booking-links"]} labelKey="users.summary.bookingLinks" />
     </Strip>
   );
 }

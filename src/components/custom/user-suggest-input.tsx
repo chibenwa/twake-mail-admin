@@ -13,6 +13,10 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "o
   wrapperClassName?: string;
 }
 
+// Arrows go round the suggestions
+const nextIndex = (index: number, count: number) => (index + 1) % count;
+const previousIndex = (index: number, count: number) => (index <= 0 ? count - 1 : index - 1);
+
 /**
  * A field expecting a user of the server: the admin types freely, and up to five matching
  * users are offered under it (arrows and Enter, or a click). Nothing is enforced: an address
@@ -32,31 +36,37 @@ const UserSuggestInput = forwardRef<HTMLInputElement, Props>(
       setActive(-1);
     };
 
-    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-      if (shown && event.key === "ArrowDown") {
+    // The keys the open suggestions handle; each returns false to leave the key to the field
+    const suggestionKeys: Record<string, (event: KeyboardEvent<HTMLInputElement>) => boolean> = {
+      ArrowDown: (event) => {
         event.preventDefault();
-        setActive((i) => (i + 1) % suggestions.length);
-        return;
-      }
-      if (shown && event.key === "ArrowUp") {
+        setActive((i) => nextIndex(i, suggestions.length));
+        return true;
+      },
+      ArrowUp: (event) => {
         event.preventDefault();
-        setActive((i) => (i <= 0 ? suggestions.length - 1 : i - 1));
-        return;
-      }
+        setActive((i) => previousIndex(i, suggestions.length));
+        return true;
+      },
       // Enter picks the highlighted suggestion, instead of adding or submitting
-      if (shown && active >= 0 && event.key === "Enter") {
+      Enter: (event) => {
+        if (active < 0) return false;
         event.preventDefault();
         event.stopPropagation();
         pick(suggestions[active]);
-        return;
-      }
-      if (shown && event.key === "Escape") {
-        // Closes the suggestions only, not the dialog around the field
+        return true;
+      },
+      // Closes the suggestions only, not the dialog around the field
+      Escape: (event) => {
         event.stopPropagation();
         setOpen(false);
-        return;
-      }
-      onKeyDown?.(event);
+        return true;
+      },
+    };
+
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+      const handled = shown && (suggestionKeys[event.key]?.(event) ?? false);
+      if (!handled) onKeyDown?.(event);
     };
 
     return (
