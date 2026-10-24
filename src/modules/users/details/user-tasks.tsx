@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ComponentProps, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import TaskRow from "@/components/custom/task-row";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -53,6 +53,19 @@ const INITIAL_RENAME_VALUES: RenameUserValues = { newUsername: "", force: false,
 
 interface Props {
   username: string;
+}
+
+// The criteria builder of the restore dialog. Once a confirm is refused because of incomplete
+// criteria, the dialog shows the error in place of the builder's hint and their empty controls are flagged.
+function RestoreDeletedMessagesForm({ flagIncomplete, onChange }: {
+  flagIncomplete: { current: () => void };
+  onChange: ComponentProps<typeof RestoreCriteriaBuilder>["onChange"];
+}) {
+  const [flagged, setFlagged] = useState(false);
+  useEffect(() => {
+    flagIncomplete.current = () => setFlagged(true);
+  }, [flagIncomplete]);
+  return <RestoreCriteriaBuilder onChange={onChange} flagIncomplete={flagged} showIncompleteMessage={!flagged} />;
 }
 
 export default function UserTasks({ username }: Props) {
@@ -180,6 +193,8 @@ export default function UserTasks({ username }: Props) {
   const handleRestoreDeletedMessages = async () => {
     let request = buildRestoreRequest([], undefined);
     let criteriaValid = true;
+    // Set by the form once mounted: flags the incomplete criteria after a refused confirm
+    const flagIncomplete = { current: () => {} };
 
     await confirm({
       header: t("users.deletedVault.restoreTitle"),
@@ -188,7 +203,8 @@ export default function UserTasks({ username }: Props) {
         <FormTaskContent
           initialValues={request}
           renderForm={(onChange) => (
-            <RestoreCriteriaBuilder
+            <RestoreDeletedMessagesForm
+              flagIncomplete={flagIncomplete}
               onChange={(criteria, limit, isValid) => {
                 criteriaValid = isValid;
                 onChange(buildRestoreRequest(criteria, limit));
@@ -199,8 +215,11 @@ export default function UserTasks({ username }: Props) {
           onChange={(r) => { request = r; }}
         />
       ),
-      // The criteria builder already shows why the criteria cannot be sent
-      validate: () => (criteriaValid ? null : false),
+      validate: () => {
+        if (criteriaValid) return null;
+        flagIncomplete.current();
+        return t("users.deletedVault.criteria.incomplete");
+      },
       action: async () => {
         const data = await restoreDeletedMessages(username, request);
         toastTaskCreated(data.taskId, undefined, t("users.tasks.restoreDeleted"));

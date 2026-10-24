@@ -141,6 +141,7 @@ export default function UserDeletedMessageVault({ label, onSearch, onRestore, ca
       {open && (
         <div id={openContentId} className="mt-3 space-y-4">
           <RestoreCriteriaBuilder
+            flagIncomplete
             onChange={(c, l, valid) => {
               setCriteria(c);
               setLimit(l);

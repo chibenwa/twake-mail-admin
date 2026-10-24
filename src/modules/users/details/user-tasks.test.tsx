@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { type ReactNode } from "react";
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { ProxyResolver, type HttpVerb, type ProxyRule } from "@/lib/proxy-resolver";
 
@@ -90,14 +90,26 @@ describe("user tasks: confirmation dialogs preview their command", () => {
     expect(screen.getByText("curl -XPOST /users/bob@linagora.com/rename/alice@linagora.com?action=rename", { exact: false })).not.toBeNull();
   });
 
-  it("refuses to restore deleted messages while a criterion is incomplete", async () => {
+  it("refuses to restore deleted messages while a criterion is incomplete, and flags it", async () => {
     await openDialog("users.tasks.restoreDeleted");
     expect(dialog.validate!()).toBeNull();
 
     fireEvent.click(screen.getByText("users.deletedVault.criteria.addCriterion"));
-    expect(dialog.validate!()).toBe(false);
+    const field = screen.getByRole("combobox", { name: "users.deletedVault.criteria.fieldPlaceholder" });
+    const operator = screen.getByRole("combobox", { name: "users.deletedVault.criteria.operatorPlaceholder" });
+    // Only the builder's hint before a confirm
     expect(screen.getByText("users.deletedVault.criteria.incomplete").getAttribute("role")).toBe("status");
     expect(screen.queryAllByRole("alert")).toEqual([]);
+    expect(field.getAttribute("aria-invalid")).toBe("false");
+
+    let error: string | null = null;
+    act(() => { error = dialog.validate!(); });
+    expect(error).toBe("users.deletedVault.criteria.incomplete");
+    // The dialog shows the returned error as an alert: the hint gives way to it
+    expect(screen.queryByText("users.deletedVault.criteria.incomplete")).toBeNull();
+    expect(field.getAttribute("aria-invalid")).toBe("true");
+    expect(operator.getAttribute("aria-invalid")).toBe("true");
+    expect(screen.getByPlaceholderText("users.deletedVault.criteria.valuePlaceholder").getAttribute("aria-invalid")).toBe("true");
 
     fireEvent.click(screen.getByRole("button", { name: "users.deletedVault.criteria.removeCriterion" }));
     expect(dialog.validate!()).toBeNull();

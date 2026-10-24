@@ -63,11 +63,18 @@ interface CriterionRow {
 
 interface Props {
   onChange: (criteria: RestoreCriterion[], limit: number | undefined, isValid: boolean) => void;
+  /** Mark the empty controls of the incomplete criteria as invalid. */
+  flagIncomplete?: boolean;
+  /**
+   * Show the hint telling why incomplete criteria block the request. Off when the host reports
+   * it itself, such as a confirmation dialog showing the error returned by its validator.
+   */
+  showIncompleteMessage?: boolean;
 }
 
 const isComplete = (c: CriterionRow) => Boolean(c.fieldName && c.operator && c.value);
 
-export default function RestoreCriteriaBuilder({ onChange }: Props) {
+export default function RestoreCriteriaBuilder({ onChange, flagIncomplete = false, showIncompleteMessage = true }: Props) {
   const { t } = useTranslation();
   const limitId = useId();
   const [criteria, setCriteria] = useState<CriterionRow[]>([]);
@@ -122,6 +129,7 @@ export default function RestoreCriteriaBuilder({ onChange }: Props) {
       {criteria.map((criterion, index) => {
         const inputType = getInputType(criterion.fieldName);
         const operators = getOperators(criterion.fieldName);
+        const flagged = flagIncomplete && !isComplete(criterion);
 
         return (
           <div key={index} className="flex items-center gap-2 min-w-0">
@@ -130,7 +138,8 @@ export default function RestoreCriteriaBuilder({ onChange }: Props) {
               onValueChange={(v) => updateCriterion(index, "fieldName", v)}
             >
               <SelectTrigger
-                className="w-[160px] shrink-0"
+                className="w-[160px] shrink-0 aria-invalid:border-red-500"
+                aria-invalid={flagged && !criterion.fieldName}
                 aria-label={t("users.deletedVault.criteria.fieldPlaceholder")}
               >
                 <SelectValue placeholder={t("users.deletedVault.criteria.fieldPlaceholder")} />
@@ -150,7 +159,8 @@ export default function RestoreCriteriaBuilder({ onChange }: Props) {
               disabled={!criterion.fieldName}
             >
               <SelectTrigger
-                className="w-[180px] shrink-0"
+                className="w-[180px] shrink-0 aria-invalid:border-red-500"
+                aria-invalid={flagged && !criterion.operator}
                 aria-label={t("users.deletedVault.criteria.operatorPlaceholder")}
               >
                 <SelectValue placeholder={t("users.deletedVault.criteria.operatorPlaceholder")} />
@@ -176,6 +186,7 @@ export default function RestoreCriteriaBuilder({ onChange }: Props) {
                     )
                   }
                   disabled={!criterion.operator}
+                  aria-invalid={flagged && !criterion.value}
                   aria-label={t("users.deletedVault.criteria.valuePlaceholder")}
                 />
                 <span className="text-sm" aria-hidden="true">
@@ -185,8 +196,9 @@ export default function RestoreCriteriaBuilder({ onChange }: Props) {
             ) : inputType === "datetime-local" ? (
               <Input
                 type="datetime-local"
-                className="flex-1 min-w-0"
+                className="flex-1 min-w-0 aria-invalid:border-red-500"
                 aria-label={t("users.deletedVault.criteria.valuePlaceholder")}
+                aria-invalid={flagged && !criterion.value}
                 disabled={!criterion.operator}
                 value={isoToDatetimeLocal(criterion.value)}
                 onChange={(e) =>
@@ -200,8 +212,9 @@ export default function RestoreCriteriaBuilder({ onChange }: Props) {
             ) : (
               <Input
                 type="text"
-                className="flex-1"
+                className="flex-1 aria-invalid:border-red-500"
                 placeholder={t("users.deletedVault.criteria.valuePlaceholder")}
+                aria-invalid={flagged && !criterion.value}
                 disabled={!criterion.operator}
                 value={criterion.value}
                 onChange={(e) =>
@@ -223,7 +236,7 @@ export default function RestoreCriteriaBuilder({ onChange }: Props) {
         );
       })}
 
-      {!criteria.every(isComplete) && (
+      {showIncompleteMessage && !criteria.every(isComplete) && (
         // A hint while the criteria are being typed, not an error: calm colour, polite announcement
         <p role="status" className="flex items-center gap-1.5 text-sm text-muted-foreground">
           <Info className="w-4 h-4 shrink-0" aria-hidden="true" />

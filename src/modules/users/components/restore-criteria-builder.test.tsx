@@ -44,6 +44,26 @@ describe("restore criteria builder", () => {
     fireEvent.click(screen.getByRole("button", { name: "users.deletedVault.criteria.removeCriterion" }));
 
     expect(onChange).toHaveBeenLastCalledWith([], undefined, true);
-    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+
+  it("flags only the empty controls of an incomplete criterion when asked to", () => {
+    const { rerender } = render(<RestoreCriteriaBuilder onChange={vi.fn()} />);
+    fireEvent.click(screen.getByText("users.deletedVault.criteria.addCriterion"));
+    const field = screen.getByRole("combobox", { name: "users.deletedVault.criteria.fieldPlaceholder" });
+    expect(field.getAttribute("aria-invalid")).toBe("false");
+
+    rerender(<RestoreCriteriaBuilder onChange={vi.fn()} flagIncomplete />);
+
+    expect(field.getAttribute("aria-invalid")).toBe("true");
+    expect(screen.getByRole("combobox", { name: "users.deletedVault.criteria.operatorPlaceholder" }).getAttribute("aria-invalid")).toBe("true");
+    expect(screen.getByPlaceholderText("users.deletedVault.criteria.valuePlaceholder").getAttribute("aria-invalid")).toBe("true");
+  });
+
+  it("leaves the incomplete message to its host when asked to", () => {
+    render(<RestoreCriteriaBuilder onChange={vi.fn()} showIncompleteMessage={false} />);
+    fireEvent.click(screen.getByText("users.deletedVault.criteria.addCriterion"));
+
+    expect(screen.queryByRole("status")).toBeNull();
   });
 });
