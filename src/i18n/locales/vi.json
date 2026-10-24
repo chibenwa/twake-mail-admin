@@ -549,7 +549,10 @@
     "detailKind": "Miền",
     "createButton": "Tạo miền",
     "domainName": "Tên miền",
-    "createHint": "Hãy chắc chắn đây là miền bạn muốn tạo: người dùng của miền sẽ nhận thư dưới tên này."
+    "createHint": "Hãy chắc chắn đây là miền bạn muốn tạo: người dùng của miền sẽ nhận thư dưới tên này.",
+    "summary": {
+      "users": "Người dùng: {{count}}"
+    }
   },
   "users": {
     "searchPlaceholder": "Tìm người dùng theo phần đầu tên...",

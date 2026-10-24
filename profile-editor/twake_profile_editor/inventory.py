@@ -102,6 +102,12 @@ DOMAINS = page(
             "Supprimer toutes les données d'un domaine",
             endpoints=[may("POST", "/domains/{domain}?action=deleteData")],
         ),
+        action(
+            "user-count",
+            "See how many users a domain has",
+            "Voir combien d'utilisateurs compte un domaine",
+            endpoints=[may("GET", "/users?domain={domain}&{params}", modes=GLOBAL)],
+        ),
         section(
             "aliases",
             "Aliases tab",

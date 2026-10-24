@@ -5,6 +5,8 @@ interface Props {
   search: string;
   onSearch: (value: string) => void;
   placeholder: string;
+  // A longer hint on what the search matches, shown on hover
+  title?: string;
   // What can be done to the list, each opening its modal
   children?: ReactNode;
 }
@@ -13,7 +15,7 @@ interface Props {
  * The one line above a list, in both applications: its search first, then its actions.
  * Nothing is typed inline above the search: creating something opens a modal.
  */
-export default function ListToolbar({ search, onSearch, placeholder, children }: Props) {
+export default function ListToolbar({ search, onSearch, placeholder, title, children }: Props) {
   return (
     <div data-list-toolbar className="flex flex-wrap items-center gap-2 mt-2">
       <div className="relative flex-1 min-w-48">
@@ -24,7 +26,8 @@ export default function ListToolbar({ search, onSearch, placeholder, children }:
           onChange={(e) => onSearch(e.target.value)}
           placeholder={placeholder}
           aria-label={placeholder}
-          className="w-full pl-9 pr-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+          title={title}
+          className="w-full h-10 pl-9 pr-4 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
         />
       </div>
       {children}

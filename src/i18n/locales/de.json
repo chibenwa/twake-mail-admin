@@ -550,7 +550,10 @@
     "detailKind": "Domäne",
     "createButton": "Domäne erstellen",
     "domainName": "Domänenname",
-    "createHint": "Prüfen Sie, dass dies die gewünschte Domäne ist: Ihre Benutzer erhalten ihre Mails unter diesem Namen."
+    "createHint": "Prüfen Sie, dass dies die gewünschte Domäne ist: Ihre Benutzer erhalten ihre Mails unter diesem Namen.",
+    "summary": {
+      "users": "Benutzer: {{count}}"
+    }
   },
   "users": {
     "searchPlaceholder": "Benutzer nach Namensanfang suchen...",

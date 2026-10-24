@@ -8,6 +8,7 @@ import DomainContacts from "./domain-contacts";
 import DomainTasks from "./domain-tasks";
 import DomainSignatureTemplates from "./domain-signature-templates";
 import DomainJmapReport from "./domain-jmap-report";
+import { DomainSummary } from "./domain-summary";
 import RateLimitsSection from "@/components/custom/rate-limits-section";
 import { getDomainRateLimits, updateDomainRateLimits } from "../api-client";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -28,6 +29,7 @@ export default function DomainDetail() {
   return (
     <SectionsProvider page="domain">
     <Header headerTitle={domain} headerSubTitle={t("domains.detailKind")} breadcrumb={breadcrumbs.domains()} actions={<ExpandCollapseAll />} />
+    <DomainSummary domain={domain!} />
     <div className="mt-4 p-4 bg-white rounded-2">
 
       <DomainQuotaSection domain={domain!} />

@@ -130,6 +130,15 @@ too — gated by the domain Users page rather than by `GET /users`.
 |---------|------|---------|----------|
 | Page load | GET | `/domains` | MUST |
 
+### Domain detail — Summary strip *(GLOBAL mode)*
+
+Under the domain, how many users it has (called with `limit=51`: "50+" beyond); the chip opens
+`/users?domain={domain}`.
+
+| Trigger | Verb | Pattern | MUST/MAY |
+|---------|------|---------|----------|
+| Page load | GET | `/users?domain={domain}&{params}` | MAY (the chip is not shown if missing) |
+
 ### Domain detail — Aliases tab *(APPLICATION:"MAIL")*
 
 | Trigger | Verb | Pattern | MUST/MAY |

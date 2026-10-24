@@ -550,7 +550,10 @@
     "detailKind": "Domaine",
     "createButton": "Créer un domaine",
     "domainName": "Nom du domaine",
-    "createHint": "Vérifiez qu'il s'agit bien du domaine voulu : ses utilisateurs recevront leurs mails sous ce nom."
+    "createHint": "Vérifiez qu'il s'agit bien du domaine voulu : ses utilisateurs recevront leurs mails sous ce nom.",
+    "summary": {
+      "users": "Utilisateurs : {{count}}"
+    }
   },
   "users": {
     "searchPlaceholder": "Rechercher des utilisateurs par début de nom…",

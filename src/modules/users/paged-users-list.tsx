@@ -1,11 +1,12 @@
-import { Link } from "react-router";
-import { useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { PAGE_LIMIT } from "@/lib/search-pagination";
 import { UsernamesSource } from "./users-paging";
 import { useUsersPages } from "./use-users-pages";
+import ListToolbar from "@/components/custom/list-toolbar";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -19,8 +20,21 @@ interface PagedUsersListProps {
 
 export function PagedUsersList({ source, domain, domainChoices = [] }: PagedUsersListProps) {
   const { t } = useTranslation();
-  const [search, setSearch] = useState("");
-  const [selectedDomain, setSelectedDomain] = useState("");
+  // The search and the domain filter live in the URL, so that Back from a user page, a bookmark
+  // or a link (/users?domain=example.org) restores them; the page anchor stays in memory
+  const [searchParams, setSearchParams] = useSearchParams();
+  const search = searchParams.get("q") ?? "";
+  const selectedDomain = searchParams.get("domain") ?? "";
+  const updateParam = (key: "q" | "domain", value: string, replace: boolean) => {
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current);
+      if (value) next.set(key, value); else next.delete(key);
+      return next;
+    }, { replace });
+  };
+  // Typing replaces the history entry, a new domain pushes one
+  const setSearch = (value: string) => updateParam("q", value, true);
+  const setSelectedDomain = (value: string) => updateParam("domain", value, false);
   const query = useDebouncedValue(search, SEARCH_DEBOUNCE_MS);
   const pages = useUsersPages(source, { query, domain: domain ?? selectedDomain }, PAGE_LIMIT);
   const prefix = query.trim();
@@ -29,6 +43,21 @@ export function PagedUsersList({ source, domain, domainChoices = [] }: PagedUser
 
   return (
     <div>
+      <ListToolbar search={search} onSearch={setSearch} placeholder={t("users.searchPlaceholder")} title={t("users.searchHint")}>
+        {!domain && domainChoices.length > 0 && (
+          <select
+            value={selectedDomain}
+            onChange={(e) => setSelectedDomain(e.target.value)}
+            aria-label={t("common.domain")}
+            className="h-10 max-w-full px-3 border rounded-md bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">{t("users.allDomains")}</option>
+            {sortedDomainChoices.map((choice) => (
+              <option key={choice} value={choice}>{choice}</option>
+            ))}
+          </select>
+        )}
+      </ListToolbar>
       {pages.isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
           <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -37,29 +66,6 @@ export function PagedUsersList({ source, domain, domainChoices = [] }: PagedUser
         </div>
       )}
       {pages.error && <p className="text-red-500 mt-4">{t("common.errorPrefix", { message: pages.error })}</p>}
-      <div className="mt-4 flex flex-wrap gap-2">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={t("users.searchPlaceholder")}
-          title={t("users.searchHint")}
-          className="flex-1 min-w-48 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-        />
-        {!domain && domainChoices.length > 0 && (
-          <select
-            value={selectedDomain}
-            onChange={(e) => setSelectedDomain(e.target.value)}
-            aria-label={t("common.domain")}
-            className="max-w-full px-3 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">{t("users.allDomains")}</option>
-            {sortedDomainChoices.map((choice) => (
-              <option key={choice} value={choice}>{choice}</option>
-            ))}
-          </select>
-        )}
-      </div>
 
       {(pages.hasPrevious || pages.hasNext) && (
         <PaginationControls

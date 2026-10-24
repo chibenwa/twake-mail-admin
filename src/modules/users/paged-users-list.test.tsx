@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, useLocation } from "react-router";
 import { PagedUsersList } from "./paged-users-list";
 import { UsernamesSource } from "./users-paging";
 
@@ -111,5 +111,42 @@ describe("paged users list: paging reset on filter change", () => {
     fireEvent.change(domainSelect, { target: { value: "" } });
 
     await expectFirstPage();
+  });
+});
+
+describe("paged users list: search and filter in the URL", () => {
+  function LocationProbe() {
+    const location = useLocation();
+    return <output data-testid="location">{location.search}</output>;
+  }
+
+  function renderAt(url: string, source: UsernamesSource, domainChoices: string[] = []) {
+    render(
+      <MemoryRouter initialEntries={[url]}>
+        <PagedUsersList source={source} domainChoices={domainChoices} />
+        <LocationProbe />
+      </MemoryRouter>
+    );
+  }
+
+  it("restores the domain filter and the search from the URL", async () => {
+    const source: UsernamesSource = async ({ domain, query }) =>
+      ["bob@example.com", "oscar@example.org"].filter((u) => (!domain || u.endsWith(`@${domain}`)) && u.startsWith(query ?? ""));
+    renderAt("/users?domain=example.org&q=os", source, ["example.com", "example.org"]);
+
+    expect(await screen.findByText("oscar@example.org")).not.toBeNull();
+    expect(screen.queryByText("bob@example.com")).toBeNull();
+    expect((screen.getByLabelText("common.domain") as HTMLSelectElement).value).toBe("example.org");
+    expect((screen.getByPlaceholderText("users.searchPlaceholder") as HTMLInputElement).value).toBe("os");
+  });
+
+  it("writes the domain filter and the search into the URL", async () => {
+    renderAt("/users", sourceOf(["bob@example.com"]), ["example.com", "example.org"]);
+    await screen.findByText("bob@example.com");
+
+    fireEvent.change(screen.getByLabelText("common.domain"), { target: { value: "example.org" } });
+    fireEvent.change(screen.getByPlaceholderText("users.searchPlaceholder"), { target: { value: "bo" } });
+
+    expect(screen.getByTestId("location").textContent).toBe("?domain=example.org&q=bo");
   });
 });
