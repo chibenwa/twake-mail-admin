@@ -6,9 +6,8 @@ import { useFetchData } from "@/hooks/use-fetch-data";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useToast } from "@/hooks/use-toast";
 import { getDomains, deleteDomain, getDomainAliases } from "./api-client";
-import { getUsers } from "@/modules/users/api-client";
 import { appConfig } from "@/lib/config";
-import { USERS_PROBE_LIMIT } from "./details/domain-summary";
+import { probeDomainUsers, USERS_PROBE_LIMIT } from "./details/domain-summary";
 import { GetDomainsResponseType } from "./types";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -59,11 +58,11 @@ export default function DomainsList() {
   // The users and the domain aliases the domain still holds, looked up in parallel
   const checkContents = async (domain: string): Promise<DomainContents> => {
     const [users, aliases] = await Promise.allSettled([
-      canListUsers ? getUsers({ domain, limit: USERS_PROBE_LIMIT }) : Promise.reject(new Error("not allowed")),
+      canListUsers ? probeDomainUsers(domain) : Promise.reject(new Error("not allowed")),
       canListAliases ? getDomainAliases(domain) : Promise.resolve([]),
     ]);
     return {
-      users: users.status === "fulfilled" ? users.value.map((u) => u.username) : [],
+      users: users.status === "fulfilled" ? users.value : [],
       aliasCount: aliases.status === "fulfilled" ? aliases.value.length : 0,
       incomplete: users.status === "rejected" || aliases.status === "rejected",
     };

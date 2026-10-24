@@ -6,7 +6,7 @@ import { MemoryRouter } from "react-router";
 const confirm = vi.hoisted(() => vi.fn<(options: Record<string, unknown>) => Promise<boolean>>(async () => false));
 const getUsers = vi.hoisted(() => vi.fn());
 const getDomainAliases = vi.hoisted(() => vi.fn());
-vi.mock("@/modules/users/api-client", () => ({ getUsers }));
+vi.mock("@/modules/users/api-client", () => ({ listUsernames: getUsers }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => confirm }));
 vi.mock("@/lib/proxy-resolver-context", () => ({ useIsAllowed: () => true }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: vi.fn() }), toast: vi.fn() }));
@@ -93,8 +93,8 @@ describe("domains list: delete tells what the domain still holds", () => {
     return confirm.mock.calls[0][0];
   };
 
-  it("keeps one confirmation for an empty domain", async () => {
-    getUsers.mockResolvedValue([]);
+  it("keeps one confirmation for an empty domain, even when the backend lists the users of other domains", async () => {
+    getUsers.mockResolvedValue(["olivia@example.org"]);
     getDomainAliases.mockResolvedValue([]);
     const options = await openDelete("example.com");
     expect(options.typeToConfirm).toBeUndefined();
@@ -104,7 +104,8 @@ describe("domains list: delete tells what the domain still holds", () => {
   });
 
   it("states the users and aliases left and asks to type the domain", async () => {
-    getUsers.mockResolvedValue([{ username: "olivia@example.org" }, { username: "oscar@example.org" }]);
+    // Users of other domains too: a backend ignoring the domain parameter
+    getUsers.mockResolvedValue(["olivia@example.org", "oscar@example.org", "alice@example.com"]);
     getDomainAliases.mockResolvedValue([{ source: "example.net" }]);
     const options = await openDelete("example.org");
     expect(options.typeToConfirm).toBe("example.org");
