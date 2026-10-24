@@ -255,6 +255,12 @@ describe("destructive confirm dialog", () => {
     await screen.findByRole("dialog");
   };
 
+  it("is described by its text message", async () => {
+    await openDestructive({ message: "Delete all signature templates for domain \"example.com\"?" });
+
+    expect(screen.getByRole("dialog", { description: "Delete all signature templates for domain \"example.com\"?" })).not.toBeNull();
+  });
+
   it("names the action on a red button and shows the consequence", async () => {
     await openDestructive({ confirmLabel: "Delete user data", consequence: "Everything is lost" });
 
@@ -316,6 +322,17 @@ describe("matchesTypeToConfirm", () => {
 });
 
 describe("confirm dialog navigation", () => {
+  it("points at no missing description when its message is a content", async () => {
+    function ContentOpener() {
+      const confirm = useConfirm();
+      return <button onClick={() => confirm({ header: "Rename", message: <input aria-label="name" /> })}>open</button>;
+    }
+    render(<ConfirmProvider><ContentOpener /></ConfirmProvider>);
+    fireEvent.click(screen.getByText("open"));
+
+    expect((await screen.findByRole("dialog")).hasAttribute("aria-describedby")).toBe(false);
+  });
+
   it("is cancelled when a link of its content leaves the page", async () => {
     const outcomes: boolean[] = [];
     function LinkOpener() {

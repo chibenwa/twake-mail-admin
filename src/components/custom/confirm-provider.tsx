@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useId, useLayoutEffect, useRef, useState, ReactNode } from "react";
 import { useInRouterContext, useLocation } from "react-router";
 import { Loader2, TriangleAlert } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
@@ -201,7 +202,9 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
       {inRouter && <OnNavigation onNavigate={() => { if (confirmState.isOpen) latestCancel.current(); }} />}
       {children}
       <Dialog open={confirmState.isOpen} onOpenChange={(open) => !open && handleCancel()}>
-        <DialogContent className={cn("has-[[data-task-params]]:max-w-2xl", confirmState.className)} onOpenAutoFocus={handleOpenAutoFocus} onCloseAutoFocus={restoreFocus}>
+        <DialogContent className={cn("has-[[data-task-params]]:max-w-2xl", confirmState.className)} onOpenAutoFocus={handleOpenAutoFocus} onCloseAutoFocus={restoreFocus}
+          // A text message is the dialog's description; a content with fields, read as it is browsed
+          {...(typeof confirmState.message === 'string' ? {} : { "aria-describedby": undefined })}>
           <DialogHeader>
             <DialogTitle>{confirmState.header}</DialogTitle>
           </DialogHeader>
@@ -214,7 +217,9 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
           <ConfirmAppearanceContext.Provider value={setAppearance}>
             <FocusCancelContext.Provider value={requestFocusCancel}>
               <div className="contents" onChange={clearError}>
-                { typeof confirmState.message === 'string' ? <p>{confirmState.message}</p> : confirmState.message }
+                { typeof confirmState.message === 'string'
+                  ? <DialogPrimitive.Description asChild><p>{confirmState.message}</p></DialogPrimitive.Description>
+                  : confirmState.message }
               </div>
             </FocusCancelContext.Provider>
           </ConfirmAppearanceContext.Provider>
