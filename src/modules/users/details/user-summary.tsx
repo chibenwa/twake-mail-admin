@@ -6,7 +6,7 @@ import { formatByteSize } from "@/i18n/format-size";
 import { formatPercent } from "@/i18n/format-percent";
 import { useRevealSection, useSectionFacts } from "@/components/custom/collapsible-section";
 import { getUserQuota, getUserVacation } from "../api-client";
-import { UserQuota, VacationSettings } from "../types";
+import { UserQuota } from "../types";
 import type { ForwardsFact } from "./user-forwards";
 
 // Same thresholds as the quota bars of the sections
@@ -67,23 +67,29 @@ function CountFact({ section, count, labelKey }: { section: string; count: unkno
   return value === undefined ? null : <Fact section={section}>{t(labelKey, { count: value })}</Fact>;
 }
 
+// Once its section has loaded or saved it, the section's value is the latest one
+function useLatest<T>(allowed: boolean, fetch: () => Promise<T>, fact: T | undefined): T | undefined {
+  const { data } = useFetchData<T>(allowed ? fetch : null);
+  return allowed ? fact ?? data ?? undefined : undefined;
+}
+
+function VacationFact({ enabled }: { enabled: boolean | undefined }) {
+  const { t } = useTranslation();
+  if (enabled === undefined) return null;
+  return <Fact section="vacation">{enabled ? t("users.summary.vacationOn") : t("users.summary.vacationOff")}</Fact>;
+}
+
 /** The essential facts of a mail user, each opening and scrolling to its section. */
 export function MailUserSummary({ username, forwardsOnly = false }: { username: string; forwardsOnly?: boolean }) {
-  const { t } = useTranslation();
   const facts = useSectionFacts();
   // An address without account has no quota, mailbox, alias nor vacation of its own
   const canQuota = useIsAllowed("GET", "/quota/users/{username}") && !forwardsOnly;
   const canVacation = useIsAllowed("GET", "/vacation/{username}") && !forwardsOnly;
   const fetchQuota = useCallback(() => getUserQuota(username), [username]);
-  const fetchVacation = useCallback(() => getUserVacation(username), [username]);
-  const { data: fetchedQuota } = useFetchData<UserQuota>(canQuota ? fetchQuota : null);
-  const { data: fetchedVacation } = useFetchData<VacationSettings>(canVacation ? fetchVacation : null);
-  // Once its section has loaded or saved them, the section's values are the latest ones
-  const quota = canQuota ? (facts["quota"] as UserQuota | undefined) ?? fetchedQuota : undefined;
+  const fetchVacation = useCallback(async () => !!(await getUserVacation(username)).enabled, [username]);
+  const quota = useLatest<UserQuota>(canQuota, fetchQuota, facts["quota"] as UserQuota | undefined);
   const vacationFact = facts["vacation"];
-  const vacationEnabled = !canVacation ? undefined
-    : typeof vacationFact === "boolean" ? vacationFact
-      : fetchedVacation ? !!fetchedVacation.enabled : undefined;
+  const vacationEnabled = useLatest<boolean>(canVacation, fetchVacation, typeof vacationFact === "boolean" ? vacationFact : undefined);
   const forwards = facts["forwards"] as ForwardsFact | undefined;
 
   return (
@@ -92,9 +98,7 @@ export function MailUserSummary({ username, forwardsOnly = false }: { username: 
       {!forwardsOnly && <CountFact section="mailboxes" count={facts["mailboxes"]} labelKey="users.summary.mailboxes" />}
       {!forwardsOnly && <CountFact section="aliases" count={facts["aliases"]} labelKey="users.summary.aliases" />}
       {forwards && <ForwardsFactChip forwards={forwards} />}
-      {vacationEnabled !== undefined && (
-        <Fact section="vacation">{vacationEnabled ? t("users.summary.vacationOn") : t("users.summary.vacationOff")}</Fact>
-      )}
+      <VacationFact enabled={vacationEnabled} />
     </Strip>
   );
 }

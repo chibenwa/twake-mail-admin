@@ -41,9 +41,9 @@ public final class Dialogs {
         confirmWith(app, START_TASK);
     }
 
-    /** The "Type DELETE to confirm" field of an irreversible action. */
-    public static Locator typeToConfirmField(AdminApp app, String word) {
-        return app.dialog().getByLabel("Type " + word + " to confirm", new Locator.GetByLabelOptions().setExact(true));
+    /** The "Type DELETE to confirm" field of an irreversible action: every one of them asks for {@link #DELETE_WORD}. */
+    public static Locator typeToConfirmField(AdminApp app) {
+        return app.dialog().getByLabel("Type " + DELETE_WORD + " to confirm", new Locator.GetByLabelOptions().setExact(true));
     }
 
     /** The field of a task parameter, by its raw query key ({@code "queue"}, {@code "limit"}...) shown under its label. */

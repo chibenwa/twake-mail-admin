@@ -176,7 +176,7 @@ class CommonTasksTest extends MailAdminE2ETest {
                     // Irreversible: the consequence is spelled out, "Delete data" waits for DELETE to be typed
                     assertThat(app.dialog()).containsText("can no longer be restored");
                     assertThat(Dialogs.button(app, "Delete data")).isDisabled();
-                    Dialogs.typeToConfirmField(app, Dialogs.DELETE_WORD).fill(Dialogs.DELETE_WORD);
+                    Dialogs.typeToConfirmField(app).fill(Dialogs.DELETE_WORD);
                     response = confirmTask(app, commonTask.method(), path, "Delete data");
                 } else {
                     response = confirmTask(app, commonTask.method(), path);
@@ -294,9 +294,9 @@ class CommonTasksTest extends MailAdminE2ETest {
         // Irreversible: "Delete data" stays disabled until DELETE is typed
         Locator deleteData = Dialogs.button(app, "Delete data");
         assertThat(deleteData).isDisabled();
-        Dialogs.typeToConfirmField(app, Dialogs.DELETE_WORD).fill("delete");
+        Dialogs.typeToConfirmField(app).fill("delete");
         assertThat(deleteData).isDisabled();
-        Dialogs.typeToConfirmField(app, Dialogs.DELETE_WORD).fill(Dialogs.DELETE_WORD);
+        Dialogs.typeToConfirmField(app).fill(Dialogs.DELETE_WORD);
         assertThat(deleteData).isEnabled();
         Response refused = app.page().waitForResponse(
             r -> r.request().method().equals("DELETE") && r.url().contains("/blobs?"), deleteData::click);
