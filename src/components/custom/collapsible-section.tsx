@@ -1,55 +1,13 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { sectionFlag, type StoredFlag } from "./section-flags";
 
 /**
  * Collapsible sections of the detail pages (user, domain, team mailbox…), in both
  * applications. Their open state is remembered per page type, not per object: opening
  * Calendars on alice's page keeps it open on bob's, and across reloads.
  */
-
-type Listener = () => void;
-const listeners = new Map<string, Set<Listener>>();
-const memory = new Map<string, boolean>();
-
-const storageKey = (page: string, id: string) => `section:${page}:${id}`;
-
-/** The remembered open state of one section of one page type, and who listens to it. */
-interface StoredFlag {
-  read(): boolean | undefined;
-  write(open: boolean): void;
-  subscribe(listener: Listener): () => void;
-}
-
-// The storage can be unavailable (private window, blocked site data): the state then lives in memory
-const storedFlag = (key: string): StoredFlag => ({
-  read() {
-    if (memory.has(key)) return memory.get(key);
-    try {
-      const value = window.localStorage.getItem(key);
-      return value === null ? undefined : value === "true";
-    } catch {
-      return undefined;
-    }
-  },
-  write(open) {
-    memory.set(key, open);
-    try {
-      window.localStorage.setItem(key, String(open));
-    } catch {
-      // kept in memory only
-    }
-    listeners.get(key)?.forEach((listener) => listener());
-  },
-  subscribe(listener) {
-    const set = listeners.get(key) ?? new Set();
-    set.add(listener);
-    listeners.set(key, set);
-    return () => set.delete(listener);
-  },
-});
-
-const sectionFlag = (page: string, id: string) => storedFlag(storageKey(page, id));
 
 interface SectionsContextValue {
   page: string;
@@ -71,16 +29,17 @@ export function SectionsProvider({ page, children }: { page: string; children: R
   const [facts, setFacts] = useState<Facts>({});
   const report = useCallback((id: string, value: unknown) =>
     setFacts((current) => (Object.is(current[id], value) ? current : { ...current, [id]: value })), []);
-  const register = useCallback((id: string) => {
-    sections.current.set(id, (sections.current.get(id) ?? 0) + 1);
+  // A section can be rendered twice (e.g. while a dialog of it is open): counted, not flagged
+  const count = useCallback((id: string, delta: number) => {
+    const next = (sections.current.get(id) ?? 0) + delta;
+    if (next > 0) sections.current.set(id, next);
+    else sections.current.delete(id);
     setVersion((v) => v + 1);
-    return () => {
-      const count = (sections.current.get(id) ?? 1) - 1;
-      if (count <= 0) sections.current.delete(id);
-      else sections.current.set(id, count);
-      setVersion((v) => v + 1);
-    };
   }, []);
+  const register = useCallback((id: string) => {
+    count(id, 1);
+    return () => count(id, -1);
+  }, [count]);
   return (
     <SectionsContext.Provider value={{ page, register }}>
       <SectionIdsContext.Provider value={sections}>
@@ -133,6 +92,7 @@ interface SectionToggleProps {
 
 /** The title button of a section: chevron, title and count, with its disclosure state exposed. */
 export function SectionToggle({ open, onToggle, controls, children }: SectionToggleProps) {
+  const Chevron = open ? ChevronDown : ChevronRight;
   return (
     <button
       type="button"
@@ -142,7 +102,7 @@ export function SectionToggle({ open, onToggle, controls, children }: SectionTog
       // Revealed from the summary strip: its title stays clear of the sticky header of the page
       className="flex items-center gap-2 text-md font-semibold text-left hover:text-blue-600 transition scroll-mt-16"
     >
-      {open ? <ChevronDown className="w-4 h-4 shrink-0" aria-hidden="true" /> : <ChevronRight className="w-4 h-4 shrink-0" aria-hidden="true" />}
+      <Chevron className="w-4 h-4 shrink-0" aria-hidden="true" />
       {children}
     </button>
   );
@@ -156,6 +116,11 @@ function useWriteSection(): (id: string, open: boolean) => void {
   }, [page]);
 }
 
+const ALL_ACTIONS = [
+  { open: true, labelKey: "common.expandAll" },
+  { open: false, labelKey: "common.collapseAll" },
+];
+
 /** "Expand all" / "Collapse all" for the sections of the enclosing SectionsProvider. */
 export function ExpandCollapseAll() {
   const { t } = useTranslation();
@@ -163,13 +128,14 @@ export function ExpandCollapseAll() {
   const sections = useContext(SectionIdsContext);
   // A page without sections (e.g. an unregistered user) has nothing to expand
   if (!sections || sections.current.size === 0) return null;
-  const setAll = (open: boolean) => {
-    for (const id of sections.current.keys()) writeSection(id, open);
-  };
   return (
     <div className="flex gap-3 text-sm">
-      <button type="button" className="text-blue-600 hover:underline" onClick={() => setAll(true)}>{t("common.expandAll")}</button>
-      <button type="button" className="text-blue-600 hover:underline" onClick={() => setAll(false)}>{t("common.collapseAll")}</button>
+      {ALL_ACTIONS.map(({ open, labelKey }) => (
+        <button key={labelKey} type="button" className="text-blue-600 hover:underline"
+          onClick={() => sections.current.forEach((_, id) => writeSection(id, open))}>
+          {t(labelKey)}
+        </button>
+      ))}
     </div>
   );
 }
