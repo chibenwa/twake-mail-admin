@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { useState } from "react";
 import FormDialog from "./form-dialog";
 
 afterEach(cleanup);
@@ -36,5 +37,27 @@ describe("form dialog", () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
     expect(onClose).not.toHaveBeenCalled();
     expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("gives the focus back to the button that opened it", async () => {
+    function Opener() {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <button onClick={() => setOpen(true)}>Add</button>
+          <FormDialog open={open} onClose={() => setOpen(false)} title="Add team mailbox" submitLabel="Save" onSubmit={async () => undefined}>
+            <input aria-label="name" autoFocus />
+          </FormDialog>
+        </>
+      );
+    }
+    render(<Opener />);
+    const opener = screen.getByText("Add");
+    opener.focus();
+    fireEvent.click(opener);
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText("name")));
+    fireEvent.click(screen.getByText("Save"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(opener));
   });
 });

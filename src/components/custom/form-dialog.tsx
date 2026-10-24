@@ -1,4 +1,5 @@
 import { FormEvent, ReactNode, useState } from "react";
+import { useReturnFocus } from "@/hooks/use-return-focus";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -69,6 +70,13 @@ function Problems({ invalid, error }: { invalid: string | null; error: unknown }
 export default function FormDialog({ open, onClose, title, submitLabel, submitDisabled, validate, onSubmit, children, className }: Props) {
   const { t } = useTranslation();
   const { submitting, error, invalid, clear, submit } = useSubmission(validate, onSubmit);
+  const { rememberFocus, restoreFocus } = useReturnFocus();
+  // Read while rendering the opening: an autoFocus field takes the focus as soon as it mounts
+  const [wasOpen, setWasOpen] = useState(false);
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    if (open) rememberFocus();
+  }
 
   const close = () => {
     if (submitting) return;
@@ -84,7 +92,7 @@ export default function FormDialog({ open, onClose, title, submitLabel, submitDi
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) close(); }}>
-      <DialogContent className={className ?? "max-w-md"} aria-describedby={undefined}>
+      <DialogContent className={className ?? "max-w-md"} aria-describedby={undefined} onCloseAutoFocus={restoreFocus}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
