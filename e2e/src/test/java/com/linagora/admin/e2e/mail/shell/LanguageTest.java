@@ -38,8 +38,9 @@ class LanguageTest extends MailAdminE2ETest {
         assertThat(Shell.rawI18nKeys(app.page().locator("body").innerText())).isEmpty();
     }
 
+    /** The toggle of a section of a detail page, "Mappings(0)": its count follows its title. */
     private static Locator section(AdminApp app, String title) {
-        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(Pattern.compile("^" + Shell.quote(title) + "( \\(\\d+\\))?$")));
+        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(Pattern.compile("^" + Shell.quote(title) + "( ?\\(\\d+\\))?$")));
     }
 
     @Test
@@ -86,8 +87,8 @@ class LanguageTest extends MailAdminE2ETest {
         assertThat(app.main()).containsText(Pattern.compile("Date de création :" + NBSP + "*\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}"));
         assertThat(app.main()).containsText(today);
         assertThat(app.main()).not().containsText("GMT");
-        section(app, "Correspondances").click();
-        assertThat(app.main().getByText("Aucune correspondance trouvée.").first()).isVisible();
+        section(app, "Réécritures d'adresses").click();
+        assertThat(app.main().getByText("Aucune réécriture d'adresse trouvée.").first()).isVisible();
         assertThat(app.main().getByText("No mappings found.")).hasCount(0);
         assertNoRawKey(app);
 
@@ -97,15 +98,15 @@ class LanguageTest extends MailAdminE2ETest {
             .filter(new Locator.FilterOptions().setVisible(true)).first()).isVisible();
         assertNoRawKey(app);
 
-        // The load error of Mailing Lists, then back to English without reloading
+        // Mailing Lists unavailable on this server (no LDAP), then back to English without reloading
         app.navigate("Listes de diffusion");
-        Locator frenchError = app.main().getByText("Erreur : Échec du chargement des données : GET /mailingLists can not be found",
+        Locator frenchNotice = app.main().getByText("Les listes de diffusion ne sont pas disponibles sur ce serveur",
             new Locator.GetByTextOptions().setExact(true));
-        assertThat(frenchError).isVisible();
+        assertThat(frenchNotice).isVisible();
         chooseLanguage(app, "English");
-        assertThat(app.main().getByText("Error: Failed to fetch data: GET /mailingLists can not be found",
+        assertThat(app.main().getByText("Mailing lists are not available on this server",
             new Locator.GetByTextOptions().setExact(true))).isVisible();
-        assertThat(frenchError).hasCount(0);
+        assertThat(frenchNotice).hasCount(0);
         assertThat(Shell.sidebarLink(app, "Users")).isVisible();
         assertThat(app.heading()).hasText("Mailing Lists");
     }

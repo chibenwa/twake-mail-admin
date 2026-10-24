@@ -43,16 +43,15 @@ class IconButtonsTest extends MailAdminE2ETest {
         String taskId = webAdmin.post("/users/" + user + "/mailboxes?task=reIndex", null).expect(201).json().path("taskId").asText();
         webAdmin.awaitTask(taskId);
 
-        // A completed task: Back and Refresh
+        // A completed task: Refresh, and the breadcrumb back to the Tasks list
         app.open("/tasks");
         app.open("/task/" + taskId);
-        assertThat(app.main()).containsText(taskId);
-        assertThat(app.main()).containsText("\"status\": \"completed\"");
-        Shell.assertNamedWithTooltip(app.button("Back"), "Back");
+        assertThat(Shell.detailTitle(app, "Task " + taskId)).isVisible();
+        assertThat(app.main().getByText("Completed", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
         assertNamedWithHoverTooltip(page, app.button("Refresh"), "Refresh");
         assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel"))).hasCount(0);
         assertThat(Shell.unnamedButtons(app.main())).isEmpty();
-        app.button("Back").click();
+        Shell.breadcrumb(app, "Tasks").click();
         assertThat(page).hasURL(Pattern.compile("/tasks$"));
 
         // A running task, as WebAdmin would describe it: the Cancel button shows up
@@ -62,7 +61,7 @@ class IconButtonsTest extends MailAdminE2ETest {
             return task.toString();
         });
         app.open("/task/" + taskId);
-        assertThat(app.main()).containsText("\"status\": \"inProgress\"");
+        assertThat(app.main().getByText("In Progress", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
         assertNamedWithHoverTooltip(page, app.button("Cancel"), "Cancel");
         assertNamedWithHoverTooltip(page, app.button("Refresh"), "Refresh");
         assertThat(Shell.unnamedButtons(app.main())).isEmpty();
@@ -96,8 +95,9 @@ class IconButtonsTest extends MailAdminE2ETest {
         Shell.assertNamedWithTooltip(app.button("Refresh"), "Refresh");
         assertThat(Shell.unnamedButtons(app.main())).isEmpty();
 
+        // No /metrics route here: the page explains it, with no button left to name
         app.navigate("Live Metrics");
-        Shell.assertNamedWithTooltip(app.button("Refresh metrics"), "Refresh metrics");
+        assertThat(app.main().getByText("Metrics are not available on this server", new Locator.GetByTextOptions().setExact(true))).isVisible();
         assertThat(Shell.unnamedButtons(app.main())).isEmpty();
 
         app.open("/users/user/" + WebAdmin.encode(user));
@@ -116,11 +116,10 @@ class IconButtonsTest extends MailAdminE2ETest {
         assertThat(Shell.unnamedButtons(app.main())).isEmpty();
 
         // A toast: its "x" is named "Close"
-        app.navigate("Domains");
-        app.main().getByPlaceholder("New domain name").fill("not a domain!");
-        app.button("Create").click();
-        app.confirm();
-        Locator toast = app.toast("Error creating domain");
+        app.navigate("Event Dead Letter");
+        app.main().getByPlaceholder("Enter event ID").fill("abc");
+        app.button("Search").click();
+        Locator toast = app.toast("Error searching for event");
         assertThat(toast).isVisible();
         Shell.assertNamedWithTooltip(toast.getByRole(AriaRole.BUTTON), "Close");
         assertThat(Shell.unnamedButtons(app.toasts())).isEmpty();

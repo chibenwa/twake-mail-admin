@@ -90,36 +90,47 @@ class TasksTest extends MailAdminE2ETest {
 
         // A click on the row opens the detail
         row.getByTitle("user-reindexing").click();
-        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Task — " + taskId);
-        for (String label : List.of("Status", "Type", "Submitted", "Started", "Executed on", "Submitted from", "Additional Information")) {
+        assertThat(app.dialog().getByRole(AriaRole.HEADING).first()).hasText("Task — " + taskId);
+        for (String label : List.of("Status", "Type", "Submitted", "Started", "Duration", "Executed on", "Submitted from")) {
             assertThat(app.dialog().getByText(label, new Locator.GetByTextOptions().setExact(true))).isVisible();
         }
+        // The status pill and the "Completed" date label
         assertThat(app.dialog().getByText("Completed", new Locator.GetByTextOptions().setExact(true))).hasCount(2);
         assertThat(app.dialog()).containsText(task.path("executedOn").asText());
+        // The additional information as labelled values, the raw JSON folded
+        assertThat(app.dialog().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Details").setExact(true))).isVisible();
+        assertThat(app.dialog().getByText("Raw JSON", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(app.dialog().locator("details pre")).isHidden();
         assertThat(app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true))).hasCount(0);
 
         app.dialog().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Full Details")).click();
         assertThat(page).hasURL(Pattern.compile("/task/" + taskId + "$"));
-        Locator json = app.main().locator("pre");
+        assertThat(app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(1)))
+            .hasText("Task " + taskId);
+        assertThat(app.main().getByText("user-reindexing", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
+        assertThat(app.main().getByText("Completed", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
+        app.main().getByText("Raw JSON", new Locator.GetByTextOptions().setExact(true)).click();
+        Locator json = app.main().locator("details pre");
+        assertThat(json).isVisible();
         assertThat(json).containsText("\"taskId\": \"" + taskId + "\"");
         assertThat(readJson(json.textContent()))
             .isEqualTo(webAdmin.get("/tasks/" + taskId).expect(200).json());
         assertThat(json).containsText(task.path("submitDate").asText());
         assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true))).hasCount(0);
         assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Refresh").setExact(true))).isVisible();
-        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Back").setExact(true))).isVisible();
+        assertThat(tasksBreadcrumb(app)).hasAttribute("href", "/tasks");
 
         // Keyboard: Enter and Space on the task ID open the same dialog, Escape gives the focus back
         page.goBack();
         Locator idButton = tasks.taskIdButton(taskId);
         idButton.focus();
         page.keyboard().press("Enter");
-        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Task — " + taskId);
+        assertThat(app.dialog().getByRole(AriaRole.HEADING).first()).hasText("Task — " + taskId);
         page.keyboard().press("Escape");
         assertThat(app.dialog()).isHidden();
         assertThat(idButton).isFocused();
         page.keyboard().press(" ");
-        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Task — " + taskId);
+        assertThat(app.dialog().getByRole(AriaRole.HEADING).first()).hasText("Task — " + taskId);
         page.keyboard().press("Escape");
         assertThat(app.dialog()).isHidden();
         assertThat(idButton).isFocused();
@@ -335,9 +346,15 @@ class TasksTest extends MailAdminE2ETest {
         assertNoCancel(app);
     }
 
+    /** The breadcrumb of the task page, leading back to the Tasks list. */
+    private static Locator tasksBreadcrumb(AdminApp app) {
+        return app.main().getByRole(AriaRole.NAVIGATION, new Locator.GetByRoleOptions().setName("Breadcrumb"))
+            .getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Tasks").setExact(true));
+    }
+
     private static void assertNoCancel(AdminApp app) {
         assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Refresh").setExact(true))).isVisible();
-        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Back").setExact(true))).isVisible();
+        assertThat(tasksBreadcrumb(app)).isVisible();
         assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true))).hasCount(0);
     }
 }

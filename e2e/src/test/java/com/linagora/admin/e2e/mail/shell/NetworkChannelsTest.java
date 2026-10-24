@@ -19,6 +19,7 @@ import com.linagora.admin.e2e.backend.MailFixtures;
 import com.linagora.admin.e2e.backend.WebAdmin;
 import com.linagora.admin.e2e.docker.MailStack;
 import com.linagora.admin.e2e.pages.AdminApp;
+import com.linagora.admin.e2e.pages.mail.ops.Dialogs;
 import com.linagora.admin.e2e.pages.mail.shell.Shell;
 import com.linagora.admin.e2e.pages.mail.shell.WebAdminStub;
 import com.linagora.admin.e2e.pages.mail.userdetail.MailUserDetailPage;
@@ -88,7 +89,8 @@ class NetworkChannelsTest extends MailAdminE2ETest {
 
         app.button("Disconnect all").click();
         assertThat(app.dialog()).containsText("Disconnect all user channels on the server? This will close every active connection.");
-        app.confirm();
+        // The confirm button names the action
+        Dialogs.confirmWith(app, "Disconnect all");
         app.expectToast("All users disconnected successfully");
         assertThat(deletes).hasSize(1);
         assertThat(Shell.unnamedButtons(app.main())).isEmpty();
@@ -137,14 +139,16 @@ class NetworkChannelsTest extends MailAdminE2ETest {
             assertThat(userButton).isFocused();
 
             // The user page lists this user's session only, and Disconnect all closes it
-            MailUserDetailPage detail = new MailUserDetailPage(app).open(user);
+            MailUserDetailPage detail = new MailUserDetailPage(app);
+            app.open("/users/user/" + WebAdmin.encode(user));
+            assertThat(Shell.detailTitle(app, user)).isVisible();
             detail.toggle("Network Channels");
             assertThat(userButton).isVisible();
             assertThat(usernameButtons).hasCount(1);
             assertThat(row).containsText("e2e-client");
             detail.button("Disconnect all").click();
             assertThat(app.dialog()).containsText("Disconnect channels for " + user);
-            app.confirm();
+            Dialogs.confirmWith(app, "Disconnect all");
             app.expectToast(user + " disconnected");
             assertThat(app.main().getByText("No active channels.", new Locator.GetByTextOptions().setExact(true))).isVisible();
             assertThat(userButton).isHidden();

@@ -30,6 +30,7 @@ import com.linagora.admin.e2e.backend.WebAdmin;
 import com.linagora.admin.e2e.docker.BrowserLog;
 import com.linagora.admin.e2e.docker.Locks;
 import com.linagora.admin.e2e.pages.AdminApp;
+import com.linagora.admin.e2e.pages.mail.ops.Dialogs;
 import com.linagora.admin.e2e.pages.mail.ops.MailRepositoriesPage;
 import com.linagora.admin.e2e.pages.mail.ops.MailRepositoryDetailPage;
 import com.linagora.admin.e2e.pages.mail.ops.Regex;
@@ -57,15 +58,41 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         app.navigate("Mail Repositories");
         MailRepositoriesPage repositories = new MailRepositoriesPage(app);
 
-        for (String path : List.of("var/mail/address-error", "var/mail/error", "var/mail/relay-denied", "var/mail/rrt-error")) {
+        assertThat(app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Mail Repositories").setLevel(1))).isVisible();
+        Map<String, String> described = Map.of(
+            "var/mail/address-error", "Mails to local addresses that do not exist.",
+            "var/mail/error", "Mails whose processing failed unexpectedly.",
+            "var/mail/relay-denied", "Mails refused because the sender may not relay.",
+            "var/mail/rrt-error", "Mails whose address rewriting (alias, forward) failed.");
+        for (Map.Entry<String, String> repository : described.entrySet()) {
+            String path = repository.getKey();
             assertThat(repositories.link(path)).isVisible();
-            assertThat(repositories.row(path).getByText(WebAdmin.encode(path), new Locator.GetByTextOptions().setExact(true))).isVisible();
+            assertThat(repositories.count(path)).hasText(Pattern.compile("^\\d+$"));
+            // Each standard repository says what it holds
+            assertThat(repositories.row(path).getByText(repository.getValue(), new Locator.GetByTextOptions().setExact(true))).isVisible();
             for (String action : List.of(MailRepositoriesPage.REPROCESS_ALL, MailRepositoriesPage.MOVE_ALL, MailRepositoriesPage.CLEAR_ALL)) {
                 assertThat(repositories.action(path, action)).isVisible();
             }
         }
+        // An empty repository: count 0, nothing to reprocess, move or clear
         assertThat(repositories.link(spaced, 0)).isVisible();
-        assertThat(repositories.row(spaced).getByText(WebAdmin.encode(spaced), new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(repositories.count(spaced)).hasText("0");
+        assertThat(repositories.count(spaced)).hasAttribute("aria-label", "Mails: 0");
+        for (String action : List.of(MailRepositoriesPage.REPROCESS_ALL, MailRepositoriesPage.MOVE_ALL, MailRepositoriesPage.CLEAR_ALL)) {
+            assertThat(repositories.action(spaced, action)).isDisabled();
+            assertThat(repositories.action(spaced, action)).hasAttribute("title", "This repository is empty");
+        }
+        // The repositories holding mails come first, then by path
+        List<String> names = repositories.headings().allInnerTexts();
+        List<Long> counts = names.stream().map(name -> Long.parseLong(name.replaceAll("(?s)^.*?(\\d+)\\s*$", "$1"))).toList();
+        assertThat(counts).isSortedAccordingTo(java.util.Comparator.reverseOrder());
+
+        // The toolbar filter narrows the list down to the matching paths
+        repositories.filter().fill("qa space-");
+        assertThat(repositories.link(spaced, 0)).isVisible();
+        assertThat(repositories.link("var/mail/error")).hasCount(0);
+        repositories.filter().fill("");
+        assertThat(repositories.link("var/mail/error")).isVisible();
 
         Request listRequest = page.waitForRequest(
             request -> request.url().contains("/mailRepositories/") && request.url().contains("/mails?"),
@@ -76,7 +103,8 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         assertThat(listRequest.url()).contains("qa%20space-").doesNotContain("+").doesNotContain("?&");
         MailRepositoryDetailPage detail = new MailRepositoryDetailPage(app);
         assertThat(detail.title(spaced)).isVisible();
-        assertThat(app.main().getByText("No emails found.")).isVisible();
+        assertThat(detail.breadcrumb("Mail Repositories")).hasAttribute("href", "/mail-repositories");
+        assertThat(app.main().getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("No emails found."))).isVisible();
         assertThat(app.main().getByText(Pattern.compile("^Error:"))).hasCount(0);
     }
 
@@ -152,9 +180,11 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         assertThat(repositories.param("consume")).isChecked();
         assertThat(repositories.param("limit")).hasValue("");
         assertThat(repositories.param("maxRetries")).hasValue("");
+        assertThat(Dialogs.paramLabel(app, "queue")).hasText("Target queue (optional)");
+        assertThat(Dialogs.paramLabel(app, "consume")).hasText("Remove from the repository once reprocessed (optional)");
         assertThat(repositories.commandPreview()).hasText("Command: curl -XPATCH /mailRepositories/" + WebAdmin.encode(source)
             + "/mails?action=reprocess&queue=spool&processor=root&consume=true");
-        app.confirm();
+        Dialogs.startTask(app);
         Locator toast = app.toast("Task created");
         assertThat(toast.getByRole(AriaRole.LINK)).hasText(Pattern.compile("^Task [0-9a-f-]{36}$"));
         String reprocessTask = OpsBackend.taskIdOf(toast.getByRole(AriaRole.LINK).getAttribute("href"));
@@ -189,7 +219,11 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         // Clear all
         repositories.action(target, MailRepositoriesPage.CLEAR_ALL).click();
         assertThat(app.dialog().getByText("Do you want to clear the mail repository: " + target + ".", new Locator.GetByTextOptions().setExact(true))).isVisible();
-        app.confirm();
+        // Irreversible: what is lost is spelled out, the button names the action
+        assertThat(app.dialog().getByText("The 2 mails stored in " + target + " are permanently deleted and can no longer be reprocessed.",
+            new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(Dialogs.button(app, "Cancel")).isFocused();
+        Dialogs.confirmWith(app, "Clear");
         Locator clearToast = app.toast("Task created");
         String clearTask = OpsBackend.taskIdOf(clearToast.getByRole(AriaRole.LINK).getAttribute("href"));
         assertThat(webAdmin.awaitTask(clearTask).path("status").asText()).isEqualTo("completed");
@@ -200,13 +234,16 @@ class MailRepositoriesTest extends MailAdminE2ETest {
 
     @Test
     @DisplayName("MR-03 Reprocess parameters: custom processor, empty fields, refusal kept in the dialog")
-    void reprocessParameters(AdminApp app, Page page, WebAdmin webAdmin) {
+    void reprocessParameters(AdminApp app, Page page, MailFixtures fixtures, WebAdmin webAdmin) {
         String repository = OpsBackend.createRepository(webAdmin, "qa-reprocess");
+        // An empty repository has nothing to reprocess: its Reprocess button is disabled
+        OpsBackend.injectMails(fixtures, fixtures.newUser("sender"), OpsBackend.rrtErrorRecipient(fixtures), repository, 1);
         MailRepositoriesPage repositories = MailRepositoriesPage.open(app);
+        assertThat(repositories.link(repository, 1)).isVisible();
 
         repositories.action(repository, MailRepositoriesPage.REPROCESS_ALL).click();
         repositories.param("maxRetries").fill("abc");
-        app.clickConfirm();
+        Dialogs.clickWith(app, Dialogs.START_TASK);
         assertThat(app.dialogError()).containsText("Can not parse maxRetries");
         assertThat(app.dialog()).isVisible();
         assertThat(repositories.param("maxRetries")).hasValue("abc");
@@ -217,7 +254,7 @@ class MailRepositoriesTest extends MailAdminE2ETest {
             + "/mails?action=reprocess&queue=spool&processor=transport&consume=true");
         Request reprocess = page.waitForRequest(
             request -> request.method().equals("PATCH") && request.url().contains("action=reprocess"),
-            app::confirm);
+            () -> Dialogs.startTask(app));
         String query = reprocess.url().substring(reprocess.url().indexOf('?') + 1);
         assertThat(query.split("&")).filteredOn(param -> param.startsWith("processor=")).containsExactly("processor=transport");
         assertThat(query).doesNotContain("limit=").doesNotContain("maxRetries=").doesNotContain("&&");
@@ -252,7 +289,9 @@ class MailRepositoriesTest extends MailAdminE2ETest {
 
         MailRepositoryDetailPage detail = new MailRepositoryDetailPage(app);
         assertThat(detail.title(seeded.repository())).isVisible();
-        assertThat(app.main().getByText("Page 1 / 1", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        // Every mail on one page: the total alone, no pagination buttons
+        assertThat(detail.pageLabel("Total: 4")).isVisible();
+        assertThat(detail.pager("Next")).hasCount(0);
         for (String key : seeded.longKeys()) {
             assertThat(detail.mailKey(key)).isVisible();
         }
@@ -279,7 +318,7 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         detail.resetFilters().click();
         detail.updatedBeforeFilter().fill("1d");
         detail.applyFilters().click();
-        assertThat(app.main().getByText("No emails found.")).isVisible();
+        assertThat(app.main().getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions().setHasText("No emails found."))).isVisible();
         assertThat(detail.mailKey(seeded.shortKey())).hasCount(0);
     }
 
@@ -353,7 +392,7 @@ class MailRepositoriesTest extends MailAdminE2ETest {
 
         detail.rowAction(reprocessed, MailRepositoryDetailPage.REPROCESS).click();
         assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Reprocess Email");
-        app.confirm();
+        Dialogs.startTask(app);
         Locator scheduled = app.toast("Reprocessing scheduled");
         String taskId = OpsBackend.taskIdOf(scheduled.getByRole(AriaRole.LINK).getAttribute("href"));
         assertThat(webAdmin.awaitTask(taskId).path("status").asText()).isEqualTo("completed");
@@ -368,7 +407,7 @@ class MailRepositoriesTest extends MailAdminE2ETest {
 
         detail.rowAction(deleted, MailRepositoryDetailPage.DELETE).click();
         assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Delete Email");
-        app.confirm();
+        Dialogs.confirmWith(app, "Delete");
         app.expectToast("Email removed successfully");
         assertThat(detail.mailButton(deleted)).hasCount(0);
         Awaitility.await().atMost(Duration.ofSeconds(10))
@@ -376,14 +415,14 @@ class MailRepositoriesTest extends MailAdminE2ETest {
     }
 
     @Test
-    @DisplayName("MR-04 Basic view: (JSON) and (MIME) of a mail, its HTML shown as text")
+    @DisplayName("MR-04 Basic view: View JSON and (MIME) of a mail, its HTML shown as text")
     void jsonAndMimeOfAMail(AdminApp app, Page page, MailFixtures fixtures, WebAdmin webAdmin) throws Exception {
         String repository = OpsBackend.createRepository(webAdmin, "qa-json");
         String sender = fixtures.newUser("json");
         String recipient = OpsBackend.rrtErrorRecipient(fixtures);
         String marker = Ids.unique("qa");
-        // What an outside sender may write: the popup must show it as text, never parse it
-        String hostile = "<img src=x onerror=\"window.opener.__xss=1\">" + marker + "<b>bold</b>";
+        // What an outside sender may write: the JSON dialog must show it as text, never parse it
+        String hostile = "<img src=x onerror=\"window.__xss=1\">" + marker + "<b>bold</b>";
         String key = OpsBackend.injectMail(fixtures, sender, recipient, repository, hostile, hostile);
         String mailPath = "/mailRepositories/" + WebAdmin.encode(repository) + "/mails/" + key;
 
@@ -408,11 +447,14 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         app.open("/mail-repositories/repository/" + WebAdmin.encode(repository));
         MailRepositoryDetailPage detail = new MailRepositoryDetailPage(app);
         assertThat(detail.title(repository)).isVisible();
-        Locator row = app.main().getByRole(AriaRole.LISTITEM).filter(new Locator.FilterOptions().setHasText(key));
-        Page popup = page.waitForPopup(() ->
-            row.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("(JSON)").setExact(true)).click());
+        int pagesBefore = page.context().pages().size();
+        detail.viewJson(key).click();
 
-        Locator pre = popup.locator("pre");
+        // An in-app dialog titled after the mail, no new window or tab
+        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText(key);
+        assertThat(Dialogs.button(app, "Copy")).isVisible();
+        assertThat(page.context().pages()).hasSize(pagesBefore);
+        Locator pre = app.dialog().locator("pre");
         // JSON escapes the quotes only
         assertThat(pre).containsText("<img src=x onerror=");
         assertThat(pre).containsText(marker + "<b>bold</b>");
@@ -422,15 +464,15 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         assertThat(real.path("sender").asText()).isEqualTo(sender);
         assertThat(WebAdmin.JSON.readTree(shown)).isEqualTo(withHostileFields.apply(real));
         assertThat(shown).as("pretty printed").contains("\n  \"");
-        assertThat(popup.locator("img, b")).hasCount(0);
+        assertThat(app.dialog().locator("img, b")).hasCount(0);
         assertThat(page.evaluate("() => window.__xss")).isNull();
         assertThat(accepted).containsExactly(mailPath + " application/json");
-        popup.close();
+        page.keyboard().press("Escape");
+        assertThat(app.dialog()).isHidden();
 
         // (MIME) gets the real message/rfc822 of WebAdmin, where the Subject is the one sent
         page.unrouteAll();
-        Download mime = page.waitForDownload(() ->
-            row.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("(MIME)").setExact(true)).click());
+        Download mime = page.waitForDownload(() -> detail.mime(key).click());
         assertThat(mime.suggestedFilename()).isEqualTo(key + ".eml");
         assertThat(Files.readString(mime.path())).contains("Subject: " + hostile).contains(marker);
         assertThat(page.evaluate("() => window.__xss")).isNull();
@@ -450,8 +492,8 @@ class MailRepositoriesTest extends MailAdminE2ETest {
     private static final int TOTAL = 450;
     /** Index, in the listing, of the first real mail of a padded repository: row 251, on page 2. */
     private static final int REAL_MAILS_AT = 250;
-    /** A row of the simple view: {@code "<n> /"}, the key, then the (JSON) (MIME) links. */
-    private static final Pattern ROW = Pattern.compile("^(\\d+) /\\s*(.+?)\\s*(?:\\(JSON\\).*)?$", Pattern.DOTALL);
+    /** A row of the simple view: {@code "<n> /"}, the key, then View JSON and (MIME). */
+    private static final Pattern ROW = Pattern.compile("^(\\d+) /\\s*(.+?)\\s*(?:View JSON.*)?$", Pattern.DOTALL);
 
     /**
      * Pads, for this test's browser only, the listing of {@code repository} up to {@code TOTAL}
@@ -518,7 +560,7 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         assertThat(page).hasURL(Pattern.compile("\\?page=1&size=" + TOTAL + "$"));
         List<String> seen = new ArrayList<>();
 
-        assertThat(detail.pageLabel("Page 1 / 3")).isVisible();
+        assertThat(detail.pageLabel("Page 1 / 3 — Total: " + TOTAL)).isVisible();
         assertThat(detail.mailKey(expected.get(0))).isVisible();
         assertThat(detail.rows()).hasCount(PAGE_SIZE);
         assertThat(detail.pager("First")).isDisabled();
@@ -531,7 +573,7 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         assertThat(next.url()).contains("limit=" + PAGE_SIZE).contains("offset=" + PAGE_SIZE);
         assertThat(page).hasURL(Pattern.compile("[?&]page=2(&|$)"));
         assertThat(page).hasURL(Pattern.compile("[?&]size=" + TOTAL + "(&|$)"));
-        assertThat(detail.pageLabel("Page 2 / 3")).isVisible();
+        assertThat(detail.pageLabel("Page 2 / 3 — Total: " + TOTAL)).isVisible();
         assertThat(detail.mailKey(expected.get(PAGE_SIZE))).isVisible();
         assertThat(detail.rows()).hasCount(PAGE_SIZE);
         assertThat(detail.pager("Previous")).isEnabled();
@@ -540,7 +582,7 @@ class MailRepositoriesTest extends MailAdminE2ETest {
 
         Request last = page.waitForRequest(request -> request.url().contains("/mails?"), () -> detail.pager("Last").click());
         assertThat(last.url()).contains("limit=" + PAGE_SIZE).contains("offset=" + 2 * PAGE_SIZE);
-        assertThat(detail.pageLabel("Page 3 / 3")).isVisible();
+        assertThat(detail.pageLabel("Page 3 / 3 — Total: " + TOTAL)).isVisible();
         assertThat(detail.mailKey(expected.get(2 * PAGE_SIZE))).isVisible();
         assertThat(detail.rows()).hasCount(TOTAL - 2 * PAGE_SIZE);
         assertThat(detail.pager("Next")).isDisabled();
@@ -551,13 +593,13 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         assertThat(seen).containsExactlyElementsOf(expected);
 
         page.reload();
-        assertThat(detail.pageLabel("Page 3 / 3")).isVisible();
+        assertThat(detail.pageLabel("Page 3 / 3 — Total: " + TOTAL)).isVisible();
         assertThat(detail.mailKey(expected.get(2 * PAGE_SIZE))).isVisible();
         detail.pager("Previous").click();
-        assertThat(detail.pageLabel("Page 2 / 3")).isVisible();
+        assertThat(detail.pageLabel("Page 2 / 3 — Total: " + TOTAL)).isVisible();
         assertThat(detail.mailKey(expected.get(PAGE_SIZE))).isVisible();
         detail.pager("First").click();
-        assertThat(detail.pageLabel("Page 1 / 3")).isVisible();
+        assertThat(detail.pageLabel("Page 1 / 3 — Total: " + TOTAL)).isVisible();
         assertThat(detail.rows().first()).hasText(Pattern.compile("^1 /\\s*" + Regex.quote(expected.get(0))));
     }
 
@@ -574,20 +616,20 @@ class MailRepositoriesTest extends MailAdminE2ETest {
             MailRepositoriesPage repositories = MailRepositoriesPage.open(app);
             repositories.link(repository, TOTAL).click();
             MailRepositoryDetailPage detail = new MailRepositoryDetailPage(app);
-            assertThat(detail.pageLabel("Page 1 / 3")).isVisible();
+            assertThat(detail.pageLabel("Page 1 / 3 — Total: " + TOTAL)).isVisible();
             detail.pager("Next").click();
-            assertThat(detail.pageLabel("Page 2 / 3")).isVisible();
+            assertThat(detail.pageLabel("Page 2 / 3 — Total: " + TOTAL)).isVisible();
             assertThat(detail.row(deleted)).hasText(Pattern.compile("^" + (REAL_MAILS_AT + 2) + " /"));
 
             detail.simpleRowAction(deleted, MailRepositoryDetailPage.DELETE).click();
             assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Remove Email");
-            Request delete = page.waitForRequest(request -> request.method().equals("DELETE"), app::confirm);
+            Request delete = page.waitForRequest(request -> request.method().equals("DELETE"), () -> Dialogs.confirmWith(app, "Remove"));
             assertThat(delete.url()).endsWith("/mailRepositories/" + WebAdmin.encode(repository) + "/mails/" + deleted);
             app.expectToast("Email removed successfully");
 
             // Still on page 2, refreshed without the deleted mail
             assertThat(page).hasURL(Pattern.compile("[?&]page=2(&|$)"));
-            assertThat(detail.pageLabel("Page 2 / 3")).isVisible();
+            assertThat(detail.pageLabel("Page 2 / 3 — Total: " + TOTAL)).isVisible();
             assertThat(detail.mailKey(deleted)).hasCount(0);
             assertThat(detail.row(kept)).hasText(Pattern.compile("^" + (REAL_MAILS_AT + 1) + " /"));
             assertThat(detail.rows().first()).hasText(Pattern.compile("^" + (PAGE_SIZE + 1) + " /\\s*" + Regex.quote(expected.get(PAGE_SIZE))));
@@ -613,7 +655,7 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         MailRepositoriesPage repositories = MailRepositoriesPage.open(app);
         repositories.link(repository, TOTAL).click();
         MailRepositoryDetailPage detail = new MailRepositoryDetailPage(app);
-        assertThat(detail.pageLabel("Page 1 / 3")).isVisible();
+        assertThat(detail.pageLabel("Page 1 / 3 — Total: " + TOTAL)).isVisible();
         assertThat(detail.extendedViewLink()).hasAttribute("href", Pattern.compile("/extended\\?(.*&)?page=1(&|$)"));
         assertThat(detail.extendedViewLink()).hasAttribute("href", Pattern.compile("/extended\\?(.*&)?size=" + TOTAL + "(&|$)"));
 
@@ -662,7 +704,7 @@ class MailRepositoriesTest extends MailAdminE2ETest {
         repositories.link(repository, TOTAL).click();
         MailRepositoryDetailPage detail = new MailRepositoryDetailPage(app);
         detail.pager("Next").click();
-        assertThat(detail.pageLabel("Page 2 / 3")).isVisible();
+        assertThat(detail.pageLabel("Page 2 / 3 — Total: " + TOTAL)).isVisible();
         assertThat(detail.mailKey(expected.get(PAGE_SIZE))).isVisible();
 
         detail.extendedViewLink().click();

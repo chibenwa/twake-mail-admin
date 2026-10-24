@@ -23,6 +23,7 @@ import com.linagora.admin.e2e.backend.MailFixtures;
 import com.linagora.admin.e2e.backend.WebAdmin;
 import com.linagora.admin.e2e.docker.Locks;
 import com.linagora.admin.e2e.pages.AdminApp;
+import com.linagora.admin.e2e.pages.mail.ops.Dialogs;
 import com.linagora.admin.e2e.pages.mail.ops.EventDeadLetterPage;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
@@ -93,45 +94,64 @@ class EventDeadLetterTest extends MailAdminE2ETest {
     @DisplayName("EDL-01 Event dead letter groups and search by event ID")
     void groupsAndSearchByEventId(AdminApp app, Page page, MailFixtures fixtures, WebAdmin webAdmin) {
         String marker = seed(fixtures);
+        // A real event of the class: its group is then listed
+        String insertionId = OpsBackend.awaitDeadLetters(webAdmin, GROUP, marker, 1).get(0);
+        String eventId = OpsBackend.eventId(webAdmin, GROUP, insertionId);
+
         app.open("/");
         app.navigate("Event Dead Letter");
         EventDeadLetterPage deadLetters = new EventDeadLetterPage(app);
 
-        assertThat(app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Search by event ID"))).isVisible();
-        assertThat(app.main().getByText("Narrows the search to a single listener group, which is significantly faster when the group is known.")).isVisible();
+        // The groups with failed events first, the search by event ID below them
+        assertThat(deadLetters.groupsTitle()).isVisible();
+        Locator searchTitle = app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Search by event ID"));
+        assertThat(searchTitle).isVisible();
+        assertThat(app.main().getByRole(AriaRole.HEADING).filter(new Locator.FilterOptions()
+            .setHasText(Pattern.compile("^(Groups with failed events|Search by event ID)$")))).hasText(new String[] {
+            "Groups with failed events", "Search by event ID"});
+
+        // A group reads by the last segment of its class name; the full class name below, with a copy button
+        assertThat(deadLetters.groupLink(GROUP)).isVisible();
+        assertThat(deadLetters.groupHeading(GROUP)).isVisible();
+        assertThat(deadLetters.groupRow(GROUP).getByText(GROUP, new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(deadLetters.groupRow(GROUP).getByRole(AriaRole.BUTTON,
+            new Locator.GetByRoleOptions().setName("Copy group name").setExact(true))).isVisible();
+
+        Locator search = deadLetters.searchSection();
+        assertThat(search.getByText("Narrows the search to a single listener group, which is significantly faster when the group is known.")).isVisible();
         assertThat(deadLetters.searchButton()).isDisabled();
+        // The group select offers the listed groups by their readable name
+        assertThat(deadLetters.groupField().locator("option").first()).hasText("All groups");
+        assertThat(deadLetters.groupField().locator("option[value='" + GROUP + "']")).hasText(EventDeadLetterPage.displayName(GROUP));
 
         deadLetters.eventIdField().fill(UUID.randomUUID().toString());
         assertThat(deadLetters.searchButton()).isEnabled();
         deadLetters.searchButton().click();
-        assertThat(app.main().getByRole(AriaRole.STATUS)).hasText("No dead-lettered event found with this ID.");
-        deadLetters.groupField().fill(GROUP);
+        assertThat(search.getByRole(AriaRole.STATUS)).hasText("No dead-lettered event found with this ID.");
+        deadLetters.groupField().selectOption(GROUP);
         deadLetters.searchButton().click();
-        assertThat(app.main().getByRole(AriaRole.STATUS)).hasText("No dead-lettered event found with this ID.");
+        assertThat(search.getByRole(AriaRole.STATUS)).hasText("No dead-lettered event found with this ID.");
 
-        deadLetters.groupField().fill("");
+        deadLetters.groupField().selectOption("");
         deadLetters.eventIdField().fill("abc");
         deadLetters.searchButton().click();
         assertThat(app.toast("Error searching for event")).containsText("Can not deserialize the supplied eventId: abc");
 
         // A real event, found across the groups then within its group
-        String insertionId = OpsBackend.awaitDeadLetters(webAdmin, GROUP, marker, 1).get(0);
-        String eventId = OpsBackend.eventId(webAdmin, GROUP, insertionId);
         deadLetters.eventIdField().fill(eventId);
         deadLetters.searchButton().click();
-        Locator result = app.main().locator("section");
-        assertThat(result.locator("pre")).containsText("\"eventId\": \"" + eventId + "\"");
-        assertThat(result.locator("pre")).containsText(marker);
+        assertThat(search.locator("pre")).containsText("\"eventId\": \"" + eventId + "\"");
+        assertThat(search.locator("pre")).containsText(marker);
         // Group and insertion id come from the X-Group / X-Insertion-Id headers, which WebAdmin does not
         // expose to a cross origin page (no Access-Control-Expose-Headers): "N/A" here, see the report
-        assertThat(result).containsText("Insertion ID:");
-        deadLetters.groupField().fill(GROUP);
+        assertThat(search).containsText("Insertion ID:");
+        deadLetters.groupField().selectOption(GROUP);
         deadLetters.searchButton().click();
-        assertThat(result.locator("pre")).containsText("\"eventId\": \"" + eventId + "\"");
+        assertThat(search.locator("pre")).containsText("\"eventId\": \"" + eventId + "\"");
 
         // The groups, with their counts and actions
         page.reload();
-        assertThat(deadLetters.groupLink(GROUP)).hasText(Pattern.compile("\\(\\d+\\)$"));
+        assertThat(deadLetters.groupHeading(GROUP)).hasText(Pattern.compile("\\(\\d+\\)$"));
         assertThat(deadLetters.groupAction(GROUP, EventDeadLetterPage.REDELIVER)).isVisible();
         assertThat(deadLetters.groupAction(GROUP, EventDeadLetterPage.CLEAR)).isVisible();
     }
@@ -147,6 +167,8 @@ class EventDeadLetterTest extends MailAdminE2ETest {
         String group = GROUP;
         List<String> mine = OpsBackend.awaitDeadLetters(webAdmin, group, marker, 1);
         String deleted = mine.get(0);
+        JsonNode deletedEvent = OpsBackend.deadLetter(webAdmin, group, deleted);
+        String deletedType = deletedEvent.fieldNames().next();
 
         EventDeadLetterPage deadLetters = EventDeadLetterPage.open(app);
         assertThat(deadLetters.groupLink(group)).hasAttribute("href", "/event-dead-letter/group/" + group + "?page=1");
@@ -154,34 +176,56 @@ class EventDeadLetterTest extends MailAdminE2ETest {
         assertThat(deadLetters.groupAction(group, EventDeadLetterPage.CLEAR)).hasAttribute("title", "Clear group");
         deadLetters.groupLink(group).click();
 
-        assertThat(deadLetters.groupTitle()).isVisible();
-        assertThat(app.main()).containsText("Group: " + group);
-        // The total is the real number of events of the group (which may still move)
+        // Headed by the readable name of the group, its class name below, a breadcrumb back to the list
+        assertThat(deadLetters.groupTitle(group)).isVisible();
+        assertThat(app.main().getByText(group, new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(deadLetters.copyGroupName()).isVisible();
+        assertThat(deadLetters.breadcrumb()).hasAttribute("href", "/event-dead-letter");
+        assertThat(deadLetters.toolbarButton(EventDeadLetterPage.REDELIVER_ALL)).isVisible();
+        assertThat(deadLetters.toolbarButton(EventDeadLetterPage.CLEAR)).isVisible();
+        // The total is the real number of events of the group (which may still move); the pagination
+        // shows only when the events do not fit on one page
         Awaitility.await().atMost(Duration.ofSeconds(20)).untilAsserted(() -> {
             page.reload();
             assertThat(deadLetters.paginationLabel()).isVisible();
             int total = OpsBackend.deadLetterCount(webAdmin, group);
             assertThat(deadLetters.paginationLabel().textContent())
-                .isEqualTo("Page 1 — 200 events per page / Total: " + total);
+                .isEqualTo(total <= 20 ? "Total: " + total : "Page 1 — 20 events per page / Total: " + total);
         });
-        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Next"))).isDisabled();
-        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Last"))).isDisabled();
-        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Back").setExact(true))).hasAttribute("title", "Back");
+        if (OpsBackend.deadLetterCount(webAdmin, group) <= 20) {
+            assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Next"))).hasCount(0);
+        }
+
+        // Each event says what it is about: its type, its user, then its insertion id with a copy button
+        Locator row = deadLetters.event(deleted);
+        assertThat(row).containsText(deletedType);
+        assertThat(row).containsText(marker);
+        assertThat(row.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Copy event ID").setExact(true))).isVisible();
         assertThat(deadLetters.deleteEvent(deleted)).hasAttribute("title", "Delete event");
+
+        // Its JSON in a dialog of the console, titled after its type: no new window
+        int pagesBefore = page.context().pages().size();
+        deadLetters.viewJson(deleted).click();
+        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText(deletedType);
+        assertThat(app.dialog().locator("pre")).containsText(marker);
+        assertThat(page.context().pages()).hasSize(pagesBefore);
+        page.keyboard().press("Escape");
+        assertThat(app.dialog()).isHidden();
 
         deadLetters.deleteEvent(deleted).click();
         assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Delete Event");
         assertThat(app.dialog()).containsText("Delete event " + deleted + " in group " + group + "?");
-        assertThat(app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Confirm").setExact(true))).isInViewport();
-        assertThat(app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true))).isInViewport();
-        app.confirm();
+        assertThat(app.dialog()).containsText("The dead-lettered events are deleted without being redelivered");
+        assertThat(Dialogs.button(app, "Delete")).isInViewport();
+        assertThat(Dialogs.button(app, "Cancel")).isInViewport();
+        Dialogs.confirmWith(app, "Delete");
         app.expectToast("Event deleted successfully");
         assertThat(deadLetters.event(deleted)).hasCount(0);
         assertThat(webAdmin.get("/events/deadLetter/groups/" + WebAdmin.encode(group) + "/" + deleted).status()).isEqualTo(404);
 
-        app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Back").setExact(true)).click();
+        deadLetters.breadcrumb().click();
         deadLetters.groupAction(group, EventDeadLetterPage.REDELIVER).click();
-        app.confirm();
+        Dialogs.startTask(app);
         Locator toast = app.toast("Task created");
         String taskId = OpsBackend.taskIdOf(toast.getByRole(AriaRole.LINK).getAttribute("href"));
         assertThat(webAdmin.awaitTask(taskId).path("status").asText()).isEqualTo("completed");
@@ -192,9 +236,9 @@ class EventDeadLetterTest extends MailAdminE2ETest {
         deadLetters.groupAction(group, EventDeadLetterPage.CLEAR).click();
         assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Clear Event Group");
         assertThat(app.dialog()).containsText("Do you want to clear the event group: " + group + ".");
-        app.confirm();
+        Dialogs.confirmWith(app, "Delete");
         app.expectToast("The events were deleted.");
-        assertThat(deadLetters.groupLink(group, 0)).isVisible();
+        assertThat(deadLetters.groupHeading(group, 0)).isVisible();
         assertThat(OpsBackend.deadLetters(webAdmin, group, marker)).isEmpty();
     }
 
@@ -223,13 +267,13 @@ class EventDeadLetterTest extends MailAdminE2ETest {
 
         for (String value : List.of("abc", "-3", "0")) {
             deadLetters.param("limit").fill(value);
-            app.clickConfirm();
+            Dialogs.clickWith(app, Dialogs.START_TASK);
             assertThat(app.dialogError()).hasText("limit must be a positive integer, or left empty.");
             assertThat(app.dialog()).isVisible();
         }
         deadLetters.param("limit").fill("");
         deadLetters.param("maxRetries").fill("1.5");
-        app.clickConfirm();
+        Dialogs.clickWith(app, Dialogs.START_TASK);
         assertThat(app.dialogError()).hasText("maxRetries must be a positive integer, or left empty.");
         assertThat(deadLetters.param("maxRetries")).hasValue("1.5");
         assertThat(posts).isEmpty();
@@ -239,7 +283,7 @@ class EventDeadLetterTest extends MailAdminE2ETest {
         assertThat(deadLetters.commandPreview()).hasText(command + "&limit=1");
         Request redeliver = page.waitForRequest(
             request -> request.method().equals("POST") && request.url().contains("/events/deadLetter/groups/"),
-            app::confirm);
+            () -> Dialogs.startTask(app));
         assertThat(redeliver.url()).contains("limit=1").doesNotContain("maxRetries").doesNotContain("NaN");
         Locator toast = app.toast("Task created");
         String taskId = OpsBackend.taskIdOf(toast.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(Pattern.compile("^Task "))).getAttribute("href"));
@@ -248,14 +292,14 @@ class EventDeadLetterTest extends MailAdminE2ETest {
         assertThat(task.path("additionalInformation").path("successfulRedeliveriesCount").asInt()).as(task.toString()).isEqualTo(1);
 
 
-        // The rest, with both fields empty
+        // The rest, with both fields empty, from the "Redeliver all events" of the group page
         deadLetters.groupLink(group).click();
-        assertThat(deadLetters.groupTitle()).isVisible();
-        app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Back").setExact(true)).click();
-        deadLetters.groupAction(group, EventDeadLetterPage.REDELIVER).click();
+        assertThat(deadLetters.groupTitle(group)).isVisible();
+        deadLetters.toolbarButton(EventDeadLetterPage.REDELIVER_ALL).click();
+        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Redeliver group events");
         Request rest = page.waitForRequest(
             request -> request.method().equals("POST") && request.url().contains("/events/deadLetter/groups/"),
-            app::confirm);
+            () -> Dialogs.startTask(app));
         assertThat(rest.url()).endsWith("?action=reDeliver");
         String restTask = OpsBackend.taskIdOf(app.toast("Task created").getByRole(AriaRole.LINK).getAttribute("href"));
         JsonNode restInfo = webAdmin.awaitTask(restTask);

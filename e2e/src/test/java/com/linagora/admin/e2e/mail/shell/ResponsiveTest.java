@@ -29,10 +29,6 @@ class ResponsiveTest extends MailAdminE2ETest {
     private static final List<String> OTHER_LIST_PAGES = List.of("/tasks", "/common-tasks", "/cassandra", "/mail-repositories",
         "/network-channels", "/live-metrics", "/event-dead-letter");
 
-    private static Locator sectionToggle(AdminApp app, String title) {
-        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(Pattern.compile("^" + Shell.quote(title) + "( \\(\\d+\\))?$")));
-    }
-
     /** Opens a route below 768 px (the sidebar is a closed sheet there) once its data is loaded. */
     private static void openOnPhone(Page page, String route) {
         page.navigate(route);
@@ -125,19 +121,19 @@ class ResponsiveTest extends MailAdminE2ETest {
         page.setViewportSize(PHONE, 800);
 
         openOnPhone(page, "/users/user/" + WebAdmin.encode(user));
-        assertThat(app.main()).containsText("Username: " + user);
+        assertThat(Shell.detailTitle(app, user)).isVisible();
         assertThat(Shell.openAllSections(page)).isGreaterThan(10);
         page.waitForLoadState(LoadState.NETWORKIDLE);
         assertFitsPhone(page, "user detail");
 
         openOnPhone(page, "/domains/domain/" + domain);
-        assertThat(app.main()).containsText("Domain: " + domain);
+        assertThat(Shell.detailTitle(app, domain)).isVisible();
         Shell.openAllSections(page);
         page.waitForLoadState(LoadState.NETWORKIDLE);
         assertFitsPhone(page, "domain detail");
 
         openOnPhone(page, "/domains/domain/" + domain + "/team-mailbox/" + teamMailbox);
-        assertThat(app.main()).containsText(teamMailbox);
+        assertThat(Shell.detailTitle(app, teamMailbox + "@" + domain)).isVisible();
         Shell.openAllSections(page);
         page.waitForLoadState(LoadState.NETWORKIDLE);
         assertFitsPhone(page, "team mailbox detail");
@@ -150,12 +146,13 @@ class ResponsiveTest extends MailAdminE2ETest {
         String longName = "A".repeat(150);
 
         app.open("/users/user/" + WebAdmin.encode(user));
-        sectionToggle(app, "JMAP Identities").click();
+        // The + next to the section opens it, and the creation modal
         app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Create identity").setExact(true)).click();
-        app.main().getByLabel("Name", new Locator.GetByLabelOptions().setExact(true)).fill(longName);
-        app.main().getByLabel("Email", new Locator.GetByLabelOptions().setExact(true)).fill(user);
-        app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Create").setExact(true)).click();
+        app.dialog().getByLabel("Name", new Locator.GetByLabelOptions().setExact(true)).fill(longName);
+        app.dialog().getByLabel("Email", new Locator.GetByLabelOptions().setExact(true)).fill(user);
+        app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Create").setExact(true)).click();
         app.expectToast("Identity created");
+        assertThat(app.dialog()).isHidden();
         Locator identity = app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(longName + " <" + user + ">").setExact(true));
         assertThat(identity).isVisible();
         assertThat(Shell.scrollWidth(page)).as("user page width").isLessThanOrEqualTo(1280);
@@ -165,7 +162,7 @@ class ResponsiveTest extends MailAdminE2ETest {
             assertThat(Shell.scrollWidth(page)).as("user page width at " + width).isLessThanOrEqualTo(width);
             app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete identity").setExact(true)).click();
             assertThat(app.dialog()).containsText("Delete identity \"" + longName + " <" + user + ">\"?");
-            Shell.assertDialogFits(page, app.dialog(), "Cancel", "Confirm");
+            Shell.assertDialogFits(page, app.dialog(), "Cancel", "Delete");
             // Clickable with the mouse: a click on Cancel lands on it
             app.cancel();
             assertThat(identity).isVisible();

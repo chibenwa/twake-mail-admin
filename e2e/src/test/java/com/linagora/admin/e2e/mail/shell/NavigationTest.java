@@ -60,11 +60,16 @@ class NavigationTest extends MailAdminE2ETest {
         String user = fixtures.newUser("nav");
 
         app.open("/users/user/" + WebAdmin.encode(user));
-        assertThat(app.main().getByText("Username: " + user, new Locator.GetByTextOptions().setExact(true))).isVisible();
+        // A detail page is headed by its object, under a breadcrumb back to its list
+        assertThat(Shell.detailTitle(app, user)).isVisible();
+        assertThat(Shell.detailKind(app, "User")).isVisible();
+        assertThat(Shell.breadcrumb(app, "Users")).hasAttribute("href", "/users");
         assertThat(Shell.sidebarLink(app, "Users")).hasAttribute("aria-current", "page");
 
         app.open("/domains/domain/" + fixtures.domain());
-        assertThat(app.main().getByText("Domain: " + fixtures.domain(), new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(Shell.detailTitle(app, fixtures.domain())).isVisible();
+        assertThat(Shell.detailKind(app, "Domain")).isVisible();
+        assertThat(Shell.breadcrumb(app, "Domains")).hasAttribute("href", "/domains");
         assertThat(Shell.sidebarLink(app, "Domains")).hasAttribute("aria-current", "page");
 
         app.open("/does-not-exist");

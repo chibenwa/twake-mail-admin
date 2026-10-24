@@ -22,6 +22,7 @@ import com.linagora.admin.e2e.backend.WebAdmin;
 import com.linagora.admin.e2e.docker.Locks;
 import com.linagora.admin.e2e.pages.AdminApp;
 import com.linagora.admin.e2e.pages.mail.ops.CommonTasksPage;
+import com.linagora.admin.e2e.pages.mail.ops.Dialogs;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Response;
@@ -43,10 +44,14 @@ class CommonTasksTest extends MailAdminE2ETest {
         "Populate Email Query View", "Reload certificates", "Reposition system rights on all Team Mailbox folders",
         "Cleanup Trash folder (all users)", "Cleanup Spam folder (all users)", "Cleaning up old tasks");
 
-    /** Confirms the open task dialog and returns the WebAdmin answer to the request it sends. */
+    /** Starts the task of the open dialog and returns the WebAdmin answer to the request it sends. */
     private static Response confirmTask(AdminApp app, String method, String pathPrefix) {
+        return confirmTask(app, method, pathPrefix, Dialogs.START_TASK);
+    }
+
+    private static Response confirmTask(AdminApp app, String method, String pathPrefix, String confirmLabel) {
         Response response = app.page().waitForResponse(
-            r -> r.request().method().equals(method) && r.url().contains(pathPrefix), app::confirm);
+            r -> r.request().method().equals(method) && r.url().contains(pathPrefix), () -> Dialogs.confirmWith(app, confirmLabel));
         assertThat(response.status()).isEqualTo(201);
         return response;
     }
@@ -81,11 +86,32 @@ class CommonTasksTest extends MailAdminE2ETest {
             assertThat(commonTasks.runButton(name)).isVisible();
         }
         assertThat(app.main().getByPlaceholder("port (optional)")).isVisible();
-        assertThat(app.main().getByPlaceholder("days")).hasValue("30");
+        assertThat(app.main().getByLabel("days", new Locator.GetByLabelOptions().setExact(true))).hasValue("30");
+
+        // Grouped by purpose
+        assertThat(commonTasks.group("Search index").getByText("Reindex all data in OpenSearch (fix outdated mode)")).isVisible();
+        assertThat(commonTasks.group("Consistency repair").getByText("Recompute mailbox counters")).isVisible();
+        assertThat(commonTasks.group("Cleanup").getByText("Blob garbage collection")).isVisible();
+        assertThat(commonTasks.group("Server").getByText("Reload certificates")).isVisible();
+        // Each task says when to use it, and how much it changes
+        assertThat(commonTasks.description("Recompute mailbox counters"))
+            .hasText("Use when the unread or total counts of mailboxes look wrong. Recounts every mailbox.");
+        assertThat(commonTasks.riskBadge("Recompute mailbox counters")).hasCount(0);
+        assertThat(commonTasks.riskBadge("Fix mailbox inconsistencies")).hasText("Modifies data");
+        assertThat(commonTasks.riskBadge("Blob garbage collection")).hasText("Deletes data");
+        assertThat(commonTasks.riskBadge("Purge Deleted Messages")).hasText("Deletes data");
+        // The filter matches the names and the descriptions
+        commonTasks.filter().fill("unread");
+        assertThat(commonTasks.label("Recompute mailbox counters")).isVisible();
+        assertThat(commonTasks.label("Blob garbage collection")).hasCount(0);
+        commonTasks.filter().fill("");
+        assertThat(commonTasks.label("Blob garbage collection")).isVisible();
 
         commonTasks.run("Recompute mailbox counters");
-        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Run");
-        assertThat(app.dialog().getByText("Do you want to run task Recompute mailbox counters?", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        // The dialog is titled after its task and repeats its description
+        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Recompute mailbox counters");
+        assertThat(app.dialog().getByText("Use when the unread or total counts of mailboxes look wrong. Recounts every mailbox.",
+            new Locator.GetByTextOptions().setExact(true))).isVisible();
         assertThat(commonTasks.param("trustMessageProjection")).not().isChecked();
         assertThat(commonTasks.param("trustMessageProjection")).hasAttribute("role", "checkbox");
         assertThat(commonTasks.commandPreview()).hasText("Command: curl -XPOST /mailboxes?task=RecomputeMailboxCounters");
@@ -98,32 +124,40 @@ class CommonTasksTest extends MailAdminE2ETest {
         JsonNode task = webAdmin.awaitTask(taskId);
         assertThat(task.path("status").asText()).isEqualTo("completed");
         app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Refresh").setExact(true)).click();
-        assertThat(app.main().locator("pre")).containsText("\"status\": \"completed\"");
-        assertThat(app.main().locator("pre")).containsText("\"processedMailboxes\"");
+        // A readable summary: status, type, then the details of the task; the raw JSON on demand
+        assertThat(app.main().getByText("Completed", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
+        assertThat(app.main().getByText("recompute-mailbox-counters", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
+        assertThat(app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Details").setExact(true))).isVisible();
+        assertThat(app.main().getByText("processedMailboxes", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        app.main().getByText("Raw JSON", new Locator.GetByTextOptions().setExact(true)).click();
+        Locator raw = app.main().locator("details pre");
+        assertThat(raw).isVisible();
+        assertThat(raw).containsText("\"status\": \"completed\"");
+        assertThat(raw).containsText("\"processedMailboxes\"");
     }
 
-    private record CommonTask(String name, String preview, String method, String request, boolean rateLimited) {
+    private record CommonTask(String name, String description, String preview, String method, String request, boolean rateLimited) {
     }
 
     @Test
     @DisplayName("CT-02 Other common tasks")
     void otherCommonTasks(AdminApp app, WebAdmin webAdmin) {
         List<CommonTask> commonTasks = List.of(
-            new CommonTask("Recompute mailbox quota", "curl -XPOST /quota/users?task=RecomputeCurrentQuotas&usersPerSecond=1",
+            new CommonTask("Recompute mailbox quota", "Use when a user's quota usage looks wrong. Recounts every user's usage.", "curl -XPOST /quota/users?task=RecomputeCurrentQuotas&usersPerSecond=1",
                 "POST", "/quota/users?task=RecomputeCurrentQuotas&usersPerSecond=1", true),
-            new CommonTask("Fix mailbox inconsistencies", "curl -XPOST /mailboxes?task=SolveInconsistencies&maxIterations=5",
+            new CommonTask("Fix mailbox inconsistencies", "Use when mailboxes are missing, duplicated or cannot be opened. Every other service must be stopped first.", "curl -XPOST /mailboxes?task=SolveInconsistencies&maxIterations=5",
                 "POST", "/mailboxes?task=SolveInconsistencies&maxIterations=5", false),
-            new CommonTask("Fix mapping denormalization", "curl -XPOST /cassandra/mappings?action=SolveInconsistencies",
+            new CommonTask("Fix mapping denormalization", "Use when an alias or forward is ignored although it is listed. Rewrites the mapping lookup tables.", "curl -XPOST /cassandra/mappings?action=SolveInconsistencies",
                 "POST", "/cassandra/mappings?action=SolveInconsistencies", false),
-            new CommonTask("Cleanup JMAP uploads", "curl -XDELETE /jmap/uploads?scope=expired",
+            new CommonTask("Cleanup JMAP uploads", "Deletes expired JMAP uploads: attachments sent to the server but never used in a mail.", "curl -XDELETE /jmap/uploads?scope=expired",
                 "DELETE", "/jmap/uploads?scope=expired", false),
-            new CommonTask("Purge Deleted Messages", "curl -XDELETE /deletedMessages?scope=expired",
+            new CommonTask("Purge Deleted Messages", "Permanently deletes the messages of the Deleted Messages Vault whose retention period is over.", "curl -XDELETE /deletedMessages?scope=expired",
                 "DELETE", "/deletedMessages?scope=expired", false),
-            new CommonTask("Populate Email Query View", "curl -XPOST /mailboxes?task=populateEmailQueryView&messagesPerSecond=10",
+            new CommonTask("Populate Email Query View", "Use after enabling the email query view. Fills it from the existing messages; moderate load.", "curl -XPOST /mailboxes?task=populateEmailQueryView&messagesPerSecond=10",
                 "POST", "/mailboxes?task=populateEmailQueryView&messagesPerSecond=10", true),
-            new CommonTask("Reindex contacts from sent mailbox", "curl -XPOST /mailboxes?task=ContactIndexing&usersPerSecond=1",
+            new CommonTask("Reindex contacts from sent mailbox", "Fills the recipient autocompletion of every user from the mails they sent.", "curl -XPOST /mailboxes?task=ContactIndexing&usersPerSecond=1",
                 "POST", "/mailboxes?task=ContactIndexing&usersPerSecond=1", true),
-            new CommonTask("Reindex all data in OpenSearch (fix outdated mode)", "curl -XPOST /mailboxes?task=reIndex&mode=fixOutdated&messagesPerSecond=50",
+            new CommonTask("Reindex all data in OpenSearch (fix outdated mode)", "Use when searches miss recent mails. Reindexes only outdated documents; moderate load.", "curl -XPOST /mailboxes?task=reIndex&mode=fixOutdated&messagesPerSecond=50",
                 "POST", "/mailboxes?task=reIndex&mode=fixOutdated&messagesPerSecond=50", true));
 
         CommonTasksPage page = CommonTasksPage.open(app);
@@ -131,10 +165,20 @@ class CommonTasksTest extends MailAdminE2ETest {
         try {
             for (CommonTask commonTask : commonTasks) {
                 page.run(commonTask.name());
-                assertThat(app.dialog().getByText("Do you want to run task " + commonTask.name() + "?", new Locator.GetByTextOptions().setExact(true))).isVisible();
+                assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText(commonTask.name());
+                assertThat(app.dialog().getByText(commonTask.description(), new Locator.GetByTextOptions().setExact(true))).isVisible();
                 assertThat(page.commandPreview()).hasText("Command: " + commonTask.preview());
                 String path = commonTask.request().substring(0, commonTask.request().indexOf('?') + 1);
-                Response response = confirmTask(app, commonTask.method(), path);
+                Response response;
+                if (commonTask.name().equals("Purge Deleted Messages")) {
+                    // Irreversible: the consequence is spelled out, "Delete data" waits for DELETE to be typed
+                    assertThat(app.dialog()).containsText("can no longer be restored");
+                    assertThat(Dialogs.button(app, "Delete data")).isDisabled();
+                    Dialogs.typeToConfirmField(app, Dialogs.DELETE_WORD).fill(Dialogs.DELETE_WORD);
+                    response = confirmTask(app, commonTask.method(), path, "Delete data");
+                } else {
+                    response = confirmTask(app, commonTask.method(), path);
+                }
                 assertThat(pathOf(response)).isEqualTo(commonTask.request());
                 String taskId = taskIdOf(response);
                 started.add(taskId);
@@ -165,7 +209,7 @@ class CommonTasksTest extends MailAdminE2ETest {
         // WebAdmin schedules the task of every user before answering: give it time
         Response response = app.page().waitForResponse(
             r -> r.request().method().equals("POST") && r.url().contains("/users?action=reindex"),
-            new Page.WaitForResponseOptions().setTimeout(90_000), app::clickConfirm);
+            new Page.WaitForResponseOptions().setTimeout(90_000), () -> Dialogs.clickWith(app, Dialogs.START_TASK));
         JsonNode body;
         try {
             body = WebAdmin.JSON.readTree(response.text());
@@ -206,7 +250,7 @@ class CommonTasksTest extends MailAdminE2ETest {
         app.confirm();
         assertThat(app.toasts()).containsText(Pattern.compile("System rights repositioned successfully|Error repositioning system rights"));
 
-        Locator days = app.main().getByPlaceholder("days");
+        Locator days = app.main().getByLabel("days", new Locator.GetByLabelOptions().setExact(true));
         Locator run = page.runButton("Cleaning up old tasks");
         Locator invalid = page.row("Cleaning up old tasks").getByRole(AriaRole.ALERT);
         for (String value : List.of("0", "-3", "1.5", "")) {
@@ -241,10 +285,19 @@ class CommonTasksTest extends MailAdminE2ETest {
 
         CommonTasksPage page = CommonTasksPage.open(app);
         page.run("Blob garbage collection");
+        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Blob garbage collection");
+        assertThat(app.dialog()).containsText("Stored blobs that no message references any more are permanently deleted from the object storage.");
         assertThat(page.param("expectedBlobCount")).hasValue("1000000");
         assertThat(page.param("associatedProbability")).hasValue("0.01");
+        // Irreversible: "Delete data" stays disabled until DELETE is typed
+        Locator deleteData = Dialogs.button(app, "Delete data");
+        assertThat(deleteData).isDisabled();
+        Dialogs.typeToConfirmField(app, Dialogs.DELETE_WORD).fill("delete");
+        assertThat(deleteData).isDisabled();
+        Dialogs.typeToConfirmField(app, Dialogs.DELETE_WORD).fill(Dialogs.DELETE_WORD);
+        assertThat(deleteData).isEnabled();
         Response refused = app.page().waitForResponse(
-            r -> r.request().method().equals("DELETE") && r.url().contains("/blobs?"), app::clickConfirm);
+            r -> r.request().method().equals("DELETE") && r.url().contains("/blobs?"), deleteData::click);
         assertThat(pathOf(refused)).isEqualTo("/blobs?scope=unreferenced&associatedProbability=0.01&expectedBlobCount=1000000");
         if (refused.status() == 201) {
             assertThat(app.dialog()).isHidden();

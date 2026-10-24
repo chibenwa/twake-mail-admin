@@ -37,6 +37,8 @@ class DegradedStateTest extends MailAdminE2ETest {
     private static final String UNHEALTHY = "Redis";
     private static final String UNHEALTHY_CAUSE = "Can not connect to Redis: Connection refused (e2e stub)";
     private static final String GROUP = "org.apache.james.quota.search.opensearch.events.OpenSearchQuotaMailboxListener$OpenSearchQuotaMailboxListenerGroup";
+    /** How the console names the group: the last segment of its class name. */
+    private static final String GROUP_NAME = "OpenSearchQuotaMailboxListenerGroup";
 
     private static String degradeHealthCheck(String body) {
         JsonNode json = jsonOf(body);
@@ -74,7 +76,13 @@ class DegradedStateTest extends MailAdminE2ETest {
     private static void openGroupPage(AdminApp app) {
         // page.navigate rather than app.open: below 768 px the sidebar is a closed sheet
         app.page().navigate("/event-dead-letter/group/" + WebAdmin.encode(GROUP) + "?page=1");
-        assertThat(app.main().getByText("Group: " + GROUP, new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(groupTitle(app)).isVisible();
+        assertThat(app.main().getByText(GROUP, new Locator.GetByTextOptions().setExact(true))).isVisible();
+    }
+
+    /** The h1 of the group page: the readable name of the group. */
+    private static Locator groupTitle(AdminApp app) {
+        return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName(GROUP_NAME).setExact(true).setLevel(1));
     }
 
     private static Locator eventRow(AdminApp app, String insertionId) {
@@ -88,7 +96,7 @@ class DegradedStateTest extends MailAdminE2ETest {
     }
 
     @Test
-    @DisplayName("HC-02 Unhealthy component tooltip")
+    @DisplayName("HC-02 Unhealthy component: status and cause on its card, in the summary")
     void unhealthyComponentTooltip(AdminApp app, Page page, WebAdmin webAdmin) {
         // WebAdmin answers 503 as soon as one component is unhealthy, with the usual body: a 503 here is an answer, not a failure
         WebAdminStub.rewrite(page, webAdmin, path -> path.equals("/healthcheck"), 503, DegradedStateTest::degradeHealthCheck);
@@ -108,19 +116,26 @@ class DegradedStateTest extends MailAdminE2ETest {
         assertThat(healthCheck.status(UNHEALTHY)).hasText("Unhealthy");
         assertThat(healthCheck.status("Cassandra backend")).hasText("Healthy");
 
-        healthCheck.hoverTarget(DEGRADED).hover();
-        assertThat(healthCheck.tooltip()).hasText(DEGRADED_CAUSE);
-        moveAway(page);
-        assertThat(healthCheck.tooltip()).hasCount(0);
-
-        healthCheck.hoverTarget(UNHEALTHY).hover();
-        assertThat(healthCheck.tooltip()).hasText(UNHEALTHY_CAUSE);
-        moveAway(page);
-        assertThat(healthCheck.tooltip()).hasCount(0);
-
+        // The cause is written on the card, no hover needed; a healthy card has none
+        assertThat(healthCheck.cause(DEGRADED)).hasText(DEGRADED_CAUSE);
+        assertThat(healthCheck.cause(UNHEALTHY)).hasText(UNHEALTHY_CAUSE);
+        assertThat(healthCheck.cause(UNHEALTHY)).hasAttribute("title", UNHEALTHY_CAUSE);
+        assertThat(healthCheck.cause("Cassandra backend")).hasCount(0);
         healthCheck.hoverTarget("Cassandra backend").hover();
-        healthCheck.hoverTarget("OpenSearch Backend").hover();
         assertThat(healthCheck.tooltip()).hasCount(0);
+        moveAway(page);
+
+        // The summary tells what needs attention, worst first, and where to look
+        int components = healthCheck.allComponents().size();
+        Locator summary = healthCheck.summary();
+        assertThat(summary).containsText("1 unhealthy, 1 degraded out of " + components + " components.");
+        assertThat(summary.getByRole(AriaRole.LISTITEM)).hasText(new String[] {
+            UNHEALTHY + " — Unhealthy — " + UNHEALTHY_CAUSE,
+            DEGRADED + " — Degraded — " + DEGRADED_CAUSE + " Open →"});
+        // The dead letters component leads to their screen, from its card and from the summary
+        assertThat(healthCheck.hoverTarget(DEGRADED)).hasAttribute("href", "/event-dead-letter");
+        summary.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Open →")).click();
+        assertThat(page).hasURL(Pattern.compile("/event-dead-letter$"));
     }
 
     @Test
@@ -154,16 +169,25 @@ class DegradedStateTest extends MailAdminE2ETest {
         stubDeadLetters(page, insertionId);
 
         app.open("/event-dead-letter");
-        Locator link = app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(GROUP + " (1)").setExact(true));
+        Locator link = app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(GROUP_NAME).setExact(true));
         assertThat(link).isVisible();
+        assertThat(app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions()
+            .setName(Pattern.compile("^" + GROUP_NAME + " ?\\(1\\)$")))).isVisible();
         Shell.assertNamedWithTooltip(app.button("Redeliver group events"), "Redeliver group events");
         Shell.assertNamedWithTooltip(app.button("Clear group"), "Clear group");
+        Shell.assertNamedWithTooltip(app.button("Copy group name"), "Copy group name");
         assertThat(Shell.unnamedButtons(app.main())).isEmpty();
 
         link.click();
-        assertThat(app.main().getByText("Group: " + GROUP, new Locator.GetByTextOptions().setExact(true))).isVisible();
-        Shell.assertNamedWithTooltip(app.button("Back"), "Back");
-        Shell.assertNamedWithTooltip(eventRow(app, insertionId).getByRole(AriaRole.BUTTON), "Delete event");
+        assertThat(groupTitle(app)).isVisible();
+        // Back to the list through the breadcrumb; the icon buttons are named and have a tooltip
+        assertThat(app.main().getByRole(AriaRole.NAVIGATION, new Locator.GetByRoleOptions().setName("Breadcrumb"))
+            .getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Event Dead Letter").setExact(true))).isVisible();
+        Shell.assertNamedWithTooltip(app.button("Copy group name"), "Copy group name");
+        Shell.assertNamedWithTooltip(eventRow(app, insertionId).getByRole(AriaRole.BUTTON,
+            new Locator.GetByRoleOptions().setName("Delete event").setExact(true)), "Delete event");
+        Shell.assertNamedWithTooltip(eventRow(app, insertionId).getByRole(AriaRole.BUTTON,
+            new Locator.GetByRoleOptions().setName("Copy event ID").setExact(true)), "Copy event ID");
         assertThat(Shell.unnamedButtons(app.main())).isEmpty();
     }
 
@@ -181,7 +205,7 @@ class DegradedStateTest extends MailAdminE2ETest {
             eventRow(app, insertionId).getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete event")).click();
 
             assertThat(app.dialog()).containsText("Delete event " + insertionId + " in group " + GROUP + "?");
-            Shell.assertDialogFits(page, app.dialog(), "Cancel", "Confirm");
+            Shell.assertDialogFits(page, app.dialog(), "Cancel", "Delete");
             app.cancel();
             assertThat(eventRow(app, insertionId)).isVisible();
         }
@@ -189,12 +213,12 @@ class DegradedStateTest extends MailAdminE2ETest {
     }
 
     @Test
-    @DisplayName("EDL-02 (JSON) of a dead-lettered event, its HTML shown as text")
+    @DisplayName("EDL-02 View JSON of a dead-lettered event, its HTML shown as text")
     void deadLetterEventJson(AdminApp app, Page page) throws Exception {
         String insertionId = UUID.randomUUID().toString();
         stubDeadLetters(page, insertionId);
-        // A mailbox name is chosen by the user: the popup must show it as text, never parse it
-        String hostile = "<img src=x onerror=\"window.opener.__xss=1\">INBOX<b>bold</b>";
+        // A mailbox name is chosen by the user: the JSON dialog must show it as text, never parse it
+        String hostile = "<img src=x onerror=\"window.__xss=1\">INBOX<b>bold</b>";
         ObjectNode mailboxPath = WebAdmin.JSON.createObjectNode()
             .put("namespace", "#private").put("user", "alice@example.com").put("name", hostile);
         ObjectNode added = WebAdmin.JSON.createObjectNode().put("eventId", UUID.randomUUID().toString());
@@ -212,17 +236,24 @@ class DegradedStateTest extends MailAdminE2ETest {
         WebAdminStub.answer(page, path -> path.endsWith("/" + insertionId), event.toString());
 
         openGroupPage(app);
-        Page popup = page.waitForPopup(() -> eventRow(app, insertionId)
-            .getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("(JSON)").setExact(true)).click());
+        // The row describes the event: its type and its user (a plain text: example.com is not a domain of the server)
+        assertThat(eventRow(app, insertionId)).containsText("MailboxAdded");
+        assertThat(eventRow(app, insertionId)).containsText("alice@example.com");
+        assertThat(eventRow(app, insertionId).getByRole(AriaRole.LINK)).hasCount(0);
+        int pagesBefore = page.context().pages().size();
+        eventRow(app, insertionId).getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("View JSON").setExact(true)).click();
 
-        Locator pre = popup.locator("pre");
+        // A dialog of the console, titled after the event type: no new window or tab
+        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("MailboxAdded");
+        assertThat(page.context().pages()).hasSize(pagesBefore);
+        Locator pre = app.dialog().locator("pre");
         // JSON escapes the quotes only
         assertThat(pre).containsText("<img src=x onerror=");
         assertThat(pre).containsText("INBOX<b>bold</b>");
         String shown = pre.textContent();
         assertThat(WebAdmin.JSON.readTree(shown)).isEqualTo(event);
         assertThat(shown).as("pretty printed").contains("\n  \"");
-        assertThat(popup.locator("img, b")).hasCount(0);
+        assertThat(app.dialog().locator("img, b")).hasCount(0);
         assertThat(page.evaluate("() => window.__xss")).isNull();
         assertThat(java.net.URLDecoder.decode(requested[0], java.nio.charset.StandardCharsets.UTF_8))
             .isEqualTo("/events/deadLetter/groups/" + GROUP + "/" + insertionId);

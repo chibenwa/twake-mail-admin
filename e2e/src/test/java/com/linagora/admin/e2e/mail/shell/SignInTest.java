@@ -15,6 +15,7 @@ import com.linagora.admin.e2e.backend.MailFixtures;
 import com.linagora.admin.e2e.docker.MailStack;
 import com.linagora.admin.e2e.pages.AdminApp;
 import com.linagora.admin.e2e.pages.mail.domains.DomainsPage;
+import com.linagora.admin.e2e.pages.mail.shell.Shell;
 import com.linagora.admin.e2e.pages.mail.shell.WebAdminAuth;
 import com.linagora.admin.e2e.pages.mail.users.UsersListPage;
 import com.microsoft.playwright.BrowserContext;
@@ -60,7 +61,7 @@ class SignInTest extends MailAdminE2ETest {
         UsersListPage users = new UsersListPage(app);
         users.search().fill(user);
         users.userLink(user).click();
-        assertThat(app.main().getByText("Username: " + user, new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(Shell.detailTitle(app, user)).isVisible();
         assertThat(dialog).hasCount(0);
         assertThat(authorizations).isNotEmpty().allMatch(("Bearer " + token)::equals);
     }

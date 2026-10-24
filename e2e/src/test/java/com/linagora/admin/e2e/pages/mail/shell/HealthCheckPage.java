@@ -8,7 +8,12 @@ import com.linagora.admin.e2e.pages.AdminApp;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.options.AriaRole;
 
-/** The Health Check page: one card per component, grouped under section headings. */
+/**
+ * The Health Check page, a triage page: a summary banner (all healthy, or what needs attention
+ * and where to go), then one card per component, grouped under section headings. A card writes
+ * out its status and, when not healthy, its cause; the card of a component having its own screen
+ * links to it.
+ */
 public class HealthCheckPage {
     public static final String TITLE = "Welcome to Twake Mail administration!";
     public static final String STORAGE = "Storage dependencies";
@@ -63,7 +68,7 @@ public class HealthCheckPage {
         return cards.locator("p:first-child").allInnerTexts().stream().map(String::trim).toList();
     }
 
-    /** The element the user hovers or focuses: the card itself, or its tooltip trigger wrapper. */
+    /** The element the user hovers or focuses: the card itself, or the link wrapping it. */
     public Locator hoverTarget(String component) {
         return app.main().locator("section > div > *").filter(new Locator.FilterOptions()
             .setHas(app.page().locator("p:first-child").filter(new Locator.FilterOptions()
@@ -73,6 +78,17 @@ public class HealthCheckPage {
     /** The status written on a component card, e.g. "Healthy". */
     public Locator status(String component) {
         return hoverTarget(component).locator("p:nth-child(2)");
+    }
+
+    /** The cause written on the card of a component that is not healthy. */
+    public Locator cause(String component) {
+        return hoverTarget(component).locator("p:nth-child(3)");
+    }
+
+    /** The summary banner above the sections. */
+    public Locator summary() {
+        return app.main().getByRole(AriaRole.STATUS).filter(new Locator.FilterOptions()
+            .setHasText(java.util.regex.Pattern.compile("components? (are healthy|\\.)|out of \\d+ components")));
     }
 
     /** The error shown when the health check request fails. */
@@ -100,14 +116,14 @@ public class HealthCheckPage {
     }
 
     private String cardStyle(String component, String property) {
-        return String.valueOf(hoverTarget(component).evaluate("(e, p) => { const card = e.matches('[tabindex]') ? e.firstElementChild : e;"
+        return String.valueOf(hoverTarget(component).evaluate("(e, p) => { const card = e.matches('a, [tabindex]') ? e.firstElementChild : e;"
             + " return getComputedStyle(card)[p]; }", property));
     }
 
     /** Computed border colour of a component card, e.g. {@code rgb(22, 163, 74)} or an oklch() value. */
     public String borderColor(String component) {
         return String.valueOf(hoverTarget(component)
-            .evaluate("e => { const card = e.matches('[tabindex]') ? e.firstElementChild : e;"
+            .evaluate("e => { const card = e.matches('a, [tabindex]') ? e.firstElementChild : e;"
                 + " return getComputedStyle(card).borderTopColor; }"));
     }
 }

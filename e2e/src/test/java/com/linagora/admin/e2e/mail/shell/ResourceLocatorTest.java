@@ -32,7 +32,7 @@ class ResourceLocatorTest extends MailAdminE2ETest {
         // Step 1: the id is shown under INBOX on the user page
         app.open("/users/user/" + WebAdmin.encode(user));
         app.main().getByRole(com.microsoft.playwright.options.AriaRole.BUTTON,
-            new Locator.GetByRoleOptions().setName(Pattern.compile("^Mailboxes"))).click();
+            new Locator.GetByRoleOptions().setName(Pattern.compile("^Mailboxes ?\\(\\d+\\)$"))).click();
         assertThat(app.main().getByText(inboxId)).isVisible();
 
         app.navigate("Resource Locator");

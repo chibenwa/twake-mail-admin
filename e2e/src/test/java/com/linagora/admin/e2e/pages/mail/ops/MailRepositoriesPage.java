@@ -31,15 +31,31 @@ public class MailRepositoriesPage {
         return app;
     }
 
-    /** The link of a repository, {@code "var/mail/error (3)"}. */
+    /** The link of a repository, named by its path; its mail count is a pill next to it. */
     public Locator link(String path) {
-        return app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions()
-            .setName(Pattern.compile("^" + Regex.quote(path) + " \\(\\d+\\)$")));
+        return app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(path).setExact(true));
     }
 
+    /** The link of a repository holding {@code count} mails: its heading reads "path Mails: count". */
     public Locator link(String path, long count) {
-        return app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions()
-            .setName(path + " (" + count + ")").setExact(true));
+        return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions()
+                .setName(path + " Mails: " + count).setExact(true))
+            .getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(path).setExact(true));
+    }
+
+    /** The mail count pill of a repository ("Mails: 3"). */
+    public Locator count(String path) {
+        return row(path).getByLabel(Pattern.compile("^Mails: \\d+$"));
+    }
+
+    /** The headings of the listed repositories, in display order. */
+    public Locator headings() {
+        return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(4));
+    }
+
+    /** The search field of the toolbar, filtering the repositories by path. */
+    public Locator filter() {
+        return app.main().getByPlaceholder("Filter repositories…");
     }
 
     /** The card of a repository: its link, its encoded id and its actions. */
@@ -65,13 +81,13 @@ public class MailRepositoriesPage {
         return app.dialog().getByLabel("Protocol");
     }
 
-    /** A labelled field of a task confirmation dialog ({@code "queue"}, {@code "limit"}...). */
+    /** A field of a task confirmation dialog, by its raw key ({@code "queue"}, {@code "limit"}...). */
     public Locator param(String key) {
-        return app.dialog().getByLabel(key + ":", new Locator.GetByLabelOptions().setExact(true));
+        return Dialogs.param(app, key);
     }
 
     /** The {@code Command: curl ...} preview of the open dialog. */
     public Locator commandPreview() {
-        return app.dialog().getByText(Pattern.compile("^Command: "));
+        return Dialogs.commandPreview(app);
     }
 }

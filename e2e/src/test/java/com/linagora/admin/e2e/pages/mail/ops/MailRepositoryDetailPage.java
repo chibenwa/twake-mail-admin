@@ -7,7 +7,7 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 
-/** The detail ("Mail Repository — path") and extended views of a mail repository. */
+/** The detail (headed by the repository path) and extended views of a mail repository. */
 public class MailRepositoryDetailPage {
     public static final String DOWNLOAD = "Download email";
     public static final String REPROCESS = "Reprocess email";
@@ -24,9 +24,16 @@ public class MailRepositoryDetailPage {
         return app;
     }
 
+    /** The h1 of the detail page: the repository path, under a breadcrumb back to the list. */
     public Locator title(String path) {
         return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions()
-            .setName("Mail Repository — " + path).setExact(true));
+            .setName(path).setExact(true).setLevel(1));
+    }
+
+    /** The breadcrumb link back to a parent page ("Mail Repositories", or the repository from the extended view). */
+    public Locator breadcrumb(String label) {
+        return app.main().getByRole(AriaRole.NAVIGATION, new Locator.GetByRoleOptions().setName("Breadcrumb"))
+            .getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(label).setExact(true));
     }
 
     public Locator extendedTitle() {
@@ -69,7 +76,10 @@ public class MailRepositoryDetailPage {
 
     // ---- pagination ----
 
-    /** The page label: {@code "Page 2 / 3"} (simple view), {@code "Page 2 / 3 — Total: 450"} (extended view). */
+    /**
+     * The page label: {@code "Page 2 / 3 — Total: 450"}; {@code "Total: 4"} alone when every mail
+     * fits on one page, the pagination buttons then being hidden.
+     */
     public Locator pageLabel(String label) {
         return app.main().getByText(label, new Locator.GetByTextOptions().setExact(true));
     }
@@ -81,7 +91,7 @@ public class MailRepositoryDetailPage {
 
     // ---- mails ----
 
-    /** The mail rows of the simple view: {@code "<n> / <key> (JSON) (MIME)"} and the mail actions. */
+    /** The mail rows of the simple view: {@code "<n> / <key> View JSON (MIME)"} and the mail actions. */
     public Locator rows() {
         return app.main().getByRole(AriaRole.LIST).getByRole(AriaRole.LISTITEM);
     }
@@ -90,6 +100,15 @@ public class MailRepositoryDetailPage {
     public Locator row(String key) {
         return rows().filter(new Locator.FilterOptions().setHas(
             app.page().getByText(key, new Page.GetByTextOptions().setExact(true))));
+    }
+
+    /** "View JSON" of a row of the simple view: opens the JSON of the mail in a dialog. */
+    public Locator viewJson(String key) {
+        return row(key).getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("View JSON").setExact(true));
+    }
+
+    public Locator mime(String key) {
+        return row(key).getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("(MIME)").setExact(true));
     }
 
     public Locator simpleRowAction(String key, String action) {

@@ -22,33 +22,19 @@ class MailingListsTest extends MailAdminE2ETest {
 
         assertThat(app.heading()).hasText("Mailing Lists");
         assertThat(app.main().getByText(Pattern.compile("^Browse LDAP-backed mailing lists and manage their members and owners\\."))).isVisible();
-        // No LDAP here: WebAdmin answers 404, the page shows its message in a readable way
-        assertThat(app.main().getByText("Error: Failed to fetch data: GET /mailingLists can not be found",
-            new Locator.GetByTextOptions().setExact(true))).isVisible();
+        // No LDAP here: WebAdmin answers 404, the page explains the feature is not available
+        // rather than showing the raw error, and drops the forms that cannot work
+        Locator unavailable = app.main().getByRole(AriaRole.STATUS)
+            .filter(new Locator.FilterOptions().setHasText("Mailing lists are not available on this server"));
+        assertThat(unavailable).isVisible();
+        assertThat(unavailable).containsText("This server does not expose the mailing list routes. "
+            + "They require the LDAP mailing list extension of tmail-backend.");
+        assertThat(unavailable.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("doc").setExact(true))).isVisible();
         assertThat(app.main()).not().containsText("statusCode");
-        assertThat(app.main().getByText("No mailing lists found.", new Locator.GetByTextOptions().setExact(true))).isVisible();
-        assertThat(app.main().getByPlaceholder("Search mailing lists...")).isEditable();
-
-        Locator toggle = app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Create a mailing list").setExact(true));
-        toggle.click();
-        Locator address = app.main().getByLabel("Address", new Locator.GetByLabelOptions().setExact(true));
-        Locator members = app.main().getByLabel(Pattern.compile("^Members"));
-        Locator owners = app.main().getByLabel("Owners", new Locator.GetByLabelOptions().setExact(true));
-        Locator category = app.main().getByLabel("Business category", new Locator.GetByLabelOptions().setExact(true));
-        Locator create = app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Create").setExact(true));
-        assertThat(address).isVisible();
-        assertThat(members).isVisible();
-        assertThat(owners).isVisible();
-        assertThat(category).hasText("None");
-        assertThat(app.main().getByText("At least one member is required.", new Locator.GetByTextOptions().setExact(true))).isVisible();
-
-        address.fill("sales@lists.e2e.test");
-        // Without any member the list cannot be created
-        assertThat(create).isDisabled();
-
-        // Cancel: the form collapses
-        toggle.click();
-        assertThat(address).isHidden();
-        assertThat(app.main().getByText("No mailing lists found.", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(app.main()).not().containsText("can not be found");
+        assertThat(app.main().getByText(Pattern.compile("^Error:"))).hasCount(0);
+        assertThat(app.main().getByPlaceholder("Search mailing lists...")).hasCount(0);
+        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Create a mailing list").setExact(true)))
+            .hasCount(0);
     }
 }

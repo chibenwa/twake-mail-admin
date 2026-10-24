@@ -41,6 +41,22 @@ public final class Shell {
         return app.sidebar().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(entry).setExact(true));
     }
 
+    /** The h1 of a detail page: the object it is about (a user, a domain...). */
+    public static Locator detailTitle(AdminApp app, String name) {
+        return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName(name).setExact(true).setLevel(1));
+    }
+
+    /** The kind of object a detail page is about, under its h1: "User", "Domain", "Task"... */
+    public static Locator detailKind(AdminApp app, String kind) {
+        return app.main().getByText(kind, new Locator.GetByTextOptions().setExact(true)).first();
+    }
+
+    /** The breadcrumb link of a detail page, back to its parent ("Users", "Tasks"...). */
+    public static Locator breadcrumb(AdminApp app, String label) {
+        return app.main().getByRole(AriaRole.NAVIGATION, new Locator.GetByRoleOptions().setName("Breadcrumb"))
+            .getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(label).setExact(true));
+    }
+
     /** The "(doc)" link of the page header. */
     public static Locator docLink(AdminApp app) {
         return app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("doc").setExact(true)).first();
