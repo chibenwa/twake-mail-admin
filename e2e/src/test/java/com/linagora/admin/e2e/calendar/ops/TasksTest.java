@@ -83,7 +83,7 @@ class TasksTest extends CalendarAdminE2ETest {
         assertThat(TasksPage.showRawJson(dialog)).containsText("\"importedEventCount\": 1");
         assertThat(dialog.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Full Details")))
             .hasAttribute("href", "/task/" + completed);
-        assertThat(dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true))).hasCount(0);
+        assertThat(dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel task").setExact(true))).hasCount(0);
         app.page().keyboard().press("Escape");
         assertThat(dialog).isHidden();
 
@@ -178,7 +178,7 @@ class TasksTest extends CalendarAdminE2ETest {
         assertThat(json).containsText("\"taskId\": \"" + completed + "\"");
         assertThat(json).containsText("\"status\": \"completed\"");
         assertThat(json).containsText("\"type\": \"calendar-import\"");
-        Locator cancel = app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true));
+        Locator cancel = app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel task").setExact(true));
         assertThat(cancel).hasCount(0);
 
         // A running task offers Cancel: the answer of WebAdmin is altered to observe it
@@ -208,7 +208,7 @@ class TasksTest extends CalendarAdminE2ETest {
     @Test
     @DisplayName("TASK-04 Task detail of an unknown or malformed ID")
     void taskDetailOfUnknownOrMalformedId(AdminApp app) {
-        Locator cancel = app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true));
+        Locator cancel = app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel task").setExact(true));
 
         app.open("/task/not-a-task");
         assertThat(app.main().getByText("Failed to fetch data: Invalid task id — Invalid UUID string: not-a-task")).isVisible();

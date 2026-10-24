@@ -50,12 +50,12 @@ class IconButtonsTest extends MailAdminE2ETest {
         assertThat(Shell.detailTitle(app, "Reindex all mailboxes — " + user)).isVisible();
         assertThat(app.main().getByText("Completed", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
         assertNamedWithHoverTooltip(page, app.button("Refresh"), "Refresh");
-        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel"))).hasCount(0);
+        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel task"))).hasCount(0);
         assertThat(Shell.unnamedButtons(app.main())).isEmpty();
         Shell.breadcrumb(app, "Tasks").click();
         assertThat(page).hasURL(Pattern.compile("/tasks$"));
 
-        // A running task, as WebAdmin would describe it: the Cancel button shows up
+        // A running task, as WebAdmin would describe it: the Cancel task button shows up
         WebAdminStub.rewrite(page, webAdmin, path -> path.equals("/tasks/" + taskId), body -> {
             ObjectNode task = (ObjectNode) jsonOf(body);
             task.put("status", "inProgress").putNull("completedDate");
@@ -63,7 +63,7 @@ class IconButtonsTest extends MailAdminE2ETest {
         });
         app.open("/task/" + taskId);
         assertThat(app.main().getByText("In Progress", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
-        assertNamedWithHoverTooltip(page, app.button("Cancel"), "Cancel");
+        assertNamedWithHoverTooltip(page, app.button("Cancel task"), "Cancel task");
         assertNamedWithHoverTooltip(page, app.button("Refresh"), "Refresh");
         assertThat(Shell.unnamedButtons(app.main())).isEmpty();
     }

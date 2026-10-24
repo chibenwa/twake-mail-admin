@@ -50,8 +50,9 @@ class CommonTasksTest extends CalendarAdminE2ETest {
     private static final int DELETE_MEMBERS_CONTACTS = 7;
 
     /** Reads the task id from the "Task created" toast. */
-    private static String runningTaskId(AdminApp app) {
-        Locator link = app.toast("Task created").getByRole(AriaRole.LINK);
+    /** The task a "Task created" toast names "<task name> — Task <short id>": earlier toasts may still be shown. */
+    private static String runningTaskId(AdminApp app, String taskName) {
+        Locator link = app.toasts().getByRole(AriaRole.LINK).filter(new Locator.FilterOptions().setHasText(taskName + " — Task "));
         assertThat(link).hasText(AdminApp.TASK_TOAST_LINK);
         return AdminApp.taskIdOf(link);
     }
@@ -198,7 +199,7 @@ class CommonTasksTest extends CalendarAdminE2ETest {
         dialog.fill("eventsPerSecond", "10");
         dialog.confirmButton().click();
         assertThat(dialog.root()).isHidden();
-        String taskId = runningTaskId(app);
+        String taskId = runningTaskId(app, "Alarm rescheduling");
         assertThat(webAdmin.awaitTask(taskId).path("status").asText()).isEqualTo("completed");
     }
 
@@ -211,7 +212,7 @@ class CommonTasksTest extends CalendarAdminE2ETest {
         addMissingFields.expectCommand(COMMANDS[2]);
         addMissingFields.confirmButton().click();
         assertThat(addMissingFields.root()).isHidden();
-        assertThat(webAdmin.awaitTask(runningTaskId(app)).path("status").asText()).isEqualTo("completed");
+        assertThat(webAdmin.awaitTask(runningTaskId(app, "Add missing fields to registered users")).path("status").asText()).isEqualTo("completed");
 
         // Reindexing goes through every calendar of the stack for minutes, and the side service
         // runs one task at a time: it would hold up the tasks of every other test. Once accepted,
@@ -219,7 +220,7 @@ class CommonTasksTest extends CalendarAdminE2ETest {
         TaskDialog reindexing = tasks.run("Calendar event reindexing");
         reindexing.confirmButton().click();
         assertThat(reindexing.root()).isHidden();
-        String reindex = runningTaskId(app);
+        String reindex = runningTaskId(app, "Calendar event reindexing");
         assertThat(webAdmin.get("/tasks/" + reindex).expect(200).json().path("type").asText()).isEqualTo("reindex-calendar-events");
         webAdmin.delete("/tasks/" + reindex);
         Awaitility.await().atMost(Duration.ofSeconds(30)).pollInterval(Duration.ofMillis(300)).until(() ->

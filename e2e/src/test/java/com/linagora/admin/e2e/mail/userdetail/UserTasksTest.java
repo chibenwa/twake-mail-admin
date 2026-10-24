@@ -150,7 +150,7 @@ class UserTasksTest extends MailAdminE2ETest {
     /** A parameter of a task dialog, by its plain-language label ("Speed limit", optionally followed by "(optional)"). */
     private static Locator param(Locator dialog, String label) {
         return dialog.getByLabel(java.util.regex.Pattern.compile("^" + com.linagora.admin.e2e.pages.mail.userdetail.Regex.escape(label)
-            + "( \\(optional\\))?$"));
+            + "( \\(optional\\)| \\*)?$"));
     }
 
     private static void expectCompleted(WebAdmin webAdmin, String taskId) {
