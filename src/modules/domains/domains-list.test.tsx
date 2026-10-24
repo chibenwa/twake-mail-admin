@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
-const confirm = vi.hoisted(() => vi.fn(async (_options: Record<string, unknown>) => false));
+const confirm = vi.hoisted(() => vi.fn<(options: Record<string, unknown>) => Promise<boolean>>(async () => false));
 const getUsers = vi.hoisted(() => vi.fn());
 const getDomainAliases = vi.hoisted(() => vi.fn());
 vi.mock("@/modules/users/api-client", () => ({ getUsers }));
