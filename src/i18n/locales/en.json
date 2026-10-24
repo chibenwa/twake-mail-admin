@@ -1726,7 +1726,7 @@
       "overquota": "Mails not delivered because the recipient's mailbox is over quota.",
       "relay-limit-exceeded": "Mails stopped by the mail loop protection: they had already gone through too many servers (30 Received headers).",
       "spam": "Mails classified as spam and kept out of the mailboxes.",
-      "suspicious": "Mails flagged as suspicious and held back from delivery.",
+      "suspicious": "Mails flagged as suspicious.",
       "too-much-mails": "Mails refused because the sender exceeded its sending rate limit.",
       "too-much-mails-for-recipient": "Mails refused because the recipient exceeded its receiving rate limit.",
       "virus": "Mails in which the antivirus detected a virus."

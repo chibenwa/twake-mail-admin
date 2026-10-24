@@ -1726,7 +1726,7 @@
       "overquota": "E-Mails, die nicht zugestellt wurden, weil das Postfach des Empfängers sein Kontingent überschritten hat.",
       "relay-limit-exceeded": "E-Mails, die vom Schleifenschutz angehalten wurden: Sie hatten bereits zu viele Server durchlaufen (30 Received-Header).",
       "spam": "Als Spam eingestufte E-Mails, die von den Postfächern ferngehalten werden.",
-      "suspicious": "Als verdächtig markierte E-Mails, die von der Zustellung zurückgehalten werden.",
+      "suspicious": "Als verdächtig markierte E-Mails.",
       "too-much-mails": "E-Mails, die abgelehnt wurden, weil der Absender sein Sendelimit überschritten hat.",
       "too-much-mails-for-recipient": "E-Mails, die abgelehnt wurden, weil der Empfänger sein Empfangslimit überschritten hat.",
       "virus": "E-Mails, in denen der Virenscanner einen Virus gefunden hat."

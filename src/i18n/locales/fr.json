@@ -1726,7 +1726,7 @@
       "overquota": "Courriers non distribués car la boîte du destinataire a dépassé son quota.",
       "relay-limit-exceeded": "Courriers arrêtés par la protection contre les boucles : ils étaient déjà passés par trop de serveurs (30 en-têtes Received).",
       "spam": "Courriers classés comme spam et tenus à l'écart des boîtes.",
-      "suspicious": "Courriers signalés comme suspects et retenus avant distribution.",
+      "suspicious": "Courriers signalés comme suspects.",
       "too-much-mails": "Courriers refusés car l'expéditeur a dépassé sa limite d'envoi.",
       "too-much-mails-for-recipient": "Courriers refusés car le destinataire a dépassé sa limite de réception.",
       "virus": "Courriers dans lesquels l'antivirus a détecté un virus."

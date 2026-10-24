@@ -1726,7 +1726,7 @@
       "overquota": "Email non recapitate perché la casella del destinatario ha superato la quota.",
       "relay-limit-exceeded": "Email fermate dalla protezione contro i loop: erano già passate da troppi server (30 intestazioni Received).",
       "spam": "Email classificate come spam e tenute fuori dalle caselle.",
-      "suspicious": "Email segnalate come sospette e trattenute prima del recapito.",
+      "suspicious": "Email segnalate come sospette.",
       "too-much-mails": "Email rifiutate perché il mittente ha superato il limite di invio.",
       "too-much-mails-for-recipient": "Email rifiutate perché il destinatario ha superato il limite di ricezione.",
       "virus": "Email in cui l'antivirus ha rilevato un virus."

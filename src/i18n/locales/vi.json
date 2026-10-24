@@ -1724,7 +1724,7 @@
       "overquota": "Thư không được gửi vì hộp thư người nhận đã vượt hạn mức.",
       "relay-limit-exceeded": "Thư bị chặn bởi cơ chế chống vòng lặp: thư đã đi qua quá nhiều máy chủ (30 tiêu đề Received).",
       "spam": "Thư bị phân loại là thư rác và không được đưa vào hộp thư.",
-      "suspicious": "Thư bị đánh dấu là đáng ngờ và bị giữ lại không gửi.",
+      "suspicious": "Thư bị đánh dấu là đáng ngờ.",
       "too-much-mails": "Thư bị từ chối vì người gửi đã vượt giới hạn gửi.",
       "too-much-mails-for-recipient": "Thư bị từ chối vì người nhận đã vượt giới hạn nhận.",
       "virus": "Thư mà trình diệt virus phát hiện có virus."
