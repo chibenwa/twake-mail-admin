@@ -40,6 +40,10 @@ export function PagedUsersList({ source, domain, domainChoices = [] }: PagedUser
   const prefix = query.trim();
   const isEmpty = !pages.isLoading && !pages.error && pages.usernames.length === 0;
   const sortedDomainChoices = useMemo(() => [...domainChoices].sort((a, b) => a.localeCompare(b)), [domainChoices]);
+  // A user whose domain was deleted stays on the server, but no mail reaches it any more
+  const managedDomains = useMemo(() => new Set(domainChoices.map((d) => d.toLowerCase())), [domainChoices]);
+  const isUnmanaged = (username: string) =>
+    managedDomains.size > 0 && !managedDomains.has(username.slice(username.lastIndexOf("@") + 1).toLowerCase());
 
   return (
     <div>
@@ -88,6 +92,14 @@ export function PagedUsersList({ source, domain, domainChoices = [] }: PagedUser
               <Link to={`/users/user/${encodeURIComponent(username)}`} className="text-blue-600 hover:underline">
                 {username}
               </Link>
+              {isUnmanaged(username) && (
+                <span
+                  className="ml-2 inline-block text-xs font-normal rounded px-1.5 py-0.5 bg-gray-100 text-gray-600 whitespace-nowrap"
+                  title={t("users.unmanagedDomainHint")}
+                >
+                  {t("users.unmanagedDomain")}
+                </span>
+              )}
             </h4>
           </div>
         ))}

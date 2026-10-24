@@ -150,3 +150,12 @@ describe("paged users list: search and filter in the URL", () => {
     expect(screen.getByTestId("location").textContent).toBe("?domain=example.org&q=bo");
   });
 });
+
+describe("paged users list: users of a deleted domain", () => {
+  it("marks a user whose domain is not managed any more", async () => {
+    renderList(sourceOf(["bob@example.com", "ghost@gone.test"]), ["example.com"]);
+    await screen.findByText("ghost@gone.test");
+    expect(screen.getAllByText("users.unmanagedDomain")).toHaveLength(1);
+    expect(screen.getByText("ghost@gone.test").parentElement?.textContent).toContain("users.unmanagedDomain");
+  });
+});

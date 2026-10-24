@@ -130,7 +130,7 @@
     "created": "Domain \"{{name}}\" created",
     "createConfirmTitle": "Create Domain",
     "deleteDomain": "Delete Domain",
-    "deleteConfirm": "Delete \"{{domain}}\"? The domain can be re-created afterwards and existing user data will not be affected.",
+    "deleteConfirm": "Delete \"{{domain}}\"? It holds no user and no domain alias; it can be re-created afterwards.",
     "deleted": "Domain \"{{domain}}\" deleted",
     "errorDeleting": "Error deleting domain",
     "import": {
@@ -553,6 +553,19 @@
     "createHint": "Make sure this is the domain you intend to create: its users will receive mail under it.",
     "summary": {
       "users": "Users: {{count}}"
+    },
+    "delete": {
+      "confirmUnchecked": "Delete \"{{domain}}\"? It can be re-created afterwards.",
+      "confirmBusy": "Delete \"{{domain}}\" anyway?",
+      "couldNotCheck": "The console could not check what this domain still holds.",
+      "users": "{{count}} users (e.g. {{examples}})",
+      "usersMore": "more than {{limit}} users (e.g. {{examples}})",
+      "stillUsers": "{{domain}} still has {{users}}.",
+      "stillAliases": "{{domain}} still has {{aliasCount}} domain aliases.",
+      "stillBoth": "{{domain}} still has {{users}} and {{aliasCount}} domain aliases.",
+      "usersConsequence": "Their accounts and mailboxes stay on the server, but mail to @{{domain}} will no longer be delivered to them.",
+      "aliasesConsequence": "Mail to these domain aliases will no longer be delivered.",
+      "seeUsers": "See the users of {{domain}}"
     }
   },
   "users": {
@@ -1168,7 +1181,9 @@
       "invalid": "{{username}} is not a valid address.",
       "search": "Search the users",
       "back": "Back to Users"
-    }
+    },
+    "unmanagedDomain": "domain not managed",
+    "unmanagedDomainHint": "This user's domain no longer exists on the server: mail to this address is not delivered locally."
   },
   "mailboxCounts": {
     "totalMessages": "Total messages",

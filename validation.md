@@ -256,6 +256,8 @@ The usage figures come from the same call as the tab load; there is no second en
 |---------|------|---------|----------|
 | "Create domain" and "Import" buttons | PUT | `/domains/{domain}` | MAY (do not show the buttons if missing) |
 | "Delete domain" button | DELETE | `/domains/{domain}` | MAY (do not show the button if missing) |
+| "Delete domain" button: users the domain still holds | GET | `/users?domain={domain}&{params}` (called with `limit=51`) | MAY (the dialog says it could not check what the domain holds) |
+| "Delete domain" button: domain aliases still pointing to it *(APPLICATION:"MAIL")* | GET | `/domains/{domain}/aliases` | MAY (aliases not counted) |
 | "Delete all data" button | POST | `/domains/{domain}?action=deleteData` | MAY (do not show the button if missing) |
 
 #### Team mailbox detail — Deleted messages sub-tab

@@ -130,7 +130,7 @@
     "created": "Dominio «{{name}}» creato",
     "createConfirmTitle": "Crea dominio",
     "deleteDomain": "Elimina dominio",
-    "deleteConfirm": "Eliminare «{{domain}}»? Il dominio potrà essere ricreato in seguito e i dati utente esistenti non saranno interessati.",
+    "deleteConfirm": "Eliminare «{{domain}}»? Non contiene alcun utente né alias di dominio; potrà essere ricreato in seguito.",
     "deleted": "Dominio «{{domain}}» eliminato",
     "errorDeleting": "Errore durante l'eliminazione del dominio",
     "import": {
@@ -553,6 +553,19 @@
     "createHint": "Verifica che sia il dominio voluto: i suoi utenti riceveranno la posta con questo nome.",
     "summary": {
       "users": "Utenti: {{count}}"
+    },
+    "delete": {
+      "confirmUnchecked": "Eliminare «{{domain}}»? Potrà essere ricreato in seguito.",
+      "confirmBusy": "Eliminare comunque «{{domain}}»?",
+      "couldNotCheck": "La console non ha potuto verificare cosa contiene ancora questo dominio.",
+      "users": "{{count}} utenti (ad es. {{examples}})",
+      "usersMore": "più di {{limit}} utenti (ad es. {{examples}})",
+      "stillUsers": "{{domain}} ha ancora {{users}}.",
+      "stillAliases": "{{domain}} ha ancora {{aliasCount}} alias di dominio.",
+      "stillBoth": "{{domain}} ha ancora {{users}} e {{aliasCount}} alias di dominio.",
+      "usersConsequence": "I loro account e caselle restano sul server, ma la posta per @{{domain}} non verrà più recapitata.",
+      "aliasesConsequence": "La posta per questi alias di dominio non verrà più recapitata.",
+      "seeUsers": "Vedi gli utenti di {{domain}}"
     }
   },
   "users": {
@@ -1168,7 +1181,9 @@
       "invalid": "{{username}} non è un indirizzo valido.",
       "search": "Cerca gli utenti",
       "back": "Torna agli utenti"
-    }
+    },
+    "unmanagedDomain": "dominio non gestito",
+    "unmanagedDomainHint": "Il dominio di questo utente non esiste più sul server: la posta per questo indirizzo non viene recapitata localmente."
   },
   "mailboxCounts": {
     "totalMessages": "Messaggi totali",

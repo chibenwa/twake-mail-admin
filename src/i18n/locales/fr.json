@@ -130,7 +130,7 @@
     "created": "Domaine « {{name}} » créé",
     "createConfirmTitle": "Créer un domaine",
     "deleteDomain": "Supprimer le domaine",
-    "deleteConfirm": "Supprimer « {{domain}} » ? Le domaine pourra être recréé et les données utilisateurs existantes ne seront pas affectées.",
+    "deleteConfirm": "Supprimer « {{domain}} » ? Il ne contient aucun utilisateur ni alias de domaine ; il pourra être recréé ensuite.",
     "deleted": "Domaine « {{domain}} » supprimé",
     "errorDeleting": "Erreur lors de la suppression du domaine",
     "import": {
@@ -553,6 +553,19 @@
     "createHint": "Vérifiez qu'il s'agit bien du domaine voulu : ses utilisateurs recevront leurs mails sous ce nom.",
     "summary": {
       "users": "Utilisateurs : {{count}}"
+    },
+    "delete": {
+      "confirmUnchecked": "Supprimer « {{domain}} » ? Il pourra être recréé ensuite.",
+      "confirmBusy": "Supprimer « {{domain}} » malgré tout ?",
+      "couldNotCheck": "La console n'a pas pu vérifier ce que ce domaine contient encore.",
+      "users": "{{count}} utilisateurs (par ex. {{examples}})",
+      "usersMore": "plus de {{limit}} utilisateurs (par ex. {{examples}})",
+      "stillUsers": "{{domain}} compte encore {{users}}.",
+      "stillAliases": "{{domain}} compte encore {{aliasCount}} alias de domaine.",
+      "stillBoth": "{{domain}} compte encore {{users}} et {{aliasCount}} alias de domaine.",
+      "usersConsequence": "Leurs comptes et boîtes restent sur le serveur, mais le courrier adressé à @{{domain}} ne leur sera plus distribué.",
+      "aliasesConsequence": "Le courrier adressé à ces alias de domaine ne sera plus distribué.",
+      "seeUsers": "Voir les utilisateurs de {{domain}}"
     }
   },
   "users": {
@@ -1168,7 +1181,9 @@
       "invalid": "{{username}} n'est pas une adresse valide.",
       "search": "Rechercher les utilisateurs",
       "back": "Retour aux utilisateurs"
-    }
+    },
+    "unmanagedDomain": "domaine non géré",
+    "unmanagedDomainHint": "Le domaine de cet utilisateur n'existe plus sur le serveur : le courrier adressé à cette adresse n'est pas distribué localement."
   },
   "mailboxCounts": {
     "totalMessages": "Messages totaux",

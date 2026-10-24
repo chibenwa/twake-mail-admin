@@ -130,7 +130,7 @@
     "created": "Domain „{{name}}“ erstellt",
     "createConfirmTitle": "Domain erstellen",
     "deleteDomain": "Domain löschen",
-    "deleteConfirm": "„{{domain}}“ löschen? Die Domain kann danach neu erstellt werden, vorhandene Benutzerdaten sind nicht betroffen.",
+    "deleteConfirm": "„{{domain}}“ löschen? Die Domain enthält keinen Benutzer und keinen Domain-Alias; sie kann danach neu angelegt werden.",
     "deleted": "Domain „{{domain}}“ gelöscht",
     "errorDeleting": "Fehler beim Löschen der Domain",
     "import": {
@@ -553,6 +553,19 @@
     "createHint": "Prüfen Sie, dass dies die gewünschte Domäne ist: Ihre Benutzer erhalten ihre Mails unter diesem Namen.",
     "summary": {
       "users": "Benutzer: {{count}}"
+    },
+    "delete": {
+      "confirmUnchecked": "„{{domain}}“ löschen? Die Domain kann danach neu angelegt werden.",
+      "confirmBusy": "„{{domain}}“ trotzdem löschen?",
+      "couldNotCheck": "Die Konsole konnte nicht prüfen, was diese Domain noch enthält.",
+      "users": "{{count}} Benutzer (z. B. {{examples}})",
+      "usersMore": "mehr als {{limit}} Benutzer (z. B. {{examples}})",
+      "stillUsers": "{{domain}} hat noch {{users}}.",
+      "stillAliases": "{{domain}} hat noch {{aliasCount}} Domain-Aliasse.",
+      "stillBoth": "{{domain}} hat noch {{users}} und {{aliasCount}} Domain-Aliasse.",
+      "usersConsequence": "Ihre Konten und Postfächer bleiben auf dem Server, aber E-Mails an @{{domain}} werden ihnen nicht mehr zugestellt.",
+      "aliasesConsequence": "E-Mails an diese Domain-Aliasse werden nicht mehr zugestellt.",
+      "seeUsers": "Benutzer von {{domain}} anzeigen"
     }
   },
   "users": {
@@ -1168,7 +1181,9 @@
       "invalid": "{{username}} ist keine gültige Adresse.",
       "search": "Benutzer suchen",
       "back": "Zurück zu den Benutzern"
-    }
+    },
+    "unmanagedDomain": "Domain nicht verwaltet",
+    "unmanagedDomainHint": "Die Domain dieses Benutzers existiert auf dem Server nicht mehr: E-Mails an diese Adresse werden nicht lokal zugestellt."
   },
   "mailboxCounts": {
     "totalMessages": "Nachrichten insgesamt",

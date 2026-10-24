@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useToast } from "@/hooks/use-toast";
-import { getDomains, deleteDomain } from "./api-client";
+import { getDomains, deleteDomain, getDomainAliases } from "./api-client";
+import { getUsers } from "@/modules/users/api-client";
+import { appConfig } from "@/lib/config";
+import { USERS_PROBE_LIMIT } from "./details/domain-summary";
 import { GetDomainsResponseType } from "./types";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -15,6 +18,15 @@ import CreateDomainButton from "./create-domain-button";
 import ListToolbar from "@/components/custom/list-toolbar";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
+const EXAMPLE_USERS = 3;
+
+/** What a domain still holds, as far as the console could check it. */
+interface DomainContents {
+  users: string[];
+  aliasCount: number;
+  // A lookup failed or is not allowed: the contents are not known for sure
+  incomplete: boolean;
+}
 
 export default function DomainsList() {
   const { t } = useTranslation();
@@ -22,6 +34,10 @@ export default function DomainsList() {
   const confirm = useConfirm();
   const canCreate = useIsAllowed("PUT", "/domains/{domain}");
   const canDelete = useIsAllowed("DELETE", "/domains/{domain}");
+  const canListUsers = useIsAllowed("GET", "/users?domain={domain}&{params}");
+  // Domain aliases are a mail feature
+  const canListAliases = useIsAllowed("GET", "/domains/{domain}/aliases") && appConfig.application === "MAIL";
+  const [checking, setChecking] = useState<string | null>(null);
 
   const {
     data: domainsResult,
@@ -33,13 +49,79 @@ export default function DomainsList() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  const handleDelete = async (domain: string) => {
-    const confirmed = await confirm({
+  // The users and the domain aliases the domain still holds, looked up in parallel
+  const checkContents = async (domain: string): Promise<DomainContents> => {
+    const [users, aliases] = await Promise.allSettled([
+      canListUsers ? getUsers({ domain, limit: USERS_PROBE_LIMIT }) : Promise.reject(new Error("not allowed")),
+      canListAliases ? getDomainAliases(domain) : Promise.resolve([]),
+    ]);
+    return {
+      users: users.status === "fulfilled" ? users.value.map((u) => u.username) : [],
+      aliasCount: aliases.status === "fulfilled" ? aliases.value.length : 0,
+      incomplete: users.status === "rejected" || aliases.status === "rejected",
+    };
+  };
+
+  const deleteDialog = (domain: string, { users, aliasCount, incomplete }: DomainContents) => {
+    const usersLabel = users.length === 0 ? "" : t(
+      users.length >= USERS_PROBE_LIMIT ? "domains.delete.usersMore" : "domains.delete.users",
+      { count: users.length, limit: USERS_PROBE_LIMIT - 1, examples: users.slice(0, EXAMPLE_USERS).join(", ") }
+    );
+    const holds = users.length > 0 && aliasCount > 0 ? "domains.delete.stillBoth"
+      : users.length > 0 ? "domains.delete.stillUsers"
+      : aliasCount > 0 ? "domains.delete.stillAliases"
+      : null;
+    const couldNotCheck = incomplete && <p className="text-sm text-gray-600">{t("domains.delete.couldNotCheck")}</p>;
+    if (!holds) {
+      return {
+        header: t("domains.deleteDomain"),
+        destructive: true,
+        confirmLabel: t("common.delete"),
+        message: (
+          <div className="space-y-2">
+            <p>{incomplete ? t("domains.delete.confirmUnchecked", { domain }) : t("domains.deleteConfirm", { domain })}</p>
+            {couldNotCheck}
+          </div>
+        ),
+      };
+    }
+    return {
       header: t("domains.deleteDomain"),
       destructive: true,
       confirmLabel: t("common.delete"),
-      message: t("domains.deleteConfirm", { domain }),
-    });
+      consequence: (
+        <>
+          {t(holds, { domain, users: usersLabel, aliasCount })}{" "}
+          {t(users.length > 0 ? "domains.delete.usersConsequence" : "domains.delete.aliasesConsequence", { domain })}
+        </>
+      ),
+      typeToConfirm: domain,
+      typeToConfirmIgnoreCase: true,
+      message: (
+        <div className="space-y-2">
+          <p>{t("domains.delete.confirmBusy", { domain })}</p>
+          {users.length > 0 && (
+            <p>
+              <Link to={`/users?domain=${encodeURIComponent(domain)}`} className="text-blue-600 hover:underline">
+                {t("domains.delete.seeUsers", { domain })}
+              </Link>
+            </p>
+          )}
+          {couldNotCheck}
+        </div>
+      ),
+    };
+  };
+
+  const handleDelete = async (domain: string) => {
+    setChecking(domain);
+    let contents: DomainContents;
+    try {
+      contents = await checkContents(domain);
+    } finally {
+      setChecking(null);
+    }
+    const confirmed = await confirm(deleteDialog(domain, contents));
     if (!confirmed) return;
     try {
       await deleteDomain(domain);
@@ -117,10 +199,14 @@ export default function DomainsList() {
             {canDelete && (
               <button
                 onClick={() => handleDelete(domain)}
-                className="shrink-0 p-2 rounded-md hover:bg-gray-200"
+                disabled={checking !== null}
+                className="shrink-0 p-2 rounded-md hover:bg-gray-200 disabled:opacity-60"
                 title={t("domains.deleteDomain")}
+                aria-label={t("domains.deleteDomain")}
               >
-                <Trash2 className="w-4 h-4 text-red-600" />
+                {checking === domain
+                  ? <Loader2 className="w-4 h-4 text-red-600 animate-spin" aria-hidden="true" />
+                  : <Trash2 className="w-4 h-4 text-red-600" aria-hidden="true" />}
               </button>
             )}
           </div>

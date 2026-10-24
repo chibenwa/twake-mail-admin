@@ -94,7 +94,11 @@ DOMAINS = page(
             "delete",
             "Delete a domain",
             "Supprimer un domaine",
-            endpoints=[may("DELETE", "/domains/{domain}")],
+            endpoints=[
+                may("DELETE", "/domains/{domain}"),
+                may("GET", "/users?domain={domain}&{params}", modes=GLOBAL),
+                may("GET", "/domains/{domain}/aliases"),
+            ],
         ),
         action(
             "delete-data",
