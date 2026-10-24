@@ -34,7 +34,8 @@ export default function UserForwards({ username, noMailbox = false }: Props) {
   const { toast } = useToast();
   const confirm = useConfirm();
   const canView = useIsAllowed("GET", "/address/forwards/{username}");
-  const canAdd = useIsAllowed("PUT", "/address/forwards/{username}/targets/{destination}");
+  // WebAdmin refuses a new forward of an address without account; its leftovers can be removed
+  const canAdd = useIsAllowed("PUT", "/address/forwards/{username}/targets/{destination}") && !noMailbox;
   const canRemove = useIsAllowed("DELETE", "/address/forwards/{username}/targets/{destination}");
 
   const { revision, notifyMappingsChanged } = useUserMappingsRevision();

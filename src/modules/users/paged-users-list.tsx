@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -27,12 +27,15 @@ export function PagedUsersList({ source, domain, domainChoices = [] }: PagedUser
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("q") ?? "";
   const selectedDomain = searchParams.get("domain") ?? "";
+  // Two changes before a render (clearing the search, then picking a domain) must not undo one
+  // another: each starts from the parameters the previous one wrote, not from the last render
+  const latestParams = useRef(searchParams);
+  latestParams.current = searchParams;
   const updateParam = (key: "q" | "domain", value: string, replace: boolean) => {
-    setSearchParams((current) => {
-      const next = new URLSearchParams(current);
-      if (value) next.set(key, value); else next.delete(key);
-      return next;
-    }, { replace });
+    const next = new URLSearchParams(latestParams.current);
+    if (value) next.set(key, value); else next.delete(key);
+    latestParams.current = next;
+    setSearchParams(next, { replace });
   };
   // Typing replaces the history entry, a new domain pushes one
   const setSearch = (value: string) => updateParam("q", value, true);

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, useLocation } from "react-router";
 import { PagedUsersList } from "./paged-users-list";
 import { UsernamesSource } from "./users-paging";
@@ -170,5 +170,26 @@ describe("paged users list: count", () => {
   it("gives the range of a page when there are several", async () => {
     renderList(sourceOf(Array.from({ length: 60 }, (_, i) => `user${String(i).padStart(2, "0")}@example.com`)));
     expect(await screen.findByText("users.countRange")).not.toBeNull();
+  });
+});
+
+describe("paged users list: quick successive filter changes", () => {
+  it("keeps the cleared search when the domain changes right after", async () => {
+    function LocationProbe() {
+      const location = useLocation();
+      return <output data-testid="location">{location.search}</output>;
+    }
+    render(
+      <MemoryRouter initialEntries={["/users?q=o"]}>
+        <PagedUsersList source={sourceOf(["bob@example.com"])} domainChoices={["example.com", "example.org"]} />
+        <LocationProbe />
+      </MemoryRouter>
+    );
+    await screen.findByText("users.noMatch");
+    act(() => {
+      fireEvent.change(screen.getByPlaceholderText("users.searchPlaceholder"), { target: { value: "" } });
+      fireEvent.change(screen.getByLabelText("common.domain"), { target: { value: "example.org" } });
+    });
+    expect(screen.getByTestId("location").textContent).toBe("?domain=example.org");
   });
 });

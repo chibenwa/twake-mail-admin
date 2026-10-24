@@ -61,9 +61,10 @@ class UserDetailMiscTest extends MailAdminE2ETest {
         }
         assertThat(detail.button("Expand all")).hasCount(0);
 
-        // No mailbox to keep a copy in; the leftover forward can be removed
+        // No mailbox to keep a copy in, no new forward (WebAdmin refuses one); the leftover can be removed
         detail.toggle("Forwards");
         assertThat(app.main().getByRole(AriaRole.CHECKBOX)).hasCount(0);
+        assertThat(app.main().getByTitle("Add forward")).hasCount(0);
         assertThat(app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(bob).setExact(true))).isVisible();
         detail.iconButton("Remove forward").click();
         detail.confirm("Remove");
