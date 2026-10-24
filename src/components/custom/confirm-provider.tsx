@@ -1,4 +1,5 @@
-import { createContext, useContext, useId, useLayoutEffect, useRef, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useId, useLayoutEffect, useRef, useState, ReactNode } from "react";
+import { useInRouterContext, useLocation } from "react-router";
 import { Loader2, TriangleAlert } from "lucide-react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -96,6 +97,21 @@ interface ConfirmProviderProps {
   children: ReactNode;
 }
 
+// Calls onNavigate when the route changes, not on mount
+function OnNavigation({ onNavigate }: { onNavigate: () => void }) {
+  const location = useLocation();
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    onNavigate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.key]);
+  return null;
+}
+
 export function ConfirmProvider({ children }: ConfirmProviderProps) {
   const { t } = useTranslation();
   const [confirmState, setConfirmState] = useState<ConfirmState>(CLOSED_STATE);
@@ -161,6 +177,12 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
     if (!confirmState.pending) handleClose(false);
   };
 
+  // A link followed from the dialog (e.g. "See the users of the domain") leaves its page: the
+  // dialog is cancelled rather than left open over another page
+  const inRouter = useInRouterContext();
+  const latestCancel = useRef(handleCancel);
+  latestCancel.current = handleCancel;
+
   // Any edit of the content may fix the reported problem: the error is re-checked on the next confirm.
   const clearError = () => setConfirmState((current) => (current.error ? { ...current, error: null } : current));
 
@@ -176,6 +198,7 @@ export function ConfirmProvider({ children }: ConfirmProviderProps) {
 
   return (
     <ConfirmContext.Provider value={confirm}>
+      {inRouter && <OnNavigation onNavigate={() => { if (confirmState.isOpen) latestCancel.current(); }} />}
       {children}
       <Dialog open={confirmState.isOpen} onOpenChange={(open) => !open && handleCancel()}>
         <DialogContent className={cn("has-[[data-task-params]]:max-w-2xl", confirmState.className)} onOpenAutoFocus={handleOpenAutoFocus} onCloseAutoFocus={restoreFocus}>

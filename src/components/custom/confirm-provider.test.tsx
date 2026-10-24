@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { useState } from "react";
 import { ConfirmOptions, ConfirmProvider, ConfirmValidator, matchesTypeToConfirm } from "./confirm-provider";
 import { useConfirm } from "@/hooks/use-confirm";
+import { Link, MemoryRouter } from "react-router";
 
 function NameForm({ onChange }: { onChange: (value: string) => void }) {
   const [name, setName] = useState("");
@@ -311,5 +312,31 @@ describe("matchesTypeToConfirm", () => {
     expect(matchesTypeToConfirm("UX.org", "ux.org")).toBe(false);
     expect(matchesTypeToConfirm("UX.org", "ux.org", true)).toBe(true);
     expect(matchesTypeToConfirm("", "ux.org", true)).toBe(false);
+  });
+});
+
+describe("confirm dialog navigation", () => {
+  it("is cancelled when a link of its content leaves the page", async () => {
+    const outcomes: boolean[] = [];
+    function LinkOpener() {
+      const confirm = useConfirm();
+      return (
+        <button onClick={async () => outcomes.push(await confirm({ header: "Delete", message: <Link to="/users">users</Link> }))}>
+          open
+        </button>
+      );
+    }
+    render(
+      <MemoryRouter initialEntries={["/domains"]}>
+        <ConfirmProvider>
+          <LinkOpener />
+        </ConfirmProvider>
+      </MemoryRouter>
+    );
+    fireEvent.click(screen.getByText("open"));
+    fireEvent.click(await screen.findByRole("link", { name: "users" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(outcomes).toEqual([false]);
   });
 });
