@@ -1302,7 +1302,14 @@
       "failedMessageCount": "Messages en échec",
       "timestamp": "Enregistré le"
     },
-    "cancelTarget": " pour {{target}}"
+    "cancelTarget": " pour {{target}}",
+    "outcome": {
+      "completed": "Tâche terminée",
+      "failed": "Tâche en échec",
+      "ended": "Tâche terminée",
+      "took": "en {{duration}}",
+      "details": "Détails"
+    }
   },
   "commonTasks": {
     "title": "Tâches communes",

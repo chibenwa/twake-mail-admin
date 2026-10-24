@@ -1302,7 +1302,14 @@
       "failedMessageCount": "Fehlgeschlagene Nachrichten",
       "timestamp": "Erfasst am"
     },
-    "cancelTarget": " für {{target}}"
+    "cancelTarget": " für {{target}}",
+    "outcome": {
+      "completed": "Aufgabe abgeschlossen",
+      "failed": "Aufgabe fehlgeschlagen",
+      "ended": "Aufgabe beendet",
+      "took": "Dauer {{duration}}",
+      "details": "Details"
+    }
   },
   "commonTasks": {
     "title": "Allgemeine Aufgaben",

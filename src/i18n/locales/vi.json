@@ -1299,7 +1299,14 @@
       "failedMessageCount": "Thư lỗi",
       "timestamp": "Ghi nhận lúc"
     },
-    "cancelTarget": " cho {{target}}"
+    "cancelTarget": " cho {{target}}",
+    "outcome": {
+      "completed": "Tác vụ đã hoàn tất",
+      "failed": "Tác vụ thất bại",
+      "ended": "Tác vụ đã kết thúc",
+      "took": "mất {{duration}}",
+      "details": "Chi tiết"
+    }
   },
   "commonTasks": {
     "title": "Tác vụ chung",

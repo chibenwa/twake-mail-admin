@@ -1302,7 +1302,14 @@
       "failedMessageCount": "Failed messages",
       "timestamp": "Recorded at"
     },
-    "cancelTarget": " for {{target}}"
+    "cancelTarget": " for {{target}}",
+    "outcome": {
+      "completed": "Task completed",
+      "failed": "Task failed",
+      "ended": "Task ended",
+      "took": "took {{duration}}",
+      "details": "Details"
+    }
   },
   "commonTasks": {
     "title": "Common Tasks",

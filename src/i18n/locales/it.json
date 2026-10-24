@@ -1302,7 +1302,14 @@
       "failedMessageCount": "Messaggi non riusciti",
       "timestamp": "Registrato il"
     },
-    "cancelTarget": " per {{target}}"
+    "cancelTarget": " per {{target}}",
+    "outcome": {
+      "completed": "Attività completata",
+      "failed": "Attività non riuscita",
+      "ended": "Attività terminata",
+      "took": "in {{duration}}",
+      "details": "Dettagli"
+    }
   },
   "commonTasks": {
     "title": "Attività comuni",

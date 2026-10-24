@@ -1870,7 +1870,21 @@ TASKS_SNACKBAR = page(
                 may("DELETE", "/tasks/{id}", modes=GLOBAL),
                 may("DELETE", "/domains/{domain}/tasks/{id}", modes=DOMAIN),
             ],
-        )
+        ),
+        action(
+            "outcome",
+            "Tell how a task started from the console ended",
+            "Annoncer comment s'est terminée une tâche lancée depuis la console",
+            endpoints=[
+                may("GET", "/tasks/{id}/await?timeout={timeout}", gates=("/tasks/{id}/await",), modes=GLOBAL),
+                may(
+                    "GET",
+                    "/domains/{domain}/tasks/{id}/await?timeout={timeout}",
+                    gates=("/domains/{domain}/tasks/{id}/await",),
+                    modes=DOMAIN,
+                ),
+            ],
+        ),
     ],
 )
 

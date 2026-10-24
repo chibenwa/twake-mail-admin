@@ -1305,7 +1305,14 @@
       "failedMessageCount": "Сообщения с ошибкой",
       "timestamp": "Записано"
     },
-    "cancelTarget": " для {{target}}"
+    "cancelTarget": " для {{target}}",
+    "outcome": {
+      "completed": "Задача выполнена",
+      "failed": "Задача завершилась ошибкой",
+      "ended": "Задача завершена",
+      "took": "за {{duration}}",
+      "details": "Подробности"
+    }
   },
   "commonTasks": {
     "title": "Общие задачи",

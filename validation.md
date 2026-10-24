@@ -40,6 +40,8 @@ a task or action parameter.
 | `DELETE /registeredUsers` | `DELETE /registeredUsers?email={email}` |
 | `DELETE /tasks` | `DELETE /tasks?olderThan={days}day` |
 | `GET /tasks` | `GET /tasks?{query_params}` |
+| `GET /tasks/{id}/await` | `GET /tasks/{id}/await?timeout={timeout}` |
+| `GET /domains/{domain}/tasks/{id}/await` | `GET /domains/{domain}/tasks/{id}/await?timeout={timeout}` |
 | `PATCH /registeredUsers` | `PATCH /registeredUsers?id={id}` |
 | `POST /addressbook/domain-members/{domain}` | `POST /addressbook/domain-members/{domain}?task=sync` |
 | `POST /calendars/{username}` | `POST /calendars/{username}?task=archive` |
@@ -727,6 +729,7 @@ A left bar entry in both modes; the detail pattern differs, see the two snackbar
 |---------|------|---------|----------|------|
 | Task detail load | GET | `/tasks/{id}` | MUST | GLOBAL |
 | "Cancel task" button | DELETE | `/tasks/{id}` | MAY (do not show the button if missing) | GLOBAL |
+| Outcome toast of a task started from the console (rounds of 25 s) | GET | `/tasks/{id}/await?timeout={timeout}` | MAY (no outcome toast if missing) | GLOBAL |
 
 ## Tasks snackbar *(DOMAIN mode)*
 
@@ -734,6 +737,7 @@ A left bar entry in both modes; the detail pattern differs, see the two snackbar
 |---------|------|---------|----------|------|
 | Task detail load | GET | `/domains/{domain}/tasks/{id}` | MUST | DOMAIN |
 | "Cancel task" button | DELETE | `/domains/{domain}/tasks/{id}` | MAY (do not show the button if missing) | DOMAIN |
+| Outcome toast of a task started from the console (rounds of 25 s) | GET | `/domains/{domain}/tasks/{id}/await?timeout={timeout}` | MAY (no outcome toast if missing) | DOMAIN |
 
 ---
 

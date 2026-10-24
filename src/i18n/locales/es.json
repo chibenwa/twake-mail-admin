@@ -1302,7 +1302,14 @@
       "failedMessageCount": "Mensajes fallidos",
       "timestamp": "Registrado el"
     },
-    "cancelTarget": " para {{target}}"
+    "cancelTarget": " para {{target}}",
+    "outcome": {
+      "completed": "Tarea completada",
+      "failed": "Tarea fallida",
+      "ended": "Tarea finalizada",
+      "took": "en {{duration}}",
+      "details": "Detalles"
+    }
   },
   "commonTasks": {
     "title": "Tareas comunes",

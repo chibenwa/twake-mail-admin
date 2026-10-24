@@ -1301,7 +1301,14 @@
       "failedMessageCount": "Амжилтгүй мессеж",
       "timestamp": "Бүртгэсэн"
     },
-    "cancelTarget": " ({{target}})"
+    "cancelTarget": " ({{target}})",
+    "outcome": {
+      "completed": "Даалгавар дууссан",
+      "failed": "Даалгавар амжилтгүй",
+      "ended": "Даалгавар дууссан",
+      "took": "{{duration}} үргэлжилсэн",
+      "details": "Дэлгэрэнгүй"
+    }
   },
   "commonTasks": {
     "title": "Нийтлэг даалгаврууд",

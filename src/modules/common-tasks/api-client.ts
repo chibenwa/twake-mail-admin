@@ -187,6 +187,18 @@ export const getTaskDetail = async (id: string, domain?: string): Promise<TaskDe
     () => apiClient.get(`/tasks/${encodeURIComponent(id)}`),
   );
 
+// WebAdmin holds the request until the task ends or 30 s pass; the request itself gives up at 25 s,
+// before proxies that cut idle requests at 30 s, and the caller asks again
+export const TASK_AWAIT_REQUEST_MS = 25_000;
+
+/** The task once it is over, or as it is after a little less than 30 s. */
+export const awaitTask = async (id: string, domain?: string): Promise<TaskDetailResponse> =>
+  callTaskRoute(
+    domain,
+    () => apiClient.get(`/domains/${encodeURIComponent(domain!)}/tasks/${encodeURIComponent(id)}/await?timeout=30s`, { timeout: TASK_AWAIT_REQUEST_MS }),
+    () => apiClient.get(`/tasks/${encodeURIComponent(id)}/await?timeout=30s`, { timeout: TASK_AWAIT_REQUEST_MS }),
+  );
+
 export const cancelTask = async (id: string, domain?: string): Promise<any> =>
   callTaskRoute(
     domain,
