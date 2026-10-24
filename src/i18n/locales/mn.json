@@ -1271,7 +1271,8 @@
     "submittedFrom": "Илгээсэн эх",
     "cancelledAt": "Цуцлагдсан",
     "failedAt": "Амжилтгүй болсон",
-    "cancelButton": "Цуцлах",
+    "cancelButton": "Даалгавар цуцлах",
+    "keepRunning": "Үргэлжлүүлэх",
     "fullDetails": "Бүрэн дэлгэрэнгүй",
     "startedCompleted": "Эхэлсэн / Дууссан",
     "risk": {

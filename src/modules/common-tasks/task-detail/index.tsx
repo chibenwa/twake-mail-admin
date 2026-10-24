@@ -55,6 +55,9 @@ export default function TaskDetail() {
     const confirmed = await confirm({
       header: t("tasks.cancelTitle"),
       message: taskDetail ? cancelConfirmMessage(t, taskDetail) : t("common.taskLink", { taskId: id }),
+      confirmLabel: t("tasks.cancelButton"),
+      cancelLabel: t("tasks.keepRunning"),
+      destructive: true,
     });
     if (!confirmed) return;
     try {

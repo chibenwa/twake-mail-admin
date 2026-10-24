@@ -95,7 +95,7 @@ public class TasksPage {
     }
 
     public Locator cancelButton(String taskId) {
-        return row(taskId).getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true));
+        return row(taskId).getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel task").setExact(true));
     }
 
     /** "Page 2 — 20 result(s)", or "Total: 7" alone when every task fits on one page. */

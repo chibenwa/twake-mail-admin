@@ -1275,7 +1275,8 @@
     "submittedFrom": "Отправлено с",
     "cancelledAt": "Отменено",
     "failedAt": "Сбой",
-    "cancelButton": "Отменить",
+    "cancelButton": "Отменить задачу",
+    "keepRunning": "Продолжить выполнение",
     "fullDetails": "Полные сведения",
     "startedCompleted": "Начато / Завершено",
     "risk": {

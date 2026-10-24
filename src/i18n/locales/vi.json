@@ -1269,7 +1269,8 @@
     "submittedFrom": "Gửi từ",
     "cancelledAt": "Đã hủy",
     "failedAt": "Thất bại",
-    "cancelButton": "Hủy",
+    "cancelButton": "Hủy tác vụ",
+    "keepRunning": "Tiếp tục chạy",
     "fullDetails": "Chi tiết đầy đủ",
     "startedCompleted": "Bắt đầu / Hoàn thành",
     "risk": {

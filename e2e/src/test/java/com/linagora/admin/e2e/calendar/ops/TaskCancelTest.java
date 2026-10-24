@@ -43,7 +43,7 @@ class TaskCancelTest extends CalendarAdminE2ETest {
     }
 
     private static Locator cancelButton(Locator scope) {
-        return scope.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true));
+        return scope.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel task").setExact(true));
     }
 
     @Test
@@ -77,14 +77,14 @@ class TaskCancelTest extends CalendarAdminE2ETest {
             // Dismissing the confirmation sends nothing
             cancelButton(row).click();
             assertThat(app.dialog()).containsText("Cancel \"Calendar event reindexing\"? (task " + waiting + ")");
-            app.cancel();
+            app.cancel("Keep running");
             assertThat(cancelButton(row)).isVisible();
             assertThat(deletes).isEmpty();
             assertThat(status(webAdmin, waiting)).isEqualTo("waiting");
 
             cancelButton(row).click();
             assertThat(app.dialog()).containsText("Cancel \"Calendar event reindexing\"? (task " + waiting + ")");
-            app.confirm();
+            app.confirm("Cancel task");
             app.expectToast("Task cancelled");
             assertThat(deletes).hasSize(1);
             assertThat(deletes.get(0)).endsWith("/tasks/" + waiting);
@@ -104,7 +104,7 @@ class TaskCancelTest extends CalendarAdminE2ETest {
             Locator cancel = cancelButton(app.main());
             cancel.click();
             assertThat(app.dialog()).containsText("Cancel \"Calendar event reindexing\"? (task " + running + ")");
-            app.confirm();
+            app.confirm("Cancel task");
             app.expectToast("Task cancelled");
             assertThat(deletes).hasSize(2);
             assertThat(deletes.get(1)).endsWith("/tasks/" + running);

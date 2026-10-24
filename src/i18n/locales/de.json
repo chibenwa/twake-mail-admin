@@ -1272,7 +1272,8 @@
     "submittedFrom": "Übermittelt von",
     "cancelledAt": "Abgebrochen",
     "failedAt": "Fehlgeschlagen",
-    "cancelButton": "Abbrechen",
+    "cancelButton": "Aufgabe abbrechen",
+    "keepRunning": "Weiterlaufen lassen",
     "fullDetails": "Alle Details",
     "startedCompleted": "Gestartet / Abgeschlossen",
     "risk": {

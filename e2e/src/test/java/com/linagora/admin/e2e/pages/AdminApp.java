@@ -76,8 +76,20 @@ public class AdminApp {
         return this;
     }
 
+    /** Clicks the confirm button of the open dialog, named after its action ("Cancel task"), and waits for it to close. */
+    public AdminApp confirm(String label) {
+        dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(label).setExact(true)).click();
+        assertThat(dialog()).isHidden();
+        return this;
+    }
+
     public AdminApp cancel() {
-        dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true)).click();
+        return cancel("Cancel");
+    }
+
+    /** Dismisses the open dialog with its cancel button, when it is named ("Keep running"). */
+    public AdminApp cancel(String label) {
+        dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(label).setExact(true)).click();
         assertThat(dialog()).isHidden();
         return this;
     }

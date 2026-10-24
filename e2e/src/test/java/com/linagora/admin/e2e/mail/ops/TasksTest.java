@@ -103,7 +103,7 @@ class TasksTest extends MailAdminE2ETest {
         assertThat(app.dialog().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Details").setExact(true))).isVisible();
         assertThat(app.dialog().getByText("Raw JSON", new Locator.GetByTextOptions().setExact(true))).isVisible();
         assertThat(app.dialog().locator("details pre")).isHidden();
-        assertThat(app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true))).hasCount(0);
+        assertThat(app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel task").setExact(true))).hasCount(0);
 
         app.dialog().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Full Details")).click();
         assertThat(page).hasURL(Pattern.compile("/task/" + taskId + "$"));
@@ -120,7 +120,7 @@ class TasksTest extends MailAdminE2ETest {
         assertThat(readJson(json.textContent()))
             .isEqualTo(webAdmin.get("/tasks/" + taskId).expect(200).json());
         assertThat(json).containsText(task.path("submitDate").asText());
-        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true))).hasCount(0);
+        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel task").setExact(true))).hasCount(0);
         assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Refresh").setExact(true))).isVisible();
         assertThat(tasksBreadcrumb(app)).hasAttribute("href", "/tasks");
 
@@ -268,7 +268,7 @@ class TasksTest extends MailAdminE2ETest {
         String taskId = slowTask(fixtures);
         try {
             app.open("/task/" + taskId);
-            assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true))).isVisible();
+            assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel task").setExact(true))).isVisible();
 
             TasksPage tasks = TasksPage.open(app);
             tasks.cancelButton(taskId).click();
@@ -276,7 +276,7 @@ class TasksTest extends MailAdminE2ETest {
             // Named as its button reads, with its target and its id
             assertThat(app.dialog()).containsText("Cancel \"Reindex all mailboxes\" for ");
             assertThat(app.dialog()).containsText("(task " + taskId + ")");
-            app.confirm();
+            app.confirm("Cancel task");
             app.expectToast("Task cancelled");
             assertThat(tasks.row(taskId)).containsText(Pattern.compile("Cancel Requested|Cancelled"));
             assertThat(OpsBackend.cancelIfRunning(webAdmin, taskId).path("status").asText()).isEqualTo("canceled");
@@ -362,6 +362,6 @@ class TasksTest extends MailAdminE2ETest {
     private static void assertNoCancel(AdminApp app) {
         assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Refresh").setExact(true))).isVisible();
         assertThat(tasksBreadcrumb(app)).isVisible();
-        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true))).hasCount(0);
+        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel task").setExact(true))).hasCount(0);
     }
 }

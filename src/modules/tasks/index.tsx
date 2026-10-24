@@ -139,6 +139,9 @@ export default function Tasks() {
     const confirmed = await confirm({
       header: t("tasks.cancelTitle"),
       message: cancelConfirmMessage(t, task),
+      confirmLabel: t("tasks.cancelButton"),
+      cancelLabel: t("tasks.keepRunning"),
+      destructive: true,
     });
     if (!confirmed) return;
     try {

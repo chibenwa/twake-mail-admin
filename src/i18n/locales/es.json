@@ -1272,7 +1272,8 @@
     "submittedFrom": "Enviada desde",
     "cancelledAt": "Cancelada",
     "failedAt": "Fallida",
-    "cancelButton": "Cancelar",
+    "cancelButton": "Cancelar tarea",
+    "keepRunning": "Dejar en ejecución",
     "fullDetails": "Detalles completos",
     "startedCompleted": "Iniciada / Completada",
     "risk": {

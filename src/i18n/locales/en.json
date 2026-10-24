@@ -1272,7 +1272,8 @@
     "submittedFrom": "Submitted from",
     "cancelledAt": "Cancelled",
     "failedAt": "Failed",
-    "cancelButton": "Cancel",
+    "cancelButton": "Cancel task",
+    "keepRunning": "Keep running",
     "fullDetails": "Full Details",
     "startedCompleted": "Started / Completed",
     "risk": {

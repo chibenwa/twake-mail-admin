@@ -1272,7 +1272,8 @@
     "submittedFrom": "Soumise depuis",
     "cancelledAt": "Annulée",
     "failedAt": "Échouée",
-    "cancelButton": "Annuler",
+    "cancelButton": "Annuler la tâche",
+    "keepRunning": "Laisser tourner",
     "fullDetails": "Détails complets",
     "startedCompleted": "Démarrée / Terminée",
     "risk": {
