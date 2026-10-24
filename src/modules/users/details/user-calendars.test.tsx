@@ -81,7 +81,7 @@ const typeInvitee = async (invitee: string, status: UserExistsStatus) => {
 
 const inviteeInput = () => screen.getByPlaceholderText("users.calendars.invitees.placeholder");
 
-const stageButton = () => inviteeInput().parentElement!.querySelector("button")!;
+const stageButton = () => inviteeInput().parentElement!.parentElement!.querySelector("button")!;
 
 describe("UserCalendars delete button", () => {
   it("is disabled on the main calendar and explains why", async () => {
@@ -125,7 +125,7 @@ describe("calendar dialogs: field labels", () => {
     fireEvent.click(workDelegation);
 
     expect(screen.getByRole("combobox", { name: "users.calendars.invitees.rightOf alice@example.com" })).toBeTruthy();
-    expect(screen.getByRole("textbox", { name: "users.calendars.invitees.email" })).toBeTruthy();
+    expect(screen.getByRole("combobox", { name: "users.calendars.invitees.email" })).toBeTruthy();
     expect(screen.getByRole("combobox", { name: "users.calendars.invitees.right" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "users.calendars.invitees.add" })).toBeTruthy();
   });
@@ -135,9 +135,10 @@ describe("calendar dialogs: field labels", () => {
     const [, workDelegation] = screen.getAllByTitle("users.calendars.invitees.title");
     fireEvent.click(workDelegation);
 
-    const email = screen.getByRole("textbox", { name: "users.calendars.invitees.email" });
-    expect(email.parentElement!.className).toContain("flex-wrap");
-    expect(email.className).toContain("min-w-0");
+    const email = screen.getByRole("combobox", { name: "users.calendars.invitees.email" });
+    expect(email.parentElement!.parentElement!.className).toContain("flex-wrap");
+    // The shrinking is on the wrapper that anchors its suggestions
+    expect(email.parentElement!.className).toContain("min-w-0");
   });
 });
 

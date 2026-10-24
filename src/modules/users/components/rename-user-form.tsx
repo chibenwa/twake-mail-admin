@@ -2,6 +2,7 @@ import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import UserSuggestInput, { SUGGEST_INPUT_CLASS } from "@/components/custom/user-suggest-input";
 
 interface Props {
   username: string;
@@ -28,13 +29,13 @@ export default function RenameUserForm({ username, onChange }: Props) {
       <p className="text-sm text-muted-foreground">{t("renameUserForm.targetMustExist")}</p>
       <div>
         <label htmlFor={newUsernameId} className="text-sm font-medium">{t("renameUserForm.newUsername")}</label>
-        <Input
+        <UserSuggestInput
           id={newUsernameId}
-          type="text"
-          className="mt-1"
+          className={SUGGEST_INPUT_CLASS}
+          wrapperClassName="mt-1"
           placeholder="new.user@domain.tld"
           value={values.newUsername}
-          onChange={(e) => update({ newUsername: e.target.value })}
+          onValueChange={(value) => update({ newUsername: value })}
         />
       </div>
       {/* Only to force or resume a rename that failed midway */}

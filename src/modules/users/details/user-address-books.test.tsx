@@ -45,7 +45,7 @@ const typeSharee = async (sharee: string, status: UserExistsStatus) => {
 
 const shareeInput = () => screen.getByPlaceholderText("users.addressBooks.invitees.placeholder");
 
-const stageButton = () => shareeInput().parentElement!.querySelector("button")!;
+const stageButton = () => shareeInput().parentElement!.parentElement!.querySelector("button")!;
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -123,7 +123,7 @@ describe("address book dialogs: field labels", () => {
     fireEvent.click(screen.getByTitle("users.addressBooks.invitees.title"));
 
     expect(screen.getByRole("combobox", { name: "users.addressBooks.invitees.rightOf alice@example.com" })).toBeTruthy();
-    expect(screen.getByRole("textbox", { name: "users.addressBooks.invitees.email" })).toBeTruthy();
+    expect(screen.getByRole("combobox", { name: "users.addressBooks.invitees.email" })).toBeTruthy();
     expect(screen.getByRole("combobox", { name: "users.addressBooks.invitees.right" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "users.addressBooks.invitees.add" })).toBeTruthy();
   });
@@ -132,9 +132,10 @@ describe("address book dialogs: field labels", () => {
     await openSection();
     fireEvent.click(screen.getByTitle("users.addressBooks.invitees.title"));
 
-    const email = screen.getByRole("textbox", { name: "users.addressBooks.invitees.email" });
-    expect(email.parentElement!.className).toContain("flex-wrap");
-    expect(email.className).toContain("min-w-0");
+    const email = screen.getByRole("combobox", { name: "users.addressBooks.invitees.email" });
+    expect(email.parentElement!.parentElement!.className).toContain("flex-wrap");
+    // The shrinking is on the wrapper that anchors its suggestions
+    expect(email.parentElement!.className).toContain("min-w-0");
   });
 });
 

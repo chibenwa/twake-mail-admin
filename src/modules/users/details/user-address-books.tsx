@@ -24,6 +24,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 import SharedWithChip from "@/components/custom/shared-with-chip";
 import { StagedChangesNotice, blocksSave, useDiscardGuard } from "@/components/custom/staged-changes";
+import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 interface Props {
   username: string;
@@ -777,14 +778,13 @@ function InviteesModal({
             {/* flex-wrap and min-w-0: on a phone the select and the + button move under the
                 address instead of being pushed past the dialog's right edge. */}
             <div className="flex flex-wrap gap-2">
-              <input
-                type="text"
+              <UserSuggestInput
                 value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
+                onValueChange={setNewEmail}
                 onKeyDown={(e) => e.key === "Enter" && handleStageAdd()}
                 placeholder={t("users.addressBooks.invitees.placeholder")}
                 aria-label={t("users.addressBooks.invitees.email")}
-                className="flex-1 basis-48 min-w-0 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500" wrapperClassName="flex-1 basis-48 min-w-0"
               />
               <select
                 value={newRight}

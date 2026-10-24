@@ -10,6 +10,7 @@ import { useCheckUserExists } from "@/hooks/use-check-user-exists";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
+import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 interface Props {
   username: string;
@@ -122,11 +123,10 @@ export default function UserDelegation({ username }: Props) {
         <div>
           <div>
             <label htmlFor="add-delegated-user" className="text-sm font-medium">{t("users.delegation.fieldLabel")}</label>
-            <input
-              type="text"
+            <UserSuggestInput
               autoFocus
               value={newUser}
-              onChange={(e) => setNewUser(e.target.value)}
+              onValueChange={setNewUser}
               id="add-delegated-user"
               placeholder={t("users.delegation.placeholder")}
               className={FIELD_CLASS}

@@ -337,6 +337,18 @@ Note: an address book row is shown when at least one of its actions is allowed; 
 
 ---
 
+## User fields — suggestions *(APPLICATION:"MAIL" and "CALENDAR")*
+
+Every field expecting a user of the server (delegation, sharing, members, administrators,
+extra senders, ACL, rename target, provisioning source, registration, forwards, mailing list
+members and owners) offers up to five users starting with what is typed. Only a suggestion:
+without the right, the field is a plain one and accepts any address.
+
+| Trigger | Verb | Pattern | MUST/MAY |
+|---------|------|---------|----------|
+| Typing in a user field (GLOBAL mode) | GET | `/users` (called as `/users?query={typed}&limit=5`) | MAY (no suggestion if missing) |
+| Typing in a user field (DOMAIN mode) | GET | `/users?domain={domain}&{params}` (called with `query={typed}&limit=5`) | MAY (no suggestion if missing) |
+
 ## Users
 
 ### User list

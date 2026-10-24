@@ -9,6 +9,7 @@ import { createRegisteredUser } from "./api-client";
 import { RegisteredUser } from "./types";
 import { defaultRegisteredUserNames, validateRegisteredUserNames } from "./validation";
 import { RegisterUserForm } from "./register-user-form";
+import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 interface Props {
   registered: RegisteredUser[];
@@ -60,12 +61,11 @@ export default function RegisterUserButton({ registered, domain, onRegistered }:
       >
         <div>
           <label htmlFor={fieldId} className="text-sm font-medium">{t("registeredUsers.email")}</label>
-          <input
+          <UserSuggestInput
             id={fieldId}
-            type="text"
             autoFocus
             value={username}
-            onChange={(e) => { setUsername(e.target.value); setNames(defaultRegisteredUserNames(e.target.value.trim())); }}
+            onValueChange={(value) => { setUsername(value); setNames(defaultRegisteredUserNames(value.trim())); }}
             placeholder={t("registeredUsers.placeholder")}
             className={FIELD_CLASS}
           />

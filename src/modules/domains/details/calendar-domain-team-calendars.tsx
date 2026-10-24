@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useTranslation } from "react-i18next";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 import { StagedChangesNotice, blocksSave, useDiscardGuard } from "@/components/custom/staged-changes";
+import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 const ROLE_OPTIONS: TeamCalendarMemberRole[] = ["viewer", "member", "manager"];
 
@@ -450,14 +451,13 @@ function MembersModal({
               {/* flex-wrap and min-w-0: on a phone the select and the + button move under the
                   address instead of being pushed past the dialog's right edge. */}
               <div className="flex flex-wrap gap-2">
-                <input
-                  type="text"
+                <UserSuggestInput
                   value={newUser}
-                  onChange={(e) => setNewUser(e.target.value)}
+                  onValueChange={setNewUser}
                   onKeyDown={(e) => e.key === "Enter" && handleStageAdd()}
                   placeholder={t("domains.teamCalendars.members.placeholder")}
                   aria-label={t("domains.teamCalendars.members.email")}
-                  className="flex-1 basis-48 min-w-0 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500" wrapperClassName="flex-1 basis-48 min-w-0"
                 />
                 <select
                   value={newRole}

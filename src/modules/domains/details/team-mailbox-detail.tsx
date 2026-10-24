@@ -20,6 +20,7 @@ import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 import { ExpandCollapseAll, SectionsProvider } from "@/components/custom/collapsible-section";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
+import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -187,12 +188,11 @@ export default function TeamMailboxDetail() {
         >
           <div>
             <label htmlFor={`${fieldId}-user`} className="text-sm font-medium">{t("domains.teamMailbox.user")}</label>
-            <input
+            <UserSuggestInput
               id={`${fieldId}-user`}
-              type="text"
               autoFocus
               value={newMember}
-              onChange={(e) => setNewMember(e.target.value)}
+              onValueChange={setNewMember}
               placeholder="user@domain.tld"
               className={FIELD_CLASS}
             />

@@ -50,7 +50,7 @@ describe("CalendarResourceDetail", () => {
     expect(screen.queryByRole("textbox")).toBeNull();
     fireEvent.click(screen.getByTitle("domains.calendarResources.addAdminTooltip"));
     const dialog = await screen.findByRole("dialog", { name: "domains.calendarResources.addAdminTooltip" });
-    fireEvent.change(within(dialog).getByRole("textbox", { name: "domains.calendarResources.addAdminTooltip" }), { target: { value: "bob@open-paas.org" } });
+    fireEvent.change(within(dialog).getByRole("combobox", { name: "domains.calendarResources.addAdminTooltip" }), { target: { value: "bob@open-paas.org" } });
     fireEvent.click(within(dialog).getByRole("button", { name: "common.add" }));
 
     await waitFor(() => expect(api.updateResource).toHaveBeenCalledWith("open-paas.org", "room-2", { administrators: [{ email: "bob@open-paas.org" }] }));
@@ -64,7 +64,7 @@ describe("CalendarResourceDetail", () => {
 
     fireEvent.click(await screen.findByTitle("domains.calendarResources.addAdminTooltip"));
     const dialog = await screen.findByRole("dialog");
-    const input = within(dialog).getByRole("textbox", { name: "domains.calendarResources.addAdminTooltip" });
+    const input = within(dialog).getByRole("combobox", { name: "domains.calendarResources.addAdminTooltip" });
     fireEvent.change(input, { target: { value: "bob@open-paas.org" } });
     fireEvent.click(within(dialog).getByRole("button", { name: "common.add" }));
 

@@ -114,7 +114,7 @@ describe("CalendarDomainAdmins add modal", () => {
     fireEvent.click(screen.getByTitle("domains.calendarAdmins.addTooltip"));
     const dialog = await screen.findByRole("dialog", { name: "domains.calendarAdmins.addTooltip" });
     expect(screen.getByPlaceholderText("domains.calendarAdmins.searchPlaceholder")).toBeTruthy();
-    fireEvent.change(within(dialog).getByRole("textbox", { name: "domains.calendarAdmins.addTooltip" }), { target: { value: "bob@open-paas.org" } });
+    fireEvent.change(within(dialog).getByRole("combobox", { name: "domains.calendarAdmins.addTooltip" }), { target: { value: "bob@open-paas.org" } });
     fireEvent.click(within(dialog).getByRole("button", { name: "common.add" }));
 
     await waitFor(() => expect(api.addDomainAdmin).toHaveBeenCalledWith("open-paas.org", "bob@open-paas.org"));

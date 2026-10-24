@@ -61,8 +61,8 @@ describe("CalendarDomainResources", () => {
 
     expect(screen.getByRole("textbox", { name: "domains.calendarResources.fieldName *" })).toBeTruthy();
     expect(screen.getByRole("textbox", { name: "domains.calendarResources.fieldDescription" })).toBeTruthy();
-    expect(screen.getByRole("textbox", { name: "domains.calendarResources.creatorLabel *" })).toBeTruthy();
-    expect(screen.getByRole("textbox", { name: "domains.calendarResources.administratorsLabel" })).toBeTruthy();
+    expect(screen.getByRole("combobox", { name: "domains.calendarResources.creatorLabel *" })).toBeTruthy();
+    expect(screen.getByRole("combobox", { name: "domains.calendarResources.administratorsLabel" })).toBeTruthy();
   });
 });
 

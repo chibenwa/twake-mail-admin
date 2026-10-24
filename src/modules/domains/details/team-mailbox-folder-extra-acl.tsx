@@ -16,6 +16,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 import { PaginationControls } from "@/components/custom/pagination-controls";
+import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -263,12 +264,11 @@ export default function TeamMailboxFolderExtraAcl({ domain, mailbox, folder }: P
       >
         <div>
           <label htmlFor={fieldId} className="text-sm font-medium">{t("domains.teamMailbox.user")}</label>
-          <input
+          <UserSuggestInput
             id={fieldId}
-            type="text"
             autoFocus
             value={newUser}
-            onChange={(e) => setNewUser(e.target.value)}
+            onValueChange={setNewUser}
             placeholder="user@domain.tld"
             className={FIELD_CLASS}
           />

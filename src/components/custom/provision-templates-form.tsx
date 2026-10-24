@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCheckUserExists } from "@/hooks/use-check-user-exists";
+import UserSuggestInput, { SUGGEST_INPUT_CLASS } from "@/components/custom/user-suggest-input";
 
 export interface ProvisionTemplatesValues {
   sourceUser: string;
@@ -40,12 +41,13 @@ export default function ProvisionTemplatesForm({ showUsersPerSecond, onChange }:
       <div className="space-y-1">
         <label htmlFor={sourceUserId} className="text-sm font-medium">{t("provisionTemplates.sourceUser")}</label>
         <div className="flex gap-2 items-center">
-          <Input
+          <UserSuggestInput
             id={sourceUserId}
-            type="text"
             value={sourceUser}
             placeholder="reference.user@domain.tld"
-            onChange={(e) => setSourceUser(e.target.value)}
+            onValueChange={setSourceUser}
+            className={SUGGEST_INPUT_CLASS}
+            wrapperClassName="flex-1"
           />
           {status === "checking" && (
             <span className="text-xs text-gray-400 whitespace-nowrap">{t("common.checking")}</span>

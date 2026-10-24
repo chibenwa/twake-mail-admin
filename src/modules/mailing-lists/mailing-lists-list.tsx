@@ -35,6 +35,7 @@ import { MAILING_LISTS_DOC_URL } from "./doc";
 import ListToolbar from "@/components/custom/list-toolbar";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 import { Button } from "@/components/ui/button";
+import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -68,12 +69,12 @@ function AddressAdder({
 }) {
   return (
     <div className="flex gap-2">
-      <input
+      <UserSuggestInput
         id={id}
         aria-label={ariaLabel}
-        type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onValueChange={onChange}
+        wrapperClassName="flex-1"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
@@ -81,7 +82,7 @@ function AddressAdder({
           }
         }}
         placeholder={placeholder}
-        className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+        className="w-full px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
       />
       <button
         type="button"

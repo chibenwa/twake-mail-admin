@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 import { PaginationControls } from "@/components/custom/pagination-controls";
+import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -256,7 +257,7 @@ export default function CalendarResourceDetail() {
     >
       <div>
         {/* The only field: named by the action, the modal title */}
-        <input type="text" autoFocus value={newAdmin} aria-label={t("domains.calendarResources.addAdminTooltip")} onChange={(e) => setNewAdmin(e.target.value)}
+        <UserSuggestInput autoFocus value={newAdmin} aria-label={t("domains.calendarResources.addAdminTooltip")} onValueChange={setNewAdmin}
           placeholder="admin@domain.tld" className={FIELD_CLASS} />
         {/* Reserved height: the status appearing does not resize the modal */}
         <p className="h-4 mt-1 text-xs">

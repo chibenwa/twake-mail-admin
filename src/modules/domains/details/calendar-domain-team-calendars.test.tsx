@@ -52,7 +52,7 @@ describe("team calendars: field labels", () => {
     fireEvent.click(screen.getByTitle("domains.teamCalendars.members.tooltip"));
 
     expect(await screen.findByRole("combobox", { name: "domains.teamCalendars.members.roleOf alice@example.com" })).toBeTruthy();
-    expect(screen.getByRole("textbox", { name: "domains.teamCalendars.members.email" })).toBeTruthy();
+    expect(screen.getByRole("combobox", { name: "domains.teamCalendars.members.email" })).toBeTruthy();
     expect(screen.getByRole("combobox", { name: "domains.teamCalendars.members.role" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "domains.teamCalendars.members.add" })).toBeTruthy();
   });
@@ -61,9 +61,10 @@ describe("team calendars: field labels", () => {
     await openSection();
     fireEvent.click(screen.getByTitle("domains.teamCalendars.members.tooltip"));
 
-    const email = await screen.findByRole("textbox", { name: "domains.teamCalendars.members.email" });
-    expect(email.parentElement!.className).toContain("flex-wrap");
-    expect(email.className).toContain("min-w-0");
+    const email = await screen.findByRole("combobox", { name: "domains.teamCalendars.members.email" });
+    expect(email.parentElement!.parentElement!.className).toContain("flex-wrap");
+    // The shrinking is on the wrapper that anchors its suggestions
+    expect(email.parentElement!.className).toContain("min-w-0");
   });
 });
 

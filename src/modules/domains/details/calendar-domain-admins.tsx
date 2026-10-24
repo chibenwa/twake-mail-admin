@@ -12,6 +12,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 import { useTranslation } from "react-i18next";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 const searchable = (admin: string) => [admin];
 
@@ -164,12 +165,11 @@ export default function CalendarDomainAdmins({ domain, defaultOpen = false }: Pr
       >
         <div>
           {/* The only field: named by the action, the modal title */}
-          <input
+          <UserSuggestInput
             autoFocus
             aria-label={t("domains.calendarAdmins.addTooltip")}
-            type="text"
             value={newAdmin}
-            onChange={(e) => setNewAdmin(e.target.value)}
+            onValueChange={setNewAdmin}
             placeholder={t("domains.calendarAdmins.addPlaceholder")}
             className={FIELD_CLASS}
           />

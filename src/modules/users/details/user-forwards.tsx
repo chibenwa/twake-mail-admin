@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
+import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 interface Props {
   username: string;
@@ -138,11 +139,10 @@ export default function UserForwards({ username }: Props) {
       >
         <div>
           <label htmlFor="add-forward-destination" className="text-sm font-medium">{t("users.forwards.fieldLabel")}</label>
-          <input
-            type="text"
+          <UserSuggestInput
             autoFocus
             value={newForward}
-            onChange={(e) => setNewForward(e.target.value)}
+            onValueChange={setNewForward}
             id="add-forward-destination"
             placeholder={t("users.forwards.placeholder")}
             className={FIELD_CLASS}

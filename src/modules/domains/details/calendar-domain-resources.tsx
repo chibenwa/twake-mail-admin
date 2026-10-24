@@ -17,6 +17,7 @@ import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 import { useTranslation } from "react-i18next";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 import { StagedChangesNotice, blocksSave } from "@/components/custom/staged-changes";
+import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 const searchable = (resource: Resource) => [resourceDisplayName(resource), resource.description];
 
@@ -234,7 +235,7 @@ export default function CalendarDomainResources({ domain, defaultOpen = false, r
         </div>
         <div>
           <label htmlFor={`${idPrefix}-creator`} className="text-sm font-medium">{t("domains.calendarResources.creatorLabel")} <span className="text-red-500">*</span></label>
-          <input id={`${idPrefix}-creator`} type="text" value={newCreator} required onChange={(e) => setNewCreator(e.target.value)}
+          <UserSuggestInput id={`${idPrefix}-creator`} value={newCreator} required onValueChange={setNewCreator}
             placeholder="user@domain.tld" className={FIELD_CLASS} />
           {/* Reserved height: the status appearing does not move the fields below */}
           <p className="h-4 mt-1 text-xs">
@@ -248,9 +249,9 @@ export default function CalendarDomainResources({ domain, defaultOpen = false, r
           <label htmlFor={`${idPrefix}-administrators`} className="text-sm font-medium">{t("domains.calendarResources.administratorsLabel")}</label>
           <div className="flex items-center gap-2 mt-1">
             {/* Enter adds the typed administrator to the list rather than creating the resource */}
-            <input id={`${idPrefix}-administrators`} type="text" value={newAdminInput} onChange={(e) => setNewAdminInput(e.target.value)}
+            <UserSuggestInput id={`${idPrefix}-administrators`} value={newAdminInput} onValueChange={setNewAdminInput}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddAdmin(); } }} placeholder="user@domain.tld"
-              className="flex-1 min-w-0 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500" />
+              className="w-full px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500" wrapperClassName="flex-1 min-w-0" />
             <button type="button" onClick={handleAddAdmin} disabled={adminInputStatus !== "exists"}
               className="px-3 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">{t("common.add")}</button>
           </div>
