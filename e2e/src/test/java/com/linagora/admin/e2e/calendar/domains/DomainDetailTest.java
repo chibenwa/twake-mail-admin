@@ -28,9 +28,13 @@ class DomainDetailTest extends CalendarAdminE2ETest {
         domains.domainLink(domain).click();
 
         assertThat(page).hasURL(Pattern.compile("/domains/domain/" + CalendarDomainPage.regexQuote(domain) + "$"));
-        assertThat(detail.title()).isVisible();
-        assertThat(app.main().getByText("Domain: " + domain, new com.microsoft.playwright.Locator.GetByTextOptions().setExact(true))).isVisible();
-        assertThat(detail.backButton()).isVisible();
+        // Headed by the domain itself, under a breadcrumb back to the list
+        assertThat(detail.title(domain)).isVisible();
+        assertThat(detail.subtitle()).isVisible();
+        assertThat(page).hasTitle(Pattern.compile(CalendarDomainPage.regexQuote(domain)));
+        assertThat(detail.backLink()).isVisible();
+        assertThat(detail.expandAllButton()).isVisible();
+        assertThat(detail.collapseAllButton()).isVisible();
         assertThat(detail.sectionToggles()).hasText(new Pattern[] {
             Pattern.compile("^Domain Admins\\s*\\(0\\)$"),
             Pattern.compile("^Calendar Resources"),
@@ -43,7 +47,15 @@ class DomainDetailTest extends CalendarAdminE2ETest {
             assertThat(app.main().getByText(mailSection)).hasCount(0);
         }
 
-        detail.backButton().click();
+        // Expand all opens every section, Collapse all closes them, and the state is remembered
+        detail.expandAllButton().click();
+        assertThat(detail.sectionToggles().and(page.locator("[aria-expanded=false]"))).hasCount(0);
+        page.reload();
+        assertThat(detail.sectionToggles().and(page.locator("[aria-expanded=true]"))).hasCount(6);
+        detail.collapseAllButton().click();
+        assertThat(detail.sectionToggles().and(page.locator("[aria-expanded=true]"))).hasCount(0);
+
+        detail.backLink().click();
         assertThat(page).hasURL(Pattern.compile("/domains$"));
         assertThat(domains.searchInput()).isVisible();
     }

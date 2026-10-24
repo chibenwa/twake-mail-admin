@@ -10,8 +10,9 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 
 /**
- * The confirmation dialog of a task (user task or common task): its parameters, named
- * {@code "<key>:"}, and its "Command: curl ..." preview.
+ * The confirmation dialog of a task (user task, domain task or common task), titled after its
+ * task: its parameters, each labelled in plain language ("Events per second (optional)") above
+ * its raw query key, and its "Command: curl ..." preview.
  */
 public class TaskDialog {
     private final AdminApp app;
@@ -28,9 +29,22 @@ public class TaskDialog {
         return root().getByRole(AriaRole.HEADING).first();
     }
 
-    /** The field of a parameter: input, number of a duration, or select trigger. */
+    /**
+     * The field of a parameter, by its raw query key: input, number of a duration, or select
+     * trigger. The field is the target of the parameter's label, whose id ends with the key.
+     */
     public Locator param(String key) {
-        return root().getByLabel(key + ":", new Locator.GetByLabelOptions().setExact(true));
+        return root().locator("[id$='-" + key + "']");
+    }
+
+    /** The plain-language label of a parameter, "(optional)" included, by its raw query key. */
+    public Locator label(String key) {
+        return root().locator("label[for$='-" + key + "']");
+    }
+
+    /** The help line under the field of a parameter. */
+    public Locator help(String key) {
+        return root().locator("[id$='-" + key + "-help']");
     }
 
     public TaskDialog fill(String key, String value) {
@@ -51,10 +65,10 @@ public class TaskDialog {
         return this;
     }
 
-    /** Sets a duration parameter: amount and unit label ("Days", "Years"...). */
-    public TaskDialog duration(String key, String amount, String unit) {
+    /** Sets a duration parameter, labelled {@code label} ("Created more than"): amount and unit label ("Days", "Years"...). */
+    public TaskDialog duration(String key, String label, String amount, String unit) {
         param(key).fill(amount);
-        Locator unitSelect = root().getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName(key + " unit").setExact(true));
+        Locator unitSelect = root().getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName(label + " unit").setExact(true));
         unitSelect.click();
         app.page().getByRole(AriaRole.OPTION, new Page.GetByRoleOptions().setName(unit).setExact(true)).click();
         assertThat(unitSelect).containsText(unit);
@@ -70,8 +84,13 @@ public class TaskDialog {
         return this;
     }
 
+    /** The button starting the task: "Start task", unless the dialog names its action ("Delete data"). */
     public Locator confirmButton() {
-        return root().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Confirm").setExact(true));
+        return confirmButton("Start task");
+    }
+
+    public Locator confirmButton(String label) {
+        return root().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(label).setExact(true));
     }
 
     public Locator cancelButton() {

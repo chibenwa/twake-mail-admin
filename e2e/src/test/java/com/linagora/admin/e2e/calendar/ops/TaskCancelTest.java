@@ -99,7 +99,7 @@ class TaskCancelTest extends CalendarAdminE2ETest {
             // From the task page, on a desktop
             page.setViewportSize(1280, 800);
             app.open("/task/" + running);
-            Locator json = app.main().locator("pre");
+            Locator json = TasksPage.showRawJson(app.main());
             assertThat(json).containsText("\"status\": \"inProgress\"");
             Locator cancel = cancelButton(app.main());
             cancel.click();

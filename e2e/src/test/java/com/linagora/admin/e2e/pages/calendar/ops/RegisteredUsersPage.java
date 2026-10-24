@@ -9,7 +9,10 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 
-/** Registered Users: the users of the DAV server. */
+/**
+ * Registered Users: the users of the DAV server. One toolbar line, the search then "Register a
+ * user", which opens the "Register user" modal.
+ */
 public class RegisteredUsersPage {
     private final AdminApp app;
 
@@ -26,19 +29,36 @@ public class RegisteredUsersPage {
         return page;
     }
 
-    public Locator newUser() {
-        return app.page().getByPlaceholder("user@domain.tld");
+    /** "Register a user", next to the search. */
+    public Locator registerButton() {
+        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Register a user").setExact(true));
     }
 
-    public Locator addButton() {
-        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Add").setExact(true));
+    /** The "Register user" modal. */
+    public Locator registerDialog() {
+        return app.page().getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Register user").setExact(true));
+    }
+
+    /** The address field of the "Register user" modal. */
+    public Locator newUser() {
+        return registerDialog().getByLabel("Email", new Locator.GetByLabelOptions().setExact(true));
+    }
+
+    /** The submit button of the "Register user" modal. */
+    public Locator submitButton() {
+        return registerDialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Register").setExact(true));
     }
 
     /** Types an address to register and waits for the existence check to settle. */
     public RegisteredUsersPage typeNewUser(String address) {
         newUser().fill(address);
-        assertThat(app.main().getByText("Checking...")).isHidden();
+        assertThat(registerDialog().getByText("Checking...")).isHidden();
         return this;
+    }
+
+    /** The status of the typed address, under the field of the "Register user" modal. */
+    public Locator accountLine(String text) {
+        return registerDialog().getByText(text, new Locator.GetByTextOptions().setExact(true));
     }
 
     public Locator search() {
@@ -65,8 +85,9 @@ public class RegisteredUsersPage {
         return row(email).getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(title).setExact(true));
     }
 
+    /** "Page 1 / 3 — Total: 120" with its buttons, or only "Total: 2" when everything fits on one page. */
     public Locator pagination() {
-        return app.main().getByText(Pattern.compile("^Page \\d+ / \\d+ — Total: \\d+$"));
+        return app.main().getByText(Pattern.compile("^(Page \\d+ / \\d+ — )?Total: \\d+$"));
     }
 
     /** A field of the open Register / Edit dialog: "Email", "Firstname", "Lastname". */

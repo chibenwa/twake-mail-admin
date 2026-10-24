@@ -36,15 +36,18 @@ import com.microsoft.playwright.options.AriaRole;
  */
 @ResourceLock(Locks.CALENDAR_SERVER_TASKS)
 class CommonTasksTest extends CalendarAdminE2ETest {
+    /** The commands of {@link CommonTasksPage#TASKS}, in the same order. */
     private static final String[] COMMANDS = {
         "curl -XPOST /registeredUsers/tasks?task=importFromLDAP&usersPerSecond=100",
         "curl -XPOST /addressbook/domain-members?task=sync",
-        "curl -XPOST /calendars?task=reindex&eventsPerSecond=100",
-        "curl -XPOST /calendars?task=archive&eventsPerSecond=100",
-        "curl -XPOST /calendars?task=scheduleAlarms&eventsPerSecond=100",
         "curl -XPOST /registeredUsers?action=addMissingFields",
         "curl -XPOST /contacts?action=republish&contactsPerSecond=100",
+        "curl -XPOST /calendars?task=reindex&eventsPerSecond=100",
+        "curl -XPOST /calendars?task=scheduleAlarms&eventsPerSecond=100",
+        "curl -XPOST /calendars?task=archive&eventsPerSecond=100",
         "curl -XDELETE /addressbook/domain-members"};
+    private static final int ARCHIVAL = 6;
+    private static final int DELETE_MEMBERS_CONTACTS = 7;
 
     /** Reads the task id from the "Task created" toast. */
     private static String runningTaskId(AdminApp app) {
@@ -85,6 +88,15 @@ class CommonTasksTest extends CalendarAdminE2ETest {
         CommonTasksPage tasks = CommonTasksPage.open(app);
         assertThat(app.main().getByText("Common tasks for data maintenance of a Twake Calendar server")).isVisible();
         assertThat(tasks.runButtons()).hasCount(CommonTasksPage.TASKS.length);
+        // Grouped by purpose, each task saying what it does
+        assertThat(tasks.groupHeadings()).hasText(CommonTasksPage.GROUPS);
+        assertThat(tasks.group("Users and contacts").getByRole(AriaRole.BUTTON,
+            new Locator.GetByRoleOptions().setName("Run").setExact(true))).hasCount(4);
+        assertThat(tasks.group("Cleanup")).containsText("Calendar event archival");
+        assertThat(tasks.row("Alarm rescheduling")).containsText("Use when event reminders are not sent.");
+        assertThat(tasks.row("Calendar event archival")).containsText("Modifies data");
+        assertThat(tasks.row("Delete domain members contacts of all domains")).containsText("Deletes data");
+        assertThat(tasks.row("Import LDAP users")).not().containsText("data");
 
         for (int i = 0; i < CommonTasksPage.TASKS.length; i++) {
             tasks.runButton(CommonTasksPage.TASKS[i]).hover();
@@ -93,20 +105,33 @@ class CommonTasksTest extends CalendarAdminE2ETest {
         assertThat(app.main().getByText(Pattern.compile("Reindex all data in OpenSearch|Cleanup Trash folder"))).hasCount(0);
 
         page.mouse().move(0, 0);
-        // The destructive task is the only one with another colour (red)
-        String red = background(tasks, CommonTasksPage.TASKS[7]);
-        for (int i = 0; i < 7; i++) {
-            assertThat(background(tasks, CommonTasksPage.TASKS[i])).as(CommonTasksPage.TASKS[i])
-                .isEqualTo(background(tasks, CommonTasksPage.TASKS[0])).isNotEqualTo(red);
+        // Green for the safe tasks, orange for the archival that modifies data, red for the deletion
+        String green = background(tasks, CommonTasksPage.TASKS[0]);
+        String orange = background(tasks, CommonTasksPage.TASKS[ARCHIVAL]);
+        String red = background(tasks, CommonTasksPage.TASKS[DELETE_MEMBERS_CONTACTS]);
+        assertThat(List.of(green, orange, red)).doesNotHaveDuplicates();
+        for (int i = 0; i < ARCHIVAL; i++) {
+            assertThat(background(tasks, CommonTasksPage.TASKS[i])).as(CommonTasksPage.TASKS[i]).isEqualTo(green);
         }
+
+        // The filter matches names and descriptions
+        tasks.filter().fill("reminders");
+        assertThat(tasks.runButtons()).hasCount(1);
+        assertThat(tasks.groupHeadings()).hasText(new String[] {"Consistency repair"});
+        tasks.filter().fill("zzz");
+        assertThat(app.main().getByText("No task matches \"zzz\".")).isVisible();
+        assertThat(tasks.runButtons()).hasCount(0);
     }
 
     @Test
     @DisplayName("CT-02 Import LDAP users")
     void importLdapUsers(AdminApp app, Page page) {
         TaskDialog dialog = CommonTasksPage.open(app).run("Import LDAP users");
-        assertThat(dialog.title()).hasText("Run");
+        assertThat(dialog.root()).containsText("Registers on the calendar server the LDAP users that are not registered yet.");
+        assertThat(dialog.label("usersPerSecond")).hasText("Users per second (optional)");
         assertThat(dialog.param("usersPerSecond")).hasValue("100");
+        // Every parameter is optional: the dialog opens on Cancel, so that Enter does not start the task
+        assertThat(dialog.cancelButton()).isFocused();
         dialog.expectCommand(COMMANDS[0]);
 
         Request request = page.waitForRequest(r -> r.method().equals("POST") && r.url().contains("/registeredUsers/tasks"),
@@ -136,7 +161,7 @@ class CommonTasksTest extends CalendarAdminE2ETest {
         app.cancel();
 
         dialog = tasks.run("Calendar event archival");
-        dialog.duration("masterDtStartBefore", "1", "Years").choose("isNotRecurring", "true");
+        dialog.duration("masterDtStartBefore", "Starting more than", "1", "Years").choose("isNotRecurring", "Yes");
         dialog.expectCommand("curl -XPOST /calendars?task=archive&masterDtStartBefore=1y&isNotRecurring=true&eventsPerSecond=100");
         app.cancel();
 
@@ -171,7 +196,8 @@ class CommonTasksTest extends CalendarAdminE2ETest {
         assertThat(tasksOfType(webAdmin, "alarm")).isEqualTo(alarmTasks);
 
         dialog.fill("eventsPerSecond", "10");
-        app.confirm();
+        dialog.confirmButton().click();
+        assertThat(dialog.root()).isHidden();
         String taskId = runningTaskId(app);
         assertThat(webAdmin.awaitTask(taskId).path("status").asText()).isEqualTo("completed");
     }
@@ -181,15 +207,18 @@ class CommonTasksTest extends CalendarAdminE2ETest {
     void otherCalendarMaintenanceTasksRun(AdminApp app, WebAdmin webAdmin) {
         CommonTasksPage tasks = CommonTasksPage.open(app);
 
-        tasks.run("Add missing fields to registered users");
-        app.confirm();
+        TaskDialog addMissingFields = tasks.run("Add missing fields to registered users");
+        addMissingFields.expectCommand(COMMANDS[2]);
+        addMissingFields.confirmButton().click();
+        assertThat(addMissingFields.root()).isHidden();
         assertThat(webAdmin.awaitTask(runningTaskId(app)).path("status").asText()).isEqualTo("completed");
 
         // Reindexing goes through every calendar of the stack for minutes, and the side service
         // runs one task at a time: it would hold up the tasks of every other test. Once accepted,
         // the task is cancelled.
-        tasks.run("Calendar event reindexing");
-        app.confirm();
+        TaskDialog reindexing = tasks.run("Calendar event reindexing");
+        reindexing.confirmButton().click();
+        assertThat(reindexing.root()).isHidden();
         String reindex = runningTaskId(app);
         assertThat(webAdmin.get("/tasks/" + reindex).expect(200).json().path("type").asText()).isEqualTo("reindex-calendar-events");
         webAdmin.delete("/tasks/" + reindex);
@@ -199,6 +228,10 @@ class CommonTasksTest extends CalendarAdminE2ETest {
         // Archival is not confirmed: it would add an "Archival" calendar to every user of the stack
         TaskDialog dialog = tasks.run("Calendar event archival");
         dialog.expectCommand("curl -XPOST /calendars?task=archive&eventsPerSecond=100");
+        // Without any criterion, every event of every user would be archived: the dialog says so
+        assertThat(dialog.root().getByRole(AriaRole.STATUS)).hasText(
+            "No criterion set: every event of every registered user will be moved to an \"Archival\" calendar.");
+        assertThat(dialog.confirmButton("Archive all events")).isVisible();
         app.cancel();
 
         // Routes missing in the side service of the stack (environment limitation)
@@ -209,7 +242,7 @@ class CommonTasksTest extends CalendarAdminE2ETest {
         app.cancel();
 
         dialog = tasks.run("Republish all common contacts");
-        dialog.expectCommand(COMMANDS[6]);
+        dialog.expectCommand(COMMANDS[3]);
         dialog.confirmButton().click();
         assertThat(dialog.error()).containsText("POST /contacts can not be found");
         app.cancel();
@@ -219,13 +252,23 @@ class CommonTasksTest extends CalendarAdminE2ETest {
     @DisplayName("CT-06 Delete domain members contacts of all domains")
     void deleteDomainMembersContactsOfAllDomains(AdminApp app, Page page) {
         TaskDialog dialog = CommonTasksPage.open(app).run("Delete domain members contacts of all domains");
+        assertThat(dialog.root()).containsText("The \"Domain members\" address book of every domain, except the skipped ones, is emptied.");
         dialog.expectCommand(COMMANDS[7]);
         dialog.fill("ignoredDomains", "example.com");
         dialog.expectCommand(COMMANDS[7] + "?ignoredDomains=example.com");
         dialog.clear("ignoredDomains");
         dialog.expectCommand(COMMANDS[7]);
 
-        Request request = page.waitForRequest(r -> r.method().equals("DELETE"), () -> dialog.confirmButton().click());
+        // Irreversible: DELETE has to be typed before the red "Delete data" can be clicked
+        Locator delete = dialog.confirmButton("Delete data");
+        assertThat(delete).isDisabled();
+        Locator typed = dialog.root().getByLabel("Type DELETE to confirm");
+        typed.fill("delete");
+        assertThat(delete).isDisabled();
+        typed.fill("DELETE");
+        assertThat(delete).isEnabled();
+
+        Request request = page.waitForRequest(r -> r.method().equals("DELETE"), delete::click);
         assertThat(request.url()).endsWith("/addressbook/domain-members");
         // Route missing in the side service of the stack (environment limitation): refused in the dialog
         assertThat(dialog.error()).containsText("DELETE /addressbook/domain-members can not be found");

@@ -87,11 +87,11 @@ class NavigationTest extends CalendarAdminE2ETest {
         assertThat(app.sidebar().getByRole(AriaRole.LINK)).hasText(new String[] {
             "Contrôle de santé", "Domaines", "Utilisateurs", "Utilisateurs enregistrés", "Mails non envoyés",
             "Tâches", "Tâches communes"});
-        assertThat(app.heading()).containsText("Bienvenue dans l'administration de Twake Calendar !");
+        assertThat(app.heading()).containsText("Bienvenue dans la console d'administration de Twake Calendar !");
 
         page.reload();
         assertThat(app.sidebar().getByRole(AriaRole.LINK).first()).hasText("Contrôle de santé");
-        assertThat(app.heading()).containsText("Bienvenue dans l'administration de Twake Calendar !");
+        assertThat(app.heading()).containsText("Bienvenue dans la console d'administration de Twake Calendar !");
 
         app.sidebar().getByTitle("Langue").click();
         page.getByRole(AriaRole.OPTION, new Page.GetByRoleOptions().setName("English")).click();
@@ -115,12 +115,12 @@ class NavigationTest extends CalendarAdminE2ETest {
         assertNoHorizontalScroll(page);
 
         page.navigate("/users/user/" + WebAdmin.encode(user));
-        sectionToggle(app, "Calendars").click();
-        sectionToggle(app, "Address Books").click();
+        CalendarDomainPage.expand(app.main(), "Calendars");
+        CalendarDomainPage.expand(app.main(), "Address Books");
         assertThat(app.main().getByText("My contacts")).isVisible();
         assertNoHorizontalScroll(page);
 
-        sectionToggle(app, "Booking Links").click();
+        CalendarDomainPage.expand(app.main(), "Booking Links");
         app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Create booking link")).click();
         Locator dialog = app.dialog();
         dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Add rule")).click();
@@ -161,14 +161,15 @@ class NavigationTest extends CalendarAdminE2ETest {
         Locator taskDocs = app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("(doc)").setExact(true));
         assertThat(taskDocs).hasCount(8);
         List<String> hrefs = taskDocs.all().stream().map(link -> link.getAttribute("href")).toList();
+        // In the order of the task groups: users and contacts, search index, consistency repair, cleanup
         assertThat(hrefs).containsExactly(
             DOC + "#import-ldap-users",
             DOC + "#domain-member-synchronisation",
-            DOC + "#calendar-event-reindexing",
-            DOC + "#calendar-event-archival",
-            DOC + "#alarm-rescheduling",
             DOC + "#add-missing-fields-to-registered-users",
             DOC + "#common-contacts-routes",
+            DOC + "#calendar-event-reindexing",
+            DOC + "#alarm-rescheduling",
+            DOC + "#calendar-event-archival",
             DOC + "#delete-domain-members-contacts");
         List<String> allHrefs = app.main().getByRole(AriaRole.LINK).all().stream()
             .map(link -> link.getAttribute("href")).toList();
@@ -183,10 +184,6 @@ class NavigationTest extends CalendarAdminE2ETest {
         Locator doc = app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("doc").setExact(true));
         assertThat(doc).hasCount(1);
         assertThat(doc).hasAttribute("href", expectedHref);
-    }
-
-    private static Locator sectionToggle(AdminApp app, String title) {
-        return CalendarDomainPage.sectionToggle(app.main(), title);
     }
 
     private static void assertNoHorizontalScroll(Page page) {

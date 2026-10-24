@@ -19,6 +19,7 @@ import com.linagora.admin.e2e.backend.Ids;
 import com.linagora.admin.e2e.backend.WebAdmin;
 import com.linagora.admin.e2e.docker.CalendarStack;
 import com.linagora.admin.e2e.pages.AdminApp;
+import com.linagora.admin.e2e.pages.calendar.ops.Regex;
 import com.linagora.admin.e2e.pages.calendar.ops.RegisteredUsersPage;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
@@ -49,14 +50,20 @@ class RegisteredUsersTest extends CalendarAdminE2ETest {
 
         RegisteredUsersPage users = RegisteredUsersPage.open(app);
         Locator doc = app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("doc").setExact(true));
-        assertThat(app.main().getByText("Manage users registered on the DAV server.")).isVisible();
+        // Says how the list differs from the Users list
+        assertThat(app.main().getByText("Users registered on the calendar (DAV) server. "
+            + "Only registered users have calendars, address books and booking links.")).isVisible();
         assertThat(doc).hasAttribute("href", Pattern.compile("#calendar-users-routes$"));
         assertThat(users.pagination()).isVisible();
+        assertThat(users.registerButton()).isVisible();
 
         users.searchFor(tag);
         assertThat(users.rowHeadings()).hasText(new String[] {"1/" + first, "2/" + second});
-        assertThat(users.pagination()).hasText("Page 1 / 1 — Total: 2");
+        assertThat(users.pagination()).hasText("Total: 2");
         Locator row = users.row(first);
+        // Each address links to its user page
+        Locator userLink = row.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(first).setExact(true));
+        assertThat(userLink).hasAttribute("href", "/users/user/" + URLEncoder.encode(first, StandardCharsets.UTF_8));
         assertThat(row).containsText(firstLocalPart + " " + firstLocalPart);
         assertThat(row).containsText("ID: " + firstId);
         assertThat(users.rowAction(first, "Edit user")).isVisible();
@@ -69,6 +76,11 @@ class RegisteredUsersTest extends CalendarAdminE2ETest {
         users.searchFor(nothing);
         assertThat(users.rowHeadings()).hasCount(0);
         assertThat(app.main().getByText("No registered user matches \"" + nothing + "\".")).isVisible();
+
+        users.searchFor(first);
+        userLink.click();
+        assertThat(app.page()).hasURL(Pattern.compile("/users/user/" + Regex.quote(URLEncoder.encode(first, StandardCharsets.UTF_8)) + "$"));
+        assertThat(app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(1).setName(first))).isVisible();
     }
 
     @Test
@@ -80,41 +92,53 @@ class RegisteredUsersTest extends CalendarAdminE2ETest {
         List<String> writes = registeredUserWrites(page);
 
         RegisteredUsersPage users = RegisteredUsersPage.open(app);
+        users.registerButton().click();
+        assertThat(users.registerDialog()).isVisible();
+        assertThat(users.newUser()).isFocused();
+        assertThat(users.newUser()).hasAttribute("placeholder", "user@domain.tld");
         users.typeNewUser(Ids.unique("nobody") + "@open-paas.org");
-        assertThat(app.main().getByText("User not found")).isVisible();
-        assertThat(users.addButton()).isDisabled();
+        assertThat(users.accountLine("User not found")).isVisible();
+        assertThat(users.submitButton()).isDisabled();
+        assertThat(users.field("Firstname")).hasCount(0);
 
         users.typeNewUser(user);
-        assertThat(app.main().getByText("User exists")).isVisible();
-        users.addButton().click();
-        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Register user");
+        assertThat(users.accountLine("User exists")).isVisible();
+        assertThat(users.submitButton()).isEnabled();
         app.cancel();
         assertThat(backend.registeredUser(user)).isNull();
 
-        users.addButton().click();
-        assertThat(app.dialog()).containsText("Registering \"" + user + "\" on the DAV server.");
-        assertThat(app.dialog()).containsText("Your deployment may include a periodic LDAP import");
+        // Reopened empty: the account, then its names, in the same modal
+        users.registerButton().click();
+        assertThat(users.newUser()).hasValue("");
+        users.typeNewUser(user);
+        assertThat(users.registerDialog()).containsText("Registering \"" + user + "\" on the DAV server.");
+        assertThat(users.registerDialog()).containsText("Your deployment may include a periodic LDAP import");
         assertThat(users.field("Firstname")).hasValue(localPart);
         assertThat(users.field("Lastname")).hasValue("");
-        app.clickConfirm();
+        users.submitButton().click();
         assertThat(app.dialogError()).hasText("Lastname is required");
-        assertThat(app.dialog()).isVisible();
+        assertThat(users.registerDialog()).isVisible();
         assertThat(writes).isEmpty();
 
         users.field("Firstname").fill("Frank");
         users.field("Lastname").fill("QA");
-        app.confirm();
+        users.submitButton().click();
 
         app.expectToast("User \"" + user + "\" registered");
-        assertThat(users.newUser()).hasValue("");
+        assertThat(users.registerDialog()).isHidden();
         users.searchFor(user);
         assertThat(users.row(user)).containsText("Frank QA");
+        users.registerButton().click();
+        users.typeNewUser(user);
+        assertThat(users.accountLine("Already registered")).isVisible();
+        assertThat(users.submitButton()).isDisabled();
+        app.cancel();
         JsonNode registered = backend.registeredUser(user);
         assertThat(registered.path("firstname").asText()).isEqualTo("Frank");
         assertThat(registered.path("lastname").asText()).isEqualTo("QA");
 
         app.open("/users/user/" + URLEncoder.encode(user, StandardCharsets.UTF_8));
-        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(Pattern.compile("^Calendars")))).isVisible();
+        assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(Pattern.compile("^Calendars\\s*(\\(\\d+\\))?$")))).isVisible();
         assertThat(app.main().getByText("This user is not registered")).hasCount(0);
     }
 
@@ -152,7 +176,8 @@ class RegisteredUsersTest extends CalendarAdminE2ETest {
         RegisteredUsersPage users = RegisteredUsersPage.open(app).searchFor(user);
         users.rowAction(user, "Delete user").click();
         assertThat(app.dialog()).containsText("Delete registered user \"" + user + "\"?");
-        app.confirm();
+        app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete").setExact(true)).click();
+        assertThat(app.dialog()).isHidden();
 
         app.expectToast("User \"" + user + "\" deleted");
         assertThat(users.rowHeadings()).hasCount(0);

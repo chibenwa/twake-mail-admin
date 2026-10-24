@@ -44,7 +44,7 @@ class BookingLinksTest extends CalendarAdminE2ETest {
         assertThat(form.calendarOptions()).hasCount(2);
         assertThat(form.create()).isDisabled();
 
-        form.selectCalendar("#default");
+        form.selectCalendar("Main calendar");
         assertThat(form.create()).isEnabled();
         form.name().fill("Intro call");
         form.description().fill("A first contact");
@@ -78,7 +78,7 @@ class BookingLinksTest extends CalendarAdminE2ETest {
         Locator row = links.row(publicId);
         assertThat(row).containsText("Intro call");
         assertThat(row).containsText("A first contact");
-        assertThat(row).containsText("#default");
+        assertThat(row).containsText("Main calendar");
         assertThat(row).containsText("45 min");
         assertThat(row).containsText("· 1 rule");
         assertThat(row).containsText("· Auto-accept bookings");
@@ -196,7 +196,7 @@ class BookingLinksTest extends CalendarAdminE2ETest {
         BookingLinksSection links = CalendarUserPage.open(app, user).bookingLinks();
         links.rowAction(publicId, "Delete associated events").click();
         assertThat(app.dialog()).containsText("Delete every calendar event created through the booking link \"Intro call\"?");
-        app.confirm();
+        confirmWith(app, "Delete");
 
         Locator taskLink = app.toast("Task created").getByRole(AriaRole.LINK);
         assertThat(taskLink).hasText(Pattern.compile("^Task [0-9a-f-]{36}$"));
@@ -208,7 +208,7 @@ class BookingLinksTest extends CalendarAdminE2ETest {
         links = CalendarUserPage.open(app, user).bookingLinks();
         links.rowAction(publicId, "Delete booking link").click();
         assertThat(app.dialog()).containsText("Do you really want to delete the booking link \"Intro call\"?");
-        app.confirm();
+        confirmWith(app, "Delete");
 
         app.expectToast("Booking link deleted");
         assertThat(app.main().getByText(publicId, new Locator.GetByTextOptions().setExact(true))).hasCount(0);
@@ -235,7 +235,7 @@ class BookingLinksTest extends CalendarAdminE2ETest {
             Form form = CalendarUserPage.open(app, bob).bookingLinks().openCreate();
             // A delegated calendar is named after its owner (ISSUE-399)
             String delegated = "Writable (" + owner + ")";
-            assertThat(form.calendarOptions()).hasText(new String[] {"Select a calendar…", "#default", delegated});
+            assertThat(form.calendarOptions()).hasText(new String[] {"Select a calendar…", "Main calendar", delegated});
             form.selectCalendar(delegated);
             assertThat(form.calendar()).hasValue(Pattern.compile("^/calendars/" + Regex.quote(OpsBackend.lastSegment(backend.defaultCalendarUrl(bob))) + "/"));
             assertThat(form.calendar().locator("option", new Locator.LocatorOptions().setHasText(room))).hasCount(0);
@@ -254,7 +254,7 @@ class BookingLinksTest extends CalendarAdminE2ETest {
 
         BookingLinksSection links = CalendarUserPage.open(app, user).bookingLinks();
         Form form = links.openCreate();
-        form.selectCalendar("#default");
+        form.selectCalendar("Main calendar");
         assertThat(form.create()).isEnabled();
 
         form.duration().clear();
@@ -297,13 +297,13 @@ class BookingLinksTest extends CalendarAdminE2ETest {
         CalendarUserPage userPage = CalendarUserPage.open(app, user);
         BookingLinksSection links = userPage.bookingLinks();
         Form form = links.openCreate();
-        assertThat(form.calendarOptions()).hasText(new String[] {"Select a calendar…", "#default"});
+        assertThat(form.calendarOptions()).hasText(new String[] {"Select a calendar…", "Main calendar"});
         form.cancel();
 
         userPage.expandCalendars().createCalendar("QA Bookable");
 
         form = links.openCreate();
-        assertThat(form.calendarOptions()).hasText(new String[] {"Select a calendar…", "#default", "QA Bookable"});
+        assertThat(form.calendarOptions()).hasText(new String[] {"Select a calendar…", "Main calendar", "QA Bookable"});
         form.cancel();
         form = links.openEdit(publicId);
         assertThat(form.calendar().locator("option", new Locator.LocatorOptions().setHasText("QA Bookable"))).hasCount(1);
@@ -311,7 +311,13 @@ class BookingLinksTest extends CalendarAdminE2ETest {
 
         userPage.deleteCalendar("QA Bookable");
         form = links.openCreate();
-        assertThat(form.calendarOptions()).hasText(new String[] {"Select a calendar…", "#default"});
+        assertThat(form.calendarOptions()).hasText(new String[] {"Select a calendar…", "Main calendar"});
         form.cancel();
+    }
+
+    /** Clicks the confirm button of the open confirmation, named after its action, and waits for it to close. */
+    private static void confirmWith(AdminApp app, String label) {
+        app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(label).setExact(true)).click();
+        assertThat(app.dialog()).isHidden();
     }
 }

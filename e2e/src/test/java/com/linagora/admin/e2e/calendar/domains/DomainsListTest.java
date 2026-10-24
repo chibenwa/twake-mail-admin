@@ -46,7 +46,10 @@ class DomainsListTest extends CalendarAdminE2ETest {
         domains.search(mine.substring(0, mine.indexOf('.')));
         assertThat(domains.domainLinks()).hasText(new String[] {mine});
         assertThat(domains.row(mine)).hasText("1/" + mine);
-        assertThat(domains.pagination()).hasText("Page 1 / 1 — Total: 1");
+        // Everything fits on one page: only the total, no page buttons
+        assertThat(domains.pagination()).hasText("Total: 1");
+        assertThat(domains.pageButton("Next")).hasCount(0);
+        assertThat(domains.pageButton("Previous")).hasCount(0);
 
         domains.search("zzz-" + Ids.suffix(8));
         String query = domains.searchInput().inputValue();
@@ -63,25 +66,34 @@ class DomainsListTest extends CalendarAdminE2ETest {
         webAdmin.put("/domains/" + before).expect(204);
         DomainsPage domains = new DomainsPage(app).open();
 
+        // "Create a domain" sits on the toolbar line, the name is typed in a modal
+        domains.createDomainButton().click();
+        assertThat(domains.createDialog()).isVisible();
+        assertThat(domains.newDomainInput()).isFocused();
+        assertThat(domains.newDomainInput()).hasAttribute("placeholder", "New domain name");
+        assertThat(domains.createDialog()).containsText("Make sure this is the domain you intend to create");
         assertThat(domains.createButton()).isDisabled();
         domains.newDomainInput().fill("   ");
         assertThat(domains.createButton()).isDisabled();
+        domains.newDomainInput().press("Enter");
+        assertThat(domains.createDialog()).isVisible();
         domains.newDomainInput().fill(created);
         assertThat(domains.createButton()).isEnabled();
 
-        domains.createButton().click();
-        assertThat(app.dialog().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Create Domain"))).isVisible();
-        assertThat(app.dialog()).containsText("Create \"" + created + "\"?");
         app.cancel();
+        assertThat(domains.createDialog()).isHidden();
         assertThat(domainList(webAdmin)).doesNotContain(created);
 
+        // Enter submits the modal
+        domains.createDomainButton().click();
+        domains.newDomainInput().fill(created);
         domains.newDomainInput().press("Enter");
-        assertThat(app.dialog()).isVisible();
-        assertThat(app.dialog()).containsText("Create \"" + created + "\"?");
-        app.confirm();
 
         app.expectToast("Domain \"" + created + "\" created");
+        assertThat(domains.createDialog()).isHidden();
+        domains.createDomainButton().click();
         assertThat(domains.newDomainInput()).hasValue("");
+        app.cancel();
         domains.search(token);
         assertThat(domains.domainLinks()).hasText(new String[] {before, created});
         assertThat(domainList(webAdmin)).contains(created);
@@ -94,10 +106,16 @@ class DomainsListTest extends CalendarAdminE2ETest {
         DomainsPage domains = new DomainsPage(app).open().search(domain);
 
         domains.deleteButton(domain).click();
-        assertThat(app.dialog().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Delete Domain"))).isVisible();
-        assertThat(app.dialog()).containsText("Delete \"" + domain
-            + "\"? The domain can be re-created afterwards and existing user data will not be affected.");
-        app.confirm();
+        // A domain created for the test holds no user and no alias: a plain confirmation, without typing its name.
+        // Fails on the side service of the stack, which ignores the domain filter of GET /users: the console then
+        // counts the users of open-paas.org as users of the domain (see the report of the e2e update).
+        Locator dialog = app.dialog();
+        assertThat(dialog.getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Delete Domain"))).isVisible();
+        assertThat(dialog).containsText("Delete \"" + domain
+            + "\"? It holds no user and no domain alias; it can be re-created afterwards.");
+        assertThat(dialog.getByRole(AriaRole.TEXTBOX)).hasCount(0);
+        dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete").setExact(true)).click();
+        assertThat(dialog).isHidden();
 
         // The side service of the stack does not implement DELETE /domains/{domain} (500 "Not implemented
         // exception"): the console reports the refusal and keeps the domain
@@ -115,16 +133,17 @@ class DomainsListTest extends CalendarAdminE2ETest {
         String second = "qa-imp2-" + token + ".e2e.test";
         DomainsPage domains = new DomainsPage(app).open();
 
-        domains.importHelpButton().focus();
-        Locator tooltip = page.getByRole(AriaRole.TOOLTIP);
-        assertThat(tooltip).containsText("one domain per line");
-        assertThat(tooltip).containsText("Comments start with # or //");
-        assertThat(tooltip).containsText("Blank lines and comment-only lines are skipped.");
-        assertThat(tooltip).containsText("Only the domains that do not exist yet are created.");
-        page.keyboard().press("Escape");
+        // The expected format is told in the modal, before picking the file
+        domains.importButton().click();
+        Locator help = domains.importDialog();
+        assertThat(help).containsText("one domain per line");
+        assertThat(help).containsText("Comments start with # or //");
+        assertThat(help).containsText("Blank lines and comment-only lines are skipped.");
+        assertThat(help).containsText("Only the domains that do not exist yet are created.");
 
         String content = "# comment\n" + first + "\n" + second + " // trailing\n\nopen-paas.org\nnot a domain\n";
-        FileChooser chooser = page.waitForFileChooser(() -> domains.importButton().click());
+        FileChooser chooser = page.waitForFileChooser(() -> domains.chooseFileButton().click());
+        assertThat(help).isHidden();
         chooser.setFiles(new FilePayload("domains.txt", "text/plain", content.getBytes(StandardCharsets.UTF_8)));
 
         Locator toast = app.toast("Domain import finished");

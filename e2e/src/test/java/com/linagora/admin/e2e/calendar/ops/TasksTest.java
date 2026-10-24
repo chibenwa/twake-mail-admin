@@ -69,11 +69,18 @@ class TasksTest extends CalendarAdminE2ETest {
         assertThat(completedRow.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel"))).hasCount(0);
 
         Locator dialog = list.openDetail(completed);
-        assertThat(dialog.getByRole(AriaRole.HEADING)).hasText("Task — " + completed);
-        for (String text : new String[] {"Completed", "calendar-import", "Submitted", "Started", "Executed on", "Submitted from",
-            "Additional Information", "\"importedEventCount\": 1"}) {
-            assertThat(dialog).containsText(text);
+        assertThat(dialog.getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(2)).first()).hasText("Task — " + completed);
+        // A readable summary: status, type, dates, duration, where it ran, then its details
+        assertThat(TasksPage.summaryValue(dialog, "Status")).hasText("Completed");
+        assertThat(TasksPage.summaryValue(dialog, "Type")).hasText("calendar-import");
+        assertThat(TasksPage.summaryValue(dialog, "Duration")).hasText(Pattern.compile("\\d s$"));
+        for (String text : new String[] {"Submitted", "Started", "Executed on", "Submitted from", "Details"}) {
+            assertThat(dialog.getByText(text, new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
         }
+        assertThat(TasksPage.summaryValue(dialog, "importedEventCount")).hasText("1");
+        // The raw JSON is folded
+        assertThat(TasksPage.rawJson(dialog)).isHidden();
+        assertThat(TasksPage.showRawJson(dialog)).containsText("\"importedEventCount\": 1");
         assertThat(dialog.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Full Details")))
             .hasAttribute("href", "/task/" + completed);
         assertThat(dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true))).hasCount(0);
@@ -83,9 +90,9 @@ class TasksTest extends CalendarAdminE2ETest {
         TasksPage.switchLanguage(app, "Français");
         assertThat(completedRow).containsText("Terminée");
         assertThat(failedRow).containsText("Échouée");
-        assertThat(app.main().getByText(Pattern.compile("^Page \\d+ — \\d+ résultat\\(s\\)$"))).isVisible();
+        assertThat(app.main().getByText(Pattern.compile("^(Page \\d+ — \\d+ résultat\\(s\\)|Total : \\d+)$"))).isVisible();
         dialog = list.openDetail(failed);
-        assertThat(dialog.getByRole(AriaRole.HEADING)).hasText("Tâche — " + failed);
+        assertThat(dialog.getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(2)).first()).hasText("Tâche — " + failed);
         assertThat(dialog).containsText("Échouée");
         assertThat(dialog).containsText("Exécutée sur");
         assertThat(dialog.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Détails complets"))).isVisible();
@@ -128,7 +135,7 @@ class TasksTest extends CalendarAdminE2ETest {
 
         list.sort().selectOption(new SelectOption().setLabel("Type"));
         assertThat(list.button("Desc ↓")).isVisible();
-        assertThat(list.pagination()).hasText(Pattern.compile("^Page 1 — "));
+        assertThat(list.pagination()).hasText(Pattern.compile("^(Page 1 — |Total: )"));
         assertThat(sorted(app, list.types(), false)).as("descending %s", list.types()).isTrue();
         list.button("Desc ↓").click();
         assertThat(list.button("Asc ↑")).isVisible();
@@ -158,9 +165,15 @@ class TasksTest extends CalendarAdminE2ETest {
         list.openDetail(completed).getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Full Details")).click();
         assertThat(page).hasURL(Pattern.compile("/task/" + completed + "$"));
 
-        assertThat(app.main().getByText(Pattern.compile("^Task " + completed))).isVisible();
+        // Headed by the task, under a breadcrumb back to the list
+        assertThat(app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(1))).hasText("Task " + completed);
+        assertThat(app.main().getByText(Pattern.compile("^Task \\(doc\\)$"))).isVisible();
         assertThat(app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("doc").setExact(true))).isVisible();
-        Locator json = app.main().locator("pre");
+        // The same readable summary as the dialog, the raw JSON on demand
+        assertThat(TasksPage.summaryValue(app.main(), "Status")).hasText("Completed");
+        assertThat(TasksPage.summaryValue(app.main(), "Type")).hasText("calendar-import");
+        assertThat(TasksPage.summaryValue(app.main(), "importedEventCount")).hasText("1");
+        Locator json = TasksPage.showRawJson(app.main());
         assertThat(json).containsText("\"taskId\": \"" + completed + "\"");
         assertThat(json).containsText("\"status\": \"completed\"");
         assertThat(json).containsText("\"type\": \"calendar-import\"");
@@ -176,13 +189,18 @@ class TasksTest extends CalendarAdminE2ETest {
         });
         app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Refresh").setExact(true)).click();
         assertThat(json).containsText("\"status\": \"inProgress\"");
+        assertThat(TasksPage.summaryValue(app.main(), "Status")).hasText("In Progress");
         assertThat(cancel).isVisible();
+        // A running task is followed by itself
+        assertThat(app.main().getByRole(AriaRole.STATUS)).hasText("Refreshing every 2 s");
         page.unrouteAll();
         app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Refresh").setExact(true)).click();
         assertThat(json).containsText("\"status\": \"completed\"");
         assertThat(cancel).hasCount(0);
+        assertThat(app.main().getByRole(AriaRole.STATUS)).hasCount(0);
 
-        app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Back").setExact(true)).click();
+        app.main().getByRole(AriaRole.NAVIGATION, new Locator.GetByRoleOptions().setName("Breadcrumb"))
+            .getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Tasks").setExact(true)).click();
         assertThat(page).hasURL(Pattern.compile("/tasks$"));
     }
 

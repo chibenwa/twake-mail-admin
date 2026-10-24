@@ -76,6 +76,12 @@ class UnsentMailsTest extends CalendarAdminE2ETest {
         return ids.stream().filter(id -> backend.unsentMail(id).path("rcptTo").toString().contains(recipient)).findFirst().orElseThrow();
     }
 
+    /** Clicks the confirm button of the open confirmation, named after its action, and waits for it to close. */
+    private static void confirmWith(AdminApp app, String label) {
+        app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(label).setExact(true)).click();
+        assertThat(app.dialog()).isHidden();
+    }
+
     @Test
     @DisplayName("UNS-01 Unsent mails page and filters")
     void unsentMailsPageAndFilters(AdminApp app, CalendarFixtures fixtures, WebAdmin webAdmin, CalendarStack stack) {
@@ -84,18 +90,23 @@ class UnsentMailsTest extends CalendarAdminE2ETest {
 
         UnsentMailsPage mails = UnsentMailsPage.open(app);
         assertThat(app.main().getByText("Mails that failed SMTP delivery, retained for inspection and re-emission.")).isVisible();
-        assertThat(mails.resendAll()).isEnabled();
-        assertThat(mails.deleteAll()).isEnabled();
         assertThat(mails.recipientFilter()).isVisible();
         assertThat(app.main().getByText("Error")).hasCount(0);
         if (empty) {
+            // Nothing to resend or delete: the bulk buttons wait for an unsent mail
             assertThat(app.main().getByText("No unsent mail.", new Locator.GetByTextOptions().setExact(true))).isVisible();
+            for (Locator bulk : new Locator[] {mails.resendAll(), mails.deleteAll()}) {
+                assertThat(bulk).isDisabled();
+                assertThat(bulk).hasAttribute("title", "No unsent mail.");
+            }
         }
 
         String sender = sender(fixtures);
         String recipient = refusedRecipient();
         String id = unsentMail(sender, recipient);
         mails = UnsentMailsPage.open(app);
+        assertThat(mails.resendAll()).isEnabled();
+        assertThat(mails.deleteAll()).isEnabled();
 
         mails.senderFilter().fill(sender);
         assertThat(mails.rows()).hasCount(1);
@@ -138,7 +149,8 @@ class UnsentMailsTest extends CalendarAdminE2ETest {
         assertThat(mails.row(second)).isVisible();
         mails.deleteAll().click();
         assertThat(app.dialog()).containsText("Sender: " + sender);
-        Request request = page.waitForRequest(r -> r.method().equals("POST") && r.url().contains("/unsentMails?"), app::confirm);
+        Request request = page.waitForRequest(r -> r.method().equals("POST") && r.url().contains("/unsentMails?"),
+            () -> confirmWith(app, "Delete"));
         assertThat(request.url()).endsWith("/unsentMails?action=delete&sender=" + WebAdmin.encode(sender));
         link = app.toast("Deletion task submitted").getByRole(AriaRole.LINK);
         String deleteTask = link.textContent().substring("Task ".length());
@@ -170,8 +182,12 @@ class UnsentMailsTest extends CalendarAdminE2ETest {
         row.getByRole(AriaRole.HEADING).click();
         assertThat(page).hasURL(Pattern.compile("/unsent-mails/mail/" + id + "$"));
         Locator detail = app.main();
-        assertThat(detail.getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Unsent mail details"))).isVisible();
-        assertThat(detail.getByText(id, new Locator.GetByTextOptions().setExact(true))).isVisible();
+        // Headed by the mail, under a breadcrumb back to the list
+        assertThat(detail.getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(1))).hasText(id);
+        assertThat(detail.getByText("Unsent mail details", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        Locator back = detail.getByRole(AriaRole.NAVIGATION, new Locator.GetByRoleOptions().setName("Breadcrumb"))
+            .getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Unsent Mails").setExact(true));
+        assertThat(back).hasAttribute("href", "/unsent-mails");
         assertThat(detail.locator("dl")).containsText("Sender" + sender);
         assertThat(detail.locator("dl")).containsText("Recipient" + recipient);
         assertThat(detail.locator("dl")).containsText("Date");
@@ -196,7 +212,7 @@ class UnsentMailsTest extends CalendarAdminE2ETest {
         mails.senderFilter().fill(sender);
         mails.rowAction(otherId, "Delete this mail").click();
         assertThat(app.dialog()).containsText("Delete unsent mail " + otherId + "? This cannot be undone.");
-        app.confirm();
+        confirmWith(app, "Delete");
         app.expectToast("Mail deleted");
         assertThat(mails.row(otherId)).hasCount(0);
         assertThat(webAdmin.get("/unsentMails/" + otherId).status()).isEqualTo(404);

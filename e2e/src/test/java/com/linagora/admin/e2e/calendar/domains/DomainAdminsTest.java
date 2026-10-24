@@ -33,6 +33,8 @@ class DomainAdminsTest extends CalendarAdminE2ETest {
         assertThat(app.main().getByText("Domain admins can manage the domain address book.")).isVisible();
         assertThat(app.main().getByText("No domain admins.")).isVisible();
         detail.addAdminButton().click();
+        assertThat(detail.addAdminDialog()).isVisible();
+        assertThat(detail.adminInput()).isFocused();
 
         detail.typeAdmin("nobody-" + alice);
         assertThat(detail.indicator("User not found")).isVisible();
@@ -47,7 +49,7 @@ class DomainAdminsTest extends CalendarAdminE2ETest {
         detail.adminAddButton().click();
 
         app.expectToast("Admin added");
-        assertThat(detail.adminInput()).isHidden();
+        assertThat(detail.addAdminDialog()).isHidden();
         assertThat(detail.adminRows()).hasText(new String[] {"1/" + alice});
         assertThat(detail.sectionToggle(CalendarDomainPage.ADMINS)).hasText(java.util.regex.Pattern.compile("^Domain Admins\\s*\\(1\\)$"));
         assertThat(admins(webAdmin, domain)).containsExactly(alice);
@@ -70,8 +72,9 @@ class DomainAdminsTest extends CalendarAdminE2ETest {
         assertThat(detail.adminRows()).hasCount(2);
 
         detail.removeAdminButton(bob).click();
+        assertThat(app.dialog().getByRole(com.microsoft.playwright.options.AriaRole.HEADING)).hasText("Remove Admin");
         assertThat(app.dialog()).containsText("Remove \"" + bob + "\" from admins of " + domain + "?");
-        app.confirm();
+        detail.confirmWith("Remove");
 
         app.expectToast("Admin removed");
         assertThat(detail.adminRows()).hasText(new String[] {"1/" + alice});
@@ -107,6 +110,10 @@ class DomainAdminsTest extends CalendarAdminE2ETest {
         assertThat(detail.adminAddButton()).isDisabled();
         detail.adminInput().press("Enter");
 
+        // Enter submits nothing: the modal stays open with the typed address
+        assertThat(detail.addAdminDialog()).isVisible();
+        assertThat(detail.adminInput()).hasValue(shouted);
+        app.cancel();
         assertThat(detail.adminRows()).hasText(new String[] {"1/" + alice});
         assertThat(puts).isEmpty();
         assertThat(admins(webAdmin, domain)).containsExactly(alice);

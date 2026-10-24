@@ -41,8 +41,18 @@ public class CalendarUserPage {
             new Locator.GetByRoleOptions().setName(Pattern.compile("^" + Regex.quote(title) + "\\s*(\\(\\d+\\))?$")));
     }
 
+    /** Opens a section unless it is open already: the sections remember their state across pages and reloads. */
+    public CalendarUserPage expand(String title) {
+        Locator toggle = toggle(title);
+        if (!"true".equals(toggle.getAttribute("aria-expanded"))) {
+            toggle.click();
+        }
+        assertThat(toggle).hasAttribute("aria-expanded", "true");
+        return this;
+    }
+
     public BookingLinksSection bookingLinks() {
-        toggle("Booking Links").click();
+        expand("Booking Links");
         BookingLinksSection section = new BookingLinksSection(app);
         assertThat(section.createButton()).isVisible();
         return section;
@@ -50,7 +60,7 @@ public class CalendarUserPage {
 
     /** Expands Calendars. */
     public CalendarUserPage expandCalendars() {
-        toggle("Calendars").click();
+        expand("Calendars");
         assertThat(app.button("Create calendar")).isVisible();
         return this;
     }
@@ -68,29 +78,45 @@ public class CalendarUserPage {
         app.main().getByText(name, new Locator.GetByTextOptions().setExact(true))
             .locator("xpath=ancestor::div[.//button[@title='Delete calendar']][1]")
             .getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete calendar")).click();
-        app.confirm();
+        confirmWith("Delete");
         app.expectToast("Calendar deleted");
         return this;
     }
 
     /** Expands Tasks. */
     public CalendarUserPage expandTasks() {
-        toggle("Tasks").click();
-        assertThat(app.main().getByText("Archive calendar events", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        expand("Tasks");
+        assertThat(taskRow("Archive calendar events")).isVisible();
         return this;
+    }
+
+    /** Clicks the confirm button of the open confirmation, named after its action ("Delete"), and waits for it to close. */
+    public CalendarUserPage confirmWith(String label) {
+        app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(label).setExact(true)).click();
+        assertThat(app.dialog()).isHidden();
+        return this;
+    }
+
+    /** The row of a user task: title, risk badge, description and Run. */
+    public Locator taskRow(String name) {
+        return app.main().getByText(name, new Locator.GetByTextOptions().setExact(true))
+            .locator("xpath=ancestor::*[@data-task-row][1]");
+    }
+
+    /** The titles of the user tasks, in display order. */
+    public Locator taskTitles() {
+        return app.main().locator("[data-task-row] p.font-medium");
     }
 
     /** Clicks Run next to a user task ("Archive calendar events"...), returns its dialog. */
     public TaskDialog runTask(String name) {
-        app.main().getByText(name, new Locator.GetByTextOptions().setExact(true)).locator("xpath=..")
-            .getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Run").setExact(true)).click();
+        runButton(name).click();
         TaskDialog dialog = new TaskDialog(app);
         assertThat(dialog.root()).isVisible();
         return dialog;
     }
 
     public Locator runButton(String name) {
-        return app.main().getByText(name, new Locator.GetByTextOptions().setExact(true)).locator("xpath=..")
-            .getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Run").setExact(true));
+        return taskRow(name).getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Run").setExact(true));
     }
 }

@@ -28,14 +28,15 @@ class DialogLayoutTest extends CalendarAdminE2ETest {
         for (int[] size : new int[][] {{1280, 800}, {390, 844}}) {
             page.setViewportSize(size[0], size[1]);
             page.navigate("/users/user/" + WebAdmin.encode(user));
-            CalendarDomainPage.sectionToggle(app.main(), "Calendars").click();
+            // Opened on the first pass, the section is still open on the second: it is remembered
+            CalendarDomainPage.expand(app.main(), "Calendars");
             assertThat(app.main().getByText(name, new Locator.GetByTextOptions().setExact(true))).isVisible();
 
             deleteButton(app, name).click();
             Locator dialog = app.dialog();
             assertThat(dialog).containsText("Do you really want to delete the calendar \"" + name + "\"?");
             assertThat((Boolean) dialog.evaluate("d => d.scrollWidth <= d.clientWidth")).as("width %d", size[0]).isTrue();
-            for (String button : new String[] {"Cancel", "Confirm"}) {
+            for (String button : new String[] {"Cancel", "Delete"}) {
                 Locator locator = dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(button).setExact(true));
                 assertThat((Boolean) locator.evaluate("(b) => { const r = b.getBoundingClientRect();"
                     + " const d = b.closest('[role=dialog]').getBoundingClientRect();"
@@ -46,7 +47,8 @@ class DialogLayoutTest extends CalendarAdminE2ETest {
         }
 
         deleteButton(app, name).click();
-        app.confirm();
+        app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete").setExact(true)).click();
+        assertThat(app.dialog()).isHidden();
         app.expectToast("Calendar deleted");
         assertThat(webAdmin.get("/users/" + user + "/calendars").expect(200).body()).doesNotContain(name);
     }

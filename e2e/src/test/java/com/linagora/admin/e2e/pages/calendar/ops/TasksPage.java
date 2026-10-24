@@ -63,8 +63,32 @@ public class TasksPage {
         return (List<String>) rows().evaluateAll("rows => rows.map(r => r.querySelector('button').textContent.trim())");
     }
 
+    /**
+     * The pagination line: "Page 2 — 50 result(s)" with its buttons, or only "Total: 12" when
+     * the list fits on one page.
+     */
     public Locator pagination() {
-        return app.main().getByText(Pattern.compile("^Page \\d+ — \\d+ result\\(s\\)$"));
+        return app.main().getByText(Pattern.compile("^(Page \\d+ — \\d+ result\\(s\\)|Total: \\d+)$"));
+    }
+
+    /** The raw JSON of a task, folded under "Raw JSON" in the detail dialog and on the task page. */
+    public static Locator rawJson(Locator scope) {
+        return scope.locator("details").filter(new Locator.FilterOptions().setHasText(
+            Pattern.compile("^(Raw JSON|JSON brut)"))).locator("pre");
+    }
+
+    /** Unfolds the raw JSON of a task. */
+    public static Locator showRawJson(Locator scope) {
+        scope.getByText(Pattern.compile("^(Raw JSON|JSON brut)$")).click();
+        Locator json = rawJson(scope);
+        assertThat(json).isVisible();
+        return json;
+    }
+
+    /** A value of the readable summary of a task ("Status", "Type", "Duration"...): the cell after its label. */
+    public static Locator summaryValue(Locator scope, String label) {
+        return scope.getByText(label, new Locator.GetByTextOptions().setExact(true)).first()
+            .locator("xpath=following-sibling::*[1]");
     }
 
     public Locator field(String label) {

@@ -47,19 +47,35 @@ class UserTasksTest extends CalendarAdminE2ETest {
         String user = fixtures.newRegisteredUser("utask");
         provisionCalendars(new OpsBackend(webAdmin, stack), user);
 
-        TaskDialog dialog = CalendarUserPage.open(app, user).expandTasks().runTask("Archive calendar events");
+        CalendarUserPage userPage = CalendarUserPage.open(app, user).expandTasks();
+        // Republish first, then the tasks that modify and delete data, each stating its risk
+        assertThat(userPage.taskTitles()).hasText(new String[] {"Republish common contacts", "Archive calendar events", "Delete user data"});
+        assertThat(userPage.taskRow("Republish common contacts")).not().containsText("Modifies data");
+        assertThat(userPage.taskRow("Archive calendar events")).containsText("Modifies data");
+        assertThat(userPage.taskRow("Delete user data")).containsText("Deletes data");
+
+        TaskDialog dialog = userPage.runTask("Archive calendar events");
         assertThat(dialog.title()).hasText("Archive Calendar Events");
         for (String key : ARCHIVE_PARAMS) {
             assertThat(dialog.param(key)).isVisible();
         }
-        for (String duration : new String[] {"createdBefore", "lastModifiedBefore", "masterDtStartBefore"}) {
+        assertThat(dialog.label("createdBefore")).hasText("Created more than (optional)");
+        for (String duration : new String[] {"Created more than", "Last modified more than", "Starting more than"}) {
             assertThat(dialog.root().getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName(duration + " unit"))).isVisible();
         }
         dialog.expectCommand("curl -XPOST /calendars/" + user + "?task=archive&eventsPerSecond=100");
+        // Without any criterion every event is archived: a warning, and a red button saying so
+        assertThat(dialog.root().getByRole(AriaRole.STATUS)).hasText(
+            "No criterion set: every event of " + user + " will be moved to an \"Archival\" calendar.");
+        assertThat(dialog.confirmButton("Archive all events")).isVisible();
+        assertThat(dialog.confirmButton()).hasCount(0);
 
-        dialog.duration("createdBefore", "30", "Days").choose("isRejected", "true").fill("eventsPerSecond", "50");
+        dialog.duration("createdBefore", "Created more than", "30", "Days").choose("isRejected", "Yes").fill("eventsPerSecond", "50");
         dialog.expectCommand("curl -XPOST /calendars/" + user + "?task=archive&createdBefore=30d&isRejected=true&eventsPerSecond=50");
-        app.confirm();
+        assertThat(dialog.root().getByRole(AriaRole.STATUS)).hasCount(0);
+        assertThat(dialog.confirmButton("Archive all events")).hasCount(0);
+        dialog.confirmButton().click();
+        assertThat(dialog.root()).isHidden();
 
         String taskId = runningTaskId(app);
         app.toast("Task created").getByRole(AriaRole.LINK).click();
@@ -94,12 +110,20 @@ class UserTasksTest extends CalendarAdminE2ETest {
 
         CalendarUserPage userPage = CalendarUserPage.open(app, user).expandTasks();
         TaskDialog dialog = userPage.runTask("Delete user data");
-        assertThat(dialog.title()).hasText("Delete User Data");
-        assertThat(dialog.root()).containsText("Delete user data: " + user);
-        Locator fromStep = dialog.root().getByLabel("Resume from step:");
+        assertThat(dialog.title()).hasText("Delete all data of " + user);
+        // What is lost, counted by the page, then the user to type before the data can be wiped
+        assertThat(dialog.root()).containsText("Calendars: 1");
+        assertThat(dialog.root()).containsText("Every calendar, event, address book, contact and booking link of this user will be deleted.");
+        dialog.root().getByText("Advanced: resume an interrupted deletion").click();
+        Locator fromStep = dialog.root().getByLabel("Resume from step", new Locator.GetByLabelOptions().setExact(true));
         assertThat(fromStep).hasValue("");
         assertThat(fromStep).hasAttribute("placeholder", "e.g. DavCalendarDeletionTaskStep");
-        app.confirm();
+        Locator delete = dialog.confirmButton("Delete user data");
+        assertThat(delete).isDisabled();
+        dialog.root().getByLabel("Type " + user + " to confirm").fill(user.toUpperCase());
+        assertThat(delete).isEnabled();
+        delete.click();
+        assertThat(dialog.root()).isHidden();
 
         String taskId = runningTaskId(app);
         assertThat(webAdmin.awaitTask(taskId).path("status").asText()).isEqualTo("completed");
@@ -119,7 +143,7 @@ class UserTasksTest extends CalendarAdminE2ETest {
         CalendarUserPage userPage = CalendarUserPage.open(app, user).expandTasks();
 
         TaskDialog dialog = userPage.runTask("Archive calendar events");
-        dialog.duration("createdBefore", "30", "Days").fill("eventsPerSecond", "abc");
+        dialog.duration("createdBefore", "Created more than", "30", "Days").fill("eventsPerSecond", "abc");
 
         // Holds the request to observe the pending state
         AtomicReference<Route> held = new AtomicReference<>();
@@ -138,7 +162,8 @@ class UserTasksTest extends CalendarAdminE2ETest {
         assertThat(backend.tasksMentioning(user)).isEmpty();
 
         dialog.fill("eventsPerSecond", "50");
-        app.confirm();
+        dialog.confirmButton().click();
+        assertThat(dialog.root()).isHidden();
         String taskId = runningTaskId(app);
         assertThat(webAdmin.awaitTask(taskId).path("status").asText()).isEqualTo("completed");
 

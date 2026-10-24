@@ -16,6 +16,7 @@ import com.linagora.admin.e2e.backend.CalendarFixtures;
 import com.linagora.admin.e2e.backend.WebAdmin;
 import com.linagora.admin.e2e.pages.AdminApp;
 import com.linagora.admin.e2e.pages.calendar.domains.CalendarDomainPage;
+import com.linagora.admin.e2e.pages.calendar.ops.TaskDialog;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Request;
@@ -58,23 +59,28 @@ class DomainTasksTest extends CalendarAdminE2ETest {
         Locator dialog = app.dialog();
         assertThat(dialog.getByRole(AriaRole.HEADING)).hasText("Republish Common Contacts");
         assertThat(dialog).containsText("Republish the common contacts of \"open-paas.org\" and of its users?");
-        Locator perSecond = dialog.getByLabel("contactsPerSecond:");
+        TaskDialog task = new TaskDialog(app);
+        // Parameters labelled in plain language, the raw key kept under the label
+        assertThat(task.label("contactsPerSecond")).hasText("Contacts per second (optional)");
+        assertThat(task.help("contactsPerSecond")).hasText("Lower it to reduce the load on the contacts server.");
+        assertThat(task.label("scope")).hasText("Scope (optional)");
+        Locator perSecond = task.param("contactsPerSecond");
         assertThat(perSecond).hasValue("100");
-        Locator scope = dialog.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("scope:"));
-        assertThat(scope).isVisible();
+        Locator scope = task.param("scope");
+        assertThat(scope).hasText("All");
 
         perSecond.fill("10");
-        scope.click();
-        page.getByRole(AriaRole.OPTION, new Page.GetByRoleOptions().setName("domain").setExact(true)).click();
-        assertThat(dialog).containsText("curl -XPOST /domains/open-paas.org/contacts?action=republish&contactsPerSecond=10&scope=domain");
+        task.choose("scope", "Domain contacts");
+        task.expectCommand("curl -XPOST /domains/open-paas.org/contacts?action=republish&contactsPerSecond=10&scope=domain");
 
-        Request request = page.waitForRequest(r -> r.url().contains("/contacts?action=republish"), app::clickConfirm);
+        Request request = page.waitForRequest(r -> r.url().contains("/contacts?action=republish"),
+            () -> task.confirmButton().click());
         assertThat(request.url()).endsWith("/domains/open-paas.org/contacts?action=republish&contactsPerSecond=10&scope=domain");
         // Environment limitation: 404, shown inside the dialog that keeps the edited values
         assertThat(app.dialogError()).containsText("can not be found");
         assertThat(dialog).isVisible();
         assertThat(perSecond).hasValue("10");
-        assertThat(scope).hasText("domain");
+        assertThat(scope).hasText("Domain contacts");
         app.cancel();
     }
 
@@ -87,10 +93,24 @@ class DomainTasksTest extends CalendarAdminE2ETest {
         assertThat(app.main().getByText("Deletes the data of every user belonging to this domain. "
             + "A task will be created to track progress.")).isVisible();
 
+        assertThat(detail.taskRow("Delete all users data")).containsText("Deletes data");
+        assertThat(detail.taskRow("Sync domain members")).not().containsText("Deletes data");
+
         detail.taskButton("Delete all users data").click();
-        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Delete All Users Data");
-        assertThat(app.dialog()).containsText("This will delete the data of ALL users belonging to \"" + domain + "\".");
-        app.confirm();
+        Locator dialog = app.dialog();
+        assertThat(dialog.getByRole(AriaRole.HEADING)).hasText("Delete All Users Data");
+        assertThat(dialog).containsText("This will delete the data of ALL users belonging to \"" + domain + "\".");
+        // Typing the domain is required before its data can be wiped, its case ignored
+        Locator typed = dialog.getByLabel("Type " + domain + " to confirm");
+        assertThat(typed).isFocused();
+        Locator delete = dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete data").setExact(true));
+        assertThat(delete).isDisabled();
+        typed.fill(domain.substring(1));
+        assertThat(delete).isDisabled();
+        typed.fill(domain.toUpperCase());
+        assertThat(delete).isEnabled();
+        delete.click();
+        assertThat(dialog).isHidden();
 
         Locator toast = app.toast("Task created");
         assertThat(toast).isVisible();
