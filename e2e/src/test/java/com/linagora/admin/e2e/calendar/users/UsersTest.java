@@ -160,6 +160,9 @@ class UsersTest extends CalendarAdminE2ETest {
         assertThat(detail.heading()).hasText(user);
         assertThat(detail.subtitle()).hasText("Not registered");
         assertThat(detail.notRegisteredPanel()).isVisible();
+        // No section to expand or collapse before the registration
+        assertThat(detail.expandAll()).hasCount(0);
+        assertThat(detail.collapseAll()).hasCount(0);
         assertThat(app.main().getByText("The user exists in the directory but is not registered on the DAV server yet.",
             new Locator.GetByTextOptions())).isVisible();
         assertThat(detail.sectionToggle("Calendars")).hasCount(0);
@@ -190,6 +193,7 @@ class UsersTest extends CalendarAdminE2ETest {
         app.expectToast("User \"" + user + "\" registered");
         assertThat(detail.notRegisteredPanel()).isHidden();
         assertThat(detail.subtitle()).hasText("Frank QA · Registered calendar user");
+        assertThat(detail.expandAll()).isVisible();
         assertThat(detail.sectionToggle("Calendars")).isVisible();
         assertThat(detail.sectionToggle("Address Books")).isVisible();
         assertThat(detail.sectionToggle("Booking Links")).isVisible();

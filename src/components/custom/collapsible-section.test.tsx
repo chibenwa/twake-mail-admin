@@ -25,6 +25,18 @@ beforeEach(() => window.localStorage.clear());
 afterEach(cleanup);
 
 describe("collapsible sections", () => {
+  it("offers Expand all and Collapse all only while the page has sections", () => {
+    const { rerender } = page(null);
+    expect(screen.queryByText("common.expandAll")).toBeNull();
+    expect(screen.queryByText("common.collapseAll")).toBeNull();
+
+    rerender(<SectionsProvider page="user"><ExpandCollapseAll /><Section id="quota-c" /></SectionsProvider>);
+    expect(screen.getByText("common.expandAll")).not.toBeNull();
+
+    rerender(<SectionsProvider page="user"><ExpandCollapseAll /></SectionsProvider>);
+    expect(screen.queryByText("common.expandAll")).toBeNull();
+  });
+
   it("exposes its state and points to its content once open", () => {
     page(<Section id="calendars-a" />);
     expect(toggle("calendars-a").getAttribute("aria-expanded")).toBe("false");

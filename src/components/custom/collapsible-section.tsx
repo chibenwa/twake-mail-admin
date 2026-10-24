@@ -78,6 +78,7 @@ export function SectionsProvider({ page, children }: { page: string; children: R
       const count = (sections.current.get(id) ?? 1) - 1;
       if (count <= 0) sections.current.delete(id);
       else sections.current.set(id, count);
+      setVersion((v) => v + 1);
     };
   }, []);
   return (
@@ -147,14 +148,23 @@ export function SectionToggle({ open, onToggle, controls, children }: SectionTog
   );
 }
 
+// Opens or closes a section of the enclosing SectionsProvider; nothing outside of one
+function useWriteSection(): (id: string, open: boolean) => void {
+  const page = useContext(SectionsContext)?.page;
+  return useCallback((id: string, open: boolean) => {
+    if (page) sectionFlag(page, id).write(open);
+  }, [page]);
+}
+
 /** "Expand all" / "Collapse all" for the sections of the enclosing SectionsProvider. */
 export function ExpandCollapseAll() {
   const { t } = useTranslation();
-  const context = useContext(SectionsContext);
+  const writeSection = useWriteSection();
   const sections = useContext(SectionIdsContext);
-  if (!context || !sections) return null;
+  // A page without sections (e.g. an unregistered user) has nothing to expand
+  if (!sections || sections.current.size === 0) return null;
   const setAll = (open: boolean) => {
-    for (const id of sections.current.keys()) sectionFlag(context.page, id).write(open);
+    for (const id of sections.current.keys()) writeSection(id, open);
   };
   return (
     <div className="flex gap-3 text-sm">
@@ -178,14 +188,14 @@ export function useSectionFacts(): Facts {
 
 /** Opens a section of the page and scrolls to it, e.g. from its summary strip. */
 export function useRevealSection(): (id: string) => void {
-  const context = useContext(SectionsContext);
+  const writeSection = useWriteSection();
   return useCallback((id: string) => {
-    if (context) sectionFlag(context.page, id).write(true);
+    writeSection(id, true);
     requestAnimationFrame(() => {
       const content = document.getElementById(contentIdOf(id));
       const toggle = document.querySelector<HTMLElement>(`[aria-controls="${contentIdOf(id)}"]`);
       (toggle ?? content)?.scrollIntoView({ behavior: "smooth", block: "start" });
       toggle?.focus({ preventScroll: true });
     });
-  }, [context]);
+  }, [writeSection]);
 }
