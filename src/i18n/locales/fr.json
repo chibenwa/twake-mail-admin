@@ -1700,7 +1700,17 @@
     "copyEventId": "Copier l'identifiant de l'événement",
     "redeliverAll": "Relivrer tous les événements",
     "eventLoadFailed": "Impossible de charger cet événement",
-    "clearError": "Erreur lors de la suppression des événements du groupe"
+    "clearError": "Erreur lors de la suppression des événements du groupe",
+    "redeliverParams": {
+      "limit": {
+        "label": "Nombre maximal d'événements",
+        "help": "Vide : tous les événements."
+      },
+      "maxRetries": {
+        "label": "Ignorer les événements réessayés plus de",
+        "help": "Les événements déjà relivrés autant de fois restent dans les lettres mortes. Vide : aucune limite."
+      }
+    }
   },
   "mailRepositories": {
     "pathLabel": "Chemin du dépôt",

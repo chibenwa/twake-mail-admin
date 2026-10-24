@@ -1700,7 +1700,17 @@
     "copyEventId": "Copiar el ID del evento",
     "redeliverAll": "Volver a entregar todos los eventos",
     "eventLoadFailed": "No se pudo cargar este evento",
-    "clearError": "Error al vaciar el grupo"
+    "clearError": "Error al vaciar el grupo",
+    "redeliverParams": {
+      "limit": {
+        "label": "Número máximo de eventos",
+        "help": "Vacío: todos los eventos."
+      },
+      "maxRetries": {
+        "label": "Omitir eventos reintentados más de",
+        "help": "Los eventos ya reentregados tantas veces permanecen en los eventos no entregados. Vacío: sin límite."
+      }
+    }
   },
   "mailRepositories": {
     "pathLabel": "Ruta del repositorio",

@@ -23,7 +23,14 @@ export function useRedeliverGroup() {
   const toastTaskCreated = useTaskCreatedToast();
 
   return async (group: string) => {
-    const params = REDELIVER_PARAM_KEYS.map((key) => ({ key, defaultValue: "", type: "input" as const }));
+    // Events stay in the dead letter: not the mails and repository the shared texts speak of
+    const params = REDELIVER_PARAM_KEYS.map((key) => ({
+      key,
+      defaultValue: "",
+      type: "input" as const,
+      labelKey: `eventDeadletter.redeliverParams.${key}.label`,
+      helpKey: `eventDeadletter.redeliverParams.${key}.help`,
+    }));
     const paramValues: Partial<Record<RedeliverParamKey, string>> = {};
     const findInvalidParam = (): RedeliverParamKey | undefined =>
       REDELIVER_PARAM_KEYS.find((key) => !isEmptyOrPositiveInteger(paramValues[key]));

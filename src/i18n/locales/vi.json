@@ -1697,7 +1697,17 @@
     "copyEventId": "Sao chép ID sự kiện",
     "redeliverAll": "Gửi lại tất cả sự kiện",
     "eventLoadFailed": "Không thể tải sự kiện này",
-    "clearError": "Lỗi khi xóa nhóm"
+    "clearError": "Lỗi khi xóa nhóm",
+    "redeliverParams": {
+      "limit": {
+        "label": "Số sự kiện tối đa",
+        "help": "Để trống: tất cả sự kiện."
+      },
+      "maxRetries": {
+        "label": "Bỏ qua sự kiện đã thử lại quá",
+        "help": "Các sự kiện đã được gửi lại số lần này sẽ ở lại trong hàng sự kiện lỗi. Để trống: không giới hạn."
+      }
+    }
   },
   "mailRepositories": {
     "pathLabel": "Đường dẫn kho",

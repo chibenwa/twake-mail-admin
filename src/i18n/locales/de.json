@@ -1700,7 +1700,17 @@
     "copyEventId": "Ereignis-ID kopieren",
     "redeliverAll": "Alle Ereignisse erneut zustellen",
     "eventLoadFailed": "Dieses Ereignis konnte nicht geladen werden",
-    "clearError": "Fehler beim Leeren der Gruppe"
+    "clearError": "Fehler beim Leeren der Gruppe",
+    "redeliverParams": {
+      "limit": {
+        "label": "Maximale Anzahl an Ereignissen",
+        "help": "Leer: alle Ereignisse."
+      },
+      "maxRetries": {
+        "label": "Ereignisse überspringen, die öfter wiederholt wurden als",
+        "help": "Bereits so oft erneut zugestellte Ereignisse bleiben in den unzustellbaren Ereignissen. Leer: keine Begrenzung."
+      }
+    }
   },
   "mailRepositories": {
     "pathLabel": "Repository-Pfad",

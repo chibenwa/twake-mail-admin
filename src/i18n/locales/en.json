@@ -1700,7 +1700,17 @@
     "copyEventId": "Copy event ID",
     "redeliverAll": "Redeliver all events",
     "eventLoadFailed": "Could not load this event",
-    "clearError": "Error clearing the group"
+    "clearError": "Error clearing the group",
+    "redeliverParams": {
+      "limit": {
+        "label": "Maximum number of events",
+        "help": "Empty: all events."
+      },
+      "maxRetries": {
+        "label": "Skip events retried more than",
+        "help": "Events already redelivered this many times stay in the dead letter. Empty: no limit."
+      }
+    }
   },
   "mailRepositories": {
     "pathLabel": "Repository path",

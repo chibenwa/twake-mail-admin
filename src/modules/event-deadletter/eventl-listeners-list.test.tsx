@@ -108,6 +108,20 @@ describe("event dead letter groups", () => {
     expect(screen.queryByText(/redeliver_group_events/)).toBeNull();
   });
 
+  it("describes the redeliver parameters in terms of events", async () => {
+    renderList();
+    await clickRedeliver();
+    await waitFor(() => expect(dialog.options).toBeDefined());
+    cleanup();
+
+    render(<>{dialog.options?.message}</>);
+
+    for (const key of ["limit", "maxRetries"]) {
+      expect(screen.getByText(`eventDeadletter.redeliverParams.${key}.help`)).not.toBeNull();
+    }
+    expect(screen.queryByText(/commonTasks\.params\.(limit|maxRetries)\.(label|help)/)).toBeNull();
+  });
+
   it("sends the limit and maxRetries typed in the redeliver dialog", async () => {
     dialog.accepted = true;
     dialog.typedValues = { limit: "1", maxRetries: " 3 " };

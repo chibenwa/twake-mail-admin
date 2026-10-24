@@ -1700,7 +1700,17 @@
     "copyEventId": "Copia l'ID dell'evento",
     "redeliverAll": "Riconsegna tutti gli eventi",
     "eventLoadFailed": "Impossibile caricare questo evento",
-    "clearError": "Errore durante lo svuotamento del gruppo"
+    "clearError": "Errore durante lo svuotamento del gruppo",
+    "redeliverParams": {
+      "limit": {
+        "label": "Numero massimo di eventi",
+        "help": "Vuoto: tutti gli eventi."
+      },
+      "maxRetries": {
+        "label": "Salta gli eventi ritentati più di",
+        "help": "Gli eventi già riconsegnati questo numero di volte restano tra gli eventi non consegnati. Vuoto: nessun limite."
+      }
+    }
   },
   "mailRepositories": {
     "pathLabel": "Percorso del repository",
