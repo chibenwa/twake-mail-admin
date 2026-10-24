@@ -9,7 +9,7 @@ import {
   reprocessMailRepository,
 } from "./api-client";
 import { useFetchData } from "@/hooks/use-fetch-data";
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useToast } from "@/hooks/use-toast";
 import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
@@ -18,6 +18,18 @@ import ConfirmTaskContent from "../common-tasks/components/confirm-task-content"
 import { useTranslation } from "react-i18next";
 import CreateMailRepositoryButton from "./create-mail-repository-button";
 import { toErrorMessage } from "@/components/custom/error-message";
+import ListToolbar from "@/components/custom/list-toolbar";
+import { cn } from "@/lib/utils";
+
+/**
+ * What a standard repository holds, keyed by the last segment of its path (address-error,
+ * error, relay-denied, rrt-error); an unknown repository gets no description.
+ */
+const describeKey = (repository: string) => `mailRepositories.describe.${repository.split("/").pop()}`;
+
+// The repositories holding mails first, as they are the ones to look at, then by path
+const byPriority = (a: { repository: string; size: number }, b: { repository: string; size: number }) =>
+  b.size - a.size || a.repository.localeCompare(b.repository);
 
 export default function MailRepositoriesList() {
   const { t } = useTranslation();
@@ -38,6 +50,7 @@ export default function MailRepositoriesList() {
   const [repositoriesWithSize, setRepositoriesWithSize] = useState<
     (MailRepository & { size: number })[]
   >([]);
+  const [search, setSearch] = useState("");
   const [, setIsLoadingInfo] = useState<boolean>(false);
   const [, setErrorInfo] = useState<string | null>(null);
 
@@ -66,6 +79,13 @@ export default function MailRepositoriesList() {
       fetchRepositoryInfo();
     }
   }, [mailRepositoriesResult, fetchRepositoryInfo]);
+
+  const shown = useMemo(() => {
+    const needle = search.trim().toLowerCase();
+    return repositoriesWithSize
+      .filter((r) => r.repository.toLowerCase().includes(needle))
+      .sort(byPriority);
+  }, [repositoriesWithSize, search]);
 
   // A refused task (e.g. WebAdmin answering 400) is reported instead of escaping as an unhandled rejection.
   const runTask = async (startTask: () => Promise<{ taskId: string }>) => {
@@ -167,6 +187,9 @@ export default function MailRepositoriesList() {
   return (
     <>
       <div>
+        <ListToolbar search={search} onSearch={setSearch} placeholder={t("mailRepositories.filterPlaceholder")}>
+          {canCreate && <CreateMailRepositoryButton onCreated={refresh} />}
+        </ListToolbar>
         {isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
             <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -174,24 +197,33 @@ export default function MailRepositoriesList() {
             <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
           </div>
         )}
-        <div className="flex items-center justify-between mt-4">
-          <p>{t("common.list")}</p>
-          {canCreate && <CreateMailRepositoryButton onCreated={refresh} />}
-        </div>
         <div>
-          {repositoriesWithSize?.map((result) => (
+          {shown.map((result) => (
             <div
               key={result.repository}
-              className="space-y-1 p-4 bg-white rounded-2 my-4 p-4 flex justify-between items-center transition-colors hover:bg-gray-50"
+              className="space-y-1 p-4 bg-white rounded-2 my-4 p-4 flex justify-between items-center gap-2 transition-colors hover:bg-gray-50"
             >
-              <div>
-                <h4 className="text-sm font-medium leading-none">
+              <div className="min-w-0">
+                <h4 className="text-sm font-medium leading-none break-all flex flex-wrap items-center gap-2">
                   <Link
                     to={`/mail-repositories/repository/${result.path}?page=1&size=${result.size}`}
+                    className="text-blue-600 hover:underline"
                   >
-                    {result.repository} ({result.size})
+                    {result.repository}
                   </Link>
+                  <span
+                    className={cn(
+                      "inline-block text-xs font-medium rounded-full px-2 py-0.5",
+                      result.size > 0 ? "bg-amber-100 text-amber-800" : "bg-gray-100 text-gray-600"
+                    )}
+                    aria-label={t("mailRepositories.mailCount", { count: result.size })}
+                  >
+                    {result.size}
+                  </span>
                 </h4>
+                {t(describeKey(result.repository), { defaultValue: "" }) && (
+                  <p className="text-sm text-gray-500 mt-1">{t(describeKey(result.repository))}</p>
+                )}
               </div>
 
               <div className="flex gap-2">

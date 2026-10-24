@@ -1715,7 +1715,15 @@
     "runTaskHeader": "Exécuter la tâche",
     "subtitle": "Les dépôts de courrier stockent les emails avec leur contexte de traitement, permettant de reprendre le traitement ultérieurement.",
     "detailKind": "Dépôt de mails",
-    "emptyActionDisabled": "Ce dépôt est vide"
+    "emptyActionDisabled": "Ce dépôt est vide",
+    "filterPlaceholder": "Filtrer les dépôts…",
+    "mailCount": "Courriers : {{count}}",
+    "describe": {
+      "address-error": "Courriers adressés à des adresses locales inexistantes.",
+      "error": "Courriers dont le traitement a échoué de façon inattendue.",
+      "relay-denied": "Courriers refusés car l'expéditeur n'est pas autorisé à relayer.",
+      "rrt-error": "Courriers dont la réécriture d'adresse (alias, redirection) a échoué."
+    }
   },
   "mappings": {
     "sourcePlaceholder": "Source (ex. utilisateur@domaine.com)",

@@ -1715,7 +1715,15 @@
     "runTaskHeader": "Run Task",
     "subtitle": "Mail repositories store emails along with their processing context, allowing to later resume the mail processing.",
     "detailKind": "Mail repository",
-    "emptyActionDisabled": "This repository is empty"
+    "emptyActionDisabled": "This repository is empty",
+    "filterPlaceholder": "Filter repositories…",
+    "mailCount": "Mails: {{count}}",
+    "describe": {
+      "address-error": "Mails to local addresses that do not exist.",
+      "error": "Mails whose processing failed unexpectedly.",
+      "relay-denied": "Mails refused because the sender may not relay.",
+      "rrt-error": "Mails whose address rewriting (alias, forward) failed."
+    }
   },
   "mappings": {
     "sourcePlaceholder": "Source (e.g. user@domain.com)",

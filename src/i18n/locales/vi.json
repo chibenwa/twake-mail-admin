@@ -1713,7 +1713,15 @@
     "runTaskHeader": "Chạy tác vụ",
     "subtitle": "Kho lưu trữ thư lưu các email cùng với bối cảnh xử lý của chúng, cho phép tiếp tục xử lý thư sau này.",
     "detailKind": "Kho thư",
-    "emptyActionDisabled": "Kho này trống"
+    "emptyActionDisabled": "Kho này trống",
+    "filterPlaceholder": "Lọc kho thư…",
+    "mailCount": "Thư: {{count}}",
+    "describe": {
+      "address-error": "Thư gửi tới các địa chỉ nội bộ không tồn tại.",
+      "error": "Thư bị lỗi xử lý ngoài dự kiến.",
+      "relay-denied": "Thư bị từ chối vì người gửi không được phép chuyển tiếp (relay).",
+      "rrt-error": "Thư bị lỗi ghi lại địa chỉ (bí danh, chuyển tiếp)."
+    }
   },
   "mappings": {
     "sourcePlaceholder": "Nguồn (vd. user@domain.com)",

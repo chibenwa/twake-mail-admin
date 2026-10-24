@@ -1715,7 +1715,15 @@
     "runTaskHeader": "Aufgabe ausführen",
     "subtitle": "Mail-Repositorys speichern E-Mails zusammen mit ihrem Verarbeitungskontext, sodass die Verarbeitung später fortgesetzt werden kann.",
     "detailKind": "Mail-Repository",
-    "emptyActionDisabled": "Dieses Repository ist leer"
+    "emptyActionDisabled": "Dieses Repository ist leer",
+    "filterPlaceholder": "Repositorys filtern…",
+    "mailCount": "E-Mails: {{count}}",
+    "describe": {
+      "address-error": "E-Mails an lokale Adressen, die nicht existieren.",
+      "error": "E-Mails, deren Verarbeitung unerwartet fehlgeschlagen ist.",
+      "relay-denied": "E-Mails, die abgelehnt wurden, weil der Absender nicht weiterleiten darf.",
+      "rrt-error": "E-Mails, bei denen die Adressumschreibung (Alias, Weiterleitung) fehlgeschlagen ist."
+    }
   },
   "mappings": {
     "sourcePlaceholder": "Quelle (z. B. user@domain.com)",

@@ -1715,7 +1715,15 @@
     "runTaskHeader": "Esegui attività",
     "subtitle": "I repository di posta conservano le email insieme al loro contesto di elaborazione, consentendo di riprenderne l'elaborazione in seguito.",
     "detailKind": "Repository di posta",
-    "emptyActionDisabled": "Questo repository è vuoto"
+    "emptyActionDisabled": "Questo repository è vuoto",
+    "filterPlaceholder": "Filtra i repository…",
+    "mailCount": "Email: {{count}}",
+    "describe": {
+      "address-error": "Email indirizzate a indirizzi locali inesistenti.",
+      "error": "Email la cui elaborazione non è riuscita in modo imprevisto.",
+      "relay-denied": "Email rifiutate perché il mittente non è autorizzato all'inoltro (relay).",
+      "rrt-error": "Email la cui riscrittura dell'indirizzo (alias, inoltro) non è riuscita."
+    }
   },
   "mappings": {
     "sourcePlaceholder": "Origine (ad es. user@domain.com)",

@@ -1715,7 +1715,15 @@
     "runTaskHeader": "Ejecutar tarea",
     "subtitle": "Los repositorios de correo almacenan los correos junto con su contexto de procesamiento, lo que permite reanudar su procesamiento más adelante.",
     "detailKind": "Repositorio de correo",
-    "emptyActionDisabled": "Este repositorio está vacío"
+    "emptyActionDisabled": "Este repositorio está vacío",
+    "filterPlaceholder": "Filtrar repositorios…",
+    "mailCount": "Correos: {{count}}",
+    "describe": {
+      "address-error": "Correos dirigidos a direcciones locales que no existen.",
+      "error": "Correos cuyo procesamiento falló de forma inesperada.",
+      "relay-denied": "Correos rechazados porque el remitente no puede retransmitir.",
+      "rrt-error": "Correos cuya reescritura de dirección (alias, reenvío) falló."
+    }
   },
   "mappings": {
     "sourcePlaceholder": "Origen (p. ej. user@domain.com)",

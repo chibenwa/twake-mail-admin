@@ -120,9 +120,36 @@ describe("mail repositories list: links", () => {
       </MemoryRouter>
     );
 
-    expect((await screen.findByRole("link", { name: "var/mail/error (3)" })).getAttribute("href")).toBe(
+    expect((await screen.findByRole("link", { name: "var/mail/error" })).getAttribute("href")).toBe(
       "/mail-repositories/repository/var%2Fmail%2Ferror?page=1&size=3"
     );
+  });
+});
+
+describe("mail repositories list: order and filter", () => {
+  afterEach(() => {
+    REPOSITORIES.splice(1);
+  });
+
+  it("lists the repositories holding mails first, then filters them on their path", async () => {
+    REPOSITORIES.push(
+      { repository: "var/mail/address-error", path: "var%2Fmail%2Faddress-error" },
+      { repository: "var/mail/relay-denied", path: "var%2Fmail%2Frelay-denied" },
+    );
+    api.getRepositoryInfo.mockImplementation(async (path: string) => ({ size: path.includes("relay") ? 2 : 0 }));
+    render(
+      <MemoryRouter>
+        <MailRepositoriesList />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => expect(screen.getAllByRole("link").map((l) => l.textContent)).toEqual([
+      "var/mail/relay-denied", "var/mail/address-error", "var/mail/error",
+    ]));
+
+    fireEvent.change(screen.getByLabelText("mailRepositories.filterPlaceholder"), { target: { value: "error" } });
+
+    expect(screen.getAllByRole("link").map((l) => l.textContent)).toEqual(["var/mail/address-error", "var/mail/error"]);
   });
 });
 
