@@ -1262,6 +1262,7 @@
     "cancelTitle": "Hủy tác vụ",
     "cancelConfirm": "Hủy \"{{name}}\"{{target}}? (tác vụ {{taskId}})",
     "taskCancelled": "Đã hủy tác vụ",
+    "alreadyEnded": "Không hủy: tác vụ đã kết thúc ({{status}})",
     "errorCancelling": "Lỗi khi hủy tác vụ",
     "empty": "Không tìm thấy tác vụ nào khớp với bộ lọc hiện tại.",
     "detailTitle": "{{name}}",

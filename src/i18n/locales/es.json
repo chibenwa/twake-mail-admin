@@ -1265,6 +1265,7 @@
     "cancelTitle": "Cancelar tarea",
     "cancelConfirm": "¿Cancelar «{{name}}»{{target}}? (tarea {{taskId}})",
     "taskCancelled": "Tarea cancelada",
+    "alreadyEnded": "No cancelada: la tarea ya había terminado ({{status}})",
     "errorCancelling": "Error al cancelar la tarea",
     "empty": "Ninguna tarea coincide con los filtros actuales.",
     "detailTitle": "{{name}}",

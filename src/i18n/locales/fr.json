@@ -1265,6 +1265,7 @@
     "cancelTitle": "Annuler la tâche",
     "cancelConfirm": "Annuler « {{name}} »{{target}} ? (tâche {{taskId}})",
     "taskCancelled": "Tâche annulée",
+    "alreadyEnded": "Non annulée : la tâche était déjà terminée ({{status}})",
     "errorCancelling": "Erreur lors de l'annulation",
     "empty": "Aucune tâche ne correspond aux filtres.",
     "detailTitle": "{{name}}",

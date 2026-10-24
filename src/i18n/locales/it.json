@@ -1265,6 +1265,7 @@
     "cancelTitle": "Annulla attività",
     "cancelConfirm": "Annullare «{{name}}»{{target}}? (attività {{taskId}})",
     "taskCancelled": "Attività annullata",
+    "alreadyEnded": "Non annullata: l'attività era già terminata ({{status}})",
     "errorCancelling": "Errore durante l'annullamento dell'attività",
     "empty": "Nessuna attività corrisponde ai filtri attuali.",
     "detailTitle": "{{name}}",

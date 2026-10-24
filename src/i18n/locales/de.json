@@ -1265,6 +1265,7 @@
     "cancelTitle": "Aufgabe abbrechen",
     "cancelConfirm": "„{{name}}“{{target}} abbrechen? (Aufgabe {{taskId}})",
     "taskCancelled": "Aufgabe abgebrochen",
+    "alreadyEnded": "Nicht abgebrochen: Die Aufgabe war bereits beendet ({{status}})",
     "errorCancelling": "Fehler beim Abbrechen der Aufgabe",
     "empty": "Keine Aufgaben entsprechen den aktuellen Filtern.",
     "detailTitle": "{{name}}",

@@ -2,7 +2,7 @@ import { useFetchData } from "@/hooks/use-fetch-data";
 import { useCallback, useEffect } from "react";
 import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { cancelTask, getTaskDetail } from "../api-client";
+import { getTaskDetail } from "../api-client";
 import { useDomain } from "@/modules/domain-admin/domain-context";
 import { Button } from "@/components/ui/button";
 import { CircleStop, Loader2, RefreshCcw } from "lucide-react";
@@ -11,7 +11,7 @@ import { Tooltip } from "@radix-ui/react-tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { TaskDetailResponse, TaskStatus } from "../types";
-import { cancelConfirmMessage, isRunning, TaskDetails, TaskSummary, taskHeading } from "@/modules/tasks/task-summary";
+import { cancelAndReport, cancelConfirmMessage, isRunning, TaskDetails, TaskSummary, taskHeading } from "@/modules/tasks/task-summary";
 
 // A running task is read again this often, until it is over
 const AUTO_REFRESH_MS = 2000;
@@ -61,8 +61,7 @@ export default function TaskDetail() {
     });
     if (!confirmed) return;
     try {
-      await cancelTask(id!, domain);
-      toast({ title: t("tasks.taskCancelled") });
+      toast({ title: await cancelAndReport(t, id!, domain) });
       await refresh();
     } catch (error) {
       toast({

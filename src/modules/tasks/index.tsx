@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { listTasks, ListTasksParams } from "./api-client";
-import { cancelTask } from "@/modules/common-tasks/api-client";
 import { TaskDetailResponse, TaskStatus } from "@/modules/common-tasks/types";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
@@ -15,7 +14,7 @@ import Header from "@/components/custom/header";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaginationControls } from "@/components/custom/pagination-controls";
-import { cancelConfirmMessage, endDate, formatDate, shortTaskId, statusLabel, STATUS_COLORS, TaskDetails, taskTarget, TaskTarget, TaskSummary, taskHeading, taskTypeLabel } from "./task-summary";
+import { cancelAndReport, cancelConfirmMessage, endDate, formatDate, shortTaskId, statusLabel, STATUS_COLORS, TaskDetails, taskTarget, TaskTarget, TaskSummary, taskHeading, taskTypeLabel } from "./task-summary";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -145,8 +144,7 @@ export default function Tasks() {
     });
     if (!confirmed) return;
     try {
-      await cancelTask(task.taskId);
-      toast({ title: t("tasks.taskCancelled") });
+      toast({ title: await cancelAndReport(t, task.taskId) });
       await refresh();
     } catch (err) {
       toast({ title: t("tasks.errorCancelling"), description: <ErrorDisplayer error={err} /> });

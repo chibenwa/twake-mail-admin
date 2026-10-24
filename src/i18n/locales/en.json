@@ -1265,6 +1265,7 @@
     "cancelTitle": "Cancel Task",
     "cancelConfirm": "Cancel \"{{name}}\"{{target}}? (task {{taskId}})",
     "taskCancelled": "Task cancelled",
+    "alreadyEnded": "Not cancelled: the task had already ended ({{status}})",
     "errorCancelling": "Error cancelling task",
     "empty": "No tasks found matching the current filters.",
     "detailTitle": "{{name}}",

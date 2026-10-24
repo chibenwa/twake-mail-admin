@@ -1268,6 +1268,7 @@
     "cancelTitle": "Отменить задачу",
     "cancelConfirm": "Отменить «{{name}}»{{target}}? (задача {{taskId}})",
     "taskCancelled": "Задача отменена",
+    "alreadyEnded": "Не отменена: задача уже завершилась ({{status}})",
     "errorCancelling": "Ошибка при отмене задачи",
     "empty": "Нет задач, соответствующих текущим фильтрам.",
     "detailTitle": "{{name}}",

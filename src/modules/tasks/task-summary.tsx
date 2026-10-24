@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { TaskDetailResponse, TaskStatus } from "@/modules/common-tasks/types";
+import { cancelTask, getTaskDetail } from "@/modules/common-tasks/api-client";
 import { currentLocale } from "@/i18n/locale";
 import UserLink from "@/components/custom/user-link";
 
@@ -34,6 +35,23 @@ const STATUS_LABEL_KEYS: Record<string, string> = {
 
 export const statusLabel = (t: TFunction, status: string): string =>
   STATUS_LABEL_KEYS[status] ? t(STATUS_LABEL_KEYS[status]) : status;
+
+/**
+ * Cancels a task, then says what became of it: WebAdmin accepts cancelling a task that ended
+ * meanwhile, which stays completed or failed. Throws when the cancellation is refused.
+ */
+export async function cancelAndReport(t: TFunction, id: string, domain?: string): Promise<string> {
+  await cancelTask(id, domain);
+  try {
+    const { status } = await getTaskDetail(id, domain);
+    if (status === TaskStatus.COMPLETED || status === TaskStatus.FAILED) {
+      return t("tasks.alreadyEnded", { status: statusLabel(t, status) });
+    }
+  } catch {
+    // Not readable: the cancellation itself was accepted
+  }
+  return t("tasks.taskCancelled");
+}
 
 // Still running: a page showing it refreshes itself until it is over
 export const isRunning = (status: TaskStatus): boolean =>
