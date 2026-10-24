@@ -47,8 +47,9 @@ class CalendarResourcesTest extends CalendarAdminE2ETest {
 
         ResourcesSection section = CalendarDomainPage.open(app, DOMAIN).resources().openCreateForm();
 
-        // The text boxes are named, not only by their placeholder
+        // A modal, its fields named, not only by their placeholder
         assertThat(section.nameBox()).isVisible();
+        assertThat(section.nameBox()).isFocused();
         assertThat(section.descriptionBox()).isVisible();
         assertThat(section.creatorBox()).isVisible();
         assertThat(section.administratorsBox()).isVisible();
@@ -68,7 +69,7 @@ class CalendarResourcesTest extends CalendarAdminE2ETest {
 
         section.createButton().click();
         app.expectToast("Calendar resource created");
-        assertThat(section.nameBox()).isHidden();
+        assertThat(section.form()).isHidden();
 
         JsonNode created = backend.activeResourceNamed(name).orElseThrow();
         backend.track(created.path("id").asText());
@@ -98,7 +99,7 @@ class CalendarResourcesTest extends CalendarAdminE2ETest {
         ResourcesSection section = CalendarDomainPage.open(app, DOMAIN).resources().search(name);
         section.clickDelete(name);
         assertThat(app.dialog()).containsText("Delete calendar resource \"" + name + "\"?");
-        app.confirm();
+        CalendarDomainPage.confirmWith(app, "Delete");
 
         app.expectToast("Calendar resource deleted");
         assertThat(section.link(name)).hasCount(0);
@@ -134,13 +135,13 @@ class CalendarResourcesTest extends CalendarAdminE2ETest {
         section = CalendarDomainPage.open(app, DOMAIN).resources().search(nameless);
         section.clickDelete(nameless);
         assertThat(app.dialog()).containsText("Delete calendar resource \"" + nameless + "\"?");
-        app.confirm();
+        CalendarDomainPage.confirmWith(app, "Delete");
         app.expectToast("Calendar resource deleted");
         assertThat(section.link(nameless)).hasCount(0);
 
         section.search(oddName);
         section.clickDelete(oddName);
-        app.confirm();
+        CalendarDomainPage.confirmWith(app, "Delete");
         assertThat(section.link(oddName)).hasCount(0);
 
         assertThat(backend.isActive(nameless)).isFalse();

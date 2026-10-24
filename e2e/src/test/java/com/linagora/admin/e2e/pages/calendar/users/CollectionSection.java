@@ -26,11 +26,14 @@ public class CollectionSection {
     private final AdminApp app;
     private final Locator toggle;
     private final String createTitle;
+    private final int depth;
 
-    CollectionSection(AdminApp app, Locator toggle, String createTitle) {
+    /** {@code depth}: how many blocks up from the toggle the section block is. */
+    CollectionSection(AdminApp app, Locator toggle, String createTitle, int depth) {
         this.app = app;
         this.toggle = toggle;
         this.createTitle = createTitle;
+        this.depth = depth;
     }
 
     /** The section title, "Calendars (2)". */
@@ -38,15 +41,36 @@ public class CollectionSection {
         return toggle;
     }
 
-    /** The innermost block holding the title and, once expanded, the rows. */
+    /** The block of the section: its title and, once expanded, the rows. */
     public Locator root() {
-        return app.main().locator("div").filter(new Locator.FilterOptions().setHas(toggle)).last();
+        return toggle.locator("xpath=ancestor::div[" + depth + "]");
     }
 
+    /** Opens the section if it is collapsed: its open state is remembered across pages and reloads. */
     public CollectionSection expand() {
-        toggle.click();
+        if (!isExpanded()) {
+            toggle.click();
+        }
+        assertThat(toggle).hasAttribute("aria-expanded", "true");
         assertThat(createButton()).isVisible();
         return this;
+    }
+
+    public CollectionSection collapse() {
+        if (isExpanded()) {
+            toggle.click();
+        }
+        assertThat(toggle).hasAttribute("aria-expanded", "false");
+        return this;
+    }
+
+    private boolean isExpanded() {
+        return "true".equals(toggle.getAttribute("aria-expanded"));
+    }
+
+    /** The rows, shown while the section is expanded. */
+    public Locator content() {
+        return root().locator("[id$='-content']");
     }
 
     public Locator createButton() {
@@ -96,9 +120,21 @@ public class CollectionSection {
         return rowsIn(group(category), name).first();
     }
 
+    /** The innermost block around the name holding an action button (not only the "Shared with" chip next to the name). */
     public static Locator rowsIn(Locator scope, String name) {
         return scope.getByText(name, new Locator.GetByTextOptions().setExact(true))
-            .locator("xpath=ancestor::div[.//button][1]");
+            .locator("xpath=ancestor::div[.//button[not(starts-with(normalize-space(.), 'Shared with'))]][1]");
+    }
+
+    /** The "Shared with n" chip of a row, listing the sharees on hover and opening the sharing dialog. */
+    public static Locator sharedWith(Locator row) {
+        return row.getByText(Pattern.compile("^Shared with \\d+$"));
+    }
+
+    /** Confirms the destructive confirmation dialog open, by its verb ("Delete"), and waits for it to close. */
+    public static void confirmWith(AdminApp app, String verb) {
+        button(app.dialog(), verb).click();
+        assertThat(app.dialog()).isHidden();
     }
 
     public static Locator button(Locator scope, String title) {

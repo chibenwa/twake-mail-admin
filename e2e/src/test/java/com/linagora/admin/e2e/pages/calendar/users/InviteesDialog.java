@@ -42,8 +42,9 @@ public class InviteesDialog {
         return dialog().getByRole(AriaRole.HEADING).first();
     }
 
+    /** A user field: a combobox suggesting the users of the server. */
     public Locator email() {
-        return dialog().getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName(noun + " email").setExact(true));
+        return dialog().getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName(noun + " email").setExact(true));
     }
 
     public Locator right() {

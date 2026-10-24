@@ -42,20 +42,23 @@ class UserCalendarDelegationTest extends CalendarAdminE2ETest {
         UserDetailPage detail = new UserDetailPage(app).open(alice);
         CollectionSection calendars = detail.calendars().expand();
 
-        CollectionSection.button(calendars.row("#default"), "Delegation (invitees)").click();
+        CollectionSection.button(calendars.row("Main calendar"), "Delegation (invitees)").click();
         InviteesDialog dialog = InviteesDialog.delegation(app);
-        assertThat(dialog.title()).hasText("Delegation (invitees) — #default");
+        assertThat(dialog.title()).hasText("Delegation (invitees) — Main calendar");
         assertThat(dialog.hint("No invitee.")).isVisible();
         assertThat(dialog.applyButton()).isDisabled();
         dialog.stage(bob, "read-write");
         assertThat(dialog.applyButton()).isEnabled();
         dialog.apply("Invitees updated");
+        // The row tells who the calendar is shared with
+        assertThat(CollectionSection.sharedWith(calendars.row("Main calendar"))).hasText("Shared with 1");
 
         assertThat(inviteAccess(seeds, alice, bob)).contains(3);
 
         detail.open(bob);
         calendars.expand();
-        Locator delegated = calendars.rowInGroup("Delegated", "#default");
+        // Named after its owner
+        Locator delegated = calendars.rowInGroup("Delegated", "Main calendar of " + alice);
         assertThat(delegated).isVisible();
         Locator owner = delegated.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(alice).setExact(true));
         assertThat(delegated.getByText("owner:")).isVisible();
@@ -65,7 +68,7 @@ class UserCalendarDelegationTest extends CalendarAdminE2ETest {
         }
         owner.click();
         assertThat(page).hasURL(Pattern.compile("/users/user/" + JsRegex.quote(WebAdmin.encode(alice)) + "$"));
-        assertThat(detail.usernameLabel()).hasText("Username: " + alice);
+        assertThat(detail.heading()).hasText(alice);
     }
 
     @Test
@@ -77,10 +80,12 @@ class UserCalendarDelegationTest extends CalendarAdminE2ETest {
         seeds.delegate(alice, seeds.mainCalendarId(alice), bob, "dav:read-write");
         UserDetailPage detail = new UserDetailPage(app).open(alice);
         CollectionSection calendars = detail.calendars().expand();
-        Locator delegation = CollectionSection.button(calendars.row("#default"), "Delegation (invitees)");
+        Locator delegation = CollectionSection.button(calendars.row("Main calendar"), "Delegation (invitees)");
         InviteesDialog dialog = InviteesDialog.delegation(app);
 
-        delegation.click();
+        // The "Shared with" chip of the row opens the same dialog
+        CollectionSection.sharedWith(calendars.row("Main calendar")).click();
+        assertThat(dialog.title()).hasText("Delegation (invitees) — Main calendar");
         assertThat(dialog.rightOf(bob)).hasValue("read-write");
         dialog.type(bob, "Already invited");
         assertThat(dialog.addButton()).isDisabled();
@@ -101,11 +106,12 @@ class UserCalendarDelegationTest extends CalendarAdminE2ETest {
         assertThat(dialog.rightOf(bob)).isEnabled();
         dialog.removeButton(bob).click();
         dialog.apply("Invitees updated");
+        assertThat(CollectionSection.sharedWith(calendars.row("Main calendar"))).hasCount(0);
         assertThat(inviteAccess(seeds, alice, bob)).isEmpty();
 
         detail.open(bob);
         calendars.expand();
-        assertThat(calendars.rowInGroup("Owner", "#default")).isVisible();
+        assertThat(calendars.rowInGroup("Owner", "Main calendar")).isVisible();
         assertThat(calendars.groupHeading("Delegated")).hasCount(0);
     }
 
@@ -121,7 +127,7 @@ class UserCalendarDelegationTest extends CalendarAdminE2ETest {
             }
         });
         CollectionSection calendars = new UserDetailPage(app).open(alice).calendars().expand();
-        CollectionSection.button(calendars.row("#default"), "Delegation (invitees)").click();
+        CollectionSection.button(calendars.row("Main calendar"), "Delegation (invitees)").click();
         InviteesDialog dialog = InviteesDialog.delegation(app);
 
         dialog.type(alice, "This is the owner of the calendar");
@@ -169,7 +175,7 @@ class UserCalendarDelegationTest extends CalendarAdminE2ETest {
 
         // Delete: only the sharee's copy is removed
         CollectionSection.button(calendars.rowInGroup("Delegated", renamed), "Delete calendar").click();
-        app.confirm();
+        CollectionSection.confirmWith(app, "Delete");
         app.expectToast("Calendar deleted");
         assertThat(calendars.groupHeading("Delegated")).hasCount(0);
         assertThat(seeds.calendars(sharee)).noneMatch(c -> c.path("dav:name").asText().startsWith(name));

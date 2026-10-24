@@ -23,7 +23,7 @@ public class ResourcesSection {
     }
 
     void expand() {
-        toggle().click();
+        CalendarDomainPage.open(toggle());
         assertThat(searchBox()).isVisible();
     }
 
@@ -43,45 +43,55 @@ public class ResourcesSection {
         return root().getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName(name).setExact(true));
     }
 
-    // --- creation form
+    // --- creation form: the "+" next to the title opens it in a modal
 
     public ResourcesSection openCreateForm() {
         button("Add calendar resource").click();
-        assertThat(root().getByText("New Calendar Resource", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(form()).isVisible();
         return this;
     }
 
+    /** The "New Calendar Resource" modal. */
+    public Locator form() {
+        return page.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("New Calendar Resource").setExact(true));
+    }
+
+    private Locator formField(AriaRole role, String name) {
+        return form().getByRole(role, new Locator.GetByRoleOptions().setName(name).setExact(true));
+    }
+
     public Locator nameBox() {
-        return textbox("Resource name");
+        return formField(AriaRole.TEXTBOX, "Name *");
     }
 
     public Locator descriptionBox() {
-        return textbox("Description");
+        return formField(AriaRole.TEXTBOX, "Description");
     }
 
+    /** A user field: a combobox suggesting the users of the server. */
     public Locator creatorBox() {
-        return textbox("Creator *");
+        return formField(AriaRole.COMBOBOX, "Creator *");
     }
 
     public Locator administratorsBox() {
-        return textbox("Administrators");
+        return formField(AriaRole.COMBOBOX, "Administrators");
     }
 
     public Locator addAdministratorButton() {
-        return button("Add");
+        return formField(AriaRole.BUTTON, "Add");
     }
 
     public Locator createButton() {
-        return button("Create");
+        return formField(AriaRole.BUTTON, "Create");
     }
 
     public ResourceIconPicker iconPicker() {
-        return new ResourceIconPicker(root());
+        return new ResourceIconPicker(form());
     }
 
     /** A staged administrator of the creation form. */
     public Locator stagedAdministrator(String email) {
-        return root().locator("div").filter(new Locator.FilterOptions().setHasText(email))
+        return form().locator("div").filter(new Locator.FilterOptions().setHasText(email))
             .filter(new Locator.FilterOptions().setHas(page.getByRole(AriaRole.BUTTON,
                 new Page.GetByRoleOptions().setName("Remove administrator").setExact(true))))
             .last();

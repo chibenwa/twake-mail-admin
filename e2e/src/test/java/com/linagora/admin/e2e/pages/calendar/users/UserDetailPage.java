@@ -24,7 +24,7 @@ public class UserDetailPage {
 
     public UserDetailPage open(String username) {
         app.open(path(username));
-        assertThat(usernameLabel()).hasText("Username: " + username);
+        assertThat(heading()).hasText(username);
         return this;
     }
 
@@ -36,16 +36,33 @@ public class UserDetailPage {
         return app.page();
     }
 
-    public Locator title() {
-        return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("User Details").setExact(true));
+    /** The page is headed by the address of the user (h1). */
+    public Locator heading() {
+        return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(1));
     }
 
-    public Locator usernameLabel() {
-        return app.main().getByText(Pattern.compile("^Username: "));
+    /** Under the heading: "Firstname Lastname · Registered calendar user", or "Not registered". */
+    public Locator subtitle() {
+        return heading().locator("xpath=following-sibling::p[1]");
     }
 
-    public Locator backButton() {
-        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Back").setExact(true));
+    /** The breadcrumb link back to the Users list. */
+    public Locator breadcrumb() {
+        return app.main().getByRole(AriaRole.NAVIGATION, new Locator.GetByRoleOptions().setName("Breadcrumb"))
+            .getByRole(AriaRole.LINK);
+    }
+
+    /** A chip of the summary strip ("Calendars: 1"), opening and scrolling to its section. */
+    public Locator summaryChip(String text) {
+        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(text).setExact(true));
+    }
+
+    public Locator expandAll() {
+        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Expand all").setExact(true));
+    }
+
+    public Locator collapseAll() {
+        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Collapse all").setExact(true));
     }
 
     /** The collapsible title of a section, "Calendars (1)": its name starts with {@code title}. */
@@ -56,11 +73,12 @@ public class UserDetailPage {
     }
 
     public CollectionSection calendars() {
-        return new CollectionSection(app, sectionToggle("Calendars"), "Create calendar");
+        return new CollectionSection(app, sectionToggle("Calendars"), "Create calendar", 1);
     }
 
     public CollectionSection addressBooks() {
-        return new CollectionSection(app, sectionToggle("Address Books"), "Create address book");
+        // The "+" sits next to the title, in a row of its own
+        return new CollectionSection(app, sectionToggle("Address Books"), "Create address book", 2);
     }
 
     // Unregistered user

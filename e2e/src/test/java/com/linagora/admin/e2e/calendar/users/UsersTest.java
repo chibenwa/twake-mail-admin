@@ -46,6 +46,8 @@ class UsersTest extends CalendarAdminE2ETest {
 
         list.searchFor(base);
         assertThat(list.userLinks()).hasText(new String[] {alice, charlie});
+        // The search lives in the URL
+        assertThat(page).hasURL(Pattern.compile("/users\\?q=" + JsRegex.quote(base) + "$"));
 
         list.searchFor(base + "-ch");
         assertThat(list.userLinks()).hasText(new String[] {charlie});
@@ -68,6 +70,8 @@ class UsersTest extends CalendarAdminE2ETest {
 
         domains.selectOption(new SelectOption().setLabel(CalendarFixtures.DOMAIN));
         assertThat(list.userLinks()).hasText(new String[] {alice, charlie});
+        // So does the domain filter
+        assertThat(page).hasURL(Pattern.compile("[?&]domain=" + JsRegex.quote(CalendarFixtures.DOMAIN) + "(&|$)"));
         domains.selectOption(new SelectOption().setLabel(otherDomain));
         assertThat(list.noMatch(base)).isVisible();
         domains.selectOption(new SelectOption().setLabel("All domains"));
@@ -75,7 +79,15 @@ class UsersTest extends CalendarAdminE2ETest {
 
         list.userLink(charlie).click();
         assertThat(page).hasURL(Pattern.compile("/users/user/" + JsRegex.quote(WebAdmin.encode(charlie)) + "$"));
-        assertThat(new UserDetailPage(app).usernameLabel()).hasText("Username: " + charlie);
+        UserDetailPage detail = new UserDetailPage(app);
+        assertThat(detail.heading()).hasText(charlie);
+        assertThat(detail.subtitle()).hasText("Not registered");
+
+        // Back from the user page restores the search
+        page.goBack();
+        assertThat(list.search()).hasValue(base);
+        assertThat(list.domainSelector()).hasValue("");
+        assertThat(list.userLinks()).hasText(new String[] {alice, charlie});
     }
 
     @Test
@@ -86,17 +98,45 @@ class UsersTest extends CalendarAdminE2ETest {
         list.searchFor(user);
         list.userLink(user).click();
 
+        // Headed by the user, a breadcrumb leading back to the list
         UserDetailPage detail = new UserDetailPage(app);
-        assertThat(detail.title()).isVisible();
-        assertThat(detail.usernameLabel()).hasText("Username: " + user);
-        assertThat(detail.backButton()).isVisible();
+        String localPart = user.substring(0, user.indexOf('@'));
+        assertThat(detail.heading()).hasText(user);
+        assertThat(detail.subtitle()).hasText(localPart + " " + localPart + " · Registered calendar user");
+        assertThat(detail.breadcrumb()).hasText("Users");
+        assertThat(detail.breadcrumb()).hasAttribute("href", "/users");
+
+        // The summary strip counts what the sections hold
+        assertThat(detail.summaryChip("Calendars: 1")).isVisible();
+        assertThat(detail.summaryChip("Address Books: 2")).isVisible();
+        assertThat(detail.summaryChip("Booking Links: 0")).isVisible();
         detail.calendars().expectCount(1);
         detail.addressBooks().expectCount(2);
         assertThat(detail.sectionToggle("Booking Links")).hasText(Pattern.compile("\\(0\\)$"));
         assertThat(detail.sectionToggle("Tasks")).isVisible();
-        // Collapsed
+
+        // Calendars and Address Books are open on a first visit, the other sections collapsed
+        assertThat(detail.calendars().createButton()).isVisible();
+        assertThat(detail.addressBooks().row("My contacts")).isVisible();
+        assertThat(detail.sectionToggle("Booking Links")).hasAttribute("aria-expanded", "false");
+        assertThat(detail.sectionToggle("Tasks")).hasAttribute("aria-expanded", "false");
+
+        // Collapse all is remembered across a reload; a chip of the strip opens its section
+        detail.collapseAll().click();
         assertThat(detail.calendars().createButton()).isHidden();
-        assertThat(detail.addressBooks().createButton()).isHidden();
+        assertThat(detail.addressBooks().rows("My contacts")).hasCount(0);
+        page.reload();
+        detail.calendars().expectCount(1);
+        assertThat(detail.calendars().toggle()).hasAttribute("aria-expanded", "false");
+        assertThat(detail.addressBooks().toggle()).hasAttribute("aria-expanded", "false");
+        detail.summaryChip("Calendars: 1").click();
+        assertThat(detail.calendars().createButton()).isVisible();
+        assertThat(detail.addressBooks().toggle()).hasAttribute("aria-expanded", "false");
+        detail.expandAll().click();
+        assertThat(detail.addressBooks().row("My contacts")).isVisible();
+        assertThat(detail.sectionToggle("Booking Links")).hasAttribute("aria-expanded", "true");
+        assertThat(detail.sectionToggle("Tasks")).hasAttribute("aria-expanded", "true");
+
         // No mail section
         for (String mailSection : new String[] {"Mailboxes", "Quota", "Aliases", "Forwards", "Vacation", "JMAP Identities",
             "Delegated Users", "Mappings", "Labels", "Network Channels"}) {
@@ -117,6 +157,8 @@ class UsersTest extends CalendarAdminE2ETest {
         });
         UserDetailPage detail = new UserDetailPage(app).open(user);
 
+        assertThat(detail.heading()).hasText(user);
+        assertThat(detail.subtitle()).hasText("Not registered");
         assertThat(detail.notRegisteredPanel()).isVisible();
         assertThat(app.main().getByText("The user exists in the directory but is not registered on the DAV server yet.",
             new Locator.GetByTextOptions())).isVisible();
@@ -147,6 +189,7 @@ class UsersTest extends CalendarAdminE2ETest {
         app.confirm();
         app.expectToast("User \"" + user + "\" registered");
         assertThat(detail.notRegisteredPanel()).isHidden();
+        assertThat(detail.subtitle()).hasText("Frank QA · Registered calendar user");
         assertThat(detail.sectionToggle("Calendars")).isVisible();
         assertThat(detail.sectionToggle("Address Books")).isVisible();
         assertThat(detail.sectionToggle("Booking Links")).isVisible();
@@ -181,19 +224,17 @@ class UsersTest extends CalendarAdminE2ETest {
         CollectionSection addressBooks = detail.addressBooks().expand();
         assertThat(calendars.row(bobCalendar)).isVisible();
         assertThat(addressBooks.row(bobAddressBook)).isVisible();
-        Locator delegated = calendars.rowInGroup("Delegated", "#default");
+        Locator delegated = calendars.rowInGroup("Delegated", "Main calendar of " + charlotte);
         delegated.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(charlotte).setExact(true)).click();
 
         assertThat(page).hasURL(Pattern.compile("/users/user/" + JsRegex.quote(WebAdmin.encode(charlotte)) + "$"));
-        assertThat(detail.usernameLabel()).hasText("Username: " + charlotte);
+        assertThat(detail.heading()).hasText(charlotte);
+        // The sections keep their open state, on charlotte's own collections
         calendars.expectCount(1);
         addressBooks.expectCount(2);
-        assertThat(calendars.createButton()).isHidden();
-        assertThat(addressBooks.createButton()).isHidden();
-
-        calendars.expand();
-        addressBooks.expand();
-        assertThat(calendars.rowInGroup("Owner", "#default")).isVisible();
+        assertThat(calendars.createButton()).isVisible();
+        assertThat(addressBooks.toggle()).hasAttribute("aria-expanded", "true");
+        assertThat(calendars.rowInGroup("Owner", "Main calendar")).isVisible();
         assertThat(calendars.groupHeading("Delegated")).hasCount(0);
         assertThat(calendars.rows(bobCalendar)).hasCount(0);
         assertThat(addressBooks.row("My contacts")).isVisible();
@@ -269,7 +310,7 @@ class UsersTest extends CalendarAdminE2ETest {
         String last = users.get(54);
         list.userLink(last).click();
         assertThat(page).hasURL(Pattern.compile("/users/user/" + JsRegex.quote(WebAdmin.encode(last)) + "$"));
-        assertThat(new UserDetailPage(app).usernameLabel()).hasText("Username: " + last);
+        assertThat(new UserDetailPage(app).heading()).hasText(last);
     }
 
     /** {@code "n/username"} for {@code users[from..to)}, numbered from {@code firstNumber}. */

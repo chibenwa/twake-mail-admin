@@ -71,7 +71,7 @@ class UserAddressBooksTest extends CalendarAdminE2ETest {
 
         CollectionSection.button(books.row("QA AB 2"), "Delete address book").click();
         assertThat(app.dialog().getByText("Do you really want to delete the address book \"QA AB 2\"?")).isVisible();
-        app.confirm();
+        CollectionSection.confirmWith(app, "Delete");
 
         app.expectToast("Address book deleted");
         assertThat(books.rows("QA AB 2")).hasCount(0);
@@ -160,7 +160,7 @@ class UserAddressBooksTest extends CalendarAdminE2ETest {
         assertThat(custom.getByText("System", new Locator.GetByTextOptions().setExact(true))).hasCount(0);
         assertThat(CollectionSection.button(custom, "Edit address book")).isVisible();
         CollectionSection.button(custom, "Delete address book").click();
-        app.confirm();
+        CollectionSection.confirmWith(app, "Delete");
 
         app.expectToast("Address book deleted");
         books.expectCount(2);

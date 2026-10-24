@@ -51,6 +51,8 @@ class ResourceDetailTest extends CalendarAdminE2ETest {
         ResourceDetailPage detail = new ResourceDetailPage(app);
         assertThat(page).hasURL(Pattern.compile("/domains/domain/" + DOMAIN.replace(".", "\\.") + "/resource/" + id + "$"));
         assertThat(detail.heading(name)).isVisible();
+        assertThat(detail.subtitle()).isVisible();
+        assertThat(detail.breadcrumb()).hasText(DOMAIN);
         assertThat(detail.field("Name", name)).isVisible();
         assertThat(detail.field("Resource ID", id)).isVisible();
         assertThat(detail.field("Domain", DOMAIN)).isVisible();
@@ -105,21 +107,32 @@ class ResourceDetailTest extends CalendarAdminE2ETest {
         ResourceDetailPage detail = ResourceDetailPage.open(app, DOMAIN, id);
         assertThat(detail.heading(name)).isVisible();
 
-        detail.addAdministrator(administrator);
+        // The "+" next to Administrators opens a modal; Add waits for the address to be known
+        assertThat(app.main().getByText("No administrators.", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        detail.typeAdministrator("nobody-" + Ids.suffix(8) + "@" + DOMAIN);
+        assertThat(detail.administratorHint("User not found")).isVisible();
+        assertThat(detail.addButton()).isDisabled();
+        detail.administratorBox().fill(administrator);
+        assertThat(detail.administratorHint("User exists")).isVisible();
+        detail.addButton().click();
+        assertThat(detail.addAdministratorDialog()).isHidden();
         app.expectToast("Administrator added");
         assertThat(detail.administrator(administrator)).isVisible();
         assertThat(DomainCalendarsBackend.administrators(backend.resource(id))).containsExactly(administrator);
 
-        // Adding the same address again is refused, without a duplicate
-        detail.addAdministrator(administrator);
-        app.expectToast("Administrator already in the list");
+        // The same address again is refused in the modal, Add staying disabled: no duplicate
+        detail.typeAdministrator(administrator);
+        assertThat(detail.administratorHint("Administrator already in the list")).isVisible();
+        assertThat(detail.addButton()).isDisabled();
+        app.cancel();
+        assertThat(detail.addAdministratorDialog()).isHidden();
         assertThat(detail.administratorEntries(administrator)).hasCount(1);
         assertThat(DomainCalendarsBackend.administrators(backend.resource(id))).containsExactly(administrator);
 
         detail.administrator(administrator).getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions()
             .setName("Remove administrator").setExact(true)).click();
         assertThat(app.dialog()).containsText("Remove \"" + administrator + "\" from administrators?");
-        app.confirm();
+        CalendarDomainPage.confirmWith(app, "Remove");
         app.expectToast("Administrator removed");
         assertThat(detail.administratorEntries(administrator)).hasCount(0);
         assertThat(DomainCalendarsBackend.administrators(backend.resource(id))).isEmpty();

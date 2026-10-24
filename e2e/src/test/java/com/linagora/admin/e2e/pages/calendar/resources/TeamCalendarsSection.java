@@ -23,7 +23,7 @@ public class TeamCalendarsSection {
     }
 
     void expand() {
-        toggle().click();
+        CalendarDomainPage.open(toggle());
         assertThat(searchBox()).isVisible();
     }
 
@@ -39,20 +39,25 @@ public class TeamCalendarsSection {
         return root().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(name).setExact(true));
     }
 
-    // --- creation form
+    // --- creation form: the "+" next to the title opens it in a modal
 
     public TeamCalendarsSection openCreateForm() {
         button("Add team calendar").click();
-        assertThat(root().getByText("New Team Calendar", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(form()).isVisible();
         return this;
     }
 
+    /** The "New Team Calendar" modal. */
+    public Locator form() {
+        return page.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("New Team Calendar").setExact(true));
+    }
+
     public Locator nameBox() {
-        return root().getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("Name *").setExact(true));
+        return form().getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("Name *").setExact(true));
     }
 
     public Locator displayNameBox() {
-        return root().getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("Display name").setExact(true));
+        return form().getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("Display name").setExact(true));
     }
 
     public TeamCalendarsSection create(String name, String displayName) {
@@ -61,9 +66,9 @@ public class TeamCalendarsSection {
         if (displayName != null) {
             displayNameBox().fill(displayName);
         }
-        button("Create").click();
+        form().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Create").setExact(true)).click();
         app.expectToast("Team calendar created");
-        assertThat(nameBox()).isHidden();
+        assertThat(form()).isHidden();
         return this;
     }
 

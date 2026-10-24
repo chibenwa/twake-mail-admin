@@ -23,9 +23,20 @@ public class ResourceDetailPage {
         return new ResourceDetailPage(app);
     }
 
+    /** The page is headed by the resource (h1), subtitled "Resource calendar". */
     public Locator heading(String displayName) {
         return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions()
-            .setName("Calendar Resource — " + displayName).setExact(true));
+            .setLevel(1).setName(displayName).setExact(true));
+    }
+
+    public Locator subtitle() {
+        return app.main().getByText("Resource calendar", new Locator.GetByTextOptions().setExact(true));
+    }
+
+    /** The breadcrumb link back to the resources of the domain. */
+    public Locator breadcrumb() {
+        return app.main().getByRole(AriaRole.NAVIGATION, new Locator.GetByRoleOptions().setName("Breadcrumb"))
+            .getByRole(AriaRole.LINK);
     }
 
     /** A "<Label>: <value>" line of the read-only view (the Icon line has no space: its parts are flex items). */
@@ -72,20 +83,45 @@ public class ResourceDetailPage {
         return button("Cancel");
     }
 
-    // --- administrators
-
-    public Locator administratorBox() {
-        return textbox("Administrators");
-    }
+    // --- administrators: the "+" next to the Administrators title opens a modal
 
     public Locator addAdministratorButton() {
-        return button("Add");
+        return button("Add administrator");
     }
 
-    /** Types an administrator and clicks Add once the address is known to exist. */
-    public ResourceDetailPage addAdministrator(String email) {
-        administratorBox().fill(email);
+    /** The "Add administrator" modal. */
+    public Locator addAdministratorDialog() {
+        return page.getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Add administrator").setExact(true));
+    }
+
+    /** Its only field, a combobox suggesting the users of the server, named after the modal. */
+    public Locator administratorBox() {
+        return addAdministratorDialog().getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Add administrator").setExact(true));
+    }
+
+    public Locator addButton() {
+        return addAdministratorDialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Add").setExact(true));
+    }
+
+    /** The status of the typed address under the field ("User exists", "Administrator already in the list"...). */
+    public Locator administratorHint(String text) {
+        return addAdministratorDialog().getByText(text, new Locator.GetByTextOptions().setExact(true));
+    }
+
+    /** Opens the modal and types an address. */
+    public ResourceDetailPage typeAdministrator(String email) {
         addAdministratorButton().click();
+        assertThat(addAdministratorDialog()).isVisible();
+        administratorBox().fill(email);
+        return this;
+    }
+
+    /** Opens the modal, types an address and adds it once it is known to exist: the modal closes. */
+    public ResourceDetailPage addAdministrator(String email) {
+        typeAdministrator(email);
+        assertThat(administratorHint("User exists")).isVisible();
+        addButton().click();
+        assertThat(addAdministratorDialog()).isHidden();
         return this;
     }
 

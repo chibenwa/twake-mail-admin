@@ -108,7 +108,7 @@ class UserCalendarsTest extends CalendarAdminE2ETest {
 
         CollectionSection.button(calendars.row("QA Cal 2"), "Delete calendar").click();
         assertThat(app.dialog().getByText("Do you really want to delete the calendar \"QA Cal 2\"?")).isVisible();
-        app.confirm();
+        CollectionSection.confirmWith(app, "Delete");
 
         app.expectToast("Calendar deleted");
         assertThat(calendars.rows("QA Cal 2")).hasCount(0);
@@ -122,11 +122,11 @@ class UserCalendarsTest extends CalendarAdminE2ETest {
         DavSeeds seeds = new DavSeeds(fixtures);
         String user = seeds.newUser("c3ucal04");
         CollectionSection calendars = new UserDetailPage(app).open(user).calendars().expand();
-        Locator row = calendars.row("#default");
+        Locator row = calendars.row("Main calendar");
 
         CollectionSection.button(row, "Private calendar").click();
         Locator dialog = app.dialog();
-        assertThat(dialog.getByRole(AriaRole.HEADING)).hasText("Public visibility — #default");
+        assertThat(dialog.getByRole(AriaRole.HEADING)).hasText("Public visibility — Main calendar");
         assertThat(radio(dialog, "Private")).isChecked();
         assertThat(radio(dialog, "Public")).not().isChecked();
         radio(dialog, "Public").check();
@@ -155,7 +155,7 @@ class UserCalendarsTest extends CalendarAdminE2ETest {
         DavSeeds seeds = new DavSeeds(fixtures);
         String user = seeds.newUser("c3ucal07");
         CollectionSection calendars = new UserDetailPage(app).open(user).calendars().expand();
-        Locator row = calendars.row("#default");
+        Locator row = calendars.row("Main calendar");
         Locator counter = CollectionSection.counter(row, "Events");
         assertThat(counter).hasText("0");
 
@@ -224,7 +224,7 @@ class UserCalendarsTest extends CalendarAdminE2ETest {
         seeds.createCalendar(user, "QA Extra");
         CollectionSection calendars = new UserDetailPage(app).open(user).calendars().expand();
 
-        Locator mainDelete = CollectionSection.button(calendars.row("#default"), "Delete calendar");
+        Locator mainDelete = CollectionSection.button(calendars.row("Main calendar"), "Delete calendar");
         assertThat(mainDelete).isDisabled();
         assertThat(mainDelete).hasAttribute("title", "The main calendar cannot be deleted");
         mainDelete.click(new Locator.ClickOptions().setForce(true));

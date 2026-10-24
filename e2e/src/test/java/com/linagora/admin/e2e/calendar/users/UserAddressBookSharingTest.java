@@ -42,6 +42,7 @@ class UserAddressBookSharingTest extends CalendarAdminE2ETest {
         assertThat(dialog.title()).hasText("Sharing — My contacts");
         dialog.stage(bob, "read");
         dialog.apply("Sharing updated");
+        assertThat(CollectionSection.sharedWith(books.row("My contacts"))).hasText("Shared with 1");
         assertThat(seeds.sharedAddressBooks(bob)).hasSize(1);
 
         sharing.click();
@@ -66,9 +67,11 @@ class UserAddressBookSharingTest extends CalendarAdminE2ETest {
 
         detail.open(alice);
         books.expand();
-        sharing.click();
+        CollectionSection.sharedWith(books.row("My contacts")).click();
+        assertThat(dialog.title()).hasText("Sharing — My contacts");
         dialog.removeButton(bob).click();
         dialog.apply("Sharing updated");
+        assertThat(CollectionSection.sharedWith(books.row("My contacts"))).hasCount(0);
 
         detail.open(bob);
         books.expand();
@@ -144,7 +147,7 @@ class UserAddressBookSharingTest extends CalendarAdminE2ETest {
         Locator shared = books.rowOwnedBy(name, owner);
         assertThat(shared).hasCount(1);
         CollectionSection.button(shared, "Delete address book").click();
-        app.confirm();
+        CollectionSection.confirmWith(app, "Delete");
 
         app.expectToast("Address book deleted");
         assertThat(books.rowOwnedBy(name, owner)).hasCount(0);

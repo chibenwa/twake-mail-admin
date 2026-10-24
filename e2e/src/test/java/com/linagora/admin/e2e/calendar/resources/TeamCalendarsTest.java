@@ -113,7 +113,7 @@ class TeamCalendarsTest extends CalendarAdminE2ETest {
         TeamCalendarsSection section = CalendarDomainPage.open(app, DOMAIN).teamCalendars().search(name);
         section.row(name).button("Delete team calendar").click();
         assertThat(app.dialog()).containsText("Delete team calendar \"" + name + "\"?");
-        app.confirm();
+        CalendarDomainPage.confirmWith(app, "Delete");
 
         app.expectToast("Team calendar deleted");
         assertThat(section.rowTitles()).hasCount(0);

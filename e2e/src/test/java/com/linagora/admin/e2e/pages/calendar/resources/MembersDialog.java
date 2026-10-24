@@ -18,8 +18,9 @@ public class MembersDialog {
         return root;
     }
 
+    /** A user field: a combobox suggesting the users of the server. */
     public Locator emailBox() {
-        return root.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("Member email").setExact(true));
+        return root.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Member email").setExact(true));
     }
 
     public Locator roleSelect() {
