@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
 vi.mock("@/lib/config", () => ({ appConfig: { application: "CALENDAR", mode: "GLOBAL", sso: null } }));
@@ -54,5 +54,46 @@ describe("header", () => {
     );
     expect(screen.queryByRole("link")).toBeNull();
     expect(screen.getByText("Subtitle")).toBeTruthy();
+  });
+});
+
+describe("header: sticky bar of a detail page", () => {
+  // Lets a test say whether the header has scrolled away
+  let report: (past: boolean) => void = () => {};
+  class FakeIntersectionObserver {
+    constructor(callback: (entries: Array<Partial<IntersectionObserverEntry>>) => void) {
+      report = (past) => callback([{ isIntersecting: !past, boundingClientRect: { top: past ? -200 : 10 } as DOMRectReadOnly }]);
+    }
+    observe() {}
+    disconnect() {}
+  }
+
+  it("shows the back link, the object and the actions once the header scrolled away", async () => {
+    vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
+    const { container } = render(
+      <MemoryRouter>
+        <Header headerTitle="bob@example.com" breadcrumb={[{ label: "Users", to: "/users" }]} actions={<button>Expand all</button>} />
+      </MemoryRouter>
+    );
+    expect(container.querySelector("[data-sticky-header]")).toBeNull();
+
+    await act(async () => report(true));
+    const bar = container.querySelector("[data-sticky-header]")!;
+    expect(bar.textContent).toContain("Users");
+    expect(bar.textContent).toContain("bob@example.com");
+    expect(bar.textContent).toContain("Expand all");
+
+    await act(async () => report(false));
+    expect(container.querySelector("[data-sticky-header]")).toBeNull();
+    vi.unstubAllGlobals();
+  });
+
+  it("has no sticky bar on a list page", async () => {
+    vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
+    report = () => {};
+    const { container } = render(<MemoryRouter><Header headerTitle="Users" /></MemoryRouter>);
+    await act(async () => report(true));
+    expect(container.querySelector("[data-sticky-header]")).toBeNull();
+    vi.unstubAllGlobals();
   });
 });

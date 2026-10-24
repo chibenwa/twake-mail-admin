@@ -138,7 +138,8 @@ export function SectionToggle({ open, onToggle, controls, children }: SectionTog
       onClick={onToggle}
       aria-expanded={open}
       aria-controls={open ? controls : undefined}
-      className="flex items-center gap-2 text-md font-semibold text-left hover:text-blue-600 transition"
+      // Revealed from the summary strip: its title stays clear of the sticky header of the page
+      className="flex items-center gap-2 text-md font-semibold text-left hover:text-blue-600 transition scroll-mt-16"
     >
       {open ? <ChevronDown className="w-4 h-4 shrink-0" aria-hidden="true" /> : <ChevronRight className="w-4 h-4 shrink-0" aria-hidden="true" />}
       {children}
