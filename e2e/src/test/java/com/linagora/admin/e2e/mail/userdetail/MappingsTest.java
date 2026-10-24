@@ -50,10 +50,12 @@ class MappingsTest extends MailAdminE2ETest {
         assertThat(mappings.row(aliceAlias, "Alias", alice)).hasCount(1);
         assertThat(mappings.row(brian, "Forward", charlotte)).hasCount(1);
         assertThat(mappings.rows()).hasCount(2);
-        assertThat(mappings.pageLabel()).hasText("Page 1 / 1 — Total: 2");
+        // Everything fits on one page: the count alone
+        assertThat(mappings.pageLabel()).hasText("Total: 2");
 
         mappings.addAddress(source, bob);
         app.expectToast("Address mapping created successfully");
+        assertThat(mappings.dialog()).isHidden();
         mappings.filter("qa.map@" + domain);
         Locator row = mappings.row(source, "Address", bob);
         assertThat(row).hasCount(1);
@@ -62,7 +64,7 @@ class MappingsTest extends MailAdminE2ETest {
 
         mappings.removeButton(row).click();
         assertThat(app.dialog()).containsText("Remove address mapping \"" + source + "\" → \"" + bob + "\"?");
-        app.confirm();
+        mappings.confirmRemove();
         app.expectToast("Address mapping removed successfully");
         assertThat(row).hasCount(0);
         assertThat(app.main().getByText("No mappings found.")).isVisible();
@@ -90,7 +92,7 @@ class MappingsTest extends MailAdminE2ETest {
         mappings.openDomainForm(sourceDomain, domain);
         assertThat(mappings.domainHint()).hasText("Mail addressed to the source domain will be rewritten to the "
             + "destination domain. No loop check is performed.");
-        mappings.button("Create").click();
+        mappings.create();
         app.expectToast("Domain mapping created successfully");
 
         mappings.filter(domain);
@@ -100,7 +102,7 @@ class MappingsTest extends MailAdminE2ETest {
         assertThat(domainRow).hasCount(1);
 
         mappings.removeButton(regexRow).click();
-        app.confirm();
+        mappings.confirmRemove();
         app.expectToast("Regex mapping removed successfully");
         assertThat(regexRow).hasCount(0);
         assertThat(mappingsOf(webAdmin, regexSource).isMissingNode()).isTrue();
@@ -108,7 +110,7 @@ class MappingsTest extends MailAdminE2ETest {
         mappings.removeButton(domainRow).click();
         assertThat(app.dialog()).containsText("Remove domain mapping \"" + sourceDomain + "\" → \"" + domain + "\"?");
         Request delete = page.waitForRequest(
-            request -> request.method().equals("DELETE") && request.url().contains("/domainMappings/"), app::confirm);
+            request -> request.method().equals("DELETE") && request.url().contains("/domainMappings/"), mappings::confirmRemove);
         assertThat(delete.url()).endsWith("/domainMappings/" + sourceDomain);
         assertThat(delete.postData()).isEqualTo(domain);
         app.expectToast("Domain mapping removed successfully");
@@ -126,21 +128,32 @@ class MappingsTest extends MailAdminE2ETest {
         String charlotte = fixtures.newUser("charlotte");
         String alias = "brian.alias@" + domain;
         webAdmin.put("/address/forwards/" + brian + "/targets/" + charlotte).expect(204);
+        webAdmin.put("/address/forwards/" + brian + "/targets/" + brian).expect(204);
         webAdmin.put("/address/aliases/" + brian + "/sources/" + alias).expect(204);
         MappingsPage mappings = new MappingsPage(app).open();
         mappings.filter(domain);
 
+        // The forward of brian to himself is the copy kept in his mailbox
+        Locator keptCopy = mappings.row(brian, "Forward (copy kept)", brian);
+        assertThat(keptCopy).hasCount(1);
         Locator forward = mappings.row(brian, "Forward", charlotte);
         mappings.removeButton(forward).click();
         assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Remove Forward Mapping");
-        app.confirm();
+        mappings.confirmRemove();
         app.expectToast("Forward mapping removed successfully");
         assertThat(forward).hasCount(0);
         assertThat(webAdmin.get("/address/forwards/" + brian).body()).doesNotContain(charlotte);
 
+        mappings.removeButton(keptCopy).click();
+        assertThat(app.dialog()).containsText(brian + " will no longer receive its own mail: it will only be forwarded.");
+        mappings.confirmRemove();
+        app.expectToast("Forward mapping removed successfully");
+        assertThat(keptCopy).hasCount(0);
+        assertThat(webAdmin.get("/address/forwards/" + brian).body()).doesNotContain(brian);
+
         Locator aliasRow = mappings.row(alias, "Alias", brian);
         mappings.removeButton(aliasRow).click();
-        app.confirm();
+        mappings.confirmRemove();
         app.expectToast("Alias mapping removed successfully");
         assertThat(app.main().getByText("No mappings found.")).isVisible();
         assertThat(webAdmin.get("/address/aliases/" + brian).json().size()).isZero();
@@ -181,7 +194,7 @@ class MappingsTest extends MailAdminE2ETest {
         for (int i = 0; i < 3; i++) {
             assertThat(items.nth(i)).hasText("Address" + sources.get(i) + "→" + bob);
         }
-        app.confirm();
+        mappings.confirmRemove();
         app.expectToast("3 mapping(s) removed successfully");
         assertThat(app.main().getByText("No mappings found.")).isVisible();
 

@@ -144,7 +144,7 @@ class DeletedMessageVaultTest extends MailAdminE2ETest {
             + "?action=restore -d '{\"combinator\":\"and\",\"criteria\":[]}'");
 
         criteria.addCriterion();
-        app.clickConfirm();
+        detail.clickStartTask();
         assertThat(app.dialog()).isVisible();
         assertThat(app.dialog().getByText(CriteriaBuilder.INCOMPLETE)).hasCount(1);
         assertThat(criteria.incompleteMessage()).isVisible();
@@ -156,7 +156,7 @@ class DeletedMessageVaultTest extends MailAdminE2ETest {
             "\"criteria\":[{\"fieldName\":\"subject\",\"operator\":\"contains\",\"value\":\"Quarterly\"}]")));
         assertThat(restoreCalls).isEmpty();
 
-        app.confirm();
+        detail.startTask();
         String taskId = detail.taskIdFromToast("Task created");
         assertThat(restoreCalls).hasSize(1);
         assertThat(restoreCalls.get(0)).contains("\"value\":\"Quarterly\"");

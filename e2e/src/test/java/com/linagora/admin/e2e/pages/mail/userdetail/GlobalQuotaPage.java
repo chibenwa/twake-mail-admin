@@ -51,20 +51,32 @@ public class GlobalQuotaPage {
         return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(name).setExact(true));
     }
 
-    public Locator sizeInput() {
-        return app.main().getByLabel("Size limit", new Locator.GetByLabelOptions().setExact(true));
+    /** The "Edit limits" dialog: both limits, prefilled with the current ones. */
+    public Locator limitsDialog() {
+        return app.dialog();
+    }
+
+    /** A limit of the "Edit limits" dialog: "Message count" or "Size". */
+    public Locator limit(String name) {
+        return limitsDialog().getByRole(AriaRole.SPINBUTTON, new Locator.GetByRoleOptions().setName(name).setExact(true));
+    }
+
+    /** The "Unlimited" box of a limit of the "Edit limits" dialog. */
+    public Locator unlimited(String name) {
+        return limitsDialog().getByRole(AriaRole.GROUP, new Locator.GetByRoleOptions().setName(name).setExact(true))
+            .getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName("Unlimited").setExact(true));
     }
 
     public Locator unit() {
-        return app.main().getByLabel("Unit", new Locator.GetByLabelOptions().setExact(true));
+        return limitsDialog().getByLabel("Unit", new Locator.GetByLabelOptions().setExact(true));
     }
 
-    /** "Update size limit", value, unit, Save. */
+    /** "Edit limits", the size and its unit, Save. */
     public GlobalQuotaPage updateSize(String value, String unit) {
-        button("Update size limit").click();
-        sizeInput().fill(value);
+        button("Edit limits").click();
+        limit("Size").fill(value);
         unit().selectOption(unit);
-        button("Save").click();
+        limitsDialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save").setExact(true)).click();
         return this;
     }
 

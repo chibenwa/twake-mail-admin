@@ -60,13 +60,15 @@ class UserTasksTest extends MailAdminE2ETest {
                         + "/templates?action=provision&from=alice@example.com");
                 }
                 case "Rename user" -> {
-                    app.dialog().getByLabel("New username:").fill("x@example.com");
-                    app.dialog().getByLabel("Force").check();
+                    app.dialog().getByLabel("New username", new Locator.GetByLabelOptions().setExact(true)).fill("x@example.com");
+                    detail.openAdvanced("Advanced options");
+                    app.dialog().getByLabel("Force", new Locator.GetByLabelOptions().setExact(true)).check();
                     assertThat(detail.commandPreview()).hasText("Command: curl -XPOST /users/" + user
                         + "/rename/x@example.com?action=rename&force");
                 }
                 case "Delete user data" -> {
-                    app.dialog().getByLabel("Resume from step:").fill("MailboxUserDeletionTaskStep");
+                    detail.openAdvanced("Advanced: resume an interrupted deletion");
+                    app.dialog().getByLabel("Resume from step", new Locator.GetByLabelOptions().setExact(true)).fill("MailboxUserDeletionTaskStep");
                     assertThat(detail.commandPreview()).hasText("Command: curl -XPOST /users/" + user
                         + "?action=deleteData&fromStep=MailboxUserDeletionTaskStep");
                 }
@@ -86,21 +88,24 @@ class UserTasksTest extends MailAdminE2ETest {
         UserTasksSection tasks = detail.tasks().open();
 
         Locator dialog = tasks.run("Reindex all mailboxes");
-        assertThat(dialog.getByLabel("messagesPerSecond:")).hasValue("50");
-        dialog.getByLabel("mode:").click();
-        page.getByRole(AriaRole.OPTION, new Page.GetByRoleOptions().setName("fixOutdated").setExact(true)).click();
+        assertThat(dialog.getByRole(AriaRole.HEADING)).hasText("Reindex User Mailboxes");
+        // Parameters in plain language, the raw key next to them
+        assertThat(param(dialog, "Speed limit")).hasValue("50");
+        assertThat(dialog).containsText("messages/s");
+        param(dialog, "Reindex mode").click();
+        page.getByRole(AriaRole.OPTION, new Page.GetByRoleOptions().setName("Fix outdated documents only").setExact(true)).click();
         assertThat(detail.commandPreview()).hasText("Command: curl -XPOST /users/" + user
             + "/mailboxes?task=reIndex&messagesPerSecond=50&mode=fixOutdated");
-        Request reindex = page.waitForRequest(request -> request.url().contains("task=reIndex"), app::confirm);
+        Request reindex = page.waitForRequest(request -> request.url().contains("task=reIndex"), detail::startTask);
         assertThat(reindex.url()).contains("mode=fixOutdated").contains("messagesPerSecond=50");
         expectCompleted(webAdmin, detail.taskIdFromToast("Task created"));
 
         tasks.run("Subscribe to all mailboxes");
-        app.confirm();
+        detail.startTask();
         expectCompleted(webAdmin, detail.taskIdFromToast("Task created"));
 
         tasks.run("Recompute JMAP fast view projection");
-        app.confirm();
+        detail.startTask();
         expectCompleted(webAdmin, detail.taskIdFromToast("Task created"));
     }
 
@@ -116,30 +121,36 @@ class UserTasksTest extends MailAdminE2ETest {
 
         for (String folder : new String[] {"Trash", "Spam"}) {
             Locator dialog = tasks.run("Cleanup user " + folder + " folder");
-            assertThat(dialog.getByLabel("olderThan:")).hasValue("5d");
-            app.confirm();
+            assertThat(param(dialog, "Older than")).hasValue("5d");
+            detail.startTask();
             expectCompleted(webAdmin, detail.taskIdFromToast("Task created"));
         }
 
         Locator dialog = tasks.run("Tier user data");
-        Locator amount = dialog.getByLabel("tiering:");
+        Locator amount = param(dialog, "Messages older than");
         assertThat(amount).hasValue("30");
-        assertThat(dialog.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("tiering unit"))).hasText("Days");
+        assertThat(dialog.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Messages older than unit"))).hasText("Days");
         assertThat(detail.commandPreview()).hasText("Command: curl -XPOST /users/" + user + "/data?tiering=30d&messagesPerSecond=50");
-        app.confirm();
+        detail.startTask();
         expectCompleted(webAdmin, detail.taskIdFromToast("Task created"));
 
         dialog = tasks.run("Tier user data");
-        amount = dialog.getByLabel("tiering:");
+        amount = param(dialog, "Messages older than");
         amount.fill("");
-        app.clickConfirm();
+        detail.clickStartTask();
         assertThat(app.dialogError()).hasText("Retention period is required");
         assertThat(app.dialog()).isVisible();
-        assertThat(dialog.getByLabel("messagesPerSecond:")).hasValue("50");
+        assertThat(param(dialog, "Speed limit")).hasValue("50");
         amount.fill("7");
         assertThat(app.dialogError()).hasCount(0);
         assertThat(detail.commandPreview()).hasText("Command: curl -XPOST /users/" + user + "/data?tiering=7d&messagesPerSecond=50");
         app.cancel();
+    }
+
+    /** A parameter of a task dialog, by its plain-language label ("Speed limit", optionally followed by "(optional)"). */
+    private static Locator param(Locator dialog, String label) {
+        return dialog.getByLabel(java.util.regex.Pattern.compile("^" + com.linagora.admin.e2e.pages.mail.userdetail.Regex.escape(label)
+            + "( \\(optional\\))?$"));
     }
 
     private static void expectCompleted(WebAdmin webAdmin, String taskId) {

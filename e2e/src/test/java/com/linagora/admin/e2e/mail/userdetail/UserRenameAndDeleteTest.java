@@ -46,18 +46,23 @@ class UserRenameAndDeleteTest extends MailAdminE2ETest {
         assertThat(dialog).containsText("Current username: " + ren1);
         assertThat(dialog).containsText("The new username must be an existing account: renaming only migrates "
             + "the data of the current user to it.");
-        assertThat(dialog.getByLabel("New username:")).isVisible();
-        assertThat(dialog.getByLabel("Force")).isVisible();
-        assertThat(dialog.getByLabel("Resume from step:")).isVisible();
+        Locator newUsername = dialog.getByLabel("New username", new Locator.GetByLabelOptions().setExact(true));
+        assertThat(newUsername).isVisible();
+        // Force and resume are for recovering a failed rename: tucked away
+        Locator force = dialog.getByLabel("Force", new Locator.GetByLabelOptions().setExact(true));
+        assertThat(force).isHidden();
+        detail.openAdvanced("Advanced options");
+        assertThat(force).isVisible();
+        assertThat(dialog.getByLabel("Resume from step", new Locator.GetByLabelOptions().setExact(true))).isVisible();
         assertThat(detail.commandPreview()).hasText("Command: curl -XPOST /users/" + ren1 + "/rename/{newUser}?action=rename");
 
-        app.clickConfirm();
+        detail.clickStartTask();
         assertThat(app.dialogError()).hasText("New username is required");
         assertThat(app.dialog()).isVisible();
         assertThat(renameCalls).isEmpty();
 
-        dialog.getByLabel("New username:").fill(ren2);
-        app.confirm();
+        newUsername.fill(ren2);
+        detail.startTask();
         JsonNode task = webAdmin.awaitTask(detail.taskIdFromToast("Task created"));
         assertThat(task.path("status").asText()).as(task.toString()).isEqualTo("completed");
         assertThat(task.path("type").asText()).isEqualTo("UsernameChangeTask");
@@ -66,12 +71,12 @@ class UserRenameAndDeleteTest extends MailAdminE2ETest {
 
         String ghost = "ghost-" + ren1;
         dialog = tasks.run("Rename user");
-        dialog.getByLabel("New username:").fill(ghost);
-        app.clickConfirm();
+        newUsername.fill(ghost);
+        detail.clickStartTask();
         assertThat(app.dialogError()).containsText("'newUser' parameter should be an existing user");
         assertThat(app.dialogError()).not().containsText("{");
         assertThat(app.dialog()).isVisible();
-        assertThat(dialog.getByLabel("New username:")).hasValue(ghost);
+        assertThat(newUsername).hasValue(ghost);
         app.cancel();
     }
 
@@ -88,8 +93,15 @@ class UserRenameAndDeleteTest extends MailAdminE2ETest {
         detail.tasks().open().run("Delete all mailboxes");
         assertThat(app.dialog()).containsText("Are you sure you want to delete ALL mailboxes for \"" + user
             + "\"? This cannot be undone.");
+        assertThat(app.dialog()).containsText("Every mailbox of " + user + " and all the messages they contain are permanently "
+            + "deleted. This cannot be undone.");
+        // Typing the username (in any case) is required first
+        Locator delete = detail.dialogButton("Delete all mailboxes");
+        assertThat(delete).isDisabled();
+        app.dialog().getByLabel("Type " + user + " to confirm", new Locator.GetByLabelOptions().setExact(true)).fill(user.toUpperCase());
+        assertThat(delete).isEnabled();
         Request sent = page.waitForRequest(
-            request -> request.method().equals("DELETE") && request.url().contains("/mailboxes"), app::confirm);
+            request -> request.method().equals("DELETE") && request.url().contains("/mailboxes"), delete::click);
         assertThat(sent.url()).endsWith("/users/" + user.replace("@", "%40") + "/mailboxes");
         app.expectToast("All mailboxes deleted successfully");
         assertThat(webAdmin.get("/users/" + user + "/mailboxes").expect(200).json().size()).isZero();
@@ -106,10 +118,17 @@ class UserRenameAndDeleteTest extends MailAdminE2ETest {
 
         MailUserDetailPage detail = new MailUserDetailPage(app).open(user);
         Locator dialog = detail.tasks().open().run("Delete user data");
-        assertThat(dialog.getByLabel("Resume from step:")).hasValue("");
+        assertThat(dialog.getByRole(com.microsoft.playwright.options.AriaRole.HEADING)).hasText("Delete all data of " + user);
+        assertThat(dialog).containsText("All mailboxes, messages, identities, labels, vacation and settings of " + user
+            + " are permanently deleted. The account itself is kept. This cannot be undone.");
+        detail.openAdvanced("Advanced: resume an interrupted deletion");
+        assertThat(dialog.getByLabel("Resume from step", new Locator.GetByLabelOptions().setExact(true))).hasValue("");
         assertThat(detail.commandPreview()).hasText(Pattern.compile("action=deleteData$"));
+        Locator delete = detail.dialogButton("Delete user data");
+        assertThat(delete).isDisabled();
+        dialog.getByLabel("Type " + user + " to confirm", new Locator.GetByLabelOptions().setExact(true)).fill(user);
         Request sent = page.waitForRequest(
-            request -> request.method().equals("POST") && request.url().contains("action=deleteData"), app::confirm);
+            request -> request.method().equals("POST") && request.url().contains("action=deleteData"), delete::click);
         assertThat(sent.url()).endsWith("/users/" + user.replace("@", "%40") + "?action=deleteData");
         JsonNode task = webAdmin.awaitTask(detail.taskIdFromToast("Task created"));
         assertThat(task.path("status").asText()).as(task.toString()).isEqualTo("completed");

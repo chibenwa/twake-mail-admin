@@ -36,8 +36,8 @@ class UserDetailSectionsTest extends MailAdminE2ETest {
         detail.toggle("Aliases").toggle("Forwards").toggle("Mappings").toggle("Allowed From Headers");
 
         detail.iconButton("Add alias").click();
-        app.main().getByPlaceholder("alias@domain.com").fill(alias);
-        detail.button("Add").click();
+        detail.dialog().getByLabel("Alias address", new Locator.GetByLabelOptions().setExact(true)).fill(alias);
+        dialogButton(detail, "Add").click();
         app.expectToast("Alias added successfully");
 
         // No reload: the other sections follow
@@ -51,7 +51,7 @@ class UserDetailSectionsTest extends MailAdminE2ETest {
 
         detail.iconButton("Remove all Alias sources").click();
         assertThat(app.dialog()).containsText("Remove all Alias sources of " + user + " (" + alias + ")?");
-        app.confirm();
+        detail.confirm("Remove");
         app.expectToast("Alias sources of " + user + " removed");
         assertThat(detail.sectionToggle("Aliases", 0)).isVisible();
         assertThat(app.main().getByText("No aliases configured.")).isVisible();
@@ -61,22 +61,33 @@ class UserDetailSectionsTest extends MailAdminE2ETest {
         assertThat(webAdmin.get("/address/aliases/" + user).json().size()).isZero();
         assertThat(webAdmin.get("/users/" + user + "/allowedFromHeaders").json().get(0).asText()).isEqualTo(user);
 
+        // Keeping a copy (the default) makes the user one of its own forward destinations
         detail.iconButton("Add forward").click();
-        app.main().getByPlaceholder("destination@domain.com").fill(david);
-        detail.button("Add").click();
+        detail.dialog().getByLabel("Destination address", new Locator.GetByLabelOptions().setExact(true)).fill(david);
+        dialogButton(detail, "Add").click();
         app.expectToast("Forward added successfully");
         assertThat(app.main().getByText("Mappings from this user")).isVisible();
-        Locator forwardRow = app.main().getByRole(AriaRole.ROW).filter(new Locator.FilterOptions().setHasText(david));
+        Locator mappingRows = app.main().getByRole(AriaRole.TABLE).getByRole(AriaRole.ROW);
+        Locator forwardRow = mappingRows.filter(new Locator.FilterOptions().setHasText(david));
+        Locator copyRow = mappingRows.filter(new Locator.FilterOptions().setHasText(user));
         assertThat(forwardRow).containsText("Forward");
-        assertThat(detail.sectionToggle("Mappings", 1)).isVisible();
+        assertThat(copyRow).containsText("Forward");
+        assertThat(detail.sectionToggle("Forwards", 1)).isVisible();
+        // Two forwards from the user, and the user as the source of a forward to itself
+        assertThat(detail.sectionToggle("Mappings", 3)).isVisible();
         assertThat(webAdmin.get("/mappings/user/" + user).body()).contains(david);
 
         detail.iconButton("Remove forward").click();
-        app.confirm();
+        detail.confirm("Remove");
         app.expectToast("Forward removed successfully");
         assertThat(forwardRow).hasCount(0);
-        assertThat(detail.sectionToggle("Mappings", 0)).isVisible();
-        assertThat(webAdmin.get("/mappings/user/" + user).json().size()).isZero();
+        assertThat(copyRow).hasCount(1);
+        assertThat(detail.sectionToggle("Mappings", 2)).isVisible();
+        assertThat(webAdmin.get("/mappings/user/" + user).json().size()).isEqualTo(1);
+    }
+
+    private static Locator dialogButton(MailUserDetailPage detail, String name) {
+        return detail.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(name).setExact(true));
     }
 
     @Test
@@ -135,37 +146,41 @@ class UserDetailSectionsTest extends MailAdminE2ETest {
         MailUserDetailPage detail = new MailUserDetailPage(app).open(bob);
         detail.toggle("Delegated Users");
         detail.iconButton("Add delegated user").click();
-        Locator input = app.main().getByPlaceholder("user@domain.tld");
-        Locator add = detail.button("Add");
+        Locator input = detail.dialog().getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Delegated user").setExact(true));
+        Locator add = dialogButton(detail, "Add");
 
         input.fill(bob);
-        assertThat(app.main().getByText("You cannot delegate a user to themself")).isVisible();
+        assertThat(detail.dialog().getByText("You cannot delegate a user to themself")).isVisible();
         assertThat(add).isDisabled();
         input.fill(bob.toUpperCase());
-        assertThat(app.main().getByText("You cannot delegate a user to themself")).isVisible();
+        assertThat(detail.dialog().getByText("You cannot delegate a user to themself")).isVisible();
         assertThat(add).isDisabled();
 
         input.fill("a@b@c");
-        assertThat(app.main().getByText("Invalid username")).isVisible();
+        assertThat(detail.dialog().getByText("Invalid username")).isVisible();
         assertThat(add).isDisabled();
 
         input.fill(ghost);
-        assertThat(app.main().getByText("User not found")).isVisible();
+        assertThat(detail.dialog().getByText("User not found")).isVisible();
         add.click();
         assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Unknown user");
         assertThat(app.dialog()).containsText("\"" + ghost + "\" does not exist and will not be able to log in. "
             + "Add it as delegated user anyway?");
-        app.cancel();
+        // Declined: the add modal stays open with the typed user
+        app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel").setExact(true)).click();
+        assertThat(app.page().getByRole(AriaRole.HEADING, new Page.GetByRoleOptions().setName("Unknown user"))).hasCount(0);
+        assertThat(input).hasValue(ghost);
         assertThat(webAdmin.get("/users/" + bob + "/authorizedUsers").json().size()).isZero();
 
         add.click();
         app.confirm();
         app.expectToast("Delegated user added");
+        assertThat(app.dialog()).hasCount(0);
         assertThat(app.main().getByText(ghost)).isVisible();
 
         detail.iconButton("Add delegated user").click();
         input.fill(alice);
-        assertThat(app.main().getByText("User exists")).isVisible();
+        assertThat(detail.dialog().getByText("User exists")).isVisible();
         add.click();
         app.expectToast("Delegated user added");
         assertThat(app.dialog()).hasCount(0);

@@ -62,7 +62,7 @@ class GlobalQuotaTest extends MailAdminE2ETest {
     }
 
     @Test
-    @DisplayName("GQ-01 Update the global quota size")
+    @DisplayName("GQ-01 Edit the global quota limits")
     void updateGlobalQuotaSize(AdminApp app, MailFixtures fixtures, WebAdmin webAdmin) {
         String user = fixtures.newUser("bob");
         if (!webAdmin.get("/quota").json().path("size").isNull()) {
@@ -72,34 +72,48 @@ class GlobalQuotaTest extends MailAdminE2ETest {
 
         assertThat(quota.size()).hasText("not set");
         assertThat(quota.count()).isVisible();
-        assertThat(quota.button("Update size limit")).isVisible();
-        assertThat(quota.button("Remove size limit")).hasCount(0);
+        String count = quota.count().innerText();
 
-        quota.updateSize("10", "GB");
-        expectSlowToast(app, "Global quota size updated");
+        // Both limits in one dialog, prefilled with the current ones
+        quota.button("Edit limits").click();
+        assertThat(quota.limitsDialog().getByRole(AriaRole.HEADING)).hasText("Quota limits of all users");
+        assertThat(quota.limit("Size")).hasValue("");
+        assertThat(quota.limitsDialog()).containsText("Leave empty for no limit.");
+        quota.limit("Size").fill("10");
+        quota.unit().selectOption("GB");
+        quota.limitsDialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save").setExact(true)).click();
+        expectSlowToast(app, "Quota limits updated");
         assertThat(quota.size()).hasText("10.0 GB");
-        assertThat(quota.button("Remove size limit")).isVisible();
+        // The count, left as it was, is not touched
+        assertThat(quota.count()).hasText(count);
+        assertThat(quota.button("Remove global limits")).isVisible();
         assertThat(webAdmin.get("/quota").json().path("size").asLong()).isEqualTo(10 * GB);
 
+        // A user without a limit of its own inherits it
         MailUserDetailPage detail = new MailUserDetailPage(app).open(user);
         detail.toggle("Quota");
         assertThat(globalRow(app)).containsText("10.0 GB");
+        detail.button("Edit limits").click();
+        assertThat(app.dialog()).containsText("Leave empty to use the global limit (10.0 GB).");
+        app.cancel();
 
         quota.open();
-        quota.button("Remove size limit").click();
-        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Remove size limit");
-        assertThat(app.dialog()).containsText("Remove the global quota size limit? Users without a domain or user "
-            + "specific limit will have unlimited storage.");
+        quota.button("Remove global limits").click();
+        assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Remove global limits");
+        assertThat(app.dialog()).containsText("Remove the global message count and size limits? Users without a limit "
+            + "of their own or of their domain will have none.");
         app.cancel();
         assertThat(quota.size()).hasText("10.0 GB");
         assertThat(webAdmin.get("/quota").json().path("size").asLong()).isEqualTo(10 * GB);
 
-        quota.button("Remove size limit").click();
+        quota.button("Remove global limits").click();
         app.confirm();
-        expectSlowToast(app, "Global quota size limit removed");
+        expectSlowToast(app, "Specific limits removed");
         assertThat(quota.size()).hasText("not set");
-        assertThat(quota.button("Remove size limit")).hasCount(0);
+        assertThat(quota.count()).hasText("not set");
+        assertThat(quota.button("Remove global limits")).hasCount(0);
         assertThat(webAdmin.get("/quota").json().path("size").isNull()).isTrue();
+        assertThat(webAdmin.get("/quota").json().path("count").isNull()).isTrue();
 
         detail.open(user);
         detail.toggle("Quota");
@@ -108,8 +122,11 @@ class GlobalQuotaTest extends MailAdminE2ETest {
         assertThat(app.main().getByText("10.0 GB")).hasCount(0);
 
         quota.open();
-        quota.updateSize("-1", "GB");
-        expectSlowToast(app, "Global quota size updated");
+        quota.button("Edit limits").click();
+        quota.unlimited("Size").click();
+        assertThat(quota.limit("Size")).isDisabled();
+        quota.limitsDialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save").setExact(true)).click();
+        expectSlowToast(app, "Quota limits updated");
         assertThat(quota.size()).hasText("unlimited");
         assertThat(webAdmin.get("/quota").json().path("size").asLong()).isEqualTo(-1);
     }
@@ -165,8 +182,9 @@ class GlobalQuotaTest extends MailAdminE2ETest {
         explore(quota, "33", "34");
         Locator found = app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(user).setExact(true)).last();
         assertThat(found.locator("xpath=..")).containsText("33.3%");
-                explore(quota, "0", "100");
-        assertThat(app.main().getByText(Pattern.compile("^Page 1 — \\d+ result\\(s\\)$"))).isVisible();
+        explore(quota, "0", "100");
+        // Paging controls only when the results do not fit on one page
+        assertThat(app.main().getByText(Pattern.compile("^(Page 1 — \\d+ result\\(s\\)|Total: \\d+)$"))).isVisible();
         explore(quota, "61.37", "61.38");
         assertThat(app.main().getByText("No users found in this occupation range.")).isVisible();
     }

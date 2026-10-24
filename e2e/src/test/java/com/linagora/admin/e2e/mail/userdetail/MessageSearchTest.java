@@ -56,7 +56,7 @@ class MessageSearchTest extends MailAdminE2ETest {
             .contains("{\"property\":\"subject\",\"isAscending\":true}");
 
         search.backLink(user).click();
-        assertThat(detail.usernameLabel()).hasText("Username: " + user);
+        assertThat(detail.title()).hasText(user);
     }
 
     private static Request searchRequest(Page page, MessageSearchPage search) {

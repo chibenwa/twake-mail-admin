@@ -95,9 +95,20 @@ class UsersListTest extends MailAdminE2ETest {
         users.search().fill("o");
         assertThat(users.userLinks()).hasText(new String[] {olivia, oscar});
 
+        // The search and the domain filter live in the URL: a reload keeps them
+        assertThat(page).hasURL(Pattern.compile("/users\\?.*domain=" + UserDetailPage.escape(domainA)));
+        assertThat(page).hasURL(Pattern.compile("[?&]q=o(&|$)"));
+        page.reload();
+        assertThat(users.domainSelect()).hasValue(domainA);
+        assertThat(users.search()).hasValue("o");
+        assertThat(users.userLinks()).hasText(new String[] {olivia, oscar});
+
         users.search().clear();
+        // Cleared from the URL too, before the next filter change builds on it
+        assertThat(page).hasURL(Pattern.compile("/users\\?domain=" + UserDetailPage.escape(domainA) + "$"));
         users.selectAllDomains();
         assertThat(users.domainSelect()).hasValue("");
+        assertThat(page).hasURL(Pattern.compile("/users$"));
         assertThat(users.row(3)).isVisible();
 
         users.selectDomain(emptyDomain);
@@ -179,12 +190,20 @@ class UsersListTest extends MailAdminE2ETest {
     void openUserFromList(AdminApp app, MailFixtures fixtures, Page page) {
         String bob = fixtures.newUser("bob");
 
-        UsersListPage.open(app).selectDomain(fixtures.domain()).userLink(bob).click();
+        UsersListPage users = UsersListPage.open(app).selectDomain(fixtures.domain());
+        users.userLink(bob).click();
 
         assertThat(page).hasURL(Pattern.compile("/users/user/" + WebAdmin.encode(bob).replace(".", "\\.") + "$"));
         UserDetailPage detail = new UserDetailPage(app, bob);
-        assertThat(detail.title()).isVisible();
-        assertThat(detail.card().getByText("Username: " + bob, new Locator.GetByTextOptions().setExact(true))).isVisible();
+        // Headed by the user, under a breadcrumb back to the list
+        assertThat(detail.title()).hasText(bob);
+        assertThat(app.main().getByText(UserDetailPage.KIND, new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(detail.breadcrumb()).hasText("Users");
+        assertThat(detail.breadcrumb()).hasAttribute("href", "/users");
+        // The summary strip of its essential facts
+        for (String chip : List.of("Quota: 0 B, unlimited", "Mailboxes: 0", "Aliases: 0", "Forwards: 0", "Vacation: off")) {
+            assertThat(detail.chip(chip)).isVisible();
+        }
 
         assertThat(detail.toggle("Mailboxes", 0)).isVisible();
         assertThat(detail.section("Mailboxes").getByRole(AriaRole.LINK,
@@ -202,9 +221,16 @@ class UsersListTest extends MailAdminE2ETest {
             assertThat(detail.toggle(title)).isVisible();
         }
         assertThat(detail.card().locator(":scope > div")).hasCount(16);
+        // Every section starts collapsed
+        assertThat(detail.card().locator("button[aria-expanded=true]")).hasCount(0);
 
         Pattern createUser = Pattern.compile("(create|add|new|register) user", Pattern.CASE_INSENSITIVE);
         assertThat(page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(createUser))).hasCount(0);
         assertThat(page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName(createUser))).hasCount(0);
+
+        // Back to the list: its domain filter, kept in the URL, is restored
+        page.goBack();
+        assertThat(users.domainSelect()).hasValue(fixtures.domain());
+        assertThat(users.userLinks()).hasText(new String[] {bob});
     }
 }

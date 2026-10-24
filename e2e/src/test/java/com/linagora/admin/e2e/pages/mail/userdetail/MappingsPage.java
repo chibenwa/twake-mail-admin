@@ -10,7 +10,8 @@ import com.microsoft.playwright.options.AriaRole;
 
 /**
  * The global Mappings page ({@code /mappings}). The table lists the mappings of the whole server:
- * tests filter it on their own domain before looking at, or deleting, rows.
+ * tests filter it on their own domain before looking at, or deleting, rows. Its toolbar holds the
+ * search, "Add a mapping" (a modal where the kind of mapping is chosen) and "Delete page".
  */
 public class MappingsPage {
     private final AdminApp app;
@@ -57,35 +58,62 @@ public class MappingsPage {
             new com.microsoft.playwright.Page.GetByRoleOptions().setName(text).setExact(true)));
     }
 
+    /** "Page 1 / 2 — Total: 60", or "Total: 2" alone when everything fits on one page. */
     public Locator pageLabel() {
-        return app.main().getByText(Pattern.compile("^Page \\d+ / \\d+ — Total: \\d+$"));
+        return app.main().getByText(Pattern.compile("^(Page \\d+ / \\d+ — )?Total: \\d+$"));
+    }
+
+    /** The "Add a mapping" modal. */
+    public Locator dialog() {
+        return app.dialog();
+    }
+
+    private Locator field(String label) {
+        return dialog().getByLabel(label, new Locator.GetByLabelOptions().setExact(true));
+    }
+
+    /** Opens "Add a mapping" and fills it: kind "Address", "Regular expression" or "Domain". */
+    public MappingsPage openForm(String kind, String source, String destination) {
+        button("Add a mapping").click();
+        assertThat(dialog().getByRole(AriaRole.HEADING)).hasText("Add a mapping");
+        field("Type").selectOption(new com.microsoft.playwright.options.SelectOption().setLabel(kind));
+        field("Source").fill(source);
+        field("Destination").fill(destination);
+        return this;
+    }
+
+    /** Clicks Create in the "Add a mapping" modal. */
+    public MappingsPage create() {
+        dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Create").setExact(true)).click();
+        return this;
     }
 
     public MappingsPage addAddress(String source, String destination) {
-        button("Add Address Mapping").click();
-        app.main().getByPlaceholder("Source (e.g. user@domain.com)").fill(source);
-        app.main().getByPlaceholder("Destination (e.g. alias@domain.com)").fill(destination);
-        button("Create").click();
-        return this;
+        openForm("Address", source, destination);
+        assertThat(field("Source")).hasAttribute("placeholder", "Source (e.g. user@domain.com)");
+        return create();
     }
 
     public MappingsPage addRegex(String source, String regex) {
-        button("Add Regex Mapping").click();
-        app.main().getByPlaceholder("Mapping source (e.g. user@domain.com)").fill(source);
-        app.main().getByPlaceholder("Regex (e.g. user@.*:intern@domain.com)").fill(regex);
-        button("Create").click();
-        return this;
+        openForm("Regular expression", source, regex);
+        assertThat(field("Destination")).hasAttribute("placeholder", "Regex (e.g. user@.*:intern@domain.com)");
+        return create();
     }
 
     public Locator domainHint() {
-        return app.main().getByText(Pattern.compile("^Mail addressed to the source domain will be rewritten"));
+        return dialog().getByText(Pattern.compile("^Mail addressed to the source domain will be rewritten"));
     }
 
     public MappingsPage openDomainForm(String source, String destination) {
-        button("Add Domain Mapping").click();
-        app.main().getByPlaceholder("Source domain (e.g. sourceDomain.tld)").fill(source);
-        app.main().getByPlaceholder("Destination domain (e.g. destination.tld)").fill(destination);
+        openForm("Domain", source, destination);
+        assertThat(field("Source")).hasAttribute("placeholder", "Source domain (e.g. sourceDomain.tld)");
         return this;
+    }
+
+    /** Confirms the removal asked by the open confirmation ("Remove"), and waits for it to close. */
+    public void confirmRemove() {
+        dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Remove").setExact(true)).click();
+        assertThat(dialog()).isHidden();
     }
 
     /** The remove action of a row, "Remove Address Mapping". */

@@ -26,9 +26,13 @@ public class UserTasksSection {
         return this;
     }
 
-    /** The row of a task, by its label: the label and its "Run" button. */
+    /** The row of a task, by its label: the label, its risk, its description and its "Run" button. */
     public Locator row(String label) {
-        return detail.main().getByText(label, new Locator.GetByTextOptions().setExact(true)).locator("xpath=..");
+        return detail.main().locator("div")
+            .filter(new Locator.FilterOptions().setHas(detail.page().getByText(label, new com.microsoft.playwright.Page.GetByTextOptions().setExact(true))))
+            .filter(new Locator.FilterOptions().setHas(detail.page().getByRole(AriaRole.BUTTON,
+                new com.microsoft.playwright.Page.GetByRoleOptions().setName("Run").setExact(true))))
+            .last();
     }
 
     public Locator labels() {

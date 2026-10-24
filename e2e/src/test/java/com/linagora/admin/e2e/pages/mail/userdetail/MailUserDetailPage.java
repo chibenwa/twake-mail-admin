@@ -12,8 +12,10 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 
 /**
- * The detail page of a user of the mail console ({@code /users/user/<username>}): a stack of
- * collapsible sections, each opened by clicking its title.
+ * The detail page of a user of the mail console ({@code /users/user/<username>}): headed by the
+ * username (h1) and the kind of object ("User", or "Address without account"), then a stack of
+ * collapsible sections, each opened by clicking its title. The browser remembers which sections
+ * are open, for every user page.
  */
 public class MailUserDetailPage {
     private static final Pattern TASK_LINK = Pattern.compile("Task ([0-9a-f-]{36})");
@@ -30,7 +32,7 @@ public class MailUserDetailPage {
 
     public MailUserDetailPage open(String username) {
         app.open(path(username));
-        assertThat(usernameLabel()).hasText("Username: " + username);
+        assertThat(title()).hasText(username);
         return this;
     }
 
@@ -46,8 +48,14 @@ public class MailUserDetailPage {
         return app.main();
     }
 
-    public Locator usernameLabel() {
-        return app.main().getByText(Pattern.compile("^Username: "));
+    /** The h1 of the page: the username. */
+    public Locator title() {
+        return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(1));
+    }
+
+    /** What the page is about, under the title: "User", or "Address without account". */
+    public Locator kind(String kind) {
+        return app.main().getByText(kind, new Locator.GetByTextOptions().setExact(true));
     }
 
     /** The title of a section, "Aliases (2)": its accessible name starts with {@code title}. */
@@ -62,9 +70,37 @@ public class MailUserDetailPage {
             new Locator.GetByRoleOptions().setName(Pattern.compile("^" + Regex.escape(title) + " ?\\(" + count + "\\)$")));
     }
 
+    /** Opens a section, unless it is already open (the browser remembers it from another user page). */
     public MailUserDetailPage toggle(String title) {
-        sectionToggle(title).click();
+        Locator toggle = sectionToggle(title);
+        assertThat(toggle).isVisible();
+        if ("false".equals(toggle.getAttribute("aria-expanded"))) {
+            toggle.click();
+        }
+        assertThat(toggle).hasAttribute("aria-expanded", "true");
         return this;
+    }
+
+    /** Closes a section, unless it is already closed. */
+    public MailUserDetailPage collapse(String title) {
+        Locator toggle = sectionToggle(title);
+        assertThat(toggle).isVisible();
+        if ("true".equals(toggle.getAttribute("aria-expanded"))) {
+            toggle.click();
+        }
+        assertThat(toggle).hasAttribute("aria-expanded", "false");
+        return this;
+    }
+
+    /** The open modal, e.g. the one opened by the "+" of a section. */
+    public Locator dialog() {
+        return app.dialog();
+    }
+
+    /** Confirms the open confirmation with its button, named after the action ("Remove", "Delete"...), and waits for it to close. */
+    public void confirm(String label) {
+        app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(label).setExact(true)).click();
+        assertThat(app.dialog()).isHidden();
     }
 
     /** An icon button of the page, named by its tooltip ("Add alias", "Search messages"...). */
@@ -98,6 +134,27 @@ public class MailUserDetailPage {
             throw new IllegalStateException("No task id in " + text);
         }
         return matcher.group(1);
+    }
+
+    /** A button of the open dialog: "Start task", "Cancel"... */
+    public Locator dialogButton(String name) {
+        return app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(name).setExact(true));
+    }
+
+    /** Clicks "Start task" in the open task dialog, without expecting it to close (validation, refusal). */
+    public void clickStartTask() {
+        dialogButton("Start task").click();
+    }
+
+    /** Clicks "Start task" in the open task dialog and waits for it to close. */
+    public void startTask() {
+        clickStartTask();
+        assertThat(app.dialog()).isHidden();
+    }
+
+    /** Opens a closed "Advanced options" part of the open dialog, by its summary text. */
+    public void openAdvanced(String summary) {
+        app.dialog().getByText(summary, new Locator.GetByTextOptions().setExact(true)).click();
     }
 
     /** The "Command: curl ..." preview of the open task dialog. */

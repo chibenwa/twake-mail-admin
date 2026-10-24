@@ -61,10 +61,15 @@ class UserDetailTest extends MailAdminE2ETest {
         assertThat(inbox.getByTitle("Total messages")).hasText("2");
         assertThat(inbox.getByTitle("Unseen messages")).hasText("2");
 
+        // The "+" next to the title opens a modal
         detail.button(mailboxes, "Create mailbox").click();
-        mailboxes.getByPlaceholder("New mailbox name (use . for nesting, e.g. INBOX.work)").fill("INBOX.qa-folder");
-        detail.button(mailboxes, "Create").click();
+        assertThat(detail.dialog().getByRole(AriaRole.HEADING)).hasText("Create mailbox");
+        Locator name = detail.dialog().getByLabel("Mailbox name", new Locator.GetByLabelOptions().setExact(true));
+        assertThat(name).isFocused();
+        name.fill("INBOX.qa-folder");
+        detail.button(detail.dialog(), "Create").click();
         app.expectToast("Mailbox created successfully");
+        assertThat(detail.dialog()).isHidden();
         assertThat(detail.toggle("Mailboxes", 2)).isVisible();
         assertThat(texts(webAdmin.get("/users/" + bob + "/mailboxes").expect(200).json(), "mailboxName"))
             .contains("INBOX.qa-folder");
@@ -75,9 +80,21 @@ class UserDetailTest extends MailAdminE2ETest {
 
         detail.clickItemButton(mailboxes, "INBOX.qa-folder", "Delete mailbox");
         assertThat(app.dialog()).containsText("Are you sure you want to delete mailbox \"INBOX.qa-folder\" and all its children?");
-        app.confirm();
+        assertThat(app.dialog()).containsText("\"INBOX.qa-folder\", its sub-folders and all their messages are permanently deleted.");
+        detail.confirm("Delete");
         app.expectToast("Mailbox deleted successfully");
         assertThat(detail.toggle("Mailboxes", 1)).isVisible();
+        assertThat(texts(webAdmin.get("/users/" + bob + "/mailboxes").expect(200).json(), "mailboxName"))
+            .containsExactly("INBOX");
+
+        // Deleting the INBOX takes typing its name
+        mailboxes.getByPlaceholder("Search mailboxes...").clear();
+        detail.clickItemButton(mailboxes, "INBOX", "Delete mailbox");
+        Locator delete = detail.button(app.dialog(), "Delete");
+        assertThat(delete).isDisabled();
+        app.dialog().getByLabel("Type INBOX to confirm", new Locator.GetByLabelOptions().setExact(true)).fill("INBOX");
+        assertThat(delete).isEnabled();
+        app.cancel();
         assertThat(texts(webAdmin.get("/users/" + bob + "/mailboxes").expect(200).json(), "mailboxName"))
             .containsExactly("INBOX");
     }
@@ -94,7 +111,8 @@ class UserDetailTest extends MailAdminE2ETest {
 
         detail.clickItemButton(mailboxes, "INBOX", "Clear mailbox content");
         assertThat(app.dialog()).containsText("Are you sure you want to delete all messages in \"INBOX\"?");
-        app.confirm();
+        assertThat(app.dialog()).containsText("All messages of \"INBOX\" are permanently deleted; the folder is kept.");
+        detail.confirm("Clear");
         Locator taskLink = app.toast("Task created").getByRole(AriaRole.LINK);
         assertThat(taskLink).isVisible();
         String taskId = taskLink.innerText().trim().substring("Task ".length());
@@ -110,44 +128,76 @@ class UserDetailTest extends MailAdminE2ETest {
     }
 
     @Test
-    @DisplayName("UDT-03 Quota: view, update, reset")
+    @DisplayName("UDT-03 Quota: view, edit the limits, remove them")
     void quotaViewUpdateReset(AdminApp app, MailFixtures fixtures, WebAdmin webAdmin) {
         String bob = fixtures.newUser("bob");
         webAdmin.put("/quota/users/" + bob + "/count", "1000").expect(204);
         webAdmin.put("/quota/users/" + bob + "/size", String.valueOf(50L * 1024 * 1024)).expect(204);
 
         UserDetailPage detail = UserDetailPage.open(app, bob);
-        Locator quota = detail.expand("Quota");
+        // The summary strip states the quota, and reveals the section
+        detail.chip("Quota: 0 B / 50.0 MB (0.0%)").click();
+        Locator quota = detail.section("Quota");
+        assertThat(detail.toggle("Quota")).hasAttribute("aria-expanded", "true");
         assertThat(quota.getByText("Occupation", new Locator.GetByTextOptions().setExact(true))).isVisible();
         assertThat(quotaRow(quota, "Used")).containsText("Count: 0");
         assertThat(quotaRow(quota, "Ratio")).containsText("Max:");
         assertThat(quota.getByText("Per user limit", new Locator.GetByTextOptions().setExact(true))).isVisible();
-        assertThat(quotaRow(quota, "Computed (effective)")).containsText("Size: 50.0 MB");
+        assertThat(quotaRow(quota, "Applied limit")).containsText("Size: 50.0 MB");
         assertThat(quotaRow(quota, "User")).hasText(Pattern.compile("Count: 1,000\\s*Size: 50\\.0 MB"));
         // No domain limit in this fresh domain: the row is omitted
         assertThat(quota.getByText("Domain", new Locator.GetByTextOptions().setExact(true))).hasCount(0);
 
-        detail.button(quota, "Update size limit").click();
-        quota.getByLabel("Size limit", new Locator.GetByLabelOptions().setExact(true)).fill("100");
-        quota.getByLabel("Unit", new Locator.GetByLabelOptions().setExact(true)).selectOption("MB");
-        detail.button(quota, "Save").click();
-        app.expectToast("Quota size updated");
-        assertThat(quotaRow(quota, "User")).containsText("Size: 100.0 MB");
+        // Both limits are edited together, prefilled with the current ones
+        detail.button(quota, "Edit limits").click();
+        Locator dialog = detail.dialog();
+        assertThat(dialog.getByRole(AriaRole.HEADING)).hasText("Quota limits of " + bob);
+        Locator count = limit(dialog, "Message count");
+        Locator size = limit(dialog, "Size");
+        assertThat(count).hasValue("1000");
+        assertThat(size).hasValue("50");
+        assertThat(dialog.getByLabel("Unit", new Locator.GetByLabelOptions().setExact(true))).hasValue("MB");
+
+        count.fill("0");
+        detail.button(dialog, "Save").click();
+        assertThat(app.dialogError()).hasText("A limit must be a positive number, or unlimited.");
+        count.fill("2000");
+        size.fill("100");
+        detail.button(dialog, "Save").click();
+        app.expectToast("Quota limits updated");
+        assertThat(dialog).isHidden();
+        assertThat(quotaRow(quota, "User")).hasText(Pattern.compile("Count: 2,000\\s*Size: 100\\.0 MB"));
         assertThat(webAdmin.get("/quota/users/" + bob + "/size").expect(200).json().asLong()).isEqualTo(104857600L);
+        assertThat(webAdmin.get("/quota/users/" + bob + "/count").expect(200).json().asLong()).isEqualTo(2000L);
 
-        detail.button(quota, "Reset to domain default").click();
-        assertThat(app.dialog()).containsText("Reset the quota size for \"" + bob + "\" to domain default?");
+        detail.button(quota, "Remove specific limits").click();
+        assertThat(app.dialog()).containsText("Remove the message count and size limits set for \"" + bob
+            + "\"? The limits of the domain, or the global ones, will apply again.");
         app.confirm();
-        app.expectToast("Quota size reset to domain default");
-        assertThat(quotaRow(quota, "User")).containsText("Size: not set");
+        app.expectToast("Specific limits removed");
+        // No limit of its own any more: the row is omitted
+        assertThat(quota.getByText("User", new Locator.GetByTextOptions().setExact(true))).hasCount(0);
+        assertThat(detail.button(quota, "Remove specific limits")).hasCount(0);
         assertThat(webAdmin.get("/quota/users/" + bob + "/size").status()).isEqualTo(204);
+        assertThat(webAdmin.get("/quota/users/" + bob + "/count").status()).isEqualTo(204);
 
-        detail.button(quota, "Update size limit").click();
-        quota.getByLabel("Size limit", new Locator.GetByLabelOptions().setExact(true)).fill("-1");
-        detail.button(quota, "Save").click();
-        app.expectToast("Quota size updated");
-        assertThat(quotaRow(quota, "User")).containsText("Size: unlimited");
+        // Unlimited size, no count limit
+        detail.button(quota, "Edit limits").click();
+        assertThat(count).hasValue("");
+        assertThat(size).hasValue("");
+        dialog.getByRole(AriaRole.GROUP, new Locator.GetByRoleOptions().setName("Size").setExact(true))
+            .getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName("Unlimited").setExact(true)).click();
+        assertThat(size).isDisabled();
+        detail.button(dialog, "Save").click();
+        app.expectToast("Quota limits updated");
+        assertThat(quotaRow(quota, "User")).hasText(Pattern.compile("Count: not set\\s*Size: unlimited"));
         assertThat(webAdmin.get("/quota/users/" + bob + "/size").expect(200).json().asLong()).isEqualTo(-1L);
+        assertThat(webAdmin.get("/quota/users/" + bob + "/count").status()).isEqualTo(204);
+    }
+
+    /** A limit field of the "Edit limits" dialog: "Message count" or "Size". */
+    private static Locator limit(Locator dialog, String name) {
+        return dialog.getByRole(AriaRole.SPINBUTTON, new Locator.GetByRoleOptions().setName(name).setExact(true));
     }
 
     /** A "label  Count: x  Size: y" row of the quota section. */
@@ -169,34 +219,48 @@ class UserDetailTest extends MailAdminE2ETest {
 
         UserDetailPage detail = UserDetailPage.open(app, alice);
         assertThat(detail.toggle("Aliases", 1)).isVisible();
+        assertThat(detail.chip("Aliases: 1")).isVisible();
         Locator aliases = detail.expand("Aliases");
         assertThat(detail.item(aliases, existingAlias)).isVisible();
 
-        detail.button(aliases, "Add alias").click();
-        aliases.getByPlaceholder("alias@domain.com").fill(newAlias);
-        detail.button(aliases, "Add").click();
+        addAlias(detail, aliases, newAlias);
         app.expectToast("Alias added successfully");
+        assertThat(detail.dialog()).isHidden();
         assertThat(detail.toggle("Aliases", 2)).isVisible();
+        assertThat(detail.chip("Aliases: 2")).isVisible();
         assertThat(texts(webAdmin.get("/address/aliases/" + alice).expect(200).json(), "source"))
             .containsExactlyInAnyOrder(existingAlias, newAlias);
 
         detail.clickItemButton(aliases, newAlias, "Remove alias");
         assertThat(app.dialog()).containsText("Remove alias \"" + newAlias + "\" from " + alice + "?");
-        app.confirm();
+        detail.confirm("Remove");
         app.expectToast("Alias removed successfully");
         assertThat(detail.toggle("Aliases", 1)).isVisible();
         assertThat(texts(webAdmin.get("/address/aliases/" + alice).expect(200).json(), "source"))
             .containsExactly(existingAlias);
 
-        detail.button(aliases, "Add alias").click();
-        aliases.getByPlaceholder("alias@domain.com").fill("not-an-address");
-        detail.button(aliases, "Add").click();
-        assertThat(app.toast("Error adding alias")).containsText("The alias is not an email address");
+        // A refusal is shown in the modal, which keeps the typed value
+        addAlias(detail, aliases, "not-an-address");
+        assertThat(app.dialogError()).containsText("The alias is not an email address");
+        assertThat(aliasField(detail)).hasValue("not-an-address");
+        app.cancel();
         assertThat(detail.toggle("Aliases", 1)).isVisible();
     }
 
+    private static Locator aliasField(UserDetailPage detail) {
+        return detail.dialog().getByLabel("Alias address", new Locator.GetByLabelOptions().setExact(true));
+    }
+
+    /** The "+" of the Aliases section, then its modal. */
+    private static void addAlias(UserDetailPage detail, Locator aliases, String alias) {
+        detail.button(aliases, "Add alias").click();
+        assertThat(detail.dialog().getByRole(AriaRole.HEADING)).hasText("Add alias");
+        aliasField(detail).fill(alias);
+        detail.button(detail.dialog(), "Add").click();
+    }
+
     @Test
-    @DisplayName("UDT-05 Forwards and \"User still receives emails\"")
+    @DisplayName("UDT-05 Forwards and \"Keep a copy in this mailbox\"")
     void forwardsAndUserStillReceives(AdminApp app, MailFixtures fixtures, WebAdmin webAdmin) {
         String brian = fixtures.newUser("brian");
         String charlotte = fixtures.newUser("charlotte");
@@ -205,47 +269,87 @@ class UserDetailTest extends MailAdminE2ETest {
 
         UserDetailPage detail = UserDetailPage.open(app, brian);
         assertThat(detail.toggle("Forwards", 1)).isVisible();
+        assertThat(detail.chip("Forwards: 1 (no copy kept)")).isVisible();
         Locator forwards = detail.expand("Forwards");
         assertThat(detail.item(forwards, charlotte)).isVisible();
-        Locator stillReceives = forwards.getByRole(AriaRole.CHECKBOX,
-            new Locator.GetByRoleOptions().setName("User still receives emails").setExact(true));
-        assertThat(stillReceives).not().isChecked();
-        assertThat(stillReceives).isEnabled();
+        // A local destination links to its user page
+        assertThat(detail.item(forwards, charlotte).getByRole(AriaRole.LINK)).hasAttribute("href", "/users/user/" + WebAdmin.encode(charlotte));
+        Locator keepCopy = forwards.getByRole(AriaRole.CHECKBOX,
+            new Locator.GetByRoleOptions().setName("Keep a copy in this mailbox").setExact(true));
+        Locator onlyForwarded = forwards.getByText("Mail to " + brian + " is only forwarded: nothing is delivered to this mailbox.");
+        assertThat(keepCopy).not().isChecked();
+        assertThat(keepCopy).isEnabled();
+        assertThat(onlyForwarded).isVisible();
 
-        stillReceives.click();
-        app.expectToast("User added to forward destinations");
-        assertThat(stillReceives).isChecked();
-        assertThat(detail.item(forwards, brian)).containsText("(self)");
+        keepCopy.click();
+        app.expectToast("A copy is kept in this mailbox");
+        assertThat(keepCopy).isChecked();
+        assertThat(onlyForwarded).isHidden();
+        // The user's own address is not listed as a forward
+        assertThat(detail.item(forwards, brian)).hasCount(0);
+        assertThat(detail.toggle("Forwards", 1)).isVisible();
+        assertThat(detail.chip("Forwards to " + charlotte)).isVisible();
         assertThat(texts(webAdmin.get("/address/forwards/" + brian).expect(200).json(), "mailAddress"))
             .containsExactlyInAnyOrder(brian, charlotte);
 
-        stillReceives.click();
-        app.expectToast("User removed from forward destinations");
-        assertThat(stillReceives).not().isChecked();
-        assertThat(detail.item(forwards, brian)).hasCount(0);
-
-        detail.button(forwards, "Add forward").click();
-        forwards.getByPlaceholder("destination@domain.com").fill(david);
-        detail.button(forwards, "Add").click();
-        app.expectToast("Forward added successfully");
-        assertThat(detail.item(forwards, david)).isVisible();
-        assertThat(texts(webAdmin.get("/address/forwards/" + brian).expect(200).json(), "mailAddress"))
-            .containsExactlyInAnyOrder(charlotte, david);
-
-        detail.clickItemButton(forwards, david, "Remove forward");
-        assertThat(app.dialog()).containsText("Remove forward to \"" + david + "\" from " + brian + "?");
-        app.confirm();
-        app.expectToast("Forward removed successfully");
-        assertThat(detail.item(forwards, david)).hasCount(0);
+        keepCopy.click();
+        app.expectToast("No copy is kept in this mailbox any more");
+        assertThat(keepCopy).not().isChecked();
+        assertThat(onlyForwarded).isVisible();
         assertThat(texts(webAdmin.get("/address/forwards/" + brian).expect(200).json(), "mailAddress"))
             .containsExactly(charlotte);
 
+        // Adding a forward asks whether to keep a copy, checked by default; the destination is suggested
+        detail.button(forwards, "Add forward").click();
+        Locator dialog = detail.dialog();
+        Locator copyInDialog = dialog.getByRole(AriaRole.CHECKBOX,
+            new Locator.GetByRoleOptions().setName("Keep a copy in " + brian + "'s mailbox").setExact(true));
+        assertThat(copyInDialog).isChecked();
+        Locator destination = dialog.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Destination address").setExact(true));
+        destination.fill(david.substring(0, david.indexOf('@')));
+        dialog.getByRole(AriaRole.OPTION, new Locator.GetByRoleOptions().setName(david).setExact(true)).click();
+        assertThat(destination).hasValue(david);
+        detail.button(dialog, "Add").click();
+        app.expectToast("Forward added successfully");
+        assertThat(dialog).isHidden();
+        assertThat(detail.item(forwards, david)).isVisible();
+        assertThat(keepCopy).isChecked();
+        assertThat(detail.toggle("Forwards", 2)).isVisible();
+        assertThat(detail.chip("Forwards: 2")).isVisible();
+        assertThat(texts(webAdmin.get("/address/forwards/" + brian).expect(200).json(), "mailAddress"))
+            .containsExactlyInAnyOrder(brian, charlotte, david);
+
+        detail.clickItemButton(forwards, david, "Remove forward");
+        assertThat(app.dialog()).containsText("Remove forward to \"" + david + "\" from " + brian + "?");
+        detail.confirm("Remove");
+        app.expectToast("Forward removed successfully");
+        assertThat(detail.item(forwards, david)).hasCount(0);
+        assertThat(texts(webAdmin.get("/address/forwards/" + brian).expect(200).json(), "mailAddress"))
+            .containsExactlyInAnyOrder(brian, charlotte);
+
+        // Once a copy is kept the question is not asked again; without a copy, unchecked, mail is only forwarded
+        detail.button(forwards, "Add forward").click();
+        assertThat(copyInDialog).hasCount(0);
+        app.cancel();
+        keepCopy.click();
+        app.expectToast("No copy is kept in this mailbox any more");
+        detail.button(forwards, "Add forward").click();
+        copyInDialog.click();
+        assertThat(dialog.getByText("Mail to " + brian + " will only be forwarded: nothing will be delivered to this mailbox."))
+            .isVisible();
+        destination.fill(david);
+        detail.button(dialog, "Add").click();
+        app.expectToast("Forward added successfully");
+        assertThat(keepCopy).not().isChecked();
+        assertThat(texts(webAdmin.get("/address/forwards/" + brian).expect(200).json(), "mailAddress"))
+            .containsExactlyInAnyOrder(charlotte, david);
+
         UserDetailPage davidDetail = UserDetailPage.open(app, david);
         Locator davidForwards = davidDetail.expand("Forwards");
-        Locator davidReceives = davidForwards.getByRole(AriaRole.CHECKBOX,
-            new Locator.GetByRoleOptions().setName("User still receives emails").setExact(true));
-        assertThat(davidReceives).isChecked();
-        assertThat(davidReceives).isDisabled();
+        Locator davidKeepsCopy = davidForwards.getByRole(AriaRole.CHECKBOX,
+            new Locator.GetByRoleOptions().setName("Keep a copy in this mailbox").setExact(true));
+        assertThat(davidKeepsCopy).isChecked();
+        assertThat(davidKeepsCopy).isDisabled();
         assertThat(davidForwards.getByText("No forwards configured.")).isVisible();
     }
 
@@ -274,7 +378,7 @@ class UserDetailTest extends MailAdminE2ETest {
 
         detail.button(mappings, "Remove all Alias sources").click();
         assertThat(app.dialog()).containsText("Remove all Alias sources of " + alice + " (" + alias + ")?");
-        app.confirm();
+        detail.confirm("Remove");
         app.expectToast("Alias sources of " + alice + " removed");
         assertThat(mappings.getByText("No mappings found.")).isVisible();
         assertThat(webAdmin.get("/mappings/sources/" + alice + "?type=alias").expect(200).json()).isEmpty();

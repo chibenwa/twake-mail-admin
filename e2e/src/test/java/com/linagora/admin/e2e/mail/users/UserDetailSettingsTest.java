@@ -59,12 +59,14 @@ class UserDetailSettingsTest extends MailAdminE2ETest {
 
         page.reload();
         detail = UserDetailPage.open(app, charlotte);
-        vacation = detail.expand("Vacation");
+        // The browser remembers the section was left open
+        assertThat(detail.toggle("Vacation")).hasAttribute("aria-expanded", "true");
+        vacation = detail.section("Vacation");
         assertVacationForm(vacation);
 
         detail.button(vacation, "Delete").click();
         assertThat(app.dialog()).containsText("Delete vacation settings for \"" + charlotte + "\"?");
-        app.confirm();
+        detail.confirm("Delete");
         app.expectToast("Vacation settings deleted");
         assertThat(label(vacation, "Subject")).hasValue("");
         assertThat(label(vacation, "Text body")).hasValue("");
@@ -95,16 +97,22 @@ class UserDetailSettingsTest extends MailAdminE2ETest {
         assertThat(delegation.getByText("Users listed here can access " + bob + "'s data through delegation.")).isVisible();
 
         detail.button(delegation, "Add delegated user").click();
-        delegation.getByPlaceholder("user@domain.tld").fill(alice);
-        assertThat(delegation.getByText("User exists", new Locator.GetByTextOptions().setExact(true))).isVisible();
-        detail.button(delegation, "Add").click();
+        Locator dialog = detail.dialog();
+        Locator user = dialog.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Delegated user").setExact(true));
+        // The user field suggests the users starting with what is typed
+        user.fill(alice.substring(0, alice.indexOf('@')));
+        dialog.getByRole(AriaRole.OPTION, new Locator.GetByRoleOptions().setName(alice).setExact(true)).click();
+        assertThat(user).hasValue(alice);
+        assertThat(dialog.getByText("User exists", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        detail.button(dialog, "Add").click();
         app.expectToast("Delegated user added");
+        assertThat(dialog).isHidden();
         assertThat(detail.item(delegation, alice)).isVisible();
         assertThat(texts(webAdmin.get("/users/" + bob + "/authorizedUsers").expect(200).json(), null))
             .containsExactly(alice);
 
         detail.clickItemButton(delegation, alice, "Remove delegated user");
-        app.confirm();
+        detail.confirm("Remove");
         app.expectToast("Delegated user removed");
         assertThat(delegation.getByText("No delegated users.")).isVisible();
         assertThat(webAdmin.get("/users/" + bob + "/authorizedUsers").expect(200).json()).isEmpty();
@@ -145,14 +153,18 @@ class UserDetailSettingsTest extends MailAdminE2ETest {
         assertThat(detail.toggle("JMAP Identities", 1)).isVisible();
         Locator identities = detail.expand("JMAP Identities");
         detail.button(identities, "Create identity").click();
-        label(identities, "Name").fill("Bob QA");
-        label(identities, "Email").fill(bob);
-        identities.getByText("Text Signature", new Locator.GetByTextOptions().setExact(true)).click();
-        assertThat(label(identities, "Text Signature")).isFocused();
-        label(identities, "Text Signature").fill("--bob");
-        label(identities, "Sort Order").fill("5");
-        detail.button(identities, "Create").click();
+        Locator create = detail.dialog();
+        assertThat(create.getByRole(AriaRole.HEADING)).hasText("New Identity");
+        assertThat(label(create, "Name")).isFocused();
+        label(create, "Name").fill("Bob QA");
+        label(create, "Email").fill(bob);
+        create.getByText("Text Signature", new Locator.GetByTextOptions().setExact(true)).click();
+        assertThat(label(create, "Text Signature")).isFocused();
+        label(create, "Text Signature").fill("--bob");
+        label(create, "Sort Order").fill("5");
+        detail.button(create, "Create").click();
         app.expectToast("Identity created");
+        assertThat(create).isHidden();
         assertThat(detail.toggle("JMAP Identities", 2)).isVisible();
 
         JsonNode created = identity(webAdmin, bob, "Bob QA");
@@ -189,17 +201,19 @@ class UserDetailSettingsTest extends MailAdminE2ETest {
             .last();
         detail.button(identityRow, "Delete identity").click();
         assertThat(app.dialog()).containsText("Delete identity \"Bob QA edited <" + bob + ">\"?");
-        app.confirm();
+        detail.confirm("Delete");
         app.expectToast("Identity deleted");
         assertThat(detail.toggle("JMAP Identities", 1)).isVisible();
         assertThat(texts(webAdmin.get("/users/" + bob + "/identities").expect(200).json(), "id")).doesNotContain(id);
 
-        // An address bob may not send from is refused
+        // An address bob may not send from is refused: the modal shows why and keeps the typed values
         detail.button(identities, "Create identity").click();
-        label(identities, "Name").fill("Not bob");
-        label(identities, "Email").fill(alice);
-        detail.button(identities, "Create").click();
-        app.expectToast("Error creating identity");
+        label(create, "Name").fill("Not bob");
+        label(create, "Email").fill(alice);
+        detail.button(create, "Create").click();
+        assertThat(app.dialogError()).isVisible();
+        assertThat(label(create, "Email")).hasValue(alice);
+        app.cancel();
         assertThat(webAdmin.get("/users/" + bob + "/identities").expect(200).json()).hasSize(1);
     }
 
@@ -221,11 +235,14 @@ class UserDetailSettingsTest extends MailAdminE2ETest {
         assertThat(detail.toggle("Labels", 0)).isVisible();
         Locator labels = detail.expand("Labels");
         detail.button(labels, "Create label").click();
-        label(labels, "Display Name *").fill("Work");
-        label(labels, "Color (optional)").fill("#ff0000");
-        label(labels, "Description (optional)").fill("Work emails");
-        detail.button(labels, "Create").click();
+        Locator create = detail.dialog();
+        assertThat(create.getByRole(AriaRole.HEADING)).hasText("New Label");
+        label(create, "Display Name *").fill("Work");
+        label(create, "Color (optional)").fill("#ff0000");
+        label(create, "Description (optional)").fill("Work emails");
+        detail.button(create, "Create").click();
         app.expectToast("Label created");
+        assertThat(create).isHidden();
         assertThat(detail.toggle("Labels", 1)).isVisible();
         JsonNode created = webAdmin.get("/users/" + bob + "/labels").expect(200).json().get(0);
         assertThat(created.path("displayName").asText()).isEqualTo("Work");
@@ -264,7 +281,7 @@ class UserDetailSettingsTest extends MailAdminE2ETest {
 
         detail.button(row, "Delete label").click();
         assertThat(app.dialog()).containsText("Delete label \"Work\"?");
-        app.confirm();
+        detail.confirm("Delete");
         app.expectToast("Label deleted");
         assertThat(labels.getByText("No labels configured.")).isVisible();
         assertThat(webAdmin.get("/users/" + bob + "/labels").expect(200).json()).isEmpty();

@@ -49,8 +49,10 @@ public class MessageSearchPage {
         return app.main().getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Sort direction").setExact(true));
     }
 
+    /** The breadcrumb back to the page of the user. */
     public Locator backLink(String username) {
-        return app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("← " + username).setExact(true));
+        return app.main().getByRole(AriaRole.NAVIGATION, new Locator.GetByRoleOptions().setName("Breadcrumb"))
+            .getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(username).setExact(true));
     }
 
     /** The path the search is POSTed to, as the app encodes it. */

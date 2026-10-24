@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,10 @@ import com.linagora.admin.e2e.backend.WebAdmin;
 import com.linagora.admin.e2e.docker.BrowserLog;
 import com.linagora.admin.e2e.pages.AdminApp;
 import com.linagora.admin.e2e.pages.mail.userdetail.MailUserDetailPage;
+import com.linagora.admin.e2e.pages.mail.userdetail.Regex;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.AriaRole;
 
 class UserDetailMiscTest extends MailAdminE2ETest {
 
@@ -32,24 +35,47 @@ class UserDetailMiscTest extends MailAdminE2ETest {
         assertThat(detail.button("Refresh")).hasAttribute("title", "Refresh");
         detail.button("Disconnect all").click();
         assertThat(app.dialog()).containsText("Disconnect channels for " + user);
-        app.confirm();
+        detail.confirm("Disconnect all");
         app.expectToast(user + " disconnected");
         assertThat(app.main().getByText("No active channels.")).isVisible();
     }
 
     @Test
-    @DisplayName("UDT-22 Unknown user detail")
-    void unknownUserDetail(AdminApp app, MailFixtures fixtures, BrowserLog browserLog) {
-        String ghost = Ids.unique("ghost") + "@" + fixtures.domain();
+    @DisplayName("UDT-22 Unknown user detail: an address without account")
+    void unknownUserDetail(AdminApp app, MailFixtures fixtures, WebAdmin webAdmin, Page page, BrowserLog browserLog) {
+        String bob = fixtures.newUser("bob");
+        // An account deleted while it still forwarded its mail: the forward outlives it
+        String ghost = fixtures.newUser("ghost");
+        String local = ghost.substring(0, ghost.indexOf('@'));
+        webAdmin.put("/address/forwards/" + ghost + "/targets/" + bob).expect(204);
+        webAdmin.delete("/users/" + ghost).expect(204);
         MailUserDetailPage detail = new MailUserDetailPage(app).open(ghost);
 
-        detail.toggle("Mailboxes");
-        assertThat(app.main().getByText(java.util.regex.Pattern.compile("^Error: ")).first()).isVisible();
-        detail.toggle("Quota");
-        detail.toggle("Aliases");
-        detail.toggle("Tasks");
-        assertThat(app.main().getByText("Reindex all mailboxes", new Locator.GetByTextOptions().setExact(true))).isVisible();
-        assertThat(detail.usernameLabel()).hasText("Username: " + ghost);
+        assertThat(detail.kind("Address without account")).isVisible();
+        assertThat(app.main().getByRole(AriaRole.ALERT)).containsText("No account named " + ghost + " exists on this server.");
+        // Only what applies to a bare address: its forwards and the mappings it is the source of
+        assertThat(detail.sectionToggle("Forwards", 1)).isVisible();
+        assertThat(detail.sectionToggle("Mappings", 1)).isVisible();
+        for (String absent : List.of("Mailboxes", "Quota", "Aliases", "Vacation", "Tasks")) {
+            assertThat(detail.sectionToggle(absent)).hasCount(0);
+        }
+        assertThat(detail.button("Expand all")).hasCount(0);
+
+        // No mailbox to keep a copy in; the leftover forward can be removed
+        detail.toggle("Forwards");
+        assertThat(app.main().getByRole(AriaRole.CHECKBOX)).hasCount(0);
+        assertThat(app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(bob).setExact(true))).isVisible();
+        detail.iconButton("Remove forward").click();
+        detail.confirm("Remove");
+        app.expectToast("Forward removed successfully");
+        assertThat(app.main().getByText("No forwards configured.")).isVisible();
+        assertThat(detail.sectionToggle("Mappings", 0)).isVisible();
+        assertThat(webAdmin.get("/address/forwards/" + ghost).body()).doesNotContain(bob);
+
+        app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Search the users").setExact(true)).click();
+        assertThat(page).hasURL(Pattern.compile("/users\\?q=" + Regex.escape(local) + "$"));
+        assertThat(app.main().getByPlaceholder("Search users by name prefix...")).hasValue(local);
+        assertThat(app.main().getByText("No username starts with \"" + local + "\".")).isVisible();
         assertThat(browserLog.pageErrors()).isEmpty();
     }
 
@@ -76,24 +102,21 @@ class UserDetailMiscTest extends MailAdminE2ETest {
         page.evaluate("path => { history.pushState({}, '', path); dispatchEvent(new PopStateEvent('popstate')); }",
             MailUserDetailPage.path(alice));
 
-        assertThat(detail.usernameLabel()).hasText("Username: " + alice);
-        // Every section collapsed again, as on a fresh load
-        assertThat(app.main().getByPlaceholder("Search mailboxes...")).hasCount(0);
-        assertThat(app.main().getByText("Per user limit")).hasCount(0);
-        assertThat(text(app, "BobBox")).hasCount(0);
-        assertThat(text(app, bobAlias)).hasCount(0);
-
-        detail.toggle("Mailboxes").toggle("Aliases");
+        assertThat(detail.title()).hasText(alice);
+        // The open sections stay open, remembered for every user page, and show alice's data only
+        assertThat(detail.sectionToggle("Mailboxes")).hasAttribute("aria-expanded", "true");
         assertThat(text(app, "AliceBox")).isVisible();
         assertThat(text(app, aliceAlias)).isVisible();
+        assertThat(app.main().getByText("Per user limit")).isVisible();
         assertThat(text(app, "BobBox")).hasCount(0);
+        assertThat(text(app, bobAlias)).hasCount(0);
         assertThat(requests).isNotEmpty()
             .noneMatch(url -> url.contains(WebAdmin.encode(bob)) || url.contains(bob));
 
         page.goBack();
-        assertThat(detail.usernameLabel()).hasText("Username: " + bob);
-        detail.toggle("Mailboxes");
+        assertThat(detail.title()).hasText(bob);
         assertThat(text(app, "BobBox")).isVisible();
+        assertThat(text(app, bobAlias)).isVisible();
         assertThat(text(app, "AliceBox")).hasCount(0);
     }
 

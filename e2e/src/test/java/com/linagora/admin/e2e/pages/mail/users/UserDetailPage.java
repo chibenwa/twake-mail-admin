@@ -10,12 +10,14 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.options.AriaRole;
 
 /**
- * The detail page of a Mail user ({@code /users/user/<username>}): a stack of collapsible
- * sections, each one opened by a toggle button named after its title, plus its count
- * ({@code "Aliases (2)"}) once loaded.
+ * The detail page of a Mail user ({@code /users/user/<username>}): headed by the username (h1)
+ * under a "Users" breadcrumb, a strip of summary chips, then a stack of collapsible sections,
+ * each one opened by a toggle button named after its title, plus its count
+ * ({@code "Aliases (2)"}) once loaded. The "+" next to a title opens a modal.
  */
 public class UserDetailPage {
-    public static final String TITLE = "User Details";
+    /** The kind of object shown under the title of an existing user. */
+    public static final String KIND = "User";
 
     private final AdminApp app;
     private final String username;
@@ -28,7 +30,9 @@ public class UserDetailPage {
     public static UserDetailPage open(AdminApp app, String username) {
         app.open("/users/user/" + WebAdmin.encode(username));
         UserDetailPage page = new UserDetailPage(app, username);
-        assertThat(page.card().getByText("Username: " + username, new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(page.title()).hasText(username);
+        // The sections show once the account is known to exist
+        assertThat(page.toggle("Mailboxes")).isVisible();
         return page;
     }
 
@@ -45,14 +49,33 @@ public class UserDetailPage {
         return username;
     }
 
+    /** The h1 of the page: the username. */
     public Locator title() {
-        return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName(TITLE).setExact(true).setLevel(3));
+        return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(1));
     }
 
-    /** The card holding the sections. */
+    /** The "Users" breadcrumb link back to the list. */
+    public Locator breadcrumb() {
+        return app.main().getByRole(AriaRole.NAVIGATION, new Locator.GetByRoleOptions().setName("Breadcrumb"))
+            .getByRole(AriaRole.LINK);
+    }
+
+    /** A chip of the summary strip under the title, by its text ("Aliases: 2"); clicking it reveals its section. */
+    public Locator chip(String text) {
+        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(text).setExact(true));
+    }
+
+    /** The card holding the sections: the innermost box holding the Forwards and the Mappings sections, present on every user page. */
     public Locator card() {
-        return app.main().locator("div").filter(new Locator.FilterOptions().setHas(app.page().getByRole(AriaRole.HEADING,
-            new com.microsoft.playwright.Page.GetByRoleOptions().setName(TITLE).setExact(true).setLevel(3)))).last();
+        return app.main().locator("div")
+            .filter(new Locator.FilterOptions().setHas(sectionTitle("Forwards")))
+            .filter(new Locator.FilterOptions().setHas(sectionTitle("Mappings")))
+            .last();
+    }
+
+    private Locator sectionTitle(String title) {
+        return app.page().getByRole(AriaRole.BUTTON, new com.microsoft.playwright.Page.GetByRoleOptions()
+            .setName(Pattern.compile("^" + escape(title) + "( \\(\\d+\\))?$")));
     }
 
     /** The toggle of a section, {@code "Aliases"} matches "Aliases" and "Aliases (2)". */
@@ -73,10 +96,29 @@ public class UserDetailPage {
             new com.microsoft.playwright.Page.GetByRoleOptions().setName(Pattern.compile("^" + escape(title) + "( \\(\\d+\\))?$")))));
     }
 
-    /** Opens a collapsed section (all sections start collapsed) and returns it. */
+    /**
+     * Opens a section and returns it. Sections start collapsed in a fresh browser, and the
+     * browser remembers which ones were opened for every user page: open it only if collapsed.
+     */
     public Locator expand(String title) {
-        toggle(title).click();
+        Locator toggle = toggle(title);
+        assertThat(toggle).isVisible();
+        if ("false".equals(toggle.getAttribute("aria-expanded"))) {
+            toggle.click();
+        }
+        assertThat(toggle).hasAttribute("aria-expanded", "true");
         return section(title);
+    }
+
+    /** The open modal, e.g. the one opened by the "+" of a section. */
+    public Locator dialog() {
+        return app.dialog();
+    }
+
+    /** Confirms the open confirmation with its button, named after the action ("Remove", "Delete"...), and waits for it to close. */
+    public void confirm(String label) {
+        button(app.dialog(), label).click();
+        assertThat(app.dialog()).isHidden();
     }
 
     /** A button of a section by its accessible name (its text, or the title of an icon button). */
