@@ -21,6 +21,10 @@ import { appConfig } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import ListToolbar from "@/components/custom/list-toolbar";
 import CreateMappingDialog, { MappingKind } from "./create-mapping-dialog";
+import UserLink from "@/components/custom/user-link";
+
+// Mappings between addresses, whose ends can be users; regex and domain mappings are not
+const ADDRESS_TYPES = ["Address", "Alias", "Forward", "Group"];
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -268,9 +272,9 @@ export default function MappingsList() {
                 <td className="px-4 py-2 text-sm text-gray-500">
                   {(page - 1) * PAGE_LIMIT + index + 1}
                 </td>
-                <td className="px-4 py-2 text-sm">{mapping.source}</td>
+                <td className="px-4 py-2 text-sm">{ADDRESS_TYPES.includes(mapping.type) ? <UserLink address={mapping.source} /> : mapping.source}</td>
                 <td className="px-4 py-2 text-sm">{isKeptCopy(mapping) ? t("mappings.forwardCopyKept") : mapping.type}</td>
-                <td className="px-4 py-2 text-sm">{mapping.destination}</td>
+                <td className="px-4 py-2 text-sm">{ADDRESS_TYPES.includes(mapping.type) ? <UserLink address={mapping.destination} /> : mapping.destination}</td>
                 <td className="px-4 py-2 text-sm">
                   {canDeleteMapping(mapping.type) && (
                     <button

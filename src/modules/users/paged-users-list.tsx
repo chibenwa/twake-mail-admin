@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { PaginationControls } from "@/components/custom/pagination-controls";
@@ -7,6 +7,7 @@ import { PAGE_LIMIT } from "@/lib/search-pagination";
 import { UsernamesSource } from "./users-paging";
 import { useUsersPages } from "./use-users-pages";
 import ListToolbar from "@/components/custom/list-toolbar";
+import UserLink from "@/components/custom/user-link";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -89,9 +90,7 @@ export function PagedUsersList({ source, domain, domainChoices = [] }: PagedUser
           <div key={username} className="space-y-1 p-4 bg-white rounded-2 my-4 flex justify-between items-center transition-colors hover:bg-gray-50">
             <h4 className="min-w-0 text-sm font-medium leading-none break-all">
               <span className="text-gray-500 mr-2">{pages.offset + index + 1}/</span>
-              <Link to={`/users/user/${encodeURIComponent(username)}`} className="text-blue-600 hover:underline">
-                {username}
-              </Link>
+              <UserLink address={username} known />
               {isUnmanaged(username) && (
                 <span
                   className="ml-2 inline-block text-xs font-normal rounded px-1.5 py-0.5 bg-gray-100 text-gray-600 whitespace-nowrap"

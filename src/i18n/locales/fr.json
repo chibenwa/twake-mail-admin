@@ -1904,7 +1904,8 @@
     "locateMessageLabel": "Localiser un message par ID",
     "messagePlaceholder": "ex. un UUID ou un entier selon le backend",
     "foundInMailboxes": "Trouvé dans {{count}} boîte(s) :",
-    "notInAnyMailbox": "Le message a été trouvé mais n'appartient à aucune boîte."
+    "notInAnyMailbox": "Le message a été trouvé mais n'appartient à aucune boîte.",
+    "ownerLabel": "Propriétaire :"
   },
   "liveMetrics": {
     "title": "Métriques en direct",

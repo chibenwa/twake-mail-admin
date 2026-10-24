@@ -1904,7 +1904,8 @@
     "locateMessageLabel": "Locate a message by ID",
     "messagePlaceholder": "e.g. a UUID or integer depending on the backend",
     "foundInMailboxes": "Found in {{count}} mailbox(es):",
-    "notInAnyMailbox": "The message was found but belongs to no mailbox."
+    "notInAnyMailbox": "The message was found but belongs to no mailbox.",
+    "ownerLabel": "Owner:"
   },
   "liveMetrics": {
     "title": "Live Metrics",

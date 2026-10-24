@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import UserLink from "@/components/custom/user-link";
 import { useTranslation } from "react-i18next";
 import { PaginationControls } from "@/components/custom/pagination-controls";
 import { useFetchData } from "@/hooks/use-fetch-data";
@@ -52,12 +52,7 @@ export default function UsersWithSpecificQuotas({ formatCount, formatSize }: Use
               <div key={u.user} className="flex justify-between items-center py-1 text-sm">
                 <span>
                   <span className="text-gray-500 mr-2">{offset + i + 1}/</span>
-                  <Link
-                    to={`/users/user/${encodeURIComponent(u.user)}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    {u.user}
-                  </Link>
+                  <UserLink address={u.user} known />
                 </span>
                 <span>
                   <span className="mr-4">{t("common.count")} <strong>{formatCount(u.countLimit)}</strong></span>

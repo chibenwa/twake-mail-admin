@@ -1,5 +1,5 @@
 import { useCallback, useId, useState } from "react";
-import { Link } from "react-router";
+import UserLink from "@/components/custom/user-link";
 import { Contact, Plus, Minus, Pencil, Trash2, Save, Eye, EyeOff, Users, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
@@ -185,12 +185,7 @@ function AddressBookRow({
         {owner && (
           <p className="text-xs text-gray-400">
             {t("users.addressBooks.ownerLabel")}{" "}
-            <Link
-              to={`/users/user/${encodeURIComponent(owner)}`}
-              className="text-blue-600 hover:underline"
-            >
-              {owner}
-            </Link>
+            <UserLink address={owner} known />
           </p>
         )}
       </div>

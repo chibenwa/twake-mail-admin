@@ -13,6 +13,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 import UserSuggestInput from "@/components/custom/user-suggest-input";
+import UserLink from "@/components/custom/user-link";
 
 interface Props {
   username: string;
@@ -230,7 +231,7 @@ export default function UserForwards({ username, noMailbox = false }: Props) {
                 >
                   <h4 className="min-w-0 text-sm font-medium leading-none break-all">
                     <span className="text-gray-500 mr-2">{index + 1}/</span>
-                    {fwd.mailAddress}
+                    <UserLink address={fwd.mailAddress} />
                   </h4>
                   {canRemove && (
                     <button

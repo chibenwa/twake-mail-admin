@@ -1,4 +1,5 @@
 import { useCallback, useId, useMemo, useState } from "react";
+import UserLink from "@/components/custom/user-link";
 import { useParams } from "react-router";
 import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -158,7 +159,7 @@ export default function TeamMailboxDetail() {
             >
               <h4 className="min-w-0 text-sm font-medium leading-none break-all">
                 <span className="text-gray-500 mr-2">{(page - 1) * PAGE_LIMIT + index + 1}/</span>
-                {member.username}
+                <UserLink address={member.username} />
                 <span className="text-xs text-muted-foreground ml-2">({member.role})</span>
               </h4>
               {canRemoveMember && (

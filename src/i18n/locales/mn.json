@@ -1904,7 +1904,8 @@
     "locateMessageLabel": "Захидлыг ID-аар байршуулах",
     "messagePlaceholder": "жнь backend-ээс хамаарч UUID эсвэл бүхэл тоо",
     "foundInMailboxes": "{{count}} шуудангийн хайрцагт олдлоо:",
-    "notInAnyMailbox": "Захидал олдсон боловч ямар ч шуудангийн хайрцагт хамаарахгүй байна."
+    "notInAnyMailbox": "Захидал олдсон боловч ямар ч шуудангийн хайрцагт хамаарахгүй байна.",
+    "ownerLabel": "Эзэмшигч:"
   },
   "liveMetrics": {
     "title": "Шууд хэмжүүр",

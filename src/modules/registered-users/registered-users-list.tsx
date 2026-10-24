@@ -1,7 +1,7 @@
 import { useCallback, useId, useMemo, useState } from "react";
+import UserLink from "@/components/custom/user-link";
 import { Pencil, Trash2, AlertTriangle } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
 import { appConfig } from "@/lib/config";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { useToast } from "@/hooks/use-toast";
@@ -201,9 +201,7 @@ export default function RegisteredUsersList() {
                 </span>
                 {/* Like the Users list: the page of the user, with their calendars and address books */}
                 {user.email ? (
-                  <Link to={`/users/user/${encodeURIComponent(user.email)}`} className="text-blue-600 hover:underline">
-                    {user.email}
-                  </Link>
+                  <UserLink address={user.email} known />
                 ) : user.email}
               </h4>
               <p className="text-xs text-gray-500 mt-1">

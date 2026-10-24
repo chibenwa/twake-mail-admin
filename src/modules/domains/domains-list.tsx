@@ -16,6 +16,7 @@ import { PaginationControls } from "@/components/custom/pagination-controls";
 import ImportDomainsButton from "./import-domains-button";
 import CreateDomainButton from "./create-domain-button";
 import ListToolbar from "@/components/custom/list-toolbar";
+import { forgetManagedDomains } from "@/hooks/use-managed-domains";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 const EXAMPLE_USERS = 3;
@@ -43,8 +44,13 @@ export default function DomainsList() {
     data: domainsResult,
     isLoading,
     error,
-    refresh,
+    refresh: refreshList,
   } = useFetchData<GetDomainsResponseType>(getDomains);
+  // The user links of the console tell local addresses by these domains
+  const refresh = () => {
+    forgetManagedDomains();
+    refreshList();
+  };
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");

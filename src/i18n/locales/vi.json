@@ -1902,7 +1902,8 @@
     "locateMessageLabel": "Định vị thư theo ID",
     "messagePlaceholder": "vd. một UUID hoặc số nguyên tùy theo backend",
     "foundInMailboxes": "Tìm thấy trong {{count}} hộp thư:",
-    "notInAnyMailbox": "Đã tìm thấy thư nhưng nó không thuộc hộp thư nào."
+    "notInAnyMailbox": "Đã tìm thấy thư nhưng nó không thuộc hộp thư nào.",
+    "ownerLabel": "Chủ sở hữu:"
   },
   "liveMetrics": {
     "title": "Số liệu trực tiếp",

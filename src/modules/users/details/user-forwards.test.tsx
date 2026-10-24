@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render as renderComponent, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
+import { ReactElement } from "react";
 
 const mocks = vi.hoisted(() => ({
   toast: vi.fn(),
@@ -20,8 +22,12 @@ vi.mock("@/lib/proxy-resolver-context", () => ({ useIsAllowed: () => true }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => vi.fn() }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: mocks.toast }) }));
 vi.mock("../api-client", () => mocks.api);
+vi.mock("@/hooks/use-managed-domains", () => ({ useManagedDomains: () => new Set(["example.com"]) }));
 
 import UserForwards from "./user-forwards";
+
+// The destinations link to their user pages
+const render = (ui: ReactElement) => renderComponent(<MemoryRouter>{ui}</MemoryRouter>);
 
 // The Radix checkbox measures itself; jsdom has no ResizeObserver
 globalThis.ResizeObserver ??= class { observe() {} unobserve() {} disconnect() {} } as unknown as typeof ResizeObserver;
@@ -124,5 +130,16 @@ describe("user forwards: keep a copy", () => {
     expect(screen.getByText("(1)")).not.toBeNull();
     expect(screen.queryByText(ALICE)).toBeNull();
     expect(screen.queryByText(/users.forwards.onlyForwarded /)).toBeNull();
+  });
+});
+
+describe("user forwards: destinations", () => {
+  it("links a local destination to its user page, not an external one", async () => {
+    mocks.api.getUserForwards.mockResolvedValue([{ mailAddress: "emma@example.com" }, { mailAddress: "someone@gmail.com" }]);
+    render(<UserForwards username={ALICE} />);
+    fireEvent.click(screen.getByText("users.forwards.title"));
+
+    expect((await screen.findByRole("link", { name: "emma@example.com" })).getAttribute("href")).toBe("/users/user/emma%40example.com");
+    expect(screen.getByText("someone@gmail.com").closest("a")).toBeNull();
   });
 });

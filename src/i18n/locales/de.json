@@ -1904,7 +1904,8 @@
     "locateMessageLabel": "Nachricht anhand der ID finden",
     "messagePlaceholder": "z. B. eine UUID oder eine Ganzzahl, je nach Backend",
     "foundInMailboxes": "Gefunden in {{count}} Postfach/Postfächern:",
-    "notInAnyMailbox": "Die Nachricht wurde gefunden, gehört aber zu keinem Postfach."
+    "notInAnyMailbox": "Die Nachricht wurde gefunden, gehört aber zu keinem Postfach.",
+    "ownerLabel": "Eigentümer:"
   },
   "liveMetrics": {
     "title": "Live-Metriken",

@@ -15,7 +15,7 @@ import Header from "@/components/custom/header";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaginationControls } from "@/components/custom/pagination-controls";
-import { endDate, formatDate, statusLabel, STATUS_COLORS, TaskDetails, taskTarget, TaskSummary } from "./task-summary";
+import { endDate, formatDate, statusLabel, STATUS_COLORS, TaskDetails, taskTarget, TaskTarget, TaskSummary } from "./task-summary";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -322,7 +322,10 @@ export default function Tasks() {
                       {task.type}
                     </span>
                     {taskTarget(task) && (
-                      <span className="block text-xs text-gray-500 break-all">{taskTarget(task)}</span>
+                      // A user target links to its page, without opening the task
+                      <span className="block text-xs text-gray-500 break-all" onClick={(e) => e.stopPropagation()}>
+                        <TaskTarget task={task} />
+                      </span>
                     )}
                   </div>
                   {/* Below md the header is hidden: status and labelled dates stack under the ID / type */}

@@ -3,6 +3,10 @@ import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { TaskDetailResponse, TaskStatus } from "@/modules/common-tasks/types";
 import { currentLocale } from "@/i18n/locale";
+import UserLink from "@/components/custom/user-link";
+
+// The additionalInformation keys holding a user, shown as a link to their page
+const USER_KEYS = new Set(["username", "user", "oldUser", "newUser"]);
 
 /**
  * A task as the operator reads it, shared by the detail dialog of the Tasks list and by the
@@ -90,6 +94,14 @@ export function taskTarget(task: TaskDetailResponse): string | null {
   return typeof target === "string" && target ? target : null;
 }
 
+/** The target of a task, a link when it is a user. */
+export function TaskTarget({ task }: { task: TaskDetailResponse }) {
+  const target = taskTarget(task);
+  if (!target) return null;
+  const info = task.additionalInformation ?? {};
+  return target === info.username && !info.repositoryPath ? <UserLink address={target} /> : <>{target}</>;
+}
+
 export function StatusPill({ status }: { status: TaskStatus }) {
   const { t } = useTranslation();
   return (
@@ -139,7 +151,9 @@ export function TaskDetails({ task, raw }: { task: TaskDetailResponse; raw: unkn
             {entries.map(([key, value]) => (
               <Fragment key={key}>
                 <span className="text-gray-500 font-medium">{DETAIL_LABEL_KEYS[key] ? t(DETAIL_LABEL_KEYS[key]) : key}</span>
-                {typeof value === "object"
+                {USER_KEYS.has(key) && typeof value === "string"
+                  ? <span className="min-w-0"><UserLink address={value} /></span>
+                  : typeof value === "object"
                   ? <pre className="text-xs bg-gray-50 p-2 rounded overflow-x-auto">{JSON.stringify(value, null, 2)}</pre>
                   : <span className="min-w-0 break-words">{String(value)}</span>}
               </Fragment>

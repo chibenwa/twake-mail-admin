@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import UserLink from "@/components/custom/user-link";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -162,7 +163,7 @@ export default function UserDelegation({ username }: Props) {
                 >
                   <h4 className="min-w-0 text-sm font-medium leading-none break-all">
                     <span className="text-gray-500 mr-2">{index + 1}/</span>
-                    {user}
+                    <UserLink address={user} />
                   </h4>
                   {canRemove && (
                     <button

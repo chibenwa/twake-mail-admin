@@ -1,5 +1,5 @@
 import { FormEvent, useId, useState } from "react";
-import { Link } from "react-router";
+import UserLink from "@/components/custom/user-link";
 import { Search, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -243,12 +243,7 @@ export default function ExploreUserQuota({ domain }: Props) {
                             className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-2 items-center px-2 py-2 bg-white rounded hover:bg-gray-100 transition text-sm"
                           >
                             <span className="text-muted-foreground w-8">{globalIndex}.</span>
-                            <Link
-                              to={`/users/user/${encodeURIComponent(entry.username)}`}
-                              className="text-blue-600 hover:underline truncate"
-                            >
-                              {entry.username}
-                            </Link>
+                            <UserLink address={entry.username} known className="truncate" />
                             <span className="w-24 text-right font-mono text-xs">
                               {formatSize(occ.size)}
                               <span className="text-gray-400 ml-1">({formatPercent(occ.ratio.size)})</span>

@@ -1,4 +1,6 @@
 import { useId, useState } from "react";
+import UserLink from "@/components/custom/user-link";
+import { parseMailboxPath } from "@/lib/mailbox-path";
 import { Search, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -66,6 +68,7 @@ function SearchSection({ label, placeholder, onSearch, status, children }: Searc
 
 function MailboxCard({ mailbox }: { mailbox: MailboxResult }) {
   const { t } = useTranslation();
+  const owner = parseMailboxPath(mailbox.mailboxPath)?.owner;
   return (
     <Card>
       <CardContent className="py-3 flex flex-col gap-1 text-sm">
@@ -77,6 +80,12 @@ function MailboxCard({ mailbox }: { mailbox: MailboxResult }) {
           <span className="font-medium text-muted-foreground">{t("resourceLocator.mailboxPathLabel")} </span>
           <span className="font-mono">{mailbox.mailboxPath}</span>
         </div>
+        {owner && (
+          <div>
+            <span className="font-medium text-muted-foreground">{t("resourceLocator.ownerLabel")} </span>
+            <UserLink address={owner} />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
