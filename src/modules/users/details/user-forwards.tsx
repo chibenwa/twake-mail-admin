@@ -5,7 +5,7 @@ import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { useUserMappingsRevision } from "./user-mappings-revision";
 import { getUserForwards, addUserForward, removeUserForward } from "../api-client";
-import { GetUserForwardsResponseType } from "../types";
+import { ForwardDestination, GetUserForwardsResponseType } from "../types";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,9 +16,19 @@ import UserSuggestInput from "@/components/custom/user-suggest-input";
 
 interface Props {
   username: string;
+  // An address without account: it can be forwarded, but there is no mailbox to keep a copy in
+  noMailbox?: boolean;
 }
 
-export default function UserForwards({ username }: Props) {
+/** What the forwards of a user amount to, for the summary strip. */
+export interface ForwardsFact {
+  // The destinations other than the user itself
+  destinations: ForwardDestination[];
+  // Whether mail is still delivered to the user's own mailbox
+  copyKept: boolean;
+}
+
+export default function UserForwards({ username, noMailbox = false }: Props) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const confirm = useConfirm();
@@ -35,24 +45,31 @@ export default function UserForwards({ username }: Props) {
   } = useFetchData<GetUserForwardsResponseType>(canView ? fetchForwards : null, revision);
 
   const [open, setOpen, openContentId] = useSectionOpen("forwards");
-  useSectionFact("forwards", forwards ?? undefined);
   const [newForward, setNewForward] = useState("");
+  const [keepCopy, setKeepCopy] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
 
-  const sorted = useMemo(() => {
+  // The user's own address among the destinations is not a forward: it keeps a copy in the mailbox
+  const destinations = useMemo(() => {
     if (!forwards) return [];
-    return [...forwards].sort((a, b) => a.mailAddress.localeCompare(b.mailAddress));
-  }, [forwards]);
+    return forwards
+      .filter((f) => f.mailAddress !== username)
+      .sort((a, b) => a.mailAddress.localeCompare(b.mailAddress));
+  }, [forwards, username]);
 
   const userInForwards = useMemo(() => {
     if (!forwards) return false;
     return forwards.some((f) => f.mailAddress === username);
   }, [forwards, username]);
 
-  const hasExternalForwards = useMemo(() => {
-    if (!forwards) return false;
-    return forwards.some((f) => f.mailAddress !== username);
-  }, [forwards, username]);
+  const hasExternalForwards = destinations.length > 0;
+  // Without any forward, mail is delivered to the mailbox
+  const copyKept = !hasExternalForwards || userInForwards;
+  const fact = useMemo<ForwardsFact | undefined>(
+    () => (forwards ? { destinations, copyKept } : undefined),
+    [forwards, destinations, copyKept]
+  );
+  useSectionFact("forwards", fact);
 
   if (!canView) return null;
 
@@ -64,10 +81,10 @@ export default function UserForwards({ username }: Props) {
     try {
       if (userInForwards) {
         await removeUserForward(username, username);
-        toast({ title: t("users.forwards.removedFromDestinations") });
+        toast({ title: t("users.forwards.copyNotKept") });
       } else {
         await addUserForward(username, username);
-        toast({ title: t("users.forwards.addedToDestinations") });
+        toast({ title: t("users.forwards.copyKept") });
       }
       notifyMappingsChanged();
     } catch (err) {
@@ -78,11 +95,20 @@ export default function UserForwards({ username }: Props) {
     }
   };
 
-  // A refusal throws: the modal shows it and keeps the typed destination
+  // Asked only while mail still reaches the mailbox through no forward or the user's own entry
+  const askKeepCopy = !noMailbox && !userInForwards;
+
+  // A refusal throws: the modal shows it and keeps the typed destination. WebAdmin only stores
+  // the new destination: unless the user is kept as a destination too, their mailbox stops
+  // receiving mail, so the copy is added before success is reported.
   const handleAdd = async () => {
     await addUserForward(username, newForward.trim());
+    if (askKeepCopy && keepCopy) {
+      await addUserForward(username, username);
+    }
     toast({ title: t("users.forwards.added") });
     setNewForward("");
+    setKeepCopy(true);
     notifyMappingsChanged();
   };
 
@@ -113,14 +139,14 @@ export default function UserForwards({ username }: Props) {
           {t("users.forwards.title")}
           {forwards && (
             <span className="text-sm font-normal text-gray-500">
-              ({forwards.length})
+              ({destinations.length})
             </span>
           )}
         </SectionToggle>
         {canAdd && (
           <button
             type="button"
-            onClick={() => { setOpen(true); setShowAddDialog(true); }}
+            onClick={() => { setOpen(true); setKeepCopy(true); setShowAddDialog(true); }}
             className="p-1 rounded-md hover:bg-gray-200 transition"
             title={t("users.forwards.addTooltip")}
           >
@@ -148,6 +174,23 @@ export default function UserForwards({ username }: Props) {
             className={FIELD_CLASS}
           />
         </div>
+        {askKeepCopy && (
+          <div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="add-forward-keep-copy"
+                checked={keepCopy}
+                onCheckedChange={(checked) => setKeepCopy(checked === true)}
+              />
+              <label htmlFor="add-forward-keep-copy" className="text-sm cursor-pointer select-none">
+                {t("users.forwards.keepCopyIn", { username })}
+              </label>
+            </div>
+            {!keepCopy && (
+              <p className="mt-1 text-xs text-gray-500">{t("users.forwards.onlyForwardedHint", { username })}</p>
+            )}
+          </div>
+        )}
       </FormDialog>
 
       {open && (
@@ -161,19 +204,26 @@ export default function UserForwards({ username }: Props) {
 
           {forwards && (
             <div>
-              <div className="flex items-center gap-2 p-4 bg-gray-50 rounded-2 my-2 transition-colors hover:bg-gray-100">
-                <Checkbox
-                  id="user-receives"
-                  checked={!hasExternalForwards || userInForwards}
-                  disabled={checkboxDisabled}
-                  onCheckedChange={handleToggleUserReceives}
-                />
-                <label htmlFor="user-receives" className="text-sm font-medium cursor-pointer select-none">
-                  {t("users.forwards.stillReceives")}
-                </label>
-              </div>
+              {!noMailbox && (
+                <div className="p-4 bg-gray-50 rounded-2 my-2 transition-colors hover:bg-gray-100">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="user-receives"
+                      checked={copyKept}
+                      disabled={checkboxDisabled}
+                      onCheckedChange={handleToggleUserReceives}
+                    />
+                    <label htmlFor="user-receives" className="text-sm font-medium cursor-pointer select-none">
+                      {t("users.forwards.keepCopy")}
+                    </label>
+                  </div>
+                  {!copyKept && (
+                    <p className="mt-2 text-sm text-amber-700">{t("users.forwards.onlyForwarded", { username })}</p>
+                  )}
+                </div>
+              )}
 
-              {sorted.map((fwd, index) => (
+              {destinations.map((fwd, index) => (
                 <div
                   key={fwd.mailAddress}
                   className="space-y-1 p-4 bg-gray-50 rounded-2 my-2 flex justify-between items-center gap-2 transition-colors hover:bg-gray-100"
@@ -181,9 +231,6 @@ export default function UserForwards({ username }: Props) {
                   <h4 className="min-w-0 text-sm font-medium leading-none break-all">
                     <span className="text-gray-500 mr-2">{index + 1}/</span>
                     {fwd.mailAddress}
-                    {fwd.mailAddress === username && (
-                      <span className="ml-2 text-xs text-blue-500">{t("users.forwards.selfLabel")}</span>
-                    )}
                   </h4>
                   {canRemove && (
                     <button
@@ -196,7 +243,7 @@ export default function UserForwards({ username }: Props) {
                   )}
                 </div>
               ))}
-              {forwards.length === 0 && (
+              {destinations.length === 0 && (
                 <p className="mt-2 text-sm text-gray-500">{t("users.forwards.empty")}</p>
               )}
             </div>

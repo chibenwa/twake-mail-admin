@@ -598,15 +598,17 @@
       "removeConfirm": "Weiterleitung an „{{destination}}“ von {{username}} entfernen?",
       "removed": "Weiterleitung erfolgreich entfernt",
       "errorRemoving": "Fehler beim Entfernen der Weiterleitung",
-      "selfLabel": "(selbst)",
-      "stillReceives": "Benutzer erhält weiterhin E-Mails",
       "empty": "Keine Weiterleitungen konfiguriert.",
       "addTooltip": "Weiterleitung hinzufügen",
       "removeTooltip": "Weiterleitung entfernen",
-      "removedFromDestinations": "Benutzer aus den Weiterleitungszielen entfernt",
-      "addedToDestinations": "Benutzer zu den Weiterleitungszielen hinzugefügt",
       "errorUpdating": "Fehler beim Aktualisieren der Weiterleitung",
-      "fieldLabel": "Zieladresse"
+      "fieldLabel": "Zieladresse",
+      "keepCopyIn": "Eine Kopie im Postfach von {{username}} behalten",
+      "onlyForwardedHint": "E-Mails an {{username}} werden nur weitergeleitet: In diesem Postfach wird nichts zugestellt.",
+      "keepCopy": "Eine Kopie in diesem Postfach behalten",
+      "onlyForwarded": "E-Mails an {{username}} werden nur weitergeleitet: In diesem Postfach wird nichts zugestellt.",
+      "copyKept": "Eine Kopie wird in diesem Postfach behalten",
+      "copyNotKept": "In diesem Postfach wird keine Kopie mehr behalten"
     },
     "mailboxes": {
       "title": "Postfächer",
@@ -1157,7 +1159,8 @@
       "vacationOff": "Abwesenheit: aus",
       "calendars": "Kalender: {{count}}",
       "addressBooks": "Adressbücher: {{count}}",
-      "bookingLinks": "Buchungslinks: {{count}}"
+      "bookingLinks": "Buchungslinks: {{count}}",
+      "forwardsNoCopy": "Weiterleitungen: {{count}} (ohne Kopie)"
     }
   },
   "mailboxCounts": {
@@ -1771,7 +1774,9 @@
       "address": "Adresse",
       "regex": "Regulärer Ausdruck",
       "domain": "Domäne"
-    }
+    },
+    "forwardCopyKept": "Weiterleitung (Kopie behalten)",
+    "removeKeptCopyConsequence": "{{source}} erhält seine eigenen E-Mails nicht mehr: Sie werden nur noch weitergeleitet."
   },
   "mailingLists": {
     "subtitle": "LDAP-basierte Mailinglisten durchsuchen und ihre Mitglieder und Eigentümer verwalten.",

@@ -6,7 +6,8 @@ import { formatByteSize } from "@/i18n/format-size";
 import { formatPercent } from "@/i18n/format-percent";
 import { useRevealSection, useSectionFacts } from "@/components/custom/collapsible-section";
 import { getUserQuota, getUserVacation } from "../api-client";
-import { ForwardDestination, UserQuota, VacationSettings } from "../types";
+import { UserQuota, VacationSettings } from "../types";
+import type { ForwardsFact } from "./user-forwards";
 
 // Same thresholds as the quota bars of the sections
 const quotaBarClass = (ratio: number) => (ratio > 0.9 ? "bg-red-500" : ratio >= 0.7 ? "bg-amber-500" : "bg-green-500");
@@ -43,7 +44,7 @@ export function MailUserSummary({ username }: { username: string }) {
 
   const mailboxes = countOf(facts["mailboxes"]);
   const aliases = countOf(facts["aliases"]);
-  const forwards = facts["forwards"] as ForwardDestination[] | undefined;
+  const forwards = facts["forwards"] as ForwardsFact | undefined;
   const limit = quota?.computed?.size;
 
   return (
@@ -64,9 +65,11 @@ export function MailUserSummary({ username }: { username: string }) {
       {aliases !== undefined && <Fact section="aliases">{t("users.summary.aliases", { count: aliases })}</Fact>}
       {forwards !== undefined && (
         <Fact section="forwards">
-          {forwards.length === 1
-            ? t("users.summary.forwardsTo", { address: forwards[0].mailAddress })
-            : t("users.summary.forwards", { count: forwards.length })}
+          {!forwards.copyKept
+            ? t("users.summary.forwardsNoCopy", { count: forwards.destinations.length })
+            : forwards.destinations.length === 1
+              ? t("users.summary.forwardsTo", { address: forwards.destinations[0].mailAddress })
+              : t("users.summary.forwards", { count: forwards.destinations.length })}
         </Fact>
       )}
       {vacation && (

@@ -597,15 +597,17 @@
       "removeConfirm": "Xóa chuyển tiếp tới \"{{destination}}\" khỏi {{username}}?",
       "removed": "Đã xóa chuyển tiếp thành công",
       "errorRemoving": "Lỗi khi xóa chuyển tiếp",
-      "selfLabel": "(chính mình)",
-      "stillReceives": "Người dùng vẫn nhận được email",
       "empty": "Chưa cấu hình chuyển tiếp nào.",
       "addTooltip": "Thêm chuyển tiếp",
       "removeTooltip": "Xóa chuyển tiếp",
-      "removedFromDestinations": "Đã xóa người dùng khỏi đích chuyển tiếp",
-      "addedToDestinations": "Đã thêm người dùng vào đích chuyển tiếp",
       "errorUpdating": "Lỗi khi cập nhật chuyển tiếp",
-      "fieldLabel": "Địa chỉ đích"
+      "fieldLabel": "Địa chỉ đích",
+      "keepCopyIn": "Giữ một bản sao trong hộp thư của {{username}}",
+      "onlyForwardedHint": "Thư gửi tới {{username}} sẽ chỉ được chuyển tiếp: không có gì được gửi vào hộp thư này.",
+      "keepCopy": "Giữ một bản sao trong hộp thư này",
+      "onlyForwarded": "Thư gửi tới {{username}} chỉ được chuyển tiếp: không có gì được gửi vào hộp thư này.",
+      "copyKept": "Một bản sao được giữ trong hộp thư này",
+      "copyNotKept": "Không còn giữ bản sao nào trong hộp thư này nữa"
     },
     "mailboxes": {
       "title": "Hộp thư",
@@ -1155,7 +1157,8 @@
       "vacationOff": "Vắng mặt: tắt",
       "calendars": "Lịch: {{count}}",
       "addressBooks": "Sổ địa chỉ: {{count}}",
-      "bookingLinks": "Liên kết đặt lịch: {{count}}"
+      "bookingLinks": "Liên kết đặt lịch: {{count}}",
+      "forwardsNoCopy": "Chuyển tiếp: {{count}} (không giữ bản sao)"
     }
   },
   "mailboxCounts": {
@@ -1769,7 +1772,9 @@
       "address": "Địa chỉ",
       "regex": "Biểu thức chính quy",
       "domain": "Miền"
-    }
+    },
+    "forwardCopyKept": "Chuyển tiếp (giữ bản sao)",
+    "removeKeptCopyConsequence": "{{source}} sẽ không nhận thư của chính mình nữa: thư chỉ được chuyển tiếp."
   },
   "mailingLists": {
     "subtitle": "Duyệt và quản lý các danh sách gửi thư LDAP cùng thành viên và chủ sở hữu.",

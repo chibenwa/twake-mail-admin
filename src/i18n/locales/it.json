@@ -598,15 +598,17 @@
       "removeConfirm": "Rimuovere l'inoltro a «{{destination}}» da {{username}}?",
       "removed": "Inoltro rimosso correttamente",
       "errorRemoving": "Errore durante la rimozione dell'inoltro",
-      "selfLabel": "(se stesso)",
-      "stillReceives": "L'utente continua a ricevere le email",
       "empty": "Nessun inoltro configurato.",
       "addTooltip": "Aggiungi inoltro",
       "removeTooltip": "Rimuovi inoltro",
-      "removedFromDestinations": "Utente rimosso dalle destinazioni di inoltro",
-      "addedToDestinations": "Utente aggiunto alle destinazioni di inoltro",
       "errorUpdating": "Errore durante l'aggiornamento dell'inoltro",
-      "fieldLabel": "Indirizzo di destinazione"
+      "fieldLabel": "Indirizzo di destinazione",
+      "keepCopyIn": "Conserva una copia nella casella di {{username}}",
+      "onlyForwardedHint": "La posta per {{username}} verrà solo inoltrata: nulla verrà recapitato in questa casella.",
+      "keepCopy": "Conserva una copia in questa casella",
+      "onlyForwarded": "La posta per {{username}} viene solo inoltrata: nulla viene recapitato in questa casella.",
+      "copyKept": "Una copia viene conservata in questa casella",
+      "copyNotKept": "Nessuna copia viene più conservata in questa casella"
     },
     "mailboxes": {
       "title": "Caselle di posta",
@@ -1157,7 +1159,8 @@
       "vacationOff": "Assenza: disattiva",
       "calendars": "Calendari: {{count}}",
       "addressBooks": "Rubriche: {{count}}",
-      "bookingLinks": "Link di prenotazione: {{count}}"
+      "bookingLinks": "Link di prenotazione: {{count}}",
+      "forwardsNoCopy": "Inoltri: {{count}} (senza copia)"
     }
   },
   "mailboxCounts": {
@@ -1771,7 +1774,9 @@
       "address": "Indirizzo",
       "regex": "Espressione regolare",
       "domain": "Dominio"
-    }
+    },
+    "forwardCopyKept": "Inoltro (copia conservata)",
+    "removeKeptCopyConsequence": "{{source}} non riceverà più la propria posta: verrà solo inoltrata."
   },
   "mailingLists": {
     "subtitle": "Sfoglia le liste di distribuzione basate su LDAP e gestisci i loro membri e proprietari.",

@@ -24,6 +24,9 @@ import CreateMappingDialog, { MappingKind } from "./create-mapping-dialog";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
+// A forward of an address to itself is how a copy is kept in its mailbox while it is forwarded
+const isKeptCopy = (mapping: FlatMapping) => mapping.type === "Forward" && mapping.source === mapping.destination;
+
 export default function MappingsList() {
   const { t } = useTranslation();
   const canAddAddress = useIsAllowed("POST", "/mappings/address/{source}/targets/{destination}");
@@ -82,6 +85,7 @@ export default function MappingsList() {
       destructive: true,
       confirmLabel: t("common.remove"),
       message: t("mappings.removeConfirm", { typeLabel, source: mapping.source, destination: mapping.destination }),
+      ...(isKeptCopy(mapping) && { consequence: t("mappings.removeKeptCopyConsequence", { source: mapping.source }) }),
     });
     if (!confirmed) return;
     try {
@@ -265,7 +269,7 @@ export default function MappingsList() {
                   {(page - 1) * PAGE_LIMIT + index + 1}
                 </td>
                 <td className="px-4 py-2 text-sm">{mapping.source}</td>
-                <td className="px-4 py-2 text-sm">{mapping.type}</td>
+                <td className="px-4 py-2 text-sm">{isKeptCopy(mapping) ? t("mappings.forwardCopyKept") : mapping.type}</td>
                 <td className="px-4 py-2 text-sm">{mapping.destination}</td>
                 <td className="px-4 py-2 text-sm">
                   {canDeleteMapping(mapping.type) && (

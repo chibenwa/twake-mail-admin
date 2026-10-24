@@ -598,15 +598,17 @@
       "removeConfirm": "Supprimer la redirection vers « {{destination}} » de {{username}} ?",
       "removed": "Redirection supprimée avec succès",
       "errorRemoving": "Erreur lors de la suppression de la redirection",
-      "selfLabel": "(lui-même)",
-      "stillReceives": "L'utilisateur reçoit toujours les emails",
       "empty": "Aucune redirection configurée.",
       "addTooltip": "Ajouter une redirection",
       "removeTooltip": "Supprimer la redirection",
-      "removedFromDestinations": "Utilisateur retiré des destinations",
-      "addedToDestinations": "Utilisateur ajouté aux destinations",
       "errorUpdating": "Erreur lors de la mise à jour de la redirection",
-      "fieldLabel": "Adresse de destination"
+      "fieldLabel": "Adresse de destination",
+      "keepCopyIn": "Conserver une copie dans la boîte de {{username}}",
+      "onlyForwardedHint": "Le courrier adressé à {{username}} sera seulement redirigé : rien ne sera distribué dans cette boîte.",
+      "keepCopy": "Conserver une copie dans cette boîte",
+      "onlyForwarded": "Le courrier adressé à {{username}} est seulement redirigé : rien n'est distribué dans cette boîte.",
+      "copyKept": "Une copie est conservée dans cette boîte",
+      "copyNotKept": "Plus aucune copie n'est conservée dans cette boîte"
     },
     "mailboxes": {
       "title": "Boîtes aux lettres",
@@ -1157,7 +1159,8 @@
       "vacationOff": "Absence : désactivée",
       "calendars": "Calendriers : {{count}}",
       "addressBooks": "Carnets d'adresses : {{count}}",
-      "bookingLinks": "Liens de réservation : {{count}}"
+      "bookingLinks": "Liens de réservation : {{count}}",
+      "forwardsNoCopy": "Redirections : {{count}} (sans copie)"
     }
   },
   "mailboxCounts": {
@@ -1771,7 +1774,9 @@
       "address": "Adresse",
       "regex": "Expression régulière",
       "domain": "Domaine"
-    }
+    },
+    "forwardCopyKept": "Redirection (copie conservée)",
+    "removeKeptCopyConsequence": "{{source}} ne recevra plus son propre courrier : il sera seulement redirigé."
   },
   "mailingLists": {
     "subtitle": "Parcourez les listes de diffusion LDAP et gérez leurs membres et propriétaires.",

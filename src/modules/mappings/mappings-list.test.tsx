@@ -41,3 +41,15 @@ describe("mappings list: one toolbar line", () => {
     await vi.waitFor(() => expect(api.createAddressMapping).toHaveBeenCalledWith("a@example.com", "b@example.com"));
   });
 });
+
+describe("mappings list: a forward kept as a copy", () => {
+  it("names the forward of an address to itself as a kept copy", async () => {
+    api.getMappings.mockResolvedValueOnce({
+      "bob@example.com": [{ type: "Forward", mapping: "bob@example.com" }, { type: "Forward", mapping: "emma@example.com" }],
+    } as never);
+    render(<MemoryRouter><MappingsList /></MemoryRouter>);
+
+    expect(await screen.findByText("mappings.forwardCopyKept")).not.toBeNull();
+    expect(screen.getAllByText("Forward")).toHaveLength(1);
+  });
+});

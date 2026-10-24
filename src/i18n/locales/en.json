@@ -598,15 +598,17 @@
       "removeConfirm": "Remove forward to \"{{destination}}\" from {{username}}?",
       "removed": "Forward removed successfully",
       "errorRemoving": "Error removing forward",
-      "selfLabel": "(self)",
-      "stillReceives": "User still receives emails",
       "empty": "No forwards configured.",
       "addTooltip": "Add forward",
       "removeTooltip": "Remove forward",
-      "removedFromDestinations": "User removed from forward destinations",
-      "addedToDestinations": "User added to forward destinations",
       "errorUpdating": "Error updating forward",
-      "fieldLabel": "Destination address"
+      "fieldLabel": "Destination address",
+      "keepCopyIn": "Keep a copy in {{username}}'s mailbox",
+      "onlyForwardedHint": "Mail to {{username}} will only be forwarded: nothing will be delivered to this mailbox.",
+      "keepCopy": "Keep a copy in this mailbox",
+      "onlyForwarded": "Mail to {{username}} is only forwarded: nothing is delivered to this mailbox.",
+      "copyKept": "A copy is kept in this mailbox",
+      "copyNotKept": "No copy is kept in this mailbox any more"
     },
     "mailboxes": {
       "title": "Mailboxes",
@@ -1157,7 +1159,8 @@
       "vacationOff": "Vacation: off",
       "calendars": "Calendars: {{count}}",
       "addressBooks": "Address Books: {{count}}",
-      "bookingLinks": "Booking Links: {{count}}"
+      "bookingLinks": "Booking Links: {{count}}",
+      "forwardsNoCopy": "Forwards: {{count}} (no copy kept)"
     }
   },
   "mailboxCounts": {
@@ -1771,7 +1774,9 @@
       "address": "Address",
       "regex": "Regular expression",
       "domain": "Domain"
-    }
+    },
+    "forwardCopyKept": "Forward (copy kept)",
+    "removeKeptCopyConsequence": "{{source}} will no longer receive its own mail: it will only be forwarded."
   },
   "mailingLists": {
     "subtitle": "Browse LDAP-backed mailing lists and manage their members and owners.",

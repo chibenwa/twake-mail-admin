@@ -32,7 +32,7 @@ describe("mail user summary", () => {
   it("states quota usage with a written percentage, and the counts reported by the sections", async () => {
     render(
       <SectionsProvider page="user">
-        <Facts facts={{ mailboxes: 1, aliases: 0, forwards: [{ mailAddress: "charlotte@example.com" }] }} />
+        <Facts facts={{ mailboxes: 1, aliases: 0, forwards: { destinations: [{ mailAddress: "charlotte@example.com" }], copyKept: true } }} />
         <MailUserSummary username="bob@example.com" />
       </SectionsProvider>
     );

@@ -598,15 +598,17 @@
       "removeConfirm": "¿Quitar el reenvío a «{{destination}}» de {{username}}?",
       "removed": "Reenvío quitado correctamente",
       "errorRemoving": "Error al quitar el reenvío",
-      "selfLabel": "(el propio usuario)",
-      "stillReceives": "El usuario sigue recibiendo los correos",
       "empty": "No hay reenvíos configurados.",
       "addTooltip": "Añadir reenvío",
       "removeTooltip": "Quitar reenvío",
-      "removedFromDestinations": "Usuario quitado de los destinos de reenvío",
-      "addedToDestinations": "Usuario añadido a los destinos de reenvío",
       "errorUpdating": "Error al actualizar el reenvío",
-      "fieldLabel": "Dirección de destino"
+      "fieldLabel": "Dirección de destino",
+      "keepCopyIn": "Conservar una copia en el buzón de {{username}}",
+      "onlyForwardedHint": "El correo dirigido a {{username}} solo se reenviará: no se entregará nada en este buzón.",
+      "keepCopy": "Conservar una copia en este buzón",
+      "onlyForwarded": "El correo dirigido a {{username}} solo se reenvía: no se entrega nada en este buzón.",
+      "copyKept": "Se conserva una copia en este buzón",
+      "copyNotKept": "Ya no se conserva ninguna copia en este buzón"
     },
     "mailboxes": {
       "title": "Buzones",
@@ -1157,7 +1159,8 @@
       "vacationOff": "Ausencia: desactivada",
       "calendars": "Calendarios: {{count}}",
       "addressBooks": "Libretas de direcciones: {{count}}",
-      "bookingLinks": "Enlaces de reserva: {{count}}"
+      "bookingLinks": "Enlaces de reserva: {{count}}",
+      "forwardsNoCopy": "Reenvíos: {{count}} (sin copia)"
     }
   },
   "mailboxCounts": {
@@ -1771,7 +1774,9 @@
       "address": "Dirección",
       "regex": "Expresión regular",
       "domain": "Dominio"
-    }
+    },
+    "forwardCopyKept": "Reenvío (copia conservada)",
+    "removeKeptCopyConsequence": "{{source}} dejará de recibir su propio correo: solo se reenviará."
   },
   "mailingLists": {
     "subtitle": "Explore las listas de distribución basadas en LDAP y gestione sus miembros y propietarios.",
