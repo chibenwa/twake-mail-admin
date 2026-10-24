@@ -346,8 +346,8 @@ without the right, the field is a plain one and accepts any address.
 
 | Trigger | Verb | Pattern | MUST/MAY |
 |---------|------|---------|----------|
-| Typing in a user field (GLOBAL mode) | GET | `/users` (called as `/users?query={typed}&limit=5`) | MAY (no suggestion if missing) |
-| Typing in a user field (DOMAIN mode) | GET | `/users?domain={domain}&{params}` (called with `query={typed}&limit=5`) | MAY (no suggestion if missing) |
+| Typing in a user field (GLOBAL mode) | GET | `/users` (called as `/users?query={typed}&limit=5`, from 3 typed characters) | MAY (no suggestion if missing) |
+| Typing in a user field (DOMAIN mode) | GET | `/users?domain={domain}&{params}` (called with `query={typed}&limit=5`, from 3 typed characters) | MAY (no suggestion if missing) |
 
 ## Users
 

@@ -6,6 +6,8 @@ import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useDebouncedValue } from "./use-debounced-value";
 
 export const MAX_USER_SUGGESTIONS = 5;
+// A shorter prefix matches too many users: it would load the server for little help
+export const MIN_SUGGEST_LENGTH = 3;
 const SUGGEST_DEBOUNCE_MS = 250;
 
 /**
@@ -20,7 +22,7 @@ export function useUserSuggestions(text: string, enabled = true): string[] {
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!enabled || !canList || !query) {
+    if (!enabled || !canList || query.length < MIN_SUGGEST_LENGTH) {
       setSuggestions([]);
       return;
     }
