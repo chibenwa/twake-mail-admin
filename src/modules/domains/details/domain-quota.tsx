@@ -32,7 +32,7 @@ function QuotaRow({ label, values, countLabel, sizeLabel }: { label: string; val
   if (!values) return null;
   return (
     <div className="flex flex-wrap justify-between items-center gap-x-4 py-1">
-      <span className="text-sm text-gray-600 capitalize">{label}</span>
+      <span className="inline-block text-sm text-gray-600 first-letter:uppercase">{label}</span>
       <span className="text-sm">
         <span className="mr-4">{countLabel ?? "Count:"} <strong>{formatCount(values.count)}</strong></span>
         {sizeLabel ?? "Size:"} <strong>{formatSize(values.size)}</strong>

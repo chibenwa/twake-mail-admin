@@ -27,6 +27,8 @@ export interface QuotaLimitsApi {
 
 const UNITS = { B: 1, KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 } as const;
 type Unit = keyof typeof UNITS;
+// Spelled in the UI language, as the sizes shown around: "Mo" in French
+const UNIT_LABEL_KEYS: Record<Unit, string> = { B: "common.bytes", KB: "common.kb", MB: "common.mb", GB: "common.gb" };
 
 const hasAtMostOneDecimal = (value: number) => Math.abs(value * 10 - Math.round(value * 10)) < 1e-9;
 
@@ -206,7 +208,7 @@ export default function QuotaLimits({ target, current, parents = [], api, canEdi
           >
             {/* KB and B only when the current limit needs them */}
             {(unit === "B" || unit === "KB" ? (["B", "KB", "MB", "GB"] as const) : (["MB", "GB"] as const)).map((u) => (
-              <option key={u} value={u}>{u}</option>
+              <option key={u} value={u}>{t(UNIT_LABEL_KEYS[u])}</option>
             ))}
           </select>
         )}
