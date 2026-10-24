@@ -1,14 +1,11 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
-import { getGlobalQuota, updateGlobalQuota, deleteGlobalQuotaSize } from "./api-client";
-import { useToast } from "@/hooks/use-toast";
-import { useConfirm } from "@/hooks/use-confirm";
-import ErrorDisplayer from "@/components/custom/error-displayer";
+import { getGlobalQuota, updateGlobalQuotaSize, deleteGlobalQuotaSize, updateGlobalQuotaCount, deleteGlobalQuotaCount } from "./api-client";
+import QuotaLimits, { QuotaLimitsApi } from "@/components/custom/quota-limits";
 import Header from "@/components/custom/header";
 import { ExpandCollapseAll, SectionsProvider } from "@/components/custom/collapsible-section";
-import { Button } from "@/components/ui/button";
 import ExploreUserQuota from "@/components/custom/explore-user-quota";
 import QuotaUsageSumSection from "@/components/custom/quota-usage-sum";
 import UsersWithSpecificQuotas from "./users-with-specific-quotas";
@@ -31,21 +28,10 @@ function formatCount(count: number | null): string {
   return count.toLocaleString(currentLocale());
 }
 
-function toBytes(value: number, unit: string): number {
-  if (value === -1) return -1;
-  switch (unit) {
-    case "KB": return value * 1024;
-    case "MB": return value * 1024 * 1024;
-    case "GB": return value * 1024 * 1024 * 1024;
-    default: return value;
-  }
-}
-
 export default function GlobalQuota() {
   const { t } = useTranslation();
-  const { toast } = useToast();
-  const confirm = useConfirm();
-  const canUpdate = useIsAllowed("PUT", "/quota");
+  const canUpdateSize = useIsAllowed("PUT", "/quota/size");
+  const canUpdateCount = useIsAllowed("PUT", "/quota/count");
   const canRemove = useIsAllowed("DELETE", "/quota/size");
   const canViewSummary = useIsAllowed("GET", "/reports/quota/users/sum?hasSpecificQuota");
   const canViewSpecificQuotas = useIsAllowed("GET", "/reports/quota/users?hasSpecificQuota");
@@ -53,45 +39,12 @@ export default function GlobalQuota() {
   // Only the global quota is loaded with the page: the reports are fetched when their section is opened
   const { data: quota, isLoading, error, refresh } = useFetchData(getGlobalQuota);
 
-  const [showSizeEdit, setShowSizeEdit] = useState(false);
-  const [sizeInput, setSizeInput] = useState("");
-  const [sizeUnit, setSizeUnit] = useState<"B" | "KB" | "MB" | "GB">("GB");
-
-  const handleUpdateSize = async () => {
-    const raw = parseFloat(sizeInput);
-    if (isNaN(raw) || raw < -1 || raw === 0) {
-      toast({ title: t("common.invalidSize"), description: t("common.invalidSizeDesc") });
-      return;
-    }
-    const bytes = Math.round(toBytes(raw, sizeUnit));
-    try {
-      await updateGlobalQuota({
-        count: quota?.count ?? null,
-        size: bytes,
-      });
-      toast({ title: t("globalQuota.updated") });
-      setSizeInput("");
-      setShowSizeEdit(false);
-      refresh();
-    } catch (err) {
-      toast({ title: t("globalQuota.errorUpdating"), description: <ErrorDisplayer error={err} /> });
-    }
-  };
-
-  const handleRemoveSize = async () => {
-    const confirmed = await confirm({
-      header: t("globalQuota.removeSizeLimit"),
-      message: t("globalQuota.removeConfirm"),
-    });
-    if (!confirmed) return;
-    try {
-      await deleteGlobalQuotaSize();
-      toast({ title: t("globalQuota.removed") });
-      refresh();
-    } catch (err) {
-      toast({ title: t("globalQuota.errorRemoving"), description: <ErrorDisplayer error={err} /> });
-    }
-  };
+  const limitsApi = useMemo<QuotaLimitsApi>(() => ({
+    putCount: updateGlobalQuotaCount,
+    deleteCount: deleteGlobalQuotaCount,
+    putSize: updateGlobalQuotaSize,
+    deleteSize: deleteGlobalQuotaSize,
+  }), []);
 
   return (
     <SectionsProvider page="globalQuota">
@@ -124,59 +77,17 @@ export default function GlobalQuota() {
 
               <hr className="border-gray-200" />
 
-              <div className="flex items-center gap-2 flex-wrap">
-                {canUpdate && (
-                  <Button
-                    variant="outline"
-                    className="rounded-sm"
-                    onClick={() => setShowSizeEdit(!showSizeEdit)}
-                  >
-                    {t("common.updateSizeLimit")}
-                  </Button>
-                )}
-                {canRemove && quota.size != null && (
-                  <Button
-                    variant="outline"
-                    className="rounded-sm"
-                    onClick={handleRemoveSize}
-                  >
-                    {t("globalQuota.removeSizeLimit")}
-                  </Button>
-                )}
-              </div>
-
-              {showSizeEdit && (
-                <div className="flex gap-2 mt-2">
-                  <input
-                    autoFocus
-                    type="number"
-                    value={sizeInput}
-                    onChange={(e) => setSizeInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleUpdateSize()}
-                    placeholder={t("common.sizeUnlimited")}
-                    aria-label={t("common.sizeLimit")}
-                    className="flex-1 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  />
-                  <select
-                    value={sizeUnit}
-                    onChange={(e) => setSizeUnit(e.target.value as "B" | "KB" | "MB" | "GB")}
-                    aria-label={t("common.sizeUnit")}
-                    className="px-3 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="B">B</option>
-                    <option value="KB">KB</option>
-                    <option value="MB">MB</option>
-                    <option value="GB">GB</option>
-                  </select>
-                  <button
-                    onClick={handleUpdateSize}
-                    disabled={!sizeInput.trim()}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {t("common.save")}
-                  </button>
-                </div>
-              )}
+              <QuotaLimits
+                target={t("quotaLimits.allUsers")}
+                current={quota}
+                api={limitsApi}
+                canEditCount={canUpdateCount}
+                canEditSize={canUpdateSize}
+                canRemove={canRemove}
+                removeLabel={t("quotaLimits.removeGlobal")}
+                removeConfirm={t("globalQuota.removeConfirm")}
+                onChanged={refresh}
+              />
             </div>
 
             {canViewSummary && <AggregatedExtraQuotas formatCount={formatCount} formatSize={formatSize} />}

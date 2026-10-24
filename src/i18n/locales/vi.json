@@ -56,7 +56,7 @@
     "occupation": "Mức sử dụng",
     "limits": "Giới hạn",
     "perUserLimit": "Giới hạn mỗi người dùng",
-    "computedEffective": "Tính toán (hiệu lực)",
+    "computedEffective": "Giới hạn áp dụng",
     "domain": "Tên miền",
     "global": "Toàn cục",
     "updateSizeLimit": "Cập nhật giới hạn kích thước",
@@ -160,7 +160,7 @@
     "quota": {
       "title": "Hạn ngạch",
       "couldNotLoad": "Không thể tải hạn ngạch.",
-      "resetConfirm": "Xóa giới hạn kích thước hạn ngạch của tên miền \"{{domain}}\"? Giới hạn toàn cục sẽ được áp dụng lại.",
+      "resetConfirm": "Xóa giới hạn số lượng thư và dung lượng của \"{{domain}}\"? Giới hạn toàn cục sẽ được áp dụng lại.",
       "reset": "Đã đặt lại kích thước hạn ngạch tên miền về mặc định toàn cục",
       "errorUpdating": "Lỗi khi cập nhật kích thước hạn ngạch",
       "updated": "Đã cập nhật kích thước hạn ngạch tên miền"
@@ -228,7 +228,7 @@
     "teamMailboxQuota": {
       "title": "Hạn ngạch",
       "teamMailbox": "Hộp thư nhóm",
-      "resetConfirm": "Đặt lại kích thước hạn ngạch cho \"{{mailbox}}@{{domain}}\" về mặc định của tên miền?"
+      "resetConfirm": "Xóa giới hạn số lượng thư và dung lượng đặt cho \"{{mailbox}}@{{domain}}\"? Giới hạn của miền, hoặc giới hạn toàn cục, sẽ được áp dụng lại."
     },
     "extraSenders": {
       "title": "Người gửi bổ sung",
@@ -599,7 +599,7 @@
     "quota": {
       "title": "Hạn ngạch",
       "user": "Người dùng",
-      "resetConfirm": "Đặt lại kích thước hạn ngạch cho \"{{username}}\" về mặc định của tên miền?",
+      "resetConfirm": "Xóa giới hạn số lượng thư và dung lượng đặt cho \"{{username}}\"? Giới hạn của miền, hoặc giới hạn toàn cục, sẽ được áp dụng lại.",
       "updated": "Đã cập nhật kích thước hạn ngạch"
     },
     "forwards": {
@@ -1589,7 +1589,7 @@
     "updated": "Đã cập nhật kích thước hạn ngạch toàn cục",
     "errorUpdating": "Lỗi khi cập nhật hạn ngạch toàn cục",
     "removeSizeLimit": "Xóa giới hạn kích thước",
-    "removeConfirm": "Xóa giới hạn kích thước hạn ngạch toàn cục? Người dùng không có giới hạn riêng theo tên miền hoặc người dùng sẽ có dung lượng không giới hạn.",
+    "removeConfirm": "Xóa giới hạn toàn cục về số lượng thư và dung lượng? Người dùng không có giới hạn riêng hoặc của miền sẽ không còn giới hạn nào.",
     "removed": "Đã xóa giới hạn kích thước hạn ngạch toàn cục",
     "errorRemoving": "Lỗi khi xóa giới hạn kích thước hạn ngạch toàn cục",
     "aggregatedExtra": "Hạn ngạch bổ sung tổng hợp",
@@ -2050,5 +2050,23 @@
     },
     "deleteData": "Xóa dữ liệu",
     "deleteWord": "XÓA"
+  },
+  "quotaLimits": {
+    "edit": "Sửa giới hạn",
+    "title": "Giới hạn hạn mức của {{target}}",
+    "allUsers": "mọi người dùng",
+    "count": "Số lượng thư",
+    "size": "Dung lượng",
+    "unlimited": "Không giới hạn",
+    "inheritHint": "Để trống để dùng giới hạn {{parent}} ({{value}}).",
+    "noLimitHint": "Để trống để không giới hạn.",
+    "parentDomain": "của miền",
+    "parentGlobal": "toàn cục",
+    "invalid": "Giới hạn phải là số dương, hoặc không giới hạn.",
+    "updated": "Đã cập nhật giới hạn hạn mức",
+    "removed": "Đã xóa giới hạn riêng",
+    "removeSpecific": "Xóa giới hạn riêng",
+    "removeDomain": "Xóa giới hạn của miền",
+    "removeGlobal": "Xóa giới hạn toàn cục"
   }
 }

@@ -86,6 +86,14 @@ export const deleteUserQuotaSize = async (username: string): Promise<void> => {
   );
 };
 
+export const updateUserQuotaCount = async (username: string, count: number): Promise<void> => {
+  await apiClient.put(`/quota/users/${encodeURIComponent(username)}/count`, count, { headers: { "Content-Type": "application/json" } });
+};
+
+export const deleteUserQuotaCount = async (username: string): Promise<void> => {
+  await apiClient.delete(`/quota/users/${encodeURIComponent(username)}/count`);
+};
+
 export const deleteAllUserMailboxes = async (username: string): Promise<void> => {
   await apiClient.delete(
     `/users/${encodeURIComponent(username)}/mailboxes`

@@ -161,8 +161,12 @@ The usage figures come from the same call as the tab load; there is no second en
 | Trigger | Verb | Pattern | MUST/MAY |
 |---------|------|---------|----------|
 | Tab load, and domain quota usage section | GET | `/quota/domains/{domain}` | MUST |
-| Save quota form | PUT | `/quota/domains/{domain}` | MAY (do not show quota update options) |
-| "Reset to global default" button | DELETE | `/quota/domains/{domain}/size` | MAY (do not show the button if missing) |
+| "Edit limits" dialog: message count | PUT | `/quota/domains/{domain}/count` | MAY (the count row is not shown if PUT is missing) |
+| "Edit limits" dialog: message count, emptied field | DELETE | `/quota/domains/{domain}/count` | MAY (a refusal is shown in the dialog) |
+| "Edit limits" dialog: size | PUT | `/quota/domains/{domain}/size` | MAY (the size row is not shown if PUT is missing) |
+| "Edit limits" dialog: size, emptied field | DELETE | `/quota/domains/{domain}/size` | MAY (a refusal is shown in the dialog) |
+| "Remove domain limits" button | DELETE | `/quota/domains/{domain}/size` | MAY (do not show the button if missing) |
+| "Remove domain limits" button, message count | DELETE | `/quota/domains/{domain}/count` | MAY |
 
 ### Domain detail — Rate limits tab *(APPLICATION:"MAIL")*
 
@@ -210,8 +214,12 @@ The usage figures come from the same call as the tab load; there is no second en
 | Trigger | Verb | Pattern | MUST/MAY |
 |---------|------|---------|----------|
 | Sub-tab load | GET | `/domains/{domain}/team-mailboxes/{mailbox}/quota` | MUST |
-| Save quota form | PUT | `/domains/{domain}/team-mailboxes/{mailbox}/quota/limit/size` | MAY (do not show the button if missing) |
-| "Clear quota" button | DELETE | `/domains/{domain}/team-mailboxes/{mailbox}/quota/limit/size` | MAY (do not show the button if missing) |
+| "Edit limits" dialog: message count | PUT | `/domains/{domain}/team-mailboxes/{mailbox}/quota/limit/count` | MAY (the count row is not shown if PUT is missing) |
+| "Edit limits" dialog: message count, emptied field | DELETE | `/domains/{domain}/team-mailboxes/{mailbox}/quota/limit/count` | MAY (a refusal is shown in the dialog) |
+| "Edit limits" dialog: size | PUT | `/domains/{domain}/team-mailboxes/{mailbox}/quota/limit/size` | MAY (the size row is not shown if PUT is missing) |
+| "Edit limits" dialog: size, emptied field | DELETE | `/domains/{domain}/team-mailboxes/{mailbox}/quota/limit/size` | MAY (a refusal is shown in the dialog) |
+| "Remove specific limits" button | DELETE | `/domains/{domain}/team-mailboxes/{mailbox}/quota/limit/size` | MAY (do not show the button if missing) |
+| "Remove specific limits" button, message count | DELETE | `/domains/{domain}/team-mailboxes/{mailbox}/quota/limit/count` | MAY |
 
 #### Team mailbox detail — Folders sub-tab
 
@@ -400,8 +408,12 @@ forwards are counted by their sections, whose own rows below apply; the strip it
 | Trigger | Verb | Pattern | MUST/MAY |
 |---------|------|---------|----------|
 | Tab load | GET | `/quota/users/{username}` | MUST |
-| Save quota form | PUT | `/quota/users/{username}/size` | MAY (do not show the button if missing) |
-| "Clear quota" button | DELETE | `/quota/users/{username}/size` | MAY (do not show the button if missing) |
+| "Edit limits" dialog: message count | PUT | `/quota/users/{username}/count` | MAY (the count row is not shown if PUT is missing) |
+| "Edit limits" dialog: message count, emptied field | DELETE | `/quota/users/{username}/count` | MAY (a refusal is shown in the dialog) |
+| "Edit limits" dialog: size | PUT | `/quota/users/{username}/size` | MAY (the size row is not shown if PUT is missing) |
+| "Edit limits" dialog: size, emptied field | DELETE | `/quota/users/{username}/size` | MAY (a refusal is shown in the dialog) |
+| "Remove specific limits" button | DELETE | `/quota/users/{username}/size` | MAY (do not show the button if missing) |
+| "Remove specific limits" button, message count | DELETE | `/quota/users/{username}/count` | MAY |
 
 ### User detail — Aliases tab *(APPLICATION:"MAIL")*
 
@@ -687,8 +699,12 @@ against what the proxy actually declares.
 | Trigger | Verb | Pattern | MUST/MAY |
 |---------|------|---------|----------|
 | Page load | GET | `/quota` | MUST |
-| Save quota form | PUT | `/quota` | MAY (do not show the button if missing) |
-| "Remove size limit" button | DELETE | `/quota/size` | MAY (do not show the button if missing) |
+| "Edit limits" dialog: message count | PUT | `/quota/count` | MAY (the count row is not shown if PUT is missing) |
+| "Edit limits" dialog: message count, emptied field | DELETE | `/quota/count` | MAY (a refusal is shown in the dialog) |
+| "Edit limits" dialog: size | PUT | `/quota/size` | MAY (the size row is not shown if PUT is missing) |
+| "Edit limits" dialog: size, emptied field | DELETE | `/quota/size` | MAY (a refusal is shown in the dialog) |
+| "Remove global limits" button | DELETE | `/quota/size` | MAY (do not show the button if missing) |
+| "Remove global limits" button, message count | DELETE | `/quota/count` | MAY |
 | Report: users with specific quotas | GET | `/reports/quota/users?hasSpecificQuota` | MAY (do not show the section if missing)|
 | Report: quota summary | GET | `/reports/quota/users/sum?hasSpecificQuota` | MAY (do not show the button if missing) |
 | Global quota usage section open | GET | `/quota/sum` | MUST (do not show the section if forbidden) |

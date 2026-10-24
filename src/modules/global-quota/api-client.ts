@@ -13,6 +13,18 @@ export const deleteGlobalQuotaSize = async (): Promise<void> => {
   await apiClient.delete("/quota/size");
 };
 
+export const updateGlobalQuotaSize = async (size: number): Promise<void> => {
+  await apiClient.put("/quota/size", size, { headers: { "Content-Type": "application/json" } });
+};
+
+export const updateGlobalQuotaCount = async (count: number): Promise<void> => {
+  await apiClient.put("/quota/count", count, { headers: { "Content-Type": "application/json" } });
+};
+
+export const deleteGlobalQuotaCount = async (): Promise<void> => {
+  await apiClient.delete("/quota/count");
+};
+
 export const getUsersWithSpecificQuotas = async (): Promise<UserSpecificQuota[]> => {
   return apiClient.get("/reports/quota/users?hasSpecificQuota");
 };

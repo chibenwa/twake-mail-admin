@@ -56,7 +56,7 @@
     "occupation": "Occupation",
     "limits": "Limits",
     "perUserLimit": "Per user limit",
-    "computedEffective": "Computed (effective)",
+    "computedEffective": "Applied limit",
     "domain": "Domain",
     "global": "Global",
     "updateSizeLimit": "Update size limit",
@@ -161,7 +161,7 @@
     "quota": {
       "title": "Quota",
       "couldNotLoad": "Could not load quota.",
-      "resetConfirm": "Remove the domain quota size limit for \"{{domain}}\"? The global limit will apply again.",
+      "resetConfirm": "Remove the message count and size limits of \"{{domain}}\"? The global limits will apply again.",
       "reset": "Domain quota size reset to global default",
       "errorUpdating": "Error updating quota size",
       "updated": "Domain quota size updated"
@@ -229,7 +229,7 @@
     "teamMailboxQuota": {
       "title": "Quota",
       "teamMailbox": "Team Mailbox",
-      "resetConfirm": "Reset the quota size for \"{{mailbox}}@{{domain}}\" to domain default?"
+      "resetConfirm": "Remove the message count and size limits set for \"{{mailbox}}@{{domain}}\"? The limits of the domain, or the global ones, will apply again."
     },
     "extraSenders": {
       "title": "Extra Senders",
@@ -600,7 +600,7 @@
     "quota": {
       "title": "Quota",
       "user": "User",
-      "resetConfirm": "Reset the quota size for \"{{username}}\" to domain default?",
+      "resetConfirm": "Remove the message count and size limits set for \"{{username}}\"? The limits of the domain, or the global ones, will apply again.",
       "updated": "Quota size updated"
     },
     "forwards": {
@@ -1591,7 +1591,7 @@
     "updated": "Global quota size updated",
     "errorUpdating": "Error updating global quota",
     "removeSizeLimit": "Remove size limit",
-    "removeConfirm": "Remove the global quota size limit? Users without a domain or user specific limit will have unlimited storage.",
+    "removeConfirm": "Remove the global message count and size limits? Users without a limit of their own or of their domain will have none.",
     "removed": "Global quota size limit removed",
     "errorRemoving": "Error removing global quota size limit",
     "aggregatedExtra": "Aggregated extra quotas",
@@ -2052,5 +2052,23 @@
     },
     "deleteData": "Delete data",
     "deleteWord": "DELETE"
+  },
+  "quotaLimits": {
+    "edit": "Edit limits",
+    "title": "Quota limits of {{target}}",
+    "allUsers": "all users",
+    "count": "Message count",
+    "size": "Size",
+    "unlimited": "Unlimited",
+    "inheritHint": "Leave empty to use the {{parent}} limit ({{value}}).",
+    "noLimitHint": "Leave empty for no limit.",
+    "parentDomain": "of the domain",
+    "parentGlobal": "global",
+    "invalid": "A limit must be a positive number, or unlimited.",
+    "updated": "Quota limits updated",
+    "removed": "Specific limits removed",
+    "removeSpecific": "Remove specific limits",
+    "removeDomain": "Remove domain limits",
+    "removeGlobal": "Remove global limits"
   }
 }

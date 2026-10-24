@@ -56,7 +56,7 @@
     "occupation": "Ocupación",
     "limits": "Límites",
     "perUserLimit": "Límite por usuario",
-    "computedEffective": "Calculado (efectivo)",
+    "computedEffective": "Límite aplicado",
     "domain": "Dominio",
     "global": "Global",
     "updateSizeLimit": "Modificar el límite de tamaño",
@@ -161,7 +161,7 @@
     "quota": {
       "title": "Cuota",
       "couldNotLoad": "No se pudo cargar la cuota.",
-      "resetConfirm": "¿Eliminar el límite de tamaño de la cuota del dominio \"{{domain}}\"? Se volverá a aplicar el límite global.",
+      "resetConfirm": "¿Eliminar los límites de número de mensajes y de tamaño de «{{domain}}»? Volverán a aplicarse los límites globales.",
       "reset": "Tamaño de cuota del dominio restablecido al valor global",
       "errorUpdating": "Error al actualizar el tamaño de la cuota",
       "updated": "Tamaño de la cuota del dominio actualizado"
@@ -229,7 +229,7 @@
     "teamMailboxQuota": {
       "title": "Cuota",
       "teamMailbox": "Buzón compartido",
-      "resetConfirm": "¿Restablecer el tamaño de la cuota de «{{mailbox}}@{{domain}}» al valor predeterminado del dominio?"
+      "resetConfirm": "¿Eliminar los límites de número de mensajes y de tamaño fijados para «{{mailbox}}@{{domain}}»? Volverán a aplicarse los límites del dominio o los globales."
     },
     "extraSenders": {
       "title": "Remitentes adicionales",
@@ -600,7 +600,7 @@
     "quota": {
       "title": "Cuota",
       "user": "Usuario",
-      "resetConfirm": "¿Restablecer el tamaño de la cuota de «{{username}}» al valor predeterminado del dominio?",
+      "resetConfirm": "¿Eliminar los límites de número de mensajes y de tamaño fijados para «{{username}}»? Volverán a aplicarse los límites del dominio o los globales.",
       "updated": "Tamaño de la cuota actualizado"
     },
     "forwards": {
@@ -1591,7 +1591,7 @@
     "updated": "Tamaño de la cuota global actualizado",
     "errorUpdating": "Error al actualizar la cuota global",
     "removeSizeLimit": "Eliminar límite de tamaño",
-    "removeConfirm": "¿Eliminar el límite de tamaño de la cuota global? Los usuarios sin un límite específico de dominio o de usuario tendrán almacenamiento ilimitado.",
+    "removeConfirm": "¿Eliminar los límites globales de número de mensajes y de tamaño? Los usuarios sin límite propio ni de dominio no tendrán ninguno.",
     "removed": "Límite de tamaño de la cuota global eliminado",
     "errorRemoving": "Error al eliminar el límite de tamaño de la cuota global",
     "aggregatedExtra": "Cuotas adicionales agregadas",
@@ -2052,5 +2052,23 @@
     },
     "deleteData": "Eliminar datos",
     "deleteWord": "ELIMINAR"
+  },
+  "quotaLimits": {
+    "edit": "Modificar los límites",
+    "title": "Límites de cuota de {{target}}",
+    "allUsers": "todos los usuarios",
+    "count": "Número de mensajes",
+    "size": "Tamaño",
+    "unlimited": "Ilimitado",
+    "inheritHint": "Dejar vacío para aplicar el límite {{parent}} ({{value}}).",
+    "noLimitHint": "Dejar vacío para no fijar ningún límite.",
+    "parentDomain": "del dominio",
+    "parentGlobal": "global",
+    "invalid": "Un límite debe ser un número positivo, o ilimitado.",
+    "updated": "Límites de cuota actualizados",
+    "removed": "Límites específicos eliminados",
+    "removeSpecific": "Eliminar los límites específicos",
+    "removeDomain": "Eliminar los límites del dominio",
+    "removeGlobal": "Eliminar los límites globales"
   }
 }

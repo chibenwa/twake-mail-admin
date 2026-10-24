@@ -1,11 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getDomainQuota, updateDomainQuota, deleteDomainQuotaSize } from "../api-client";
+import { getDomainQuota, updateDomainQuotaSize, deleteDomainQuotaSize, updateDomainQuotaCount, deleteDomainQuotaCount } from "../api-client";
 import { DomainQuota, DomainQuotaValues } from "../types";
-import { useToast } from "@/hooks/use-toast";
-import { useConfirm } from "@/hooks/use-confirm";
-import ErrorDisplayer from "@/components/custom/error-displayer";
-import { Button } from "@/components/ui/button";
+import QuotaLimits, { NO_LIMITS, QuotaLimitsApi } from "@/components/custom/quota-limits";
 import ExploreUserQuota from "@/components/custom/explore-user-quota";
 import QuotaUsageSumSection from "@/components/custom/quota-usage-sum";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
@@ -44,29 +41,21 @@ function QuotaRow({ label, values, countLabel, sizeLabel }: { label: string; val
   );
 }
 
-function toBytes(value: number, unit: string): number {
-  if (value === -1) return -1;
-  switch (unit) {
-    case "KB": return value * 1024;
-    case "MB": return value * 1024 * 1024;
-    case "GB": return value * 1024 * 1024 * 1024;
-    default: return value;
-  }
-}
-
 export default function DomainQuotaSection({ domain, defaultOpen }: Props) {
   const { t } = useTranslation();
-  const { toast } = useToast();
-  const confirm = useConfirm();
   const canView = useIsAllowed("GET", "/quota/domains/{domain}");
-  const canUpdate = useIsAllowed("PUT", "/quota/domains/{domain}");
+  const canUpdateSize = useIsAllowed("PUT", "/quota/domains/{domain}/size");
+  const canUpdateCount = useIsAllowed("PUT", "/quota/domains/{domain}/count");
   const canReset = useIsAllowed("DELETE", "/quota/domains/{domain}/size");
   const [open, setOpen, openContentId] = useSectionOpen("quota", defaultOpen ?? false);
   const [loading, setLoading] = useState(false);
   const [quota, setQuota] = useState<DomainQuota | null>(null);
-  const [showSizeEdit, setShowSizeEdit] = useState(false);
-  const [sizeInput, setSizeInput] = useState("");
-  const [sizeUnit, setSizeUnit] = useState<"B" | "KB" | "MB" | "GB">("GB");
+  const limitsApi = useMemo<QuotaLimitsApi>(() => ({
+    putCount: (count) => updateDomainQuotaCount(domain, count),
+    deleteCount: () => deleteDomainQuotaCount(domain),
+    putSize: (size) => updateDomainQuotaSize(domain, size),
+    deleteSize: () => deleteDomainQuotaSize(domain),
+  }), [domain]);
 
   const fetchQuota = useCallback(async () => {
     setLoading(true);
@@ -85,42 +74,6 @@ export default function DomainQuotaSection({ domain, defaultOpen }: Props) {
   }, [open, fetchQuota]);
 
   if (!canView) return null;
-
-  const handleUpdateSize = async () => {
-    const raw = parseFloat(sizeInput);
-    if (isNaN(raw) || (raw < -1) || raw === 0) {
-      toast({ title: t("common.invalidSize"), description: t("common.invalidSizeDesc") });
-      return;
-    }
-    const bytes = Math.round(toBytes(raw, sizeUnit));
-    try {
-      await updateDomainQuota(domain, {
-        count: quota?.domain?.count ?? null,
-        size: bytes,
-      });
-      toast({ title: t("domains.quota.updated") });
-      setSizeInput("");
-      setShowSizeEdit(false);
-      await fetchQuota();
-    } catch (err) {
-      toast({ title: t("domains.quota.errorUpdating"), description: <ErrorDisplayer error={err} /> });
-    }
-  };
-
-  const handleResetSize = async () => {
-    const confirmed = await confirm({
-      header: t("common.resetQuotaSize"),
-      message: t("domains.quota.resetConfirm", { domain }),
-    });
-    if (!confirmed) return;
-    try {
-      await deleteDomainQuotaSize(domain);
-      toast({ title: t("domains.quota.reset") });
-      await fetchQuota();
-    } catch (err) {
-      toast({ title: t("common.errorResettingQuota"), description: <ErrorDisplayer error={err} /> });
-    }
-  };
 
   return (
     <div className="mt-6">
@@ -145,59 +98,18 @@ export default function DomainQuotaSection({ domain, defaultOpen }: Props) {
 
               <hr className="border-gray-200" />
 
-              <div className="flex items-center gap-2 flex-wrap">
-                {canUpdate && (
-                  <Button
-                    variant="outline"
-                    className="rounded-sm"
-                    onClick={() => setShowSizeEdit(!showSizeEdit)}
-                  >
-                    {t("common.updateSizeLimit")}
-                  </Button>
-                )}
-                {canReset && quota.domain?.size != null && (
-                  <Button
-                    variant="outline"
-                    className="rounded-sm"
-                    onClick={handleResetSize}
-                  >
-                    {t("common.resetToGlobalDefault")}
-                  </Button>
-                )}
-              </div>
-
-              {showSizeEdit && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <input
-                    autoFocus
-                    type="number"
-                    value={sizeInput}
-                    onChange={(e) => setSizeInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleUpdateSize()}
-                    placeholder={t("common.sizeUnlimited")}
-                    aria-label={t("common.sizeLimit")}
-                    className="flex-1 min-w-32 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  />
-                  <select
-                    value={sizeUnit}
-                    onChange={(e) => setSizeUnit(e.target.value as "B" | "KB" | "MB" | "GB")}
-                    aria-label={t("common.sizeUnit")}
-                    className="px-3 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="B">B</option>
-                    <option value="KB">KB</option>
-                    <option value="MB">MB</option>
-                    <option value="GB">GB</option>
-                  </select>
-                  <button
-                    onClick={handleUpdateSize}
-                    disabled={!sizeInput.trim()}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {t("common.save")}
-                  </button>
-                </div>
-              )}
+              <QuotaLimits
+                target={domain}
+                current={quota.domain ?? NO_LIMITS}
+                parents={[{ label: t("quotaLimits.parentGlobal"), values: quota.global ?? NO_LIMITS }]}
+                api={limitsApi}
+                canEditCount={canUpdateCount}
+                canEditSize={canUpdateSize}
+                canRemove={canReset}
+                removeLabel={t("quotaLimits.removeDomain")}
+                removeConfirm={t("domains.quota.resetConfirm", { domain })}
+                onChanged={fetchQuota}
+              />
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">{t("domains.quota.couldNotLoad")}</p>

@@ -56,7 +56,7 @@
     "occupation": "Belegung",
     "limits": "Grenzwerte",
     "perUserLimit": "Grenzwert pro Benutzer",
-    "computedEffective": "Berechnet (wirksam)",
+    "computedEffective": "Angewandtes Limit",
     "domain": "Domain",
     "global": "Global",
     "updateSizeLimit": "Größenbeschränkung ändern",
@@ -161,7 +161,7 @@
     "quota": {
       "title": "Kontingent",
       "couldNotLoad": "Kontingent konnte nicht geladen werden.",
-      "resetConfirm": "Die Größenbegrenzung des Domain-Kontingents für \"{{domain}}\" entfernen? Danach gilt wieder die globale Begrenzung.",
+      "resetConfirm": "Die Limits für Nachrichtenanzahl und Größe von „{{domain}}“ entfernen? Dann gelten wieder die globalen Limits.",
       "reset": "Domain-Kontingentgröße auf globalen Standard zurückgesetzt",
       "errorUpdating": "Fehler beim Aktualisieren der Kontingentgröße",
       "updated": "Domain-Kontingentgröße aktualisiert"
@@ -229,7 +229,7 @@
     "teamMailboxQuota": {
       "title": "Kontingent",
       "teamMailbox": "Team-Postfach",
-      "resetConfirm": "Kontingentgröße für „{{mailbox}}@{{domain}}“ auf den Domain-Standard zurücksetzen?"
+      "resetConfirm": "Die für „{{mailbox}}@{{domain}}“ festgelegten Limits für Nachrichtenanzahl und Größe entfernen? Dann gelten wieder die Limits der Domain oder die globalen."
     },
     "extraSenders": {
       "title": "Zusätzliche Absender",
@@ -600,7 +600,7 @@
     "quota": {
       "title": "Kontingent",
       "user": "Benutzer",
-      "resetConfirm": "Kontingentgröße für „{{username}}“ auf den Domain-Standard zurücksetzen?",
+      "resetConfirm": "Die für „{{username}}“ festgelegten Limits für Nachrichtenanzahl und Größe entfernen? Dann gelten wieder die Limits der Domain oder die globalen.",
       "updated": "Kontingentgröße aktualisiert"
     },
     "forwards": {
@@ -1591,7 +1591,7 @@
     "updated": "Globale Kontingentgröße aktualisiert",
     "errorUpdating": "Fehler beim Aktualisieren des globalen Kontingents",
     "removeSizeLimit": "Größenbegrenzung entfernen",
-    "removeConfirm": "Die globale Kontingent-Größenbegrenzung entfernen? Benutzer ohne domain- oder benutzerspezifische Begrenzung erhalten unbegrenzten Speicher.",
+    "removeConfirm": "Die globalen Limits für Nachrichtenanzahl und Größe entfernen? Benutzer ohne eigenes oder Domain-Limit haben dann keines mehr.",
     "removed": "Globale Kontingent-Größenbegrenzung entfernt",
     "errorRemoving": "Fehler beim Entfernen der globalen Kontingent-Größenbegrenzung",
     "aggregatedExtra": "Zusätzliche Kontingente gesamt",
@@ -2052,5 +2052,23 @@
     },
     "deleteData": "Daten löschen",
     "deleteWord": "LÖSCHEN"
+  },
+  "quotaLimits": {
+    "edit": "Limits bearbeiten",
+    "title": "Kontingentlimits von {{target}}",
+    "allUsers": "alle Benutzer",
+    "count": "Anzahl der Nachrichten",
+    "size": "Größe",
+    "unlimited": "Unbegrenzt",
+    "inheritHint": "Leer lassen, um das Limit {{parent}} ({{value}}) zu verwenden.",
+    "noLimitHint": "Leer lassen für kein Limit.",
+    "parentDomain": "der Domain",
+    "parentGlobal": "globale",
+    "invalid": "Ein Limit muss eine positive Zahl oder unbegrenzt sein.",
+    "updated": "Kontingentlimits aktualisiert",
+    "removed": "Spezifische Limits entfernt",
+    "removeSpecific": "Spezifische Limits entfernen",
+    "removeDomain": "Domain-Limits entfernen",
+    "removeGlobal": "Globale Limits entfernen"
   }
 }

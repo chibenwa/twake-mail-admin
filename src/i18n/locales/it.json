@@ -56,7 +56,7 @@
     "occupation": "Occupazione",
     "limits": "Limiti",
     "perUserLimit": "Limite per utente",
-    "computedEffective": "Calcolato (effettivo)",
+    "computedEffective": "Limite applicato",
     "domain": "Dominio",
     "global": "Globale",
     "updateSizeLimit": "Modifica il limite di dimensione",
@@ -161,7 +161,7 @@
     "quota": {
       "title": "Quota",
       "couldNotLoad": "Impossibile caricare la quota.",
-      "resetConfirm": "Rimuovere il limite di dimensione della quota del dominio \"{{domain}}\"? Verrà applicato di nuovo il limite globale.",
+      "resetConfirm": "Rimuovere i limiti di numero di messaggi e di dimensione di «{{domain}}»? Torneranno ad applicarsi i limiti globali.",
       "reset": "Dimensione della quota del dominio ripristinata al valore globale",
       "errorUpdating": "Errore durante l'aggiornamento della dimensione della quota",
       "updated": "Dimensione della quota del dominio aggiornata"
@@ -229,7 +229,7 @@
     "teamMailboxQuota": {
       "title": "Quota",
       "teamMailbox": "Casella condivisa",
-      "resetConfirm": "Ripristinare la dimensione della quota di «{{mailbox}}@{{domain}}» al valore predefinito del dominio?"
+      "resetConfirm": "Rimuovere i limiti di numero di messaggi e di dimensione impostati per «{{mailbox}}@{{domain}}»? Torneranno ad applicarsi i limiti del dominio o quelli globali."
     },
     "extraSenders": {
       "title": "Mittenti aggiuntivi",
@@ -600,7 +600,7 @@
     "quota": {
       "title": "Quota",
       "user": "Utente",
-      "resetConfirm": "Ripristinare la dimensione della quota di «{{username}}» al valore predefinito del dominio?",
+      "resetConfirm": "Rimuovere i limiti di numero di messaggi e di dimensione impostati per «{{username}}»? Torneranno ad applicarsi i limiti del dominio o quelli globali.",
       "updated": "Dimensione della quota aggiornata"
     },
     "forwards": {
@@ -1591,7 +1591,7 @@
     "updated": "Dimensione della quota globale aggiornata",
     "errorUpdating": "Errore durante l'aggiornamento della quota globale",
     "removeSizeLimit": "Rimuovi limite di dimensione",
-    "removeConfirm": "Rimuovere il limite di dimensione della quota globale? Gli utenti senza un limite specifico per dominio o utente avranno spazio illimitato.",
+    "removeConfirm": "Rimuovere i limiti globali di numero di messaggi e di dimensione? Gli utenti senza un limite proprio o del dominio non ne avranno alcuno.",
     "removed": "Limite di dimensione della quota globale rimosso",
     "errorRemoving": "Errore durante la rimozione del limite di dimensione della quota globale",
     "aggregatedExtra": "Quote aggiuntive aggregate",
@@ -2052,5 +2052,23 @@
     },
     "deleteData": "Elimina dati",
     "deleteWord": "ELIMINA"
+  },
+  "quotaLimits": {
+    "edit": "Modifica i limiti",
+    "title": "Limiti di quota di {{target}}",
+    "allUsers": "tutti gli utenti",
+    "count": "Numero di messaggi",
+    "size": "Dimensione",
+    "unlimited": "Illimitato",
+    "inheritHint": "Lascia vuoto per applicare il limite {{parent}} ({{value}}).",
+    "noLimitHint": "Lascia vuoto per nessun limite.",
+    "parentDomain": "del dominio",
+    "parentGlobal": "globale",
+    "invalid": "Un limite deve essere un numero positivo, oppure illimitato.",
+    "updated": "Limiti di quota aggiornati",
+    "removed": "Limiti specifici rimossi",
+    "removeSpecific": "Rimuovi i limiti specifici",
+    "removeDomain": "Rimuovi i limiti del dominio",
+    "removeGlobal": "Rimuovi i limiti globali"
   }
 }

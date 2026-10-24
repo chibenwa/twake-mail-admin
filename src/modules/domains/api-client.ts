@@ -46,6 +46,18 @@ export const deleteDomainQuotaSize = async (domain: string): Promise<void> => {
   await apiClient.delete(`/quota/domains/${encodeURIComponent(domain)}/size`);
 };
 
+export const updateDomainQuotaSize = async (domain: string, size: number): Promise<void> => {
+  await apiClient.put(`/quota/domains/${encodeURIComponent(domain)}/size`, size, { headers: { "Content-Type": "application/json" } });
+};
+
+export const updateDomainQuotaCount = async (domain: string, count: number): Promise<void> => {
+  await apiClient.put(`/quota/domains/${encodeURIComponent(domain)}/count`, count, { headers: { "Content-Type": "application/json" } });
+};
+
+export const deleteDomainQuotaCount = async (domain: string): Promise<void> => {
+  await apiClient.delete(`/quota/domains/${encodeURIComponent(domain)}/count`);
+};
+
 export const getTeamMailboxes = async (domain: string): Promise<GetTeamMailboxesResponseType> => {
   return apiClient.get(`/domains/${encodeURIComponent(domain)}/team-mailboxes`);
 };
@@ -149,6 +161,20 @@ export const updateTeamMailboxQuotaSize = async (domain: string, mailbox: string
 export const deleteTeamMailboxQuotaSize = async (domain: string, mailbox: string): Promise<void> => {
   await apiClient.delete(
     `/domains/${encodeURIComponent(domain)}/team-mailboxes/${encodeURIComponent(mailbox)}/quota/limit/size`
+  );
+};
+
+export const updateTeamMailboxQuotaCount = async (domain: string, mailbox: string, count: number): Promise<void> => {
+  await apiClient.put(
+    `/domains/${encodeURIComponent(domain)}/team-mailboxes/${encodeURIComponent(mailbox)}/quota/limit/count`,
+    count,
+    { headers: { "Content-Type": "application/json" } }
+  );
+};
+
+export const deleteTeamMailboxQuotaCount = async (domain: string, mailbox: string): Promise<void> => {
+  await apiClient.delete(
+    `/domains/${encodeURIComponent(domain)}/team-mailboxes/${encodeURIComponent(mailbox)}/quota/limit/count`
   );
 };
 

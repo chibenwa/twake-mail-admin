@@ -6,7 +6,9 @@ import { ProxyResolver, type HttpVerb, type ProxyRule } from "@/lib/proxy-resolv
 const proxy = vi.hoisted(() => ({ resolver: null as { isAllowed: (verb: never, pattern: string) => boolean } | null }));
 const api = vi.hoisted(() => ({
   getGlobalQuota: vi.fn(),
-  updateGlobalQuota: vi.fn(),
+  updateGlobalQuotaSize: vi.fn(),
+  updateGlobalQuotaCount: vi.fn(),
+  deleteGlobalQuotaCount: vi.fn(),
   deleteGlobalQuotaSize: vi.fn(),
   getUsersWithSpecificQuotas: vi.fn(),
   getQuotaExtraSummary: vi.fn(),
@@ -26,7 +28,7 @@ vi.mock("./aggregated-extra-quotas", () => ({ default: () => <p>aggregated-extra
 
 import GlobalQuota from "./index";
 
-const ALL = [{ endpoint: "/quota" }, { endpoint: "/quota/size" }];
+const ALL = [{ endpoint: "/quota" }, { endpoint: "/quota/size" }, { endpoint: "/quota/count" }];
 
 function renderWith(rules: ProxyRule[], size: number | null) {
   proxy.resolver = new ProxyResolver(rules);
@@ -46,7 +48,7 @@ describe("global quota size removal", () => {
     api.deleteGlobalQuotaSize.mockResolvedValue(undefined);
     renderWith(ALL, 1073741824);
 
-    fireEvent.click(await screen.findByText("globalQuota.removeSizeLimit"));
+    fireEvent.click(await screen.findByText("quotaLimits.removeGlobal"));
 
     await waitFor(() => expect(api.deleteGlobalQuotaSize).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(api.getGlobalQuota).toHaveBeenCalledTimes(2));
@@ -56,7 +58,7 @@ describe("global quota size removal", () => {
     confirmation.answer = false;
     renderWith(ALL, 1073741824);
 
-    fireEvent.click(await screen.findByText("globalQuota.removeSizeLimit"));
+    fireEvent.click(await screen.findByText("quotaLimits.removeGlobal"));
 
     await waitFor(() => expect(api.getGlobalQuota).toHaveBeenCalledTimes(1));
     expect(api.deleteGlobalQuotaSize).not.toHaveBeenCalled();
@@ -65,15 +67,15 @@ describe("global quota size removal", () => {
   it("is not offered when no global size limit is set", async () => {
     renderWith(ALL, null);
 
-    expect(await screen.findByText("common.updateSizeLimit")).not.toBeNull();
-    expect(screen.queryByText("globalQuota.removeSizeLimit")).toBeNull();
+    expect(await screen.findByText("quotaLimits.edit")).not.toBeNull();
+    expect(screen.queryByText("quotaLimits.removeGlobal")).toBeNull();
   });
 
   it("is not offered when the profile does not allow deleting the size limit", async () => {
-    renderWith([{ endpoint: "/quota" }], 1073741824);
+    renderWith([{ endpoint: "/quota" }, { endpoint: "/quota/size", verb: ["PUT"] }], 1073741824);
 
-    expect(await screen.findByText("common.updateSizeLimit")).not.toBeNull();
-    expect(screen.queryByText("globalQuota.removeSizeLimit")).toBeNull();
+    expect(await screen.findByText("quotaLimits.edit")).not.toBeNull();
+    expect(screen.queryByText("quotaLimits.removeGlobal")).toBeNull();
   });
 });
 
@@ -97,7 +99,7 @@ describe("global quota reports", () => {
   it("hides the report sections the profile does not allow", async () => {
     renderWith(ALL, null);
 
-    expect(await screen.findByText("common.updateSizeLimit")).not.toBeNull();
+    expect(await screen.findByText("quotaLimits.edit")).not.toBeNull();
     expect(screen.queryByText("users-with-specific-quotas")).toBeNull();
     expect(screen.queryByText("aggregated-extra-quotas")).toBeNull();
   });

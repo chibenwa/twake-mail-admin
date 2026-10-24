@@ -1,13 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useFetchData } from "@/hooks/use-fetch-data";
-import { getUserQuota, updateUserQuotaSize, deleteUserQuotaSize } from "../api-client";
+import { getUserQuota, updateUserQuotaSize, deleteUserQuotaSize, updateUserQuotaCount, deleteUserQuotaCount } from "../api-client";
 import { UserQuota as UserQuotaType, QuotaValues } from "../types";
-import { useToast } from "@/hooks/use-toast";
-import { useConfirm } from "@/hooks/use-confirm";
-import { Button } from "@/components/ui/button";
-import ErrorDisplayer from "@/components/custom/error-displayer";
+import QuotaLimits, { NO_LIMITS, QuotaLimitsApi } from "@/components/custom/quota-limits";
 import i18n from "i18next";
 import { currentLocale } from "@/i18n/locale";
 import { formatByteSize } from "@/i18n/format-size";
@@ -45,15 +42,17 @@ interface Props {
 
 export default function UserQuota({ username }: Props) {
   const { t } = useTranslation();
-  const { toast } = useToast();
-  const confirm = useConfirm();
   const canView = useIsAllowed("GET", "/quota/users/{username}");
-  const canUpdate = useIsAllowed("PUT", "/quota/users/{username}/size");
+  const canUpdateSize = useIsAllowed("PUT", "/quota/users/{username}/size");
+  const canUpdateCount = useIsAllowed("PUT", "/quota/users/{username}/count");
   const canReset = useIsAllowed("DELETE", "/quota/users/{username}/size");
   const [open, setOpen, openContentId] = useSectionOpen("quota");
-  const [sizeInput, setSizeInput] = useState("");
-  const [sizeUnit, setSizeUnit] = useState<"B" | "KB" | "MB" | "GB">("GB");
-  const [showSizeEdit, setShowSizeEdit] = useState(false);
+  const limitsApi = useMemo<QuotaLimitsApi>(() => ({
+    putCount: (count) => updateUserQuotaCount(username, count),
+    deleteCount: () => deleteUserQuotaCount(username),
+    putSize: (size) => updateUserQuotaSize(username, size),
+    deleteSize: () => deleteUserQuotaSize(username),
+  }), [username]);
 
   const fetchQuota = useCallback(() => getUserQuota(username), [username]);
   const {
@@ -64,49 +63,6 @@ export default function UserQuota({ username }: Props) {
   } = useFetchData<UserQuotaType>(canView ? fetchQuota : null);
 
   if (!canView) return null;
-
-  const toBytes = (value: number, unit: string): number => {
-    if (value === -1) return -1;
-    switch (unit) {
-      case "KB": return value * 1024;
-      case "MB": return value * 1024 * 1024;
-      case "GB": return value * 1024 * 1024 * 1024;
-      default: return value;
-    }
-  };
-
-  const handleUpdateSize = async () => {
-    const raw = parseFloat(sizeInput);
-    if (isNaN(raw) || (raw < -1) || raw === 0) {
-      toast({ title: t("common.invalidSize"), description: t("common.invalidSizeDesc") });
-      return;
-    }
-    const value = Math.round(toBytes(raw, sizeUnit));
-    try {
-      await updateUserQuotaSize(username, value);
-      toast({ title: t("common.quotaSizeUpdated") });
-      setSizeInput("");
-      setShowSizeEdit(false);
-      await refresh();
-    } catch (err) {
-      toast({ title: t("common.errorUpdatingQuota"), description: <ErrorDisplayer error={err} /> });
-    }
-  };
-
-  const handleResetSize = async () => {
-    const confirmed = await confirm({
-      header: t("common.resetQuotaSize"),
-      message: t("users.quota.resetConfirm", { username }),
-    });
-    if (!confirmed) return;
-    try {
-      await deleteUserQuotaSize(username);
-      toast({ title: t("common.quotaSizeReset") });
-      await refresh();
-    } catch (err) {
-      toast({ title: t("common.errorResettingQuota"), description: <ErrorDisplayer error={err} /> });
-    }
-  };
 
   return (
     <div className="mt-6">
@@ -163,59 +119,21 @@ export default function UserQuota({ username }: Props) {
 
               <hr className="border-gray-200" />
 
-              <div className="flex items-center gap-2 flex-wrap">
-                {canUpdate && (
-                  <Button
-                    variant="outline"
-                    className="rounded-sm"
-                    onClick={() => setShowSizeEdit(!showSizeEdit)}
-                  >
-                    {t("common.updateSizeLimit")}
-                  </Button>
-                )}
-                {canReset && (
-                  <Button
-                    variant="outline"
-                    className="rounded-sm"
-                    onClick={handleResetSize}
-                  >
-                    {t("common.resetToDomainDefault")}
-                  </Button>
-                )}
-              </div>
-
-              {showSizeEdit && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <input
-                    autoFocus
-                    type="number"
-                    value={sizeInput}
-                    onChange={(e) => setSizeInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleUpdateSize()}
-                    placeholder={t("common.sizeUnlimited")}
-                    aria-label={t("common.sizeLimit")}
-                    className="flex-1 min-w-32 px-4 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  />
-                  <select
-                    value={sizeUnit}
-                    onChange={(e) => setSizeUnit(e.target.value as "B" | "KB" | "MB" | "GB")}
-                    aria-label={t("common.sizeUnit")}
-                    className="px-3 py-2 border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="B">B</option>
-                    <option value="KB">KB</option>
-                    <option value="MB">MB</option>
-                    <option value="GB">GB</option>
-                  </select>
-                  <button
-                    onClick={handleUpdateSize}
-                    disabled={!sizeInput.trim()}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {t("common.save")}
-                  </button>
-                </div>
-              )}
+              <QuotaLimits
+                target={username}
+                current={quota.user ?? NO_LIMITS}
+                parents={[
+                  { label: t("quotaLimits.parentDomain"), values: quota.domain ?? NO_LIMITS },
+                  { label: t("quotaLimits.parentGlobal"), values: quota.global ?? NO_LIMITS },
+                ]}
+                api={limitsApi}
+                canEditCount={canUpdateCount}
+                canEditSize={canUpdateSize}
+                canRemove={canReset}
+                removeLabel={t("quotaLimits.removeSpecific")}
+                removeConfirm={t("users.quota.resetConfirm", { username })}
+                onChanged={refresh}
+              />
             </div>
           )}
         </div>

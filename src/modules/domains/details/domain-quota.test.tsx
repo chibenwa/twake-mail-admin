@@ -6,7 +6,9 @@ import { ProxyResolver, type HttpVerb, type ProxyRule } from "@/lib/proxy-resolv
 const proxy = vi.hoisted(() => ({ resolver: null as { isAllowed: (verb: never, pattern: string) => boolean } | null }));
 const api = vi.hoisted(() => ({
   getDomainQuota: vi.fn(),
-  updateDomainQuota: vi.fn(),
+  updateDomainQuotaSize: vi.fn(),
+  updateDomainQuotaCount: vi.fn(),
+  deleteDomainQuotaCount: vi.fn(),
   deleteDomainQuotaSize: vi.fn(),
 }));
 const confirmation = vi.hoisted(() => ({ answer: true }));
@@ -36,7 +38,7 @@ function renderWith(rules: ProxyRule[]) {
 
 beforeEach(() => {
   api.getDomainQuota.mockReset();
-  api.updateDomainQuota.mockReset();
+
   api.deleteDomainQuotaSize.mockReset();
   confirmation.answer = true;
 });
@@ -49,7 +51,7 @@ describe("domain quota reset", () => {
     api.deleteDomainQuotaSize.mockResolvedValue(undefined);
     renderWith(ALL);
 
-    fireEvent.click(await screen.findByText("common.resetToGlobalDefault"));
+    fireEvent.click(await screen.findByText("quotaLimits.removeDomain"));
 
     await waitFor(() => expect(api.deleteDomainQuotaSize).toHaveBeenCalledWith("linagora.com"));
     await waitFor(() => expect(api.getDomainQuota).toHaveBeenCalledTimes(2));
@@ -60,7 +62,7 @@ describe("domain quota reset", () => {
     api.getDomainQuota.mockResolvedValue(WITH_DOMAIN_LIMIT);
     renderWith(ALL);
 
-    fireEvent.click(await screen.findByText("common.resetToGlobalDefault"));
+    fireEvent.click(await screen.findByText("quotaLimits.removeDomain"));
 
     await waitFor(() => expect(api.getDomainQuota).toHaveBeenCalledTimes(1));
     expect(api.deleteDomainQuotaSize).not.toHaveBeenCalled();
@@ -70,15 +72,15 @@ describe("domain quota reset", () => {
     api.getDomainQuota.mockResolvedValue(WITHOUT_DOMAIN_LIMIT);
     renderWith(ALL);
 
-    expect(await screen.findByText("common.updateSizeLimit")).not.toBeNull();
-    expect(screen.queryByText("common.resetToGlobalDefault")).toBeNull();
+    expect(await screen.findByText("quotaLimits.edit")).not.toBeNull();
+    expect(screen.queryByText("quotaLimits.removeDomain")).toBeNull();
   });
 
   it("is not offered when the profile does not allow deleting the size limit", async () => {
     api.getDomainQuota.mockResolvedValue(WITH_DOMAIN_LIMIT);
     renderWith([{ endpoint: "/quota/domains/*", verb: ["GET", "PUT"] }]);
 
-    expect(await screen.findByText("common.updateSizeLimit")).not.toBeNull();
-    expect(screen.queryByText("common.resetToGlobalDefault")).toBeNull();
+    expect(await screen.findByText("quotaLimits.edit")).not.toBeNull();
+    expect(screen.queryByText("quotaLimits.removeDomain")).toBeNull();
   });
 });
