@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { apiClient } from "@/lib/apiClient";
 
+// No user name holds a space or more than one "@": the calendar server answers 404, not 400, for these
+const USERNAME_PATTERN = /^[^\s@]+(@[^\s@]+)?$/;
+
 export type UserExistsStatus = "idle" | "checking" | "exists" | "not_found" | "invalid";
 
 // "not_found" stays submittable: callers ask for an explicit confirmation instead.
@@ -19,13 +22,17 @@ export function useCheckUserExists(username: string): UserExistsStatus {
       return;
     }
 
-    setStatus("checking");
-
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
 
+    setStatus("checking");
+
     timerRef.current = setTimeout(async () => {
+      if (!USERNAME_PATTERN.test(trimmed)) {
+        setStatus("invalid");
+        return;
+      }
       try {
         await apiClient.head(`/users/${encodeURIComponent(trimmed)}`);
         setStatus("exists");
