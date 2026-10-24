@@ -1,5 +1,6 @@
 import { useCallback } from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
+import { TriangleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import UserMailboxes from "./user-mailboxes";
 import { MailUserSummary } from "./user-summary";
@@ -25,6 +26,25 @@ import { appConfig } from "@/lib/config";
 import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 import { ExpandCollapseAll, SectionsProvider } from "@/components/custom/collapsible-section";
+import { useAccountState } from "./use-account-state";
+
+/** The page of an address that is no account: what it is, and where to look instead. */
+function NoAccount({ username, invalid }: { username: string; invalid: boolean }) {
+  const { t } = useTranslation();
+  const localPart = username.includes("@") ? username.slice(0, username.lastIndexOf("@")) : username;
+  return (
+    <div role="alert" className="mt-4 flex gap-2 items-start border-l-4 border-amber-500 bg-amber-50 text-amber-900 p-3 text-sm">
+      <TriangleAlert className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
+      <div className="space-y-1">
+        <p>{invalid ? t("users.noAccount.invalid", { username }) : t("users.noAccount.missing", { username })}</p>
+        <p className="flex flex-wrap gap-4">
+          <Link to={`/users?q=${encodeURIComponent(localPart)}`} className="text-blue-600 hover:underline">{t("users.noAccount.search")}</Link>
+          <Link to="/users" className="text-blue-600 hover:underline">{t("users.noAccount.back")}</Link>
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function UserDetail() {
   const { t } = useTranslation();
@@ -37,10 +57,31 @@ export default function UserDetail() {
   const mappingsRevision = useUserMappingsRevisionState();
   const fetchRateLimits = useCallback(() => getUserRateLimits(username!), [username]);
   const updateRateLimits = useCallback((limits: any) => updateUserRateLimits(username!, limits), [username]);
+  const account = useAccountState(username!);
 
   return (
     <SectionsProvider page="user">
-    <Header headerTitle={username} headerSubTitle={t("users.detailKind")} breadcrumb={breadcrumbs.users()} actions={<ExpandCollapseAll />} />
+    <Header
+      headerTitle={username}
+      headerSubTitle={account === "missing" || account === "invalid" ? t("users.noAccount.kind") : t("users.detailKind")}
+      breadcrumb={breadcrumbs.users()}
+      actions={account === "missing" || account === "invalid" ? undefined : <ExpandCollapseAll />}
+    />
+    {account === "checking" && <div className="h-[58px] mt-4 rounded-2 animate-pulse bg-gray-200" />}
+    {(account === "missing" || account === "invalid") && <NoAccount username={username!} invalid={account === "invalid"} />}
+    {account === "missing" && (
+      // A bare address can still be forwarded and be the source of mappings; nothing else applies
+      <>
+        <MailUserSummary username={username!} forwardsOnly />
+        <div className="mt-4 p-4 bg-white rounded-2">
+          <UserMappingsRevisionContext.Provider value={mappingsRevision}>
+            <UserForwards username={username!} noMailbox />
+            <UserMappings username={username!} />
+          </UserMappingsRevisionContext.Provider>
+        </div>
+      </>
+    )}
+    {(account === "exists" || account === "unknown") && <>
     <MailUserSummary username={username!} />
     <div className="mt-4 p-4 bg-white rounded-2">
 
@@ -71,6 +112,7 @@ export default function UserDetail() {
       <UserTasks username={username!} />
       <UserChannels username={username!} />
     </div>
+    </>}
     </SectionsProvider>
   );
 }

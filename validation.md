@@ -376,6 +376,7 @@ forwards are counted by their sections, whose own rows below apply; the strip it
 |---------|------|---------|----------|
 | Quota fact | GET | `/quota/users/{username}` | MAY (the fact is not shown if missing) |
 | Vacation fact | GET | `/vacation/{username}` | MAY (the fact is not shown if missing) |
+| Account check, on page load | HEAD | `/users/{username}` | MAY (not gated: a refusal renders the page as usual; a 404 shows the "no account" state with only Forwards and Mappings) |
 
 ### User detail — Mailboxes tab *(APPLICATION:"MAIL")*
 

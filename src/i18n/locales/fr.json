@@ -1161,6 +1161,13 @@
       "addressBooks": "Carnets d'adresses : {{count}}",
       "bookingLinks": "Liens de réservation : {{count}}",
       "forwardsNoCopy": "Redirections : {{count}} (sans copie)"
+    },
+    "noAccount": {
+      "kind": "Adresse sans compte",
+      "missing": "Aucun compte nommé {{username}} n'existe sur ce serveur.",
+      "invalid": "{{username}} n'est pas une adresse valide.",
+      "search": "Rechercher les utilisateurs",
+      "back": "Retour aux utilisateurs"
     }
   },
   "mailboxCounts": {

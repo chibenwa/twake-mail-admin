@@ -1165,6 +1165,13 @@
       "addressBooks": "Адресные книги: {{count}}",
       "bookingLinks": "Ссылки для записи: {{count}}",
       "forwardsNoCopy": "Пересылки: {{count}} (без копии)"
+    },
+    "noAccount": {
+      "kind": "Адрес без учётной записи",
+      "missing": "На этом сервере нет учётной записи {{username}}.",
+      "invalid": "{{username}} — недопустимый адрес.",
+      "search": "Искать пользователей",
+      "back": "Назад к пользователям"
     }
   },
   "mailboxCounts": {

@@ -1159,6 +1159,13 @@
       "addressBooks": "Sổ địa chỉ: {{count}}",
       "bookingLinks": "Liên kết đặt lịch: {{count}}",
       "forwardsNoCopy": "Chuyển tiếp: {{count}} (không giữ bản sao)"
+    },
+    "noAccount": {
+      "kind": "Địa chỉ không có tài khoản",
+      "missing": "Không có tài khoản nào tên {{username}} trên máy chủ này.",
+      "invalid": "{{username}} không phải là địa chỉ hợp lệ.",
+      "search": "Tìm người dùng",
+      "back": "Quay lại Người dùng"
     }
   },
   "mailboxCounts": {

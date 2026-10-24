@@ -799,6 +799,13 @@ USERS = page(
     ],
     children=[
         action(
+            "account-check",
+            "Tell an address without account on its user page",
+            "Signaler une adresse sans compte sur sa page utilisateur",
+            applications=MAIL,
+            endpoints=[may("HEAD", _U)],
+        ),
+        action(
             "rename",
             "Rename a user",
             "Renommer un utilisateur",

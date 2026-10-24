@@ -1161,6 +1161,13 @@
       "addressBooks": "Хаягийн дэвтрүүд: {{count}}",
       "bookingLinks": "Захиалгын холбоосууд: {{count}}",
       "forwardsNoCopy": "Дамжуулалт: {{count}} (хуулбаргүй)"
+    },
+    "noAccount": {
+      "kind": "Бүртгэлгүй хаяг",
+      "missing": "Энэ серверт {{username}} нэртэй бүртгэл байхгүй.",
+      "invalid": "{{username}} хүчинтэй хаяг биш.",
+      "search": "Хэрэглэгч хайх",
+      "back": "Хэрэглэгчид рүү буцах"
     }
   },
   "mailboxCounts": {

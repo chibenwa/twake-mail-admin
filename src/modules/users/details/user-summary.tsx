@@ -32,18 +32,19 @@ const Strip = ({ children }: { children: ReactNode }) => (
 const countOf = (value: unknown) => (typeof value === "number" ? value : undefined);
 
 /** The essential facts of a mail user, each opening and scrolling to its section. */
-export function MailUserSummary({ username }: { username: string }) {
+export function MailUserSummary({ username, forwardsOnly = false }: { username: string; forwardsOnly?: boolean }) {
   const { t } = useTranslation();
   const facts = useSectionFacts();
-  const canQuota = useIsAllowed("GET", "/quota/users/{username}");
-  const canVacation = useIsAllowed("GET", "/vacation/{username}");
+  // An address without account has no quota, mailbox, alias nor vacation of its own
+  const canQuota = useIsAllowed("GET", "/quota/users/{username}") && !forwardsOnly;
+  const canVacation = useIsAllowed("GET", "/vacation/{username}") && !forwardsOnly;
   const fetchQuota = useCallback(() => getUserQuota(username), [username]);
   const fetchVacation = useCallback(() => getUserVacation(username), [username]);
   const { data: quota } = useFetchData<UserQuota>(canQuota ? fetchQuota : null);
   const { data: vacation } = useFetchData<VacationSettings>(canVacation ? fetchVacation : null);
 
-  const mailboxes = countOf(facts["mailboxes"]);
-  const aliases = countOf(facts["aliases"]);
+  const mailboxes = forwardsOnly ? undefined : countOf(facts["mailboxes"]);
+  const aliases = forwardsOnly ? undefined : countOf(facts["aliases"]);
   const forwards = facts["forwards"] as ForwardsFact | undefined;
   const limit = quota?.computed?.size;
 
