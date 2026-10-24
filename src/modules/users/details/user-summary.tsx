@@ -76,8 +76,14 @@ export function MailUserSummary({ username, forwardsOnly = false }: { username: 
   const canVacation = useIsAllowed("GET", "/vacation/{username}") && !forwardsOnly;
   const fetchQuota = useCallback(() => getUserQuota(username), [username]);
   const fetchVacation = useCallback(() => getUserVacation(username), [username]);
-  const { data: quota } = useFetchData<UserQuota>(canQuota ? fetchQuota : null);
-  const { data: vacation } = useFetchData<VacationSettings>(canVacation ? fetchVacation : null);
+  const { data: fetchedQuota } = useFetchData<UserQuota>(canQuota ? fetchQuota : null);
+  const { data: fetchedVacation } = useFetchData<VacationSettings>(canVacation ? fetchVacation : null);
+  // Once its section has loaded or saved them, the section's values are the latest ones
+  const quota = canQuota ? (facts["quota"] as UserQuota | undefined) ?? fetchedQuota : undefined;
+  const vacationFact = facts["vacation"];
+  const vacationEnabled = !canVacation ? undefined
+    : typeof vacationFact === "boolean" ? vacationFact
+      : fetchedVacation ? !!fetchedVacation.enabled : undefined;
   const forwards = facts["forwards"] as ForwardsFact | undefined;
 
   return (
@@ -86,8 +92,8 @@ export function MailUserSummary({ username, forwardsOnly = false }: { username: 
       {!forwardsOnly && <CountFact section="mailboxes" count={facts["mailboxes"]} labelKey="users.summary.mailboxes" />}
       {!forwardsOnly && <CountFact section="aliases" count={facts["aliases"]} labelKey="users.summary.aliases" />}
       {forwards && <ForwardsFactChip forwards={forwards} />}
-      {vacation && (
-        <Fact section="vacation">{vacation.enabled ? t("users.summary.vacationOn") : t("users.summary.vacationOff")}</Fact>
+      {vacationEnabled !== undefined && (
+        <Fact section="vacation">{vacationEnabled ? t("users.summary.vacationOn") : t("users.summary.vacationOff")}</Fact>
       )}
     </Strip>
   );

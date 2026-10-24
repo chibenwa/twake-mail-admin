@@ -6,7 +6,7 @@ import { getUserQuota, updateUserQuotaSize, deleteUserQuotaSize, updateUserQuota
 import { UserQuota as UserQuotaType } from "../types";
 import QuotaLimits, { NO_LIMITS, QuotaLimitsApi } from "@/components/custom/quota-limits";
 import { domainOf, isLimited, QuotaLevel, QuotaLevelRows, QuotaOccupation } from "@/components/custom/quota-levels";
-import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
@@ -33,6 +33,8 @@ export default function UserQuota({ username }: Props) {
     error,
     refresh,
   } = useFetchData<UserQuotaType>(canView ? fetchQuota : null);
+  // The summary strip of the page follows each edit of the limits
+  useSectionFact("quota", quota);
 
   if (!canView) return null;
   const levels: QuotaLevel[] = quota ? [

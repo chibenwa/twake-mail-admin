@@ -11,7 +11,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 
 interface Props {
   username: string;
@@ -37,6 +37,9 @@ export default function UserVacation({ username }: Props) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<VacationSettings>(EMPTY_VACATION);
+  // Whether the stored vacation is enabled (not the unsaved form): the summary strip of the page follows it
+  const [savedEnabled, setSavedEnabled] = useState<boolean | undefined>(undefined);
+  useSectionFact("vacation", savedEnabled);
 
   const fetchVacation = useCallback(async () => {
     setLoading(true);
@@ -50,6 +53,7 @@ export default function UserVacation({ username }: Props) {
         textBody: data.textBody ?? "",
         htmlBody: data.htmlBody ?? "",
       });
+      setSavedEnabled(data.enabled ?? false);
     } catch {
       setForm(EMPTY_VACATION);
     } finally {
@@ -70,6 +74,7 @@ export default function UserVacation({ username }: Props) {
     setSaving(true);
     try {
       await updateUserVacation(username, form);
+      setSavedEnabled(form.enabled);
       toast({ title: t("users.vacation.updated") });
     } catch (err) {
       toast({
@@ -94,6 +99,7 @@ export default function UserVacation({ username }: Props) {
       await deleteUserVacation(username);
       toast({ title: t("users.vacation.deleted") });
       setForm(EMPTY_VACATION);
+      setSavedEnabled(false);
     } catch (err) {
       toast({
         title: t("users.vacation.errorDeleting"),
