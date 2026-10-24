@@ -45,3 +45,6 @@ const storedFlag = (key: string): StoredFlag => ({
 });
 
 export const sectionFlag = (page: string, id: string) => storedFlag(storageKey(page, id));
+
+// Outside a page: nothing remembered
+export const NO_FLAG: StoredFlag = { read: () => undefined, write: () => {}, subscribe: () => () => {} };
