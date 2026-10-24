@@ -16,6 +16,10 @@ const api = vi.hoisted(() => ({
   deleteRegexMapping: vi.fn(),
 }));
 vi.mock("./api-client", () => api);
+const accounts = vi.hoisted(() => new Set<string>());
+vi.mock("@/hooks/use-check-user-exists", () => ({
+  useCheckUserExists: (value: string) => (!value.trim() ? "idle" : accounts.has(value.trim()) ? "exists" : "not_found"),
+}));
 vi.mock("@/lib/proxy-resolver-context", () => ({ useIsAllowed: () => true }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => vi.fn(async () => false) }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: vi.fn() }) }));
@@ -51,5 +55,38 @@ describe("mappings list: a forward kept as a copy", () => {
 
     expect(await screen.findByText("mappings.forwardCopyKept")).not.toBeNull();
     expect(screen.getAllByText("Forward")).toHaveLength(1);
+  });
+});
+
+describe("mappings list: an address mapping checks its addresses", () => {
+  const openAddressDialog = async () => {
+    render(<MemoryRouter><MappingsList /></MemoryRouter>);
+    fireEvent.click(await screen.findByRole("button", { name: "mappings.addTitle" }));
+  };
+  const typeAddresses = (source: string, destination: string) => {
+    fireEvent.change(screen.getByLabelText("mappings.source"), { target: { value: source } });
+    fireEvent.change(screen.getByLabelText("mappings.destination"), { target: { value: destination } });
+  };
+
+  it("refuses a source that is an existing account, naming where its mail would go", async () => {
+    accounts.add("charlotte@example.com");
+    await openAddressDialog();
+    typeAddresses("charlotte@example.com", "bob@example.com");
+
+    expect(screen.getByRole("alert").textContent).toBe("common.sourceIsAccount");
+    expect((screen.getByRole("button", { name: "common.create" }) as HTMLButtonElement).disabled).toBe(true);
+    accounts.clear();
+  });
+
+  it("tells whether the destination is a local account, without blocking", async () => {
+    accounts.add("bob@example.com");
+    await openAddressDialog();
+    typeAddresses("qa.map@example.com", "bob@example.com");
+    expect(screen.getByText("common.userExists")).not.toBeNull();
+
+    typeAddresses("qa.map@example.com", "someone@external.test");
+    expect(screen.getByText("mappings.destinationExternal")).not.toBeNull();
+    expect((screen.getByRole("button", { name: "common.create" }) as HTMLButtonElement).disabled).toBe(false);
+    accounts.clear();
   });
 });

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { createAddressMapping, createDomainMapping, createRegexMapping } from "./api-client";
+import { DestinationLine, SourceLine, useSourceCheck } from "@/components/custom/address-checks";
 
 export type MappingKind = "address" | "regex" | "domain";
 
@@ -11,19 +12,25 @@ const KINDS: Record<MappingKind, {
   destinationPlaceholder: string;
   created: string;
   create: (source: string, destination: string) => Promise<unknown>;
-  hint?: string;
+  // What the type does, under the type select
+  hint: string;
+  // Source and destination are addresses, checked against the accounts
+  checksAccounts?: boolean;
 }> = {
   address: {
     sourcePlaceholder: "mappings.sourcePlaceholder",
     destinationPlaceholder: "mappings.destinationPlaceholder",
     created: "mappings.addressCreated",
     create: createAddressMapping,
+    hint: "mappings.typeHint.address",
+    checksAccounts: true,
   },
   regex: {
     sourcePlaceholder: "mappings.mappingSourcePlaceholder",
     destinationPlaceholder: "mappings.regexPlaceholder",
     created: "mappings.regexCreated",
     create: createRegexMapping,
+    hint: "mappings.typeHint.regex",
   },
   domain: {
     sourcePlaceholder: "mappings.domainSourcePlaceholder",
@@ -51,6 +58,8 @@ export default function CreateMappingDialog({ open, kinds, onClose, onCreated }:
   const [destination, setDestination] = useState("");
   const [kind, setKind] = useState<MappingKind>(kinds[0] ?? "address");
   const config = KINDS[kinds.includes(kind) ? kind : kinds[0] ?? "address"];
+  // Only an address source can be an account whose mail would be diverted
+  const sourceCheck = useSourceCheck(config.checksAccounts ? source : "");
 
   const close = () => {
     setSource("");
@@ -72,7 +81,7 @@ export default function CreateMappingDialog({ open, kinds, onClose, onCreated }:
       onClose={close}
       title={t("mappings.addTitle")}
       submitLabel={t("common.create")}
-      submitDisabled={!source.trim() || !destination.trim()}
+      submitDisabled={!source.trim() || !destination.trim() || sourceCheck.blocking}
       onSubmit={handleCreate}
     >
       {kinds.length > 1 && (
@@ -83,17 +92,19 @@ export default function CreateMappingDialog({ open, kinds, onClose, onCreated }:
           </select>
         </div>
       )}
+      <p className="text-xs text-muted-foreground">{t(config.hint)}</p>
       <div>
         <label htmlFor={`${idPrefix}-source`} className="text-sm font-medium">{t("mappings.source")}</label>
         <input id={`${idPrefix}-source`} type="text" autoFocus value={source} onChange={(e) => setSource(e.target.value)}
           placeholder={t(config.sourcePlaceholder)} className={FIELD_CLASS} />
+        {config.checksAccounts && <SourceLine source={source} destination={destination} status={sourceCheck.status} />}
       </div>
       <div>
         <label htmlFor={`${idPrefix}-destination`} className="text-sm font-medium">{t("mappings.destination")}</label>
         <input id={`${idPrefix}-destination`} type="text" value={destination} onChange={(e) => setDestination(e.target.value)}
           placeholder={t(config.destinationPlaceholder)} className={FIELD_CLASS} />
+        {config.checksAccounts && <DestinationLine destination={destination} />}
       </div>
-      {config.hint && <p className="text-xs text-muted-foreground">{t(config.hint)}</p>}
     </FormDialog>
   );
 }

@@ -98,7 +98,9 @@
     "serverMessage": "Серверийн мэдэгдэл:",
     "copy": "Хуулах",
     "copied": "Санах ойд хуулсан",
-    "viewJson": "JSON харах"
+    "viewJson": "JSON харах",
+    "sourceIsAccount": "{{source}} нь одоо байгаа бүртгэл: хоч нэр түүний шууданг {{destination}} руу шилжүүлнэ.",
+    "sourceIsAccountNoDestination": "{{source}} нь одоо байгаа бүртгэл: хоч нэр түүний шууданг шилжүүлнэ."
   },
   "sidebar": {
     "healthCheck": "Эрүүл байдлын шалгалт",
@@ -1776,8 +1778,8 @@
     "fetchMailError": "Захидлыг авахад алдаа гарлаа"
   },
   "mappings": {
-    "sourcePlaceholder": "Эх (жнь user@domain.com)",
-    "destinationPlaceholder": "Хүрэх газар (жнь alias@domain.com)",
+    "sourcePlaceholder": "жишээ нь sales@example.com",
+    "destinationPlaceholder": "жишээ нь alice@example.com",
     "mappingSourcePlaceholder": "Зураглалын эх (жнь user@domain.com)",
     "regexPlaceholder": "Regex (жнь user@.*:intern@domain.com)",
     "searchPlaceholder": "Эх, төрөл эсвэл хүрэх газраар хайх...",
@@ -1822,6 +1824,11 @@
       "Domain": "Домэйн",
       "DomainAlias": "Домэйн алиас",
       "Regex": "Регуляр илэрхийлэл"
+    },
+    "destinationExternal": "Дотоод бүртгэл биш: захидлыг энэ хаяг руу байгаагаар нь илгээнэ.",
+    "typeHint": {
+      "address": "Эх хаяг руу илгээсэн захидлыг очих хаяг руу хүргэнэ.",
+      "regex": "Хүлээн авагч нь регуляр илэрхийлэлтэй таарсан захидлыг очих хаяг руу дахин бичнэ."
     }
   },
   "mailingLists": {

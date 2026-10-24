@@ -98,7 +98,9 @@
     "serverMessage": "Meldung des Servers:",
     "copy": "Kopieren",
     "copied": "In die Zwischenablage kopiert",
-    "viewJson": "JSON anzeigen"
+    "viewJson": "JSON anzeigen",
+    "sourceIsAccount": "{{source}} ist ein bestehendes Konto: Ein Alias würde seine E-Mails an {{destination}} umleiten.",
+    "sourceIsAccountNoDestination": "{{source}} ist ein bestehendes Konto: Ein Alias würde seine E-Mails umleiten."
   },
   "sidebar": {
     "healthCheck": "Systemzustand",
@@ -1777,8 +1779,8 @@
     "fetchMailError": "Fehler beim Abrufen der E-Mail"
   },
   "mappings": {
-    "sourcePlaceholder": "Quelle (z. B. user@domain.com)",
-    "destinationPlaceholder": "Ziel (z. B. alias@domain.com)",
+    "sourcePlaceholder": "z. B. vertrieb@example.com",
+    "destinationPlaceholder": "z. B. alice@example.com",
     "mappingSourcePlaceholder": "Zuordnungsquelle (z. B. user@domain.com)",
     "regexPlaceholder": "Regex (z. B. user@.*:intern@domain.com)",
     "searchPlaceholder": "Nach Quelle, Typ oder Ziel suchen...",
@@ -1823,6 +1825,11 @@
       "Domain": "Domain",
       "DomainAlias": "Domain-Alias",
       "Regex": "Regulärer Ausdruck"
+    },
+    "destinationExternal": "Kein lokales Konto: E-Mails werden unverändert an diese Adresse gesendet.",
+    "typeHint": {
+      "address": "E-Mails an die Quelladresse werden an die Zieladresse zugestellt.",
+      "regex": "E-Mails, deren Empfänger dem regulären Ausdruck entspricht, werden auf das Ziel umgeschrieben."
     }
   },
   "mailingLists": {

@@ -11,6 +11,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
+import { SourceLine, useSourceCheck } from "@/components/custom/address-checks";
 
 interface Props {
   username: string;
@@ -36,6 +37,7 @@ export default function UserAliases({ username }: Props) {
   useSectionFact("aliases", aliases?.length);
   const [newAlias, setNewAlias] = useState("");
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const aliasCheck = useSourceCheck(newAlias);
 
   const sorted = useMemo(() => {
     if (!aliases) return [];
@@ -100,7 +102,7 @@ export default function UserAliases({ username }: Props) {
         onClose={() => setShowAddDialog(false)}
         title={t("users.aliases.addTooltip")}
         submitLabel={t("common.add")}
-        submitDisabled={!newAlias.trim()}
+        submitDisabled={!newAlias.trim() || aliasCheck.blocking}
         onSubmit={handleAdd}
       >
         <div>
@@ -114,6 +116,7 @@ export default function UserAliases({ username }: Props) {
             placeholder={t("users.aliases.placeholder")}
             className={FIELD_CLASS}
           />
+          <SourceLine source={newAlias} destination={username} status={aliasCheck.status} />
         </div>
       </FormDialog>
 

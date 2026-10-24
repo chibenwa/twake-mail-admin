@@ -31,6 +31,8 @@ vi.mock("@/lib/proxy-resolver-context", () => ({ useIsAllowed: () => true }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => mocks.confirm }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: mocks.toast }) }));
 vi.mock("../api-client", () => mocks.api);
+// The typed alias is not an account
+vi.mock("@/hooks/use-check-user-exists", () => ({ useCheckUserExists: (value: string) => (value.trim() ? "not_found" : "idle") }));
 vi.mock("@/modules/domains/api-client", () => mocks.domainsApi);
 
 import UserAliases from "./user-aliases";

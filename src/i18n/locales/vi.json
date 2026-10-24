@@ -97,7 +97,9 @@
     "serverMessage": "Thông báo của máy chủ:",
     "copy": "Sao chép",
     "copied": "Đã sao chép vào bộ nhớ tạm",
-    "viewJson": "Xem JSON"
+    "viewJson": "Xem JSON",
+    "sourceIsAccount": "{{source}} là một tài khoản hiện có: bí danh sẽ chuyển hướng thư của tài khoản này tới {{destination}}.",
+    "sourceIsAccountNoDestination": "{{source}} là một tài khoản hiện có: bí danh sẽ chuyển hướng thư của tài khoản này."
   },
   "sidebar": {
     "healthCheck": "Kiểm tra tình trạng",
@@ -1774,8 +1776,8 @@
     "fetchMailError": "Lỗi khi lấy thư"
   },
   "mappings": {
-    "sourcePlaceholder": "Nguồn (vd. user@domain.com)",
-    "destinationPlaceholder": "Đích (vd. alias@domain.com)",
+    "sourcePlaceholder": "vd. sales@example.com",
+    "destinationPlaceholder": "vd. alice@example.com",
     "mappingSourcePlaceholder": "Nguồn ánh xạ (vd. user@domain.com)",
     "regexPlaceholder": "Biểu thức chính quy (vd. user@.*:intern@domain.com)",
     "searchPlaceholder": "Tìm theo nguồn, loại hoặc đích...",
@@ -1820,6 +1822,11 @@
       "Domain": "Miền",
       "DomainAlias": "Bí danh miền",
       "Regex": "Biểu thức chính quy"
+    },
+    "destinationExternal": "Không phải tài khoản nội bộ: thư sẽ được gửi nguyên trạng tới địa chỉ này.",
+    "typeHint": {
+      "address": "Thư gửi tới địa chỉ nguồn được chuyển tới địa chỉ đích.",
+      "regex": "Thư có người nhận khớp với biểu thức chính quy sẽ được ghi lại tới đích."
     }
   },
   "mailingLists": {

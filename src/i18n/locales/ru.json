@@ -100,7 +100,9 @@
     "serverMessage": "Сообщение сервера:",
     "copy": "Копировать",
     "copied": "Скопировано в буфер обмена",
-    "viewJson": "Показать JSON"
+    "viewJson": "Показать JSON",
+    "sourceIsAccount": "{{source}} — существующая учётная запись: псевдоним перенаправит её почту на {{destination}}.",
+    "sourceIsAccountNoDestination": "{{source}} — существующая учётная запись: псевдоним перенаправит её почту."
   },
   "sidebar": {
     "healthCheck": "Проверка состояния",
@@ -1780,8 +1782,8 @@
     "fetchMailError": "Ошибка получения письма"
   },
   "mappings": {
-    "sourcePlaceholder": "Источник (напр. user@domain.com)",
-    "destinationPlaceholder": "Назначение (напр. alias@domain.com)",
+    "sourcePlaceholder": "напр. sales@example.com",
+    "destinationPlaceholder": "напр. alice@example.com",
     "mappingSourcePlaceholder": "Источник сопоставления (напр. user@domain.com)",
     "regexPlaceholder": "Регулярное выражение (напр. user@.*:intern@domain.com)",
     "searchPlaceholder": "Поиск по источнику, типу или назначению...",
@@ -1826,6 +1828,11 @@
       "Domain": "Домен",
       "DomainAlias": "Псевдоним домена",
       "Regex": "Регулярное выражение"
+    },
+    "destinationExternal": "Не локальная учётная запись: почта будет отправлена на этот адрес как есть.",
+    "typeHint": {
+      "address": "Почта, отправленная на исходный адрес, доставляется на адрес назначения.",
+      "regex": "Почта, получатель которой соответствует регулярному выражению, перенаправляется на адрес назначения."
     }
   },
   "mailingLists": {

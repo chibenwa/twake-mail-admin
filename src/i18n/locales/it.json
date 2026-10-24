@@ -98,7 +98,9 @@
     "serverMessage": "Messaggio del server:",
     "copy": "Copia",
     "copied": "Copiato negli appunti",
-    "viewJson": "Vedi il JSON"
+    "viewJson": "Vedi il JSON",
+    "sourceIsAccount": "{{source}} è un account esistente: un alias devierebbe la sua posta verso {{destination}}.",
+    "sourceIsAccountNoDestination": "{{source}} è un account esistente: un alias devierebbe la sua posta."
   },
   "sidebar": {
     "healthCheck": "Stato del sistema",
@@ -1777,8 +1779,8 @@
     "fetchMailError": "Errore nel recupero dell'email"
   },
   "mappings": {
-    "sourcePlaceholder": "Origine (ad es. user@domain.com)",
-    "destinationPlaceholder": "Destinazione (ad es. alias@domain.com)",
+    "sourcePlaceholder": "es. vendite@example.com",
+    "destinationPlaceholder": "es. alice@example.com",
     "mappingSourcePlaceholder": "Origine della mappatura (ad es. user@domain.com)",
     "regexPlaceholder": "Regex (ad es. user@.*:intern@domain.com)",
     "searchPlaceholder": "Cerca per origine, tipo o destinazione...",
@@ -1823,6 +1825,11 @@
       "Domain": "Dominio",
       "DomainAlias": "Alias di dominio",
       "Regex": "Espressione regolare"
+    },
+    "destinationExternal": "Non è un account locale: la posta verrà inviata così com'è a questo indirizzo.",
+    "typeHint": {
+      "address": "La posta inviata all'indirizzo di origine viene recapitata all'indirizzo di destinazione.",
+      "regex": "La posta il cui destinatario corrisponde all'espressione regolare viene riscritta verso la destinazione."
     }
   },
   "mailingLists": {
