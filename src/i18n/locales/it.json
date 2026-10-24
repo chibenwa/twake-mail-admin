@@ -1724,7 +1724,7 @@
       "relay-denied": "Email rifiutate perché il mittente non è autorizzato all'inoltro (relay).",
       "rrt-error": "Email la cui riscrittura dell'indirizzo (alias, inoltro) non è riuscita.",
       "overquota": "Email non recapitate perché la casella del destinatario ha superato la quota.",
-      "relay-limit-exceeded": "Email rifiutate perché il mittente ha superato il limite di inoltro (relay).",
+      "relay-limit-exceeded": "Email fermate dalla protezione contro i loop: erano già passate da troppi server (30 intestazioni Received).",
       "spam": "Email classificate come spam e tenute fuori dalle caselle.",
       "suspicious": "Email segnalate come sospette e trattenute prima del recapito.",
       "too-much-mails": "Email rifiutate perché il mittente ha superato il limite di invio.",

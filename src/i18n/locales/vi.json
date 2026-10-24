@@ -1722,7 +1722,7 @@
       "relay-denied": "Thư bị từ chối vì người gửi không được phép chuyển tiếp (relay).",
       "rrt-error": "Thư bị lỗi ghi lại địa chỉ (bí danh, chuyển tiếp).",
       "overquota": "Thư không được gửi vì hộp thư người nhận đã vượt hạn mức.",
-      "relay-limit-exceeded": "Thư bị từ chối vì người gửi đã vượt giới hạn chuyển tiếp (relay).",
+      "relay-limit-exceeded": "Thư bị chặn bởi cơ chế chống vòng lặp: thư đã đi qua quá nhiều máy chủ (30 tiêu đề Received).",
       "spam": "Thư bị phân loại là thư rác và không được đưa vào hộp thư.",
       "suspicious": "Thư bị đánh dấu là đáng ngờ và bị giữ lại không gửi.",
       "too-much-mails": "Thư bị từ chối vì người gửi đã vượt giới hạn gửi.",

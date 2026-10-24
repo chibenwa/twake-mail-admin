@@ -1724,7 +1724,7 @@
       "relay-denied": "Courriers refusés car l'expéditeur n'est pas autorisé à relayer.",
       "rrt-error": "Courriers dont la réécriture d'adresse (alias, redirection) a échoué.",
       "overquota": "Courriers non distribués car la boîte du destinataire a dépassé son quota.",
-      "relay-limit-exceeded": "Courriers refusés car l'expéditeur a dépassé sa limite de relais.",
+      "relay-limit-exceeded": "Courriers arrêtés par la protection contre les boucles : ils étaient déjà passés par trop de serveurs (30 en-têtes Received).",
       "spam": "Courriers classés comme spam et tenus à l'écart des boîtes.",
       "suspicious": "Courriers signalés comme suspects et retenus avant distribution.",
       "too-much-mails": "Courriers refusés car l'expéditeur a dépassé sa limite d'envoi.",
