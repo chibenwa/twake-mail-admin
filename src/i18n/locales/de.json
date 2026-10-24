@@ -134,7 +134,7 @@
     "errorCreating": "Fehler beim Erstellen der Domain",
     "created": "Domain „{{name}}“ erstellt",
     "createConfirmTitle": "Domain erstellen",
-    "deleteDomain": "Domain löschen",
+    "deleteDomain": "Domain {{domain}} löschen",
     "deleteConfirm": "„{{domain}}“ löschen? Die Domain enthält keinen Benutzer und keinen Domain-Alias; sie kann danach neu angelegt werden.",
     "deleted": "Domain „{{domain}}“ gelöscht",
     "errorDeleting": "Fehler beim Löschen der Domain",
@@ -1188,7 +1188,10 @@
       "back": "Zurück zu den Benutzern"
     },
     "unmanagedDomain": "Domain nicht verwaltet",
-    "unmanagedDomainHint": "Die Domain dieses Benutzers existiert auf dem Server nicht mehr: E-Mails an diese Adresse werden nicht lokal zugestellt."
+    "unmanagedDomainHint": "Die Domain dieses Benutzers existiert auf dem Server nicht mehr: E-Mails an diese Adresse werden nicht lokal zugestellt.",
+    "countSingle": "{{count}} Benutzer",
+    "countSingle_one": "{{count}} Benutzer",
+    "countRange": "Benutzer {{from}}–{{to}}"
   },
   "mailboxCounts": {
     "totalMessages": "Nachrichten insgesamt",

@@ -134,7 +134,7 @@
     "errorCreating": "Errore durante la creazione del dominio",
     "created": "Dominio «{{name}}» creato",
     "createConfirmTitle": "Crea dominio",
-    "deleteDomain": "Elimina dominio",
+    "deleteDomain": "Elimina il dominio {{domain}}",
     "deleteConfirm": "Eliminare «{{domain}}»? Non contiene alcun utente né alias di dominio; potrà essere ricreato in seguito.",
     "deleted": "Dominio «{{domain}}» eliminato",
     "errorDeleting": "Errore durante l'eliminazione del dominio",
@@ -1188,7 +1188,10 @@
       "back": "Torna agli utenti"
     },
     "unmanagedDomain": "dominio non gestito",
-    "unmanagedDomainHint": "Il dominio di questo utente non esiste più sul server: la posta per questo indirizzo non viene recapitata localmente."
+    "unmanagedDomainHint": "Il dominio di questo utente non esiste più sul server: la posta per questo indirizzo non viene recapitata localmente.",
+    "countSingle": "{{count}} utenti",
+    "countSingle_one": "{{count}} utente",
+    "countRange": "Utenti {{from}}–{{to}}"
   },
   "mailboxCounts": {
     "totalMessages": "Messaggi totali",

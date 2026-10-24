@@ -8,6 +8,7 @@ import { UsernamesSource } from "./users-paging";
 import { useUsersPages } from "./use-users-pages";
 import ListToolbar from "@/components/custom/list-toolbar";
 import UserLink from "@/components/custom/user-link";
+import { CompactList, CompactRow } from "@/components/custom/compact-list";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -72,24 +73,26 @@ export function PagedUsersList({ source, domain, domainChoices = [] }: PagedUser
       )}
       {pages.error && <p className="text-red-500 mt-4">{t("common.errorPrefix", { message: pages.error })}</p>}
 
-      {(pages.hasPrevious || pages.hasNext) && (
+      {pages.usernames.length > 0 && (
+        // WebAdmin pages the users without a total: the range of the page, or the count when it is the only one
         <PaginationControls
           onFirst={pages.first}
           onPrev={pages.previous}
           onNext={pages.next}
           disabledPrev={!pages.hasPrevious || pages.isLoading}
           disabledNext={!pages.hasNext || pages.isLoading}
-          label={t("common.pageSimple", { page: pages.pageNumber })}
+          label={pages.hasPrevious || pages.hasNext
+            ? t("users.countRange", { from: pages.offset + 1, to: pages.offset + pages.usernames.length })
+            : t("users.countSingle", { count: pages.usernames.length })}
         />
       )}
       {isEmpty && (
         <p className="text-gray-500 mt-4">{prefix ? t("users.noMatch", { query: prefix }) : t("users.empty")}</p>
       )}
-      <div>
+      <CompactList>
         {pages.usernames.map((username, index) => (
-          <div key={username} className="space-y-1 p-4 bg-white rounded-2 my-4 flex justify-between items-center transition-colors hover:bg-gray-50">
-            <h4 className="min-w-0 text-sm font-medium leading-none break-all">
-              <span className="text-gray-500 mr-2">{pages.offset + index + 1}/</span>
+          <CompactRow key={username} number={pages.offset + index + 1}>
+            <span className="min-w-0 break-all">
               <UserLink address={username} known />
               {isUnmanaged(username) && (
                 <span
@@ -99,10 +102,10 @@ export function PagedUsersList({ source, domain, domainChoices = [] }: PagedUser
                   {t("users.unmanagedDomain")}
                 </span>
               )}
-            </h4>
-          </div>
+            </span>
+          </CompactRow>
         ))}
-      </div>
+      </CompactList>
     </div>
   );
 }

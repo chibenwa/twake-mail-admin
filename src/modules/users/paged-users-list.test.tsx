@@ -159,3 +159,16 @@ describe("paged users list: users of a deleted domain", () => {
     expect(screen.getByText("ghost@gone.test").parentElement?.textContent).toContain("users.unmanagedDomain");
   });
 });
+
+describe("paged users list: count", () => {
+  it("says how many users the only page holds", async () => {
+    renderList(sourceOf(["alice@example.com", "bob@example.com"]));
+    expect(await screen.findByText("users.countSingle")).not.toBeNull();
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+
+  it("gives the range of a page when there are several", async () => {
+    renderList(sourceOf(Array.from({ length: 60 }, (_, i) => `user${String(i).padStart(2, "0")}@example.com`)));
+    expect(await screen.findByText("users.countRange")).not.toBeNull();
+  });
+});

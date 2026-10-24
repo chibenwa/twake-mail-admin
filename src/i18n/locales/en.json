@@ -134,7 +134,7 @@
     "errorCreating": "Error creating domain",
     "created": "Domain \"{{name}}\" created",
     "createConfirmTitle": "Create Domain",
-    "deleteDomain": "Delete Domain",
+    "deleteDomain": "Delete domain {{domain}}",
     "deleteConfirm": "Delete \"{{domain}}\"? It holds no user and no domain alias; it can be re-created afterwards.",
     "deleted": "Domain \"{{domain}}\" deleted",
     "errorDeleting": "Error deleting domain",
@@ -1188,7 +1188,10 @@
       "back": "Back to Users"
     },
     "unmanagedDomain": "domain not managed",
-    "unmanagedDomainHint": "This user's domain no longer exists on the server: mail to this address is not delivered locally."
+    "unmanagedDomainHint": "This user's domain no longer exists on the server: mail to this address is not delivered locally.",
+    "countSingle": "{{count}} users",
+    "countSingle_one": "{{count}} user",
+    "countRange": "Users {{from}}–{{to}}"
   },
   "mailboxCounts": {
     "totalMessages": "Total messages",

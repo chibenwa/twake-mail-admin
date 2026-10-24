@@ -16,6 +16,7 @@ import { PaginationControls } from "@/components/custom/pagination-controls";
 import ImportDomainsButton from "./import-domains-button";
 import CreateDomainButton from "./create-domain-button";
 import ListToolbar from "@/components/custom/list-toolbar";
+import { CompactList, CompactRow } from "@/components/custom/compact-list";
 import { forgetManagedDomains } from "@/hooks/use-managed-domains";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
@@ -80,7 +81,7 @@ export default function DomainsList() {
     const couldNotCheck = incomplete && <p className="text-sm text-gray-600">{t("domains.delete.couldNotCheck")}</p>;
     if (!holds) {
       return {
-        header: t("domains.deleteDomain"),
+        header: t("domains.deleteDomain", { domain }),
         destructive: true,
         confirmLabel: t("common.delete"),
         message: (
@@ -92,7 +93,7 @@ export default function DomainsList() {
       };
     }
     return {
-      header: t("domains.deleteDomain"),
+      header: t("domains.deleteDomain", { domain }),
       destructive: true,
       confirmLabel: t("common.delete"),
       consequence: (
@@ -185,39 +186,31 @@ export default function DomainsList() {
           total={filtered.length}
         />
       )}
-      <div>
+      <CompactList>
         {paginated.map((domain, index) => (
-          <div
-            key={domain}
-            className="space-y-1 p-4 bg-white rounded-2 my-4 p-4 flex justify-between items-center gap-2 transition-colors hover:bg-gray-50"
-          >
-            <div className="min-w-0">
-              <h4 className="text-sm font-medium leading-none break-all">
-                <span className="text-gray-500 mr-2">{(page - 1) * PAGE_LIMIT + index + 1}/</span>
-                <Link
-                  to={`/domains/domain/${encodeURIComponent(domain)}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {domain}
-                </Link>
-              </h4>
-            </div>
+          <CompactRow key={domain} number={(page - 1) * PAGE_LIMIT + index + 1}>
+            <Link
+              to={`/domains/domain/${encodeURIComponent(domain)}`}
+              className="min-w-0 break-all text-blue-600 hover:underline"
+            >
+              {domain}
+            </Link>
             {canDelete && (
               <button
                 onClick={() => handleDelete(domain)}
                 disabled={checking !== null}
-                className="shrink-0 p-2 rounded-md hover:bg-gray-200 disabled:opacity-60"
-                title={t("domains.deleteDomain")}
-                aria-label={t("domains.deleteDomain")}
+                className="ml-auto shrink-0 p-1.5 rounded-md hover:bg-gray-200 disabled:opacity-60"
+                title={t("domains.deleteDomain", { domain })}
+                aria-label={t("domains.deleteDomain", { domain })}
               >
                 {checking === domain
                   ? <Loader2 className="w-4 h-4 text-red-600 animate-spin" aria-hidden="true" />
                   : <Trash2 className="w-4 h-4 text-red-600" aria-hidden="true" />}
               </button>
             )}
-          </div>
+          </CompactRow>
         ))}
-      </div>
+      </CompactList>
       {search && domainsResult && filtered.length === 0 && (
         <p className="text-gray-500 mt-4">{t("domains.noMatch", { query: search })}</p>
       )}

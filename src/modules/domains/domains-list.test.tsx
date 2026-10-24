@@ -87,7 +87,7 @@ describe("domains list: one toolbar line", () => {
 describe("domains list: delete tells what the domain still holds", () => {
   const openDelete = async (domain: string) => {
     await renderList();
-    const row = screen.getByText(domain).closest("div.flex")!;
+    const row = screen.getByText(domain).closest("li")!;
     fireEvent.click(row.querySelector("button")!);
     await vi.waitFor(() => expect(confirm).toHaveBeenCalled());
     return confirm.mock.calls[0][0];
@@ -122,5 +122,13 @@ describe("domains list: delete tells what the domain still holds", () => {
     const options = await openDelete("example.com");
     render(<>{options.message as never}</>);
     expect(screen.getByText("domains.delete.couldNotCheck")).not.toBeNull();
+  });
+});
+
+describe("domains list: compact and accessible", () => {
+  it("lists the domains as list items, without headings", async () => {
+    await renderList();
+    expect(screen.getAllByRole("listitem").map((li) => li.textContent)).toEqual(["1.example.com", "2.example.org"]);
+    expect(screen.queryAllByRole("heading", { level: 4 })).toHaveLength(0);
   });
 });

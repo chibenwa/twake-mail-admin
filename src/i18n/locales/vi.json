@@ -133,7 +133,7 @@
     "errorCreating": "Lỗi khi tạo tên miền",
     "created": "Đã tạo tên miền \"{{name}}\"",
     "createConfirmTitle": "Tạo tên miền",
-    "deleteDomain": "Xóa tên miền",
+    "deleteDomain": "Xóa miền {{domain}}",
     "deleteConfirm": "Xóa \"{{domain}}\"? Miền không chứa người dùng hay bí danh miền nào; có thể tạo lại sau.",
     "deleted": "Đã xóa tên miền \"{{domain}}\"",
     "errorDeleting": "Lỗi khi xóa tên miền",
@@ -1186,7 +1186,9 @@
       "back": "Quay lại Người dùng"
     },
     "unmanagedDomain": "miền không được quản lý",
-    "unmanagedDomainHint": "Miền của người dùng này không còn tồn tại trên máy chủ: thư gửi tới địa chỉ này không được gửi nội bộ."
+    "unmanagedDomainHint": "Miền của người dùng này không còn tồn tại trên máy chủ: thư gửi tới địa chỉ này không được gửi nội bộ.",
+    "countSingle": "{{count}} người dùng",
+    "countRange": "Người dùng {{from}}–{{to}}"
   },
   "mailboxCounts": {
     "totalMessages": "Tổng số thư",

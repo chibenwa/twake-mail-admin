@@ -134,7 +134,7 @@
     "errorCreating": "Error al crear el dominio",
     "created": "Dominio «{{name}}» creado",
     "createConfirmTitle": "Crear dominio",
-    "deleteDomain": "Eliminar dominio",
+    "deleteDomain": "Eliminar el dominio {{domain}}",
     "deleteConfirm": "¿Eliminar «{{domain}}»? No contiene ningún usuario ni alias de dominio; se podrá volver a crear después.",
     "deleted": "Dominio «{{domain}}» eliminado",
     "errorDeleting": "Error al eliminar el dominio",
@@ -1188,7 +1188,10 @@
       "back": "Volver a Usuarios"
     },
     "unmanagedDomain": "dominio no gestionado",
-    "unmanagedDomainHint": "El dominio de este usuario ya no existe en el servidor: el correo dirigido a esta dirección no se entrega localmente."
+    "unmanagedDomainHint": "El dominio de este usuario ya no existe en el servidor: el correo dirigido a esta dirección no se entrega localmente.",
+    "countSingle": "{{count}} usuarios",
+    "countSingle_one": "{{count}} usuario",
+    "countRange": "Usuarios {{from}}–{{to}}"
   },
   "mailboxCounts": {
     "totalMessages": "Mensajes en total",
