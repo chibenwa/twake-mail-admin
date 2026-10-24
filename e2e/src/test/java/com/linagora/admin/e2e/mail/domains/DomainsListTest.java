@@ -56,7 +56,7 @@ class DomainsListTest extends MailAdminE2ETest {
         assertThat(domains.newDomainInput()).hasValue("");
         app.cancel();
 
-        // Alphabetically sorted, "N/ domain"
+        // Alphabetically sorted, "N. domain"
         domains.search(prefix);
         assertThat(domains.rowHeadings()).hasText(new Pattern[] {
             DomainsPage.rowHeading(1, domain), DomainsPage.rowHeading(2, sibling)});
@@ -74,8 +74,9 @@ class DomainsListTest extends MailAdminE2ETest {
         // An empty domain: a plain confirmation, saying it holds nothing
         domains.search(domain);
         assertThat(domains.domainLink(domain)).isVisible();
-        domains.deleteButtons().click();
-        assertThat(app.dialog()).containsText("Delete Domain");
+        domains.deleteButton(domain).click();
+        // The dialog is named after the domain, like its button
+        assertThat(app.dialog()).containsText("Delete domain " + domain);
         assertThat(app.dialog()).containsText("Delete \"" + domain
             + "\"? It holds no user and no domain alias; it can be re-created afterwards.");
         app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete").setExact(true)).click();
@@ -96,9 +97,9 @@ class DomainsListTest extends MailAdminE2ETest {
         webAdmin.put("/domains/" + domain + "/aliases/" + fixtures.newDomain("alias")).expect(204);
 
         DomainsPage domains = DomainsPage.open(app).search(domain);
-        domains.deleteButtons().click();
+        domains.deleteButton(domain).click();
         Locator dialog = app.dialog();
-        assertThat(dialog).containsText("Delete Domain");
+        assertThat(dialog).containsText("Delete domain " + domain);
         assertThat(dialog).containsText(domain + " still has 2 users (e.g. ");
         assertThat(dialog).containsText(alice);
         assertThat(dialog).containsText(bob);
@@ -123,7 +124,7 @@ class DomainsListTest extends MailAdminE2ETest {
         app.cancel();
         assertThat(webAdmin.get("/domains/" + domain).status()).isNotEqualTo(404);
 
-        domains.deleteButtons().click();
+        domains.deleteButton(domain).click();
         typed.fill(domain);
         delete.click();
         assertThat(app.dialog()).isHidden();

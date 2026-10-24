@@ -2,7 +2,6 @@ package com.linagora.admin.e2e.pages.mail.userdetail;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.linagora.admin.e2e.backend.WebAdmin;
@@ -18,7 +17,6 @@ import com.microsoft.playwright.options.AriaRole;
  * are open, for every user page.
  */
 public class MailUserDetailPage {
-    private static final Pattern TASK_LINK = Pattern.compile("Task ([0-9a-f-]{36})");
 
     private final AdminApp app;
 
@@ -127,13 +125,8 @@ public class MailUserDetailPage {
     /** Reads the id of the task out of the "Task created" toast, which vanishes after a few seconds. */
     public String taskIdFromToast(String title) {
         Locator link = app.toast(title).getByRole(AriaRole.LINK);
-        assertThat(link).isVisible();
-        String text = link.textContent().trim();
-        Matcher matcher = TASK_LINK.matcher(text);
-        if (!matcher.find()) {
-            throw new IllegalStateException("No task id in " + text);
-        }
-        return matcher.group(1);
+        assertThat(link).hasText(AdminApp.TASK_TOAST_LINK);
+        return AdminApp.taskIdOf(link);
     }
 
     /** A button of the open dialog: "Start task", "Cancel"... */

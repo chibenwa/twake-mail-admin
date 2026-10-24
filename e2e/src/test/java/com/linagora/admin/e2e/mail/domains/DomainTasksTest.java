@@ -3,7 +3,6 @@ package com.linagora.admin.e2e.mail.domains;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +20,6 @@ import com.microsoft.playwright.Request;
 import com.microsoft.playwright.options.AriaRole;
 
 class DomainTasksTest extends MailAdminE2ETest {
-    private static final Pattern TASK_LINK = Pattern.compile("^Task ([0-9a-f-]{36})$");
 
     @Test
     @DisplayName("DOM-14 Domain tasks: rows, apply signature templates, provision templates")
@@ -115,11 +113,11 @@ class DomainTasksTest extends MailAdminE2ETest {
     }
 
     private static String taskIdOfToast(AdminApp app, String title) {
-        Locator link = app.toast(title).getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(TASK_LINK));
+        Locator link = app.toast(title).getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(AdminApp.TASK_TOAST_LINK));
         assertThat(link).isVisible();
-        Matcher matcher = TASK_LINK.matcher(link.textContent().trim());
-        assertThat(matcher.matches()).isTrue();
-        assertThat(link).hasAttribute("href", "/task/" + matcher.group(1));
-        return matcher.group(1);
+        String taskId = AdminApp.taskIdOf(link);
+        // The toast names the task and the first characters of its id
+        assertThat(link).hasText(java.util.regex.Pattern.compile(" — Task " + taskId.substring(0, 8) + "$"));
+        return taskId;
     }
 }

@@ -186,7 +186,7 @@ class MailRepositoriesTest extends MailAdminE2ETest {
             + "/mails?action=reprocess&queue=spool&processor=root&consume=true");
         Dialogs.startTask(app);
         Locator toast = app.toast("Task created");
-        assertThat(toast.getByRole(AriaRole.LINK)).hasText(Pattern.compile("^Task [0-9a-f-]{36}$"));
+        assertThat(toast.getByRole(AriaRole.LINK)).hasText(AdminApp.TASK_TOAST_LINK);
         String reprocessTask = OpsBackend.taskIdOf(toast.getByRole(AriaRole.LINK).getAttribute("href"));
         assertThat(webAdmin.awaitTask(reprocessTask).path("status").asText()).isEqualTo("completed");
         assertThat(OpsBackend.size(webAdmin, source)).isZero();

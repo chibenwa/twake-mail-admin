@@ -40,8 +40,10 @@ class DomainQuotaTest extends MailAdminE2ETest {
 
         DomainDetailPage detail = DomainDetailPage.open(app, domain).openSection("Quota");
         assertThat(detail.text("Per user limit")).isVisible();
-        assertThat(detail.quotaRow("Applied limit")).containsText("Count: not set");
-        assertThat(detail.quotaRow("Domain")).hasText(Pattern.compile("Domain\\s*Count: not set\\s*Size: not set"));
+        // No limit anywhere: the applied limit says so, each level reads "—"
+        assertThat(detail.quotaRow("Applied limit")).containsText("Count: Unlimited (no limit set)");
+        assertThat(detail.quotaRow("Domain " + domain)).containsText("Count: —");
+        assertThat(detail.quotaRow("Domain " + domain)).containsText("Size: —");
         assertThat(detail.quotaRow("Global")).containsText("Count:");
         assertThat(detail.editLimitsButton()).isVisible();
         assertThat(detail.button("Remove domain limits")).hasCount(0);
@@ -57,7 +59,8 @@ class DomainQuotaTest extends MailAdminE2ETest {
         detail.dialogButton("Save").click();
         app.expectToast("Quota limits updated");
         assertThat(detail.dialog()).isHidden();
-        assertThat(detail.quotaRow("Domain")).hasText(Pattern.compile("Domain\\s*Count: 1,000\\s*Size: 2\\.0 GB"));
+        assertThat(detail.quotaRow("Domain " + domain)).hasText(Pattern.compile("Count: 1,000\\s*Size: 2\\.0 GB"));
+        assertThat(detail.quotaRow("Applied limit")).containsText("Size: 2.0 GB (domain " + domain + ")");
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").asLong()).isEqualTo(2147483648L);
         assertThat(domainQuota(webAdmin, domain).path("domain").path("count").asLong()).isEqualTo(1000L);
 
@@ -69,7 +72,7 @@ class DomainQuotaTest extends MailAdminE2ETest {
         detail.limitInput("Message count").fill("");
         detail.dialogButton("Save").click();
         app.expectToast("Quota limits updated");
-        assertThat(detail.quotaRow("Domain")).hasText(Pattern.compile("Domain\\s*Count: not set\\s*Size: 2\\.0 GB"));
+        assertThat(detail.quotaRow("Domain " + domain)).hasText(Pattern.compile("Count: —\\s*Size: 2\\.0 GB"));
         assertThat(domainQuota(webAdmin, domain).path("domain").path("count").isNull()).isTrue();
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").asLong()).isEqualTo(2147483648L);
 
@@ -78,12 +81,12 @@ class DomainQuotaTest extends MailAdminE2ETest {
         assertThat(app.dialog()).containsText("Remove domain limits");
         assertThat(app.dialog()).containsText("Remove the message count and size limits of \"" + domain + "\"? The global limits will apply again.");
         app.cancel();
-        assertThat(detail.quotaRow("Domain")).containsText("Size: 2.0 GB");
+        assertThat(detail.quotaRow("Domain " + domain)).containsText("Size: 2.0 GB");
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").asLong()).isEqualTo(2147483648L);
         detail.button("Remove domain limits").click();
         app.confirm();
         app.expectToast("Specific limits removed");
-        assertThat(detail.quotaRow("Domain")).containsText("Size: not set");
+        assertThat(detail.quotaRow("Domain " + domain)).containsText("Size: —");
         assertThat(detail.button("Remove domain limits")).hasCount(0);
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").isNull()).isTrue();
 
@@ -104,7 +107,7 @@ class DomainQuotaTest extends MailAdminE2ETest {
         assertThat(detail.limitInput("Size")).isDisabled();
         detail.dialogButton("Save").click();
         app.expectToast("Quota limits updated");
-        assertThat(detail.quotaRow("Domain")).containsText("Size: unlimited");
+        assertThat(detail.quotaRow("Domain " + domain)).containsText("Size: Unlimited");
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").asLong()).isEqualTo(-1L);
         detail.editLimitsButton().click();
         assertThat(detail.limitUnlimited("Size")).isChecked();
@@ -112,7 +115,7 @@ class DomainQuotaTest extends MailAdminE2ETest {
         detail.button("Remove domain limits").click();
         app.confirm();
         app.expectToast("Specific limits removed");
-        assertThat(detail.quotaRow("Domain")).containsText("Size: not set");
+        assertThat(detail.quotaRow("Domain " + domain)).containsText("Size: —");
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").isNull()).isTrue();
     }
 

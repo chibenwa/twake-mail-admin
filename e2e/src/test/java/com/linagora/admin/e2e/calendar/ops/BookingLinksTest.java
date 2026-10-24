@@ -199,8 +199,8 @@ class BookingLinksTest extends CalendarAdminE2ETest {
         confirmWith(app, "Delete");
 
         Locator taskLink = app.toast("Task created").getByRole(AriaRole.LINK);
-        assertThat(taskLink).hasText(Pattern.compile("^Task [0-9a-f-]{36}$"));
-        String taskId = taskLink.textContent().substring("Task ".length());
+        assertThat(taskLink).hasText(AdminApp.TASK_TOAST_LINK);
+        String taskId = AdminApp.taskIdOf(taskLink);
         taskLink.click();
         assertThat(page).hasURL(Pattern.compile("/task/" + taskId + "$"));
         assertThat(webAdmin.awaitTask(taskId).path("status").asText()).isEqualTo("completed");

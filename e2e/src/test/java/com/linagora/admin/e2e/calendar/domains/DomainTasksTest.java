@@ -119,7 +119,7 @@ class DomainTasksTest extends CalendarAdminE2ETest {
         Matcher matcher = Pattern.compile("^/task/([0-9a-f-]{36})$").matcher(href);
         assertThat(matcher.matches()).as(href).isTrue();
         String taskId = matcher.group(1);
-        assertThat(link).hasText("Task " + taskId);
+        assertThat(link).hasText("Delete all users data — Task " + taskId.substring(0, 8));
 
         JsonNode task = webAdmin.awaitTask(taskId);
         assertThat(task.path("status").asText()).isEqualTo("completed");

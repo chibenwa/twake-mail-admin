@@ -115,7 +115,8 @@ class UserDetailTest extends MailAdminE2ETest {
         detail.confirm("Clear");
         Locator taskLink = app.toast("Task created").getByRole(AriaRole.LINK);
         assertThat(taskLink).isVisible();
-        String taskId = taskLink.innerText().trim().substring("Task ".length());
+        assertThat(taskLink).hasText(AdminApp.TASK_TOAST_LINK);
+        String taskId = AdminApp.taskIdOf(taskLink);
         // Follow the link right away: the toast vanishes after a few seconds
         taskLink.click();
         assertThat(page).hasURL(Pattern.compile("/task/" + taskId + "$"));
@@ -145,8 +146,10 @@ class UserDetailTest extends MailAdminE2ETest {
         assertThat(quota.getByText("Per user limit", new Locator.GetByTextOptions().setExact(true))).isVisible();
         assertThat(quotaRow(quota, "Applied limit")).containsText("Size: 50.0 MB");
         assertThat(quotaRow(quota, "User")).hasText(Pattern.compile("Count: 1,000\\s*Size: 50\\.0 MB"));
-        // No domain limit in this fresh domain: the row is omitted
-        assertThat(quota.getByText("Domain", new Locator.GetByTextOptions().setExact(true))).hasCount(0);
+        // Where the applied limit comes from, and every level, "—" when it sets nothing
+        assertThat(quotaRow(quota, "Applied limit")).containsText("Size: 50.0 MB (user)");
+        String domainOfBob = bob.substring(bob.indexOf('@') + 1);
+        assertThat(quotaRow(quota, "Domain " + domainOfBob)).hasText(Pattern.compile("Count: —\\s*Size: —"));
 
         // Both limits are edited together, prefilled with the current ones
         detail.button(quota, "Edit limits").click();
@@ -175,8 +178,11 @@ class UserDetailTest extends MailAdminE2ETest {
             + "\"? The limits of the domain, or the global ones, will apply again.");
         app.confirm();
         app.expectToast("Specific limits removed");
-        // No limit of its own any more: the row is omitted
-        assertThat(quota.getByText("User", new Locator.GetByTextOptions().setExact(true))).hasCount(0);
+        // No limit of its own any more: the User row reads "—", and nothing applies
+        assertThat(quotaRow(quota, "User")).hasText(Pattern.compile("Count: —\\s*Size: —"));
+        assertThat(quotaRow(quota, "Applied limit")).containsText("Size: Unlimited (no limit set)");
+        // A ratio of an unlimited quota means nothing: none is shown
+        assertThat(quota.getByText("Ratio", new Locator.GetByTextOptions().setExact(true))).hasCount(0);
         assertThat(detail.button(quota, "Remove specific limits")).hasCount(0);
         assertThat(webAdmin.get("/quota/users/" + bob + "/size").status()).isEqualTo(204);
         assertThat(webAdmin.get("/quota/users/" + bob + "/count").status()).isEqualTo(204);
@@ -190,7 +196,7 @@ class UserDetailTest extends MailAdminE2ETest {
         assertThat(size).isDisabled();
         detail.button(dialog, "Save").click();
         app.expectToast("Quota limits updated");
-        assertThat(quotaRow(quota, "User")).hasText(Pattern.compile("Count: not set\\s*Size: unlimited"));
+        assertThat(quotaRow(quota, "User")).hasText(Pattern.compile("Count: —\\s*Size: Unlimited"));
         assertThat(webAdmin.get("/quota/users/" + bob + "/size").expect(200).json().asLong()).isEqualTo(-1L);
         assertThat(webAdmin.get("/quota/users/" + bob + "/count").status()).isEqualTo(204);
     }

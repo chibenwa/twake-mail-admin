@@ -286,7 +286,7 @@ class EventDeadLetterTest extends MailAdminE2ETest {
             () -> Dialogs.startTask(app));
         assertThat(redeliver.url()).contains("limit=1").doesNotContain("maxRetries").doesNotContain("NaN");
         Locator toast = app.toast("Task created");
-        String taskId = OpsBackend.taskIdOf(toast.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(Pattern.compile("^Task "))).getAttribute("href"));
+        String taskId = OpsBackend.taskIdOf(toast.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(AdminApp.TASK_TOAST_LINK)).getAttribute("href"));
         JsonNode task = webAdmin.awaitTask(taskId);
         assertThat(task.path("status").asText()).as(task.toString()).isEqualTo("completed");
         assertThat(task.path("additionalInformation").path("successfulRedeliveriesCount").asInt()).as(task.toString()).isEqualTo(1);

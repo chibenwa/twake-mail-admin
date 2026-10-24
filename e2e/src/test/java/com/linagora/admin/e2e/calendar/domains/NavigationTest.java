@@ -30,7 +30,10 @@ class NavigationTest extends CalendarAdminE2ETest {
 
         assertThat(page).hasURL(Pattern.compile("/health-check$"));
         assertThat(app.sidebar().getByRole(AriaRole.LINK)).hasText(new String[] {
-            "Health Check", "Domains", "Users", "Registered Users", "Unsent Mails", "Tasks", "Common Tasks"});
+            "Health Check", "Unsent Mails", "Users", "Registered Users", "Domains", "Tasks", "Common Tasks"});
+        // Grouped by what the operator comes to do
+        assertThat(app.sidebar().locator("[data-sidebar=group-label]")).hasText(new String[] {
+            "Monitoring", "Accounts and addresses", "Maintenance"});
         assertThat(app.sidebar().getByRole(AriaRole.IMG, new Locator.GetByRoleOptions().setName("Twake Calendar"))).isVisible();
         assertThat(app.sidebar().getByText("Calendar", new Locator.GetByTextOptions().setExact(true))).isVisible();
         assertThat(app.sidebar().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Health Check")))
@@ -85,8 +88,10 @@ class NavigationTest extends CalendarAdminE2ETest {
         page.getByRole(AriaRole.OPTION, new Page.GetByRoleOptions().setName("Français")).click();
 
         assertThat(app.sidebar().getByRole(AriaRole.LINK)).hasText(new String[] {
-            "Contrôle de santé", "Domaines", "Utilisateurs", "Utilisateurs enregistrés", "Mails non envoyés",
+            "Contrôle de santé", "Mails non envoyés", "Utilisateurs", "Utilisateurs enregistrés", "Domaines",
             "Tâches", "Tâches communes"});
+        assertThat(app.sidebar().locator("[data-sidebar=group-label]")).hasText(new String[] {
+            "Supervision", "Comptes et adresses", "Maintenance"});
         assertThat(app.heading()).containsText("Bienvenue dans la console d'administration de Twake Calendar !");
 
         page.reload();

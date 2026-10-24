@@ -5,7 +5,6 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.linagora.admin.e2e.pages.AdminApp;
@@ -21,7 +20,6 @@ import com.microsoft.playwright.options.FilePayload;
  * tooltip).
  */
 public class CollectionSection {
-    private static final Pattern TASK_LINK = Pattern.compile("Task ([0-9a-f-]{36})");
 
     private final AdminApp app;
     private final Locator toggle;
@@ -156,12 +154,8 @@ public class CollectionSection {
         Locator toast = app.toast("Task created");
         assertThat(toast).isVisible();
         Locator link = toast.getByRole(AriaRole.LINK);
-        assertThat(link).hasText(TASK_LINK);
-        Matcher matcher = TASK_LINK.matcher(link.textContent());
-        if (!matcher.find()) {
-            throw new IllegalStateException("No task id in " + link.textContent());
-        }
-        return matcher.group(1);
+        assertThat(link).hasText(AdminApp.TASK_TOAST_LINK);
+        return AdminApp.taskIdOf(link);
     }
 
     public record Exported(String fileName, String content) {

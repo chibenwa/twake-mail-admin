@@ -64,7 +64,7 @@ class ResponsiveTest extends MailAdminE2ETest {
         app.main().getByPlaceholder(Pattern.compile("^Search")).fill(domain);
         Locator row = app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(domain).setExact(true));
         assertThat(row).isVisible();
-        assertWithinViewport(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete Domain")).first(), "Delete Domain");
+        assertWithinViewport(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(Pattern.compile("^Delete domain "))).first(), "Delete domain");
         for (String pagination : List.of("First", "Previous", "Next", "Last")) {
             Locator button = app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(pagination).setExact(true));
             if (button.count() > 0) {

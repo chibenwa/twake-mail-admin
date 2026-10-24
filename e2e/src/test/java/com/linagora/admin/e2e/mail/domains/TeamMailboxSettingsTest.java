@@ -109,10 +109,10 @@ class TeamMailboxSettingsTest extends MailAdminE2ETest {
         assertThat(extraSenders(webAdmin, domain)).containsExactly(ghost);
     }
 
-    /** The "Team Mailbox" quota row, unless absent or showing "Size: not set". */
+    /** The "Team Mailbox" quota row, unless it sets no size ("Size: —"). */
     private static com.microsoft.playwright.Locator sizeIsSet(TeamMailboxPage teamMailbox) {
         return teamMailbox.quotaRow("Team Mailbox")
-            .filter(new com.microsoft.playwright.Locator.FilterOptions().setHasNotText("Size: not set"));
+            .filter(new com.microsoft.playwright.Locator.FilterOptions().setHasNotText("Size: —"));
     }
 
     private static JsonNode quota(WebAdmin webAdmin, String domain) {

@@ -75,22 +75,24 @@ class TasksTest extends MailAdminE2ETest {
 
         TasksPage tasks = TasksPage.open(app);
         tasks.refreshButton().click();
-        for (String column : List.of("#", "Task ID / Type", "Status", "Submitted", "Started / Completed", "Actions")) {
+        for (String column : List.of("#", "Task", "Status", "Submitted", "Started / Completed", "Actions")) {
             assertThat(app.main().getByTestId("tasks-header").getByText(column, new Locator.GetByTextOptions().setExact(true))).isVisible();
         }
         assertThat(tasks.pageLabel()).isVisible();
         Locator row = tasks.row(taskId);
         assertThat(row).containsText("Completed");
         assertThat(row).not().containsText("completed");
-        assertThat(row.getByTitle("user-reindexing", new Locator.GetByTitleOptions().setExact(true))).hasText("user-reindexing");
+        // Named as its button reads, then its type and the start of its id, muted
+        assertThat(row.getByRole(AriaRole.BUTTON).first()).hasText("Reindex all mailboxes");
+        assertThat(row.getByTitle(taskId, new Locator.GetByTitleOptions().setExact(true))).hasText("user-reindexing · " + taskId.substring(0, 8));
         Locator startedCompleted = tasks.startedCompleted(taskId);
         assertThat(startedCompleted).hasAttribute("title", formatted(page, task.path("startedDate").asText())
             + " → " + formatted(page, task.path("completedDate").asText()));
         assertThat(tasks.cancelButton(taskId)).hasCount(0);
 
         // A click on the row opens the detail
-        row.getByTitle("user-reindexing").click();
-        assertThat(app.dialog().getByRole(AriaRole.HEADING).first()).hasText("Task — " + taskId);
+        row.getByTitle(taskId).click();
+        assertThat(app.dialog().getByRole(AriaRole.HEADING).first()).containsText("Reindex all mailboxes");
         for (String label : List.of("Status", "Type", "Submitted", "Started", "Duration", "Executed on", "Submitted from")) {
             assertThat(app.dialog().getByText(label, new Locator.GetByTextOptions().setExact(true))).isVisible();
         }
@@ -105,8 +107,10 @@ class TasksTest extends MailAdminE2ETest {
 
         app.dialog().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Full Details")).click();
         assertThat(page).hasURL(Pattern.compile("/task/" + taskId + "$"));
+        // Headed by the task as its button reads, its id below
         assertThat(app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(1)))
-            .hasText("Task " + taskId);
+            .containsText("Reindex all mailboxes");
+        assertThat(app.main().getByText("Task " + taskId, new Locator.GetByTextOptions().setExact(false)).first()).isVisible();
         assertThat(app.main().getByText("user-reindexing", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
         assertThat(app.main().getByText("Completed", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
         app.main().getByText("Raw JSON", new Locator.GetByTextOptions().setExact(true)).click();
@@ -125,12 +129,12 @@ class TasksTest extends MailAdminE2ETest {
         Locator idButton = tasks.taskIdButton(taskId);
         idButton.focus();
         page.keyboard().press("Enter");
-        assertThat(app.dialog().getByRole(AriaRole.HEADING).first()).hasText("Task — " + taskId);
+        assertThat(app.dialog().getByRole(AriaRole.HEADING).first()).containsText("Reindex all mailboxes");
         page.keyboard().press("Escape");
         assertThat(app.dialog()).isHidden();
         assertThat(idButton).isFocused();
         page.keyboard().press(" ");
-        assertThat(app.dialog().getByRole(AriaRole.HEADING).first()).hasText("Task — " + taskId);
+        assertThat(app.dialog().getByRole(AriaRole.HEADING).first()).containsText("Reindex all mailboxes");
         page.keyboard().press("Escape");
         assertThat(app.dialog()).isHidden();
         assertThat(idButton).isFocused();
@@ -248,7 +252,7 @@ class TasksTest extends MailAdminE2ETest {
 
     private static void assertSorted(Page page, TasksPage tasks, boolean ascending) {
         org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<String> types = tasks.rowTypes().allTextContents();
+            List<String> types = tasks.names();
             assertThat(types).isNotEmpty();
             @SuppressWarnings("unchecked")
             List<String> expected = (List<String>) page.evaluate(
@@ -269,7 +273,9 @@ class TasksTest extends MailAdminE2ETest {
             TasksPage tasks = TasksPage.open(app);
             tasks.cancelButton(taskId).click();
             assertThat(app.dialog().getByRole(AriaRole.HEADING)).hasText("Cancel Task");
-            assertThat(app.dialog()).containsText("Cancel task \"" + taskId + "\" (user-reindexing)?");
+            // Named as its button reads, with its target and its id
+            assertThat(app.dialog()).containsText("Cancel \"Reindex all mailboxes\" for ");
+            assertThat(app.dialog()).containsText("(task " + taskId + ")");
             app.confirm();
             app.expectToast("Task cancelled");
             assertThat(tasks.row(taskId)).containsText(Pattern.compile("Cancel Requested|Cancelled"));
@@ -325,8 +331,9 @@ class TasksTest extends MailAdminE2ETest {
 
     private static void assertBefore(TasksPage tasks, String first, String second) {
         org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<String> ids = tasks.rows().getByRole(AriaRole.BUTTON,
-                new Locator.GetByRoleOptions().setName(Pattern.compile("^[0-9a-f-]{36}$"))).allTextContents();
+            // The full id of each row, carried by its muted "type · short id" line
+            List<String> ids = tasks.rows().locator("span.font-mono[title]").evaluateAll("spans => spans.map(s => s.title)")
+                instanceof List<?> list ? list.stream().map(String::valueOf).toList() : List.of();
             assertThat(ids).as("%d rows", ids.size()).contains(first, second);
             assertThat(ids.indexOf(first)).isLessThan(ids.indexOf(second));
         });

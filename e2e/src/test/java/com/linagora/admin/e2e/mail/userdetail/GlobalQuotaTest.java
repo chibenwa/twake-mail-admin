@@ -70,7 +70,7 @@ class GlobalQuotaTest extends MailAdminE2ETest {
         }
         GlobalQuotaPage quota = new GlobalQuotaPage(app).open();
 
-        assertThat(quota.size()).hasText("not set");
+        assertThat(quota.size()).hasText("No limit");
         assertThat(quota.count()).isVisible();
         String count = quota.count().innerText();
 
@@ -109,8 +109,8 @@ class GlobalQuotaTest extends MailAdminE2ETest {
         quota.button("Remove global limits").click();
         app.confirm();
         expectSlowToast(app, "Specific limits removed");
-        assertThat(quota.size()).hasText("not set");
-        assertThat(quota.count()).hasText("not set");
+        assertThat(quota.size()).hasText("No limit");
+        assertThat(quota.count()).hasText("No limit");
         assertThat(quota.button("Remove global limits")).hasCount(0);
         assertThat(webAdmin.get("/quota").json().path("size").isNull()).isTrue();
         assertThat(webAdmin.get("/quota").json().path("count").isNull()).isTrue();
@@ -118,7 +118,7 @@ class GlobalQuotaTest extends MailAdminE2ETest {
         detail.open(user);
         detail.toggle("Quota");
         assertThat(app.main().getByText("Per user limit")).isVisible();
-        // The Global row reads "not set", or is left out when WebAdmin has no global quota at all
+        // The Global row reads "—": no global limit any more
         assertThat(app.main().getByText("10.0 GB")).hasCount(0);
 
         quota.open();
@@ -127,7 +127,7 @@ class GlobalQuotaTest extends MailAdminE2ETest {
         assertThat(quota.limit("Size")).isDisabled();
         quota.limitsDialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Save").setExact(true)).click();
         expectSlowToast(app, "Quota limits updated");
-        assertThat(quota.size()).hasText("unlimited");
+        assertThat(quota.size()).hasText("Unlimited");
         assertThat(webAdmin.get("/quota").json().path("size").asLong()).isEqualTo(-1);
     }
 
@@ -279,11 +279,11 @@ class GlobalQuotaTest extends MailAdminE2ETest {
 
     private static String formatSize(JsonNode bytes) {
         if (bytes.isNull()) {
-            return "not set";
+            return "No limit";
         }
         long value = bytes.asLong();
         if (value == -1) {
-            return "unlimited";
+            return "Unlimited";
         }
         String[] units = {"B", "KB", "MB", "GB"};
         int exponent = value >= GB ? 3 : value >= MB ? 2 : value >= 1024 ? 1 : 0;
@@ -295,8 +295,8 @@ class GlobalQuotaTest extends MailAdminE2ETest {
 
     private static String formatCount(JsonNode count) {
         if (count.isNull()) {
-            return "not set";
+            return "No limit";
         }
-        return count.asLong() == -1 ? "unlimited" : String.format(Locale.US, "%,d", count.asLong());
+        return count.asLong() == -1 ? "Unlimited" : String.format(Locale.US, "%,d", count.asLong());
     }
 }

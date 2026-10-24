@@ -63,7 +63,7 @@ function Row({ label, count, size }: { label: string; count: React.ReactNode; si
 
 function Applied({ t, levels, limit }: { t: TFunction; levels: QuotaLevel[]; limit: Limit }) {
   const { value, source } = appliedText(t, levels, limit);
-  return <>{value}{source && <span className="ml-1 font-normal text-gray-500">{source}</span>}</>;
+  return <>{value}{source && <>{" "}<span className="font-normal text-gray-500">{source}</span></>}</>;
 }
 
 /** The limit that applies, with where it comes from, then what each level sets ("—" for nothing). */

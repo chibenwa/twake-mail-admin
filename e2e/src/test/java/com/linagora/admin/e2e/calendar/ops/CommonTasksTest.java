@@ -52,8 +52,8 @@ class CommonTasksTest extends CalendarAdminE2ETest {
     /** Reads the task id from the "Task created" toast. */
     private static String runningTaskId(AdminApp app) {
         Locator link = app.toast("Task created").getByRole(AriaRole.LINK);
-        assertThat(link).hasText(Pattern.compile("^Task [0-9a-f-]{36}$"));
-        return link.textContent().substring("Task ".length());
+        assertThat(link).hasText(AdminApp.TASK_TOAST_LINK);
+        return AdminApp.taskIdOf(link);
     }
 
     /** Records the task submissions of the page (POST / DELETE on WebAdmin). */

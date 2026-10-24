@@ -46,7 +46,8 @@ class IconButtonsTest extends MailAdminE2ETest {
         // A completed task: Refresh, and the breadcrumb back to the Tasks list
         app.open("/tasks");
         app.open("/task/" + taskId);
-        assertThat(Shell.detailTitle(app, "Task " + taskId)).isVisible();
+        // Headed by the task as its button reads, and its target
+        assertThat(Shell.detailTitle(app, "Reindex all mailboxes — " + user)).isVisible();
         assertThat(app.main().getByText("Completed", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
         assertNamedWithHoverTooltip(page, app.button("Refresh"), "Refresh");
         assertThat(app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Cancel"))).hasCount(0);

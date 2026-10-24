@@ -98,6 +98,15 @@ public class AdminApp {
             .or(toasts().locator("li").filter(new Locator.FilterOptions().setHasText(text))).first();
     }
 
+    /** The link of a "Task created" toast: "<task name> — Task <first 8 characters of its id>". */
+    public static final Pattern TASK_TOAST_LINK = Pattern.compile("^.+ — Task [0-9a-f]{8}$");
+
+    /** The full id of the task a toast link leads to: its href is /task/<id>. */
+    public static String taskIdOf(Locator link) {
+        String href = link.getAttribute("href");
+        return href.substring(href.lastIndexOf('/') + 1);
+    }
+
     public AdminApp expectToast(String text) {
         assertThat(toast(text)).isVisible();
         return this;

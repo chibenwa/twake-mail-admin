@@ -14,17 +14,20 @@ import com.microsoft.playwright.options.AriaRole;
  * collapsible sections, page width, unnamed buttons, raw i18n keys.
  */
 public final class Shell {
-    /** The sidebar entries of the Mail application, in order. */
+    /** The sidebar entries of the Mail application, in order: Monitoring, Accounts and addresses, Maintenance. */
     public static final List<String> MAIL_ENTRIES = List.of(
-        "Health Check", "Mail Repositories", "Event Dead Letter", "Domains", "Global Quota", "Users",
-        "Mappings", "Mailing Lists", "Network Channels", "Cassandra", "Tasks", "Common Tasks",
-        "Resource Locator", "JMAP Settings Report", "Live Metrics");
+        "Health Check", "Mail Repositories", "Event Dead Letter", "Network Channels", "Live Metrics",
+        "Users", "Domains", "Mappings", "Mailing Lists", "Global Quota",
+        "Tasks", "Common Tasks", "Cassandra", "Resource Locator", "JMAP Settings Report");
 
     /** The route of each entry of {@link #MAIL_ENTRIES}, same order. */
     public static final List<String> MAIL_ROUTES = List.of(
-        "/health-check", "/mail-repositories", "/event-dead-letter", "/domains", "/global-quota", "/users",
-        "/mappings", "/mailing-lists", "/network-channels", "/cassandra", "/tasks", "/common-tasks",
-        "/resource-locator", "/jmap-settings-report", "/live-metrics");
+        "/health-check", "/mail-repositories", "/event-dead-letter", "/network-channels", "/live-metrics",
+        "/users", "/domains", "/mappings", "/mailing-lists", "/global-quota",
+        "/tasks", "/common-tasks", "/cassandra", "/resource-locator", "/jmap-settings-report");
+
+    /** The labels of the sidebar groups, in order. */
+    public static final List<String> MAIL_GROUPS = List.of("Monitoring", "Accounts and addresses", "Maintenance");
 
     /** {@code - button} with no name in an ARIA snapshot, possibly followed by attributes ({@code [disabled]}). */
     private static final Pattern UNNAMED_BUTTON = Pattern.compile("(?m)^\\s*- button(?: \\[[^\\]]*\\])*:?\\s*$");

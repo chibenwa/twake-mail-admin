@@ -88,7 +88,7 @@ class UserTasksTest extends MailAdminE2ETest {
         UserTasksSection tasks = detail.tasks().open();
 
         Locator dialog = tasks.run("Reindex all mailboxes");
-        assertThat(dialog.getByRole(AriaRole.HEADING)).hasText("Reindex User Mailboxes");
+        assertThat(dialog.getByRole(AriaRole.HEADING)).hasText("Reindex all mailboxes");
         // Parameters in plain language, the raw key next to them
         assertThat(param(dialog, "Speed limit")).hasValue("50");
         assertThat(dialog).containsText("messages/s");

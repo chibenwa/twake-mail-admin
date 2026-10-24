@@ -2,6 +2,7 @@ package com.linagora.admin.e2e.pages.mail.ops;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import com.linagora.admin.e2e.pages.AdminApp;
@@ -68,19 +69,25 @@ public class TasksPage {
         return app.main().getByTestId("task-row");
     }
 
-    /** The task ID button of a row: it opens the detail dialog. */
+    /** The button naming the task of a row ("Reindex all mailboxes"): it opens the detail dialog. */
     public Locator taskIdButton(String taskId) {
-        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(taskId).setExact(true));
+        return row(taskId).getByRole(AriaRole.BUTTON).first();
     }
 
+    /** A row, by the full task id its muted "type · short id" line carries as tooltip. */
     public Locator row(String taskId) {
-        return rows().filter(new Locator.FilterOptions().setHas(app.page().getByRole(AriaRole.BUTTON,
-            new com.microsoft.playwright.Page.GetByRoleOptions().setName(taskId).setExact(true))));
+        return rows().filter(new Locator.FilterOptions().setHas(app.page().locator("[title='" + taskId + "']")));
     }
 
-    /** The type of every displayed row, in order. */
+    /** The "type · short id" line of every displayed row, in order. */
     public Locator rowTypes() {
-        return rows().locator("span[title]");
+        return rows().locator("span.font-mono[title]");
+    }
+
+    /** The name of every displayed task, in order: what sorting by type orders. */
+    @SuppressWarnings("unchecked")
+    public List<String> names() {
+        return (List<String>) rows().evaluateAll("rows => rows.map(r => r.querySelector('button').textContent.trim())");
     }
 
     public Locator startedCompleted(String taskId) {

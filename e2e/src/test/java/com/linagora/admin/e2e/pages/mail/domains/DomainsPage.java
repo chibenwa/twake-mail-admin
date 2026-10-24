@@ -70,15 +70,18 @@ public class DomainsPage {
         return app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(domain).setExact(true));
     }
 
-    /** The headings of the listed rows, {@code "1/domain"}. */
+    /** The listed rows, {@code "1.domain"}: list items, no longer headings. */
     public Locator rowHeadings() {
-        return app.main().getByRole(AriaRole.HEADING)
-            .filter(new Locator.FilterOptions().setHas(page().getByRole(AriaRole.LINK)));
+        return app.main().getByRole(AriaRole.LISTITEM);
     }
 
-    /** The trash buttons of the listed rows. */
+    /** The trash buttons of the listed rows, each named after its domain. */
     public Locator deleteButtons() {
-        return mainButton("Delete Domain");
+        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(java.util.regex.Pattern.compile("^Delete domain ")));
+    }
+
+    public Locator deleteButton(String domain) {
+        return mainButton("Delete domain " + domain);
     }
 
     public Locator paginationLabel() {
@@ -106,6 +109,6 @@ public class DomainsPage {
     }
 
     public static Pattern rowHeading(int index, String domain) {
-        return Pattern.compile("^" + index + "/\\s*" + Regex.quote(domain) + "$");
+        return Pattern.compile("^" + index + "\\.\\s*" + Regex.quote(domain) + "$");
     }
 }

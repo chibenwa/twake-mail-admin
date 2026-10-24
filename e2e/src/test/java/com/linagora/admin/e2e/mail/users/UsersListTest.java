@@ -128,19 +128,19 @@ class UsersListTest extends MailAdminE2ETest {
         expected.parallelStream().forEach(username -> createUser(webAdmin, username));
 
         UsersListPage users = UsersListPage.open(app).selectDomain(domain);
-        assertThat(users.pageLabel()).hasText("Page 1");
+        assertThat(users.pageLabel()).hasText("Users 1–50");
         assertThat(users.rows()).hasCount(50);
-        assertThat(users.row(1)).hasText("1/" + expected.get(0));
-        assertThat(users.row(50)).hasText("50/" + expected.get(49));
+        assertThat(users.row(1)).hasText("1." + expected.get(0));
+        assertThat(users.row(50)).hasText("50." + expected.get(49));
         assertThat(users.first()).isDisabled();
         assertThat(users.previous()).isDisabled();
         assertThat(users.next()).isEnabled();
         List<String> firstPage = users.listedUsernames();
 
         users.next().click();
-        assertThat(users.pageLabel()).hasText("Page 2");
+        assertThat(users.pageLabel()).hasText("Users 51–55");
         assertThat(users.rows()).hasCount(5);
-        assertThat(users.row(51)).hasText("51/" + expected.get(50));
+        assertThat(users.row(51)).hasText("51." + expected.get(50));
         assertThat(users.next()).isDisabled();
         List<String> secondPage = users.listedUsernames();
 
@@ -150,38 +150,38 @@ class UsersListTest extends MailAdminE2ETest {
         assertThat(new HashSet<>(all)).hasSize(55);
 
         users.previous().click();
-        assertThat(users.pageLabel()).hasText("Page 1");
-        assertThat(users.row(1)).hasText("1/" + expected.get(0));
+        assertThat(users.pageLabel()).hasText("Users 1–50");
+        assertThat(users.row(1)).hasText("1." + expected.get(0));
         assertThat(users.userLinks()).hasText(firstPage.toArray(String[]::new));
         assertThat(users.first()).isDisabled();
 
         users.next().click();
-        assertThat(users.pageLabel()).hasText("Page 2");
+        assertThat(users.pageLabel()).hasText("Users 51–55");
         users.first().click();
-        assertThat(users.pageLabel()).hasText("Page 1");
+        assertThat(users.pageLabel()).hasText("Users 1–50");
         assertThat(users.userLinks()).hasText(firstPage.toArray(String[]::new));
 
         // Searching from page 2 restarts from the first page, everything fits on it
         users.next().click();
-        assertThat(users.pageLabel()).hasText("Page 2");
+        assertThat(users.pageLabel()).hasText("Users 51–55");
         users.search().fill("qa5");
         assertThat(users.userLinks()).hasText(expected.subList(49, 55).toArray(String[]::new));
-        assertThat(users.row(1)).hasText("1/" + expected.get(49));
-        assertThat(users.pageLabel()).hasCount(0);
+        assertThat(users.row(1)).hasText("1." + expected.get(49));
+        assertThat(users.pageLabel()).hasText("6 users");
         assertThat(users.next()).hasCount(0);
 
         // Back to the unfiltered list: page 1, not the page 2 visited before
         users.search().clear();
-        assertThat(users.pageLabel()).hasText("Page 1");
-        assertThat(users.row(1)).hasText("1/" + expected.get(0));
+        assertThat(users.pageLabel()).hasText("Users 1–50");
+        assertThat(users.row(1)).hasText("1." + expected.get(0));
 
         users.next().click();
-        assertThat(users.pageLabel()).hasText("Page 2");
+        assertThat(users.pageLabel()).hasText("Users 51–55");
         users.selectDomain(otherDomain);
         assertThat(users.message("No users found.")).isVisible();
         users.selectDomain(domain);
-        assertThat(users.pageLabel()).hasText("Page 1");
-        assertThat(users.row(1)).hasText("1/" + expected.get(0));
+        assertThat(users.pageLabel()).hasText("Users 1–50");
+        assertThat(users.row(1)).hasText("1." + expected.get(0));
         assertThat(users.rows()).hasCount(50);
     }
 
@@ -201,7 +201,7 @@ class UsersListTest extends MailAdminE2ETest {
         assertThat(detail.breadcrumb()).hasText("Users");
         assertThat(detail.breadcrumb()).hasAttribute("href", "/users");
         // The summary strip of its essential facts
-        for (String chip : List.of("Quota: 0 B, unlimited", "Mailboxes: 0", "Aliases: 0", "Forwards: 0", "Vacation: off")) {
+        for (String chip : List.of("Quota: 0 B, Unlimited", "Mailboxes: 0", "Aliases: 0", "Forwards: 0", "Vacation: off")) {
             assertThat(detail.chip(chip)).isVisible();
         }
 

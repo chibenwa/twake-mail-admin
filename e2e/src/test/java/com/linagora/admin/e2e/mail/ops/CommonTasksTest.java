@@ -71,8 +71,8 @@ class CommonTasksTest extends MailAdminE2ETest {
     }
 
     private static void expectTaskToast(AdminApp app, String taskId) {
-        assertThat(app.toast("Task created").getByRole(AriaRole.LINK,
-            new Locator.GetByRoleOptions().setName("Task " + taskId).setExact(true))).isVisible();
+        // The toast names the task and leads to its page
+        assertThat(app.toast("Task created").locator("a[href='/task/" + taskId + "']")).hasText(AdminApp.TASK_TOAST_LINK);
     }
 
     @Test
@@ -119,7 +119,9 @@ class CommonTasksTest extends MailAdminE2ETest {
         assertThat(pathOf(response)).isEqualTo("/mailboxes?task=RecomputeMailboxCounters");
         String taskId = taskIdOf(response);
 
-        app.toast("Task created").getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Task " + taskId)).click();
+        Locator toastLink = app.toast("Task created").locator("a[href='/task/" + taskId + "']");
+        assertThat(toastLink).hasText("Recompute mailbox counters — Task " + taskId.substring(0, 8));
+        toastLink.click();
         assertThat(page).hasURL(Pattern.compile("/task/" + taskId + "$"));
         JsonNode task = webAdmin.awaitTask(taskId);
         assertThat(task.path("status").asText()).isEqualTo("completed");
@@ -128,7 +130,7 @@ class CommonTasksTest extends MailAdminE2ETest {
         assertThat(app.main().getByText("Completed", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
         assertThat(app.main().getByText("recompute-mailbox-counters", new Locator.GetByTextOptions().setExact(true)).first()).isVisible();
         assertThat(app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Details").setExact(true))).isVisible();
-        assertThat(app.main().getByText("processedMailboxes", new Locator.GetByTextOptions().setExact(true))).isVisible();
+        assertThat(app.main().getByText("Processed mailboxes", new Locator.GetByTextOptions().setExact(true))).isVisible();
         app.main().getByText("Raw JSON", new Locator.GetByTextOptions().setExact(true)).click();
         Locator raw = app.main().locator("details pre");
         assertThat(raw).isVisible();

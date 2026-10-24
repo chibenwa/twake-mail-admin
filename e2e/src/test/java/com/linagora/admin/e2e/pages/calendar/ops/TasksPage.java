@@ -47,20 +47,21 @@ public class TasksPage {
         return app.page().getByTestId("task-row");
     }
 
+    /** A row, by the full task id its muted "type · short id" line carries as tooltip. */
     public Locator row(String taskId) {
-        return rows().filter(new Locator.FilterOptions().setHasText(taskId));
+        return rows().filter(new Locator.FilterOptions().setHas(app.page().locator("[title='" + taskId + "']")));
     }
 
-    /** The type of every listed row, in display order. */
+    /** The name of every listed task ("Import events (ICS)"), in display order: what sorting by type orders. */
     @SuppressWarnings("unchecked")
     public List<String> types() {
-        return (List<String>) rows().evaluateAll("rows => rows.map(r => r.querySelector('span[title]').title)");
+        return (List<String>) rows().evaluateAll("rows => rows.map(r => r.querySelector('button').textContent.trim())");
     }
 
     /** The id of every listed row, in display order. */
     @SuppressWarnings("unchecked")
     public List<String> ids() {
-        return (List<String>) rows().evaluateAll("rows => rows.map(r => r.querySelector('button').textContent.trim())");
+        return (List<String>) rows().evaluateAll("rows => rows.map(r => r.querySelector('span.font-mono[title]').title)");
     }
 
     /**
@@ -107,7 +108,8 @@ public class TasksPage {
 
     /** Opens the detail dialog of a task by clicking its ID. */
     public Locator openDetail(String taskId) {
-        row(taskId).getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName(taskId).setExact(true)).click();
+        // The button naming the task: "Import events (ICS)"
+        row(taskId).getByRole(AriaRole.BUTTON).first().click();
         assertThat(app.dialog()).isVisible();
         return app.dialog();
     }

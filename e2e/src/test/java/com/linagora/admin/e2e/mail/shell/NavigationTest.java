@@ -27,6 +27,7 @@ class NavigationTest extends MailAdminE2ETest {
 
         assertThat(page).hasURL(Pattern.compile("/health-check$"));
         assertThat(app.sidebar().getByRole(AriaRole.LINK)).hasText(Shell.MAIL_ENTRIES.toArray(String[]::new));
+        assertThat(app.sidebar().locator("[data-sidebar=group-label]")).hasText(Shell.MAIL_GROUPS.toArray(String[]::new));
         assertThat(app.sidebar().getByText("Registered Users")).hasCount(0);
         assertThat(app.sidebar().getByText("Unsent Mails")).hasCount(0);
         assertThat(app.sidebar().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Logout"))).hasCount(0);
@@ -98,6 +99,7 @@ class NavigationTest extends MailAdminE2ETest {
         assertThat(sheet).isVisible();
         assertThat(sheet).hasAccessibleDescription("Application navigation menu");
         assertThat(sheet.getByRole(AriaRole.LINK)).hasText(Shell.MAIL_ENTRIES.toArray(String[]::new));
+        assertThat(sheet.locator("[data-sidebar=group-label]")).hasText(Shell.MAIL_GROUPS.toArray(String[]::new));
 
         sheet.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Domains").setExact(true)).click();
         assertThat(page).hasURL(Pattern.compile("/domains$"));

@@ -137,8 +137,8 @@ class UnsentMailsTest extends CalendarAdminE2ETest {
         assertThat(app.dialog()).containsText("Schedule a task re-emitting every retained mail?");
         app.confirm();
         Locator link = app.toast("Resend task submitted").getByRole(AriaRole.LINK);
-        assertThat(link).hasText(Pattern.compile("^Task [0-9a-f-]{36}$"));
-        String resendTask = link.textContent().substring("Task ".length());
+        assertThat(link).hasText(AdminApp.TASK_TOAST_LINK);
+        String resendTask = AdminApp.taskIdOf(link);
         assertThat(webAdmin.awaitTask(resendTask).path("status").asText()).isEqualTo("completed");
         assertThat(backend.unsentMailIds(sender)).doesNotContain(first);
 
@@ -153,7 +153,7 @@ class UnsentMailsTest extends CalendarAdminE2ETest {
             () -> confirmWith(app, "Delete"));
         assertThat(request.url()).endsWith("/unsentMails?action=delete&sender=" + WebAdmin.encode(sender));
         link = app.toast("Deletion task submitted").getByRole(AriaRole.LINK);
-        String deleteTask = link.textContent().substring("Task ".length());
+        String deleteTask = AdminApp.taskIdOf(link);
         assertThat(webAdmin.awaitTask(deleteTask).path("status").asText()).isEqualTo("completed");
         assertThat(backend.unsentMailIds(sender)).isEmpty();
     }

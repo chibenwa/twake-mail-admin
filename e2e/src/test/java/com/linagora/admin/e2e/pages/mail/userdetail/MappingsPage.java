@@ -90,7 +90,7 @@ public class MappingsPage {
 
     public MappingsPage addAddress(String source, String destination) {
         openForm("Address", source, destination);
-        assertThat(field("Source")).hasAttribute("placeholder", "Source (e.g. user@domain.com)");
+        assertThat(field("Source")).hasAttribute("placeholder", "e.g. sales@example.com");
         return create();
     }
 

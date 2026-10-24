@@ -76,14 +76,14 @@ class TaskCancelTest extends CalendarAdminE2ETest {
 
             // Dismissing the confirmation sends nothing
             cancelButton(row).click();
-            assertThat(app.dialog()).containsText("Cancel task \"" + waiting + "\" (reindex-calendar-events)?");
+            assertThat(app.dialog()).containsText("Cancel \"Calendar event reindexing\"? (task " + waiting + ")");
             app.cancel();
             assertThat(cancelButton(row)).isVisible();
             assertThat(deletes).isEmpty();
             assertThat(status(webAdmin, waiting)).isEqualTo("waiting");
 
             cancelButton(row).click();
-            assertThat(app.dialog()).containsText("Cancel task \"" + waiting + "\" (reindex-calendar-events)?");
+            assertThat(app.dialog()).containsText("Cancel \"Calendar event reindexing\"? (task " + waiting + ")");
             app.confirm();
             app.expectToast("Task cancelled");
             assertThat(deletes).hasSize(1);
@@ -103,7 +103,7 @@ class TaskCancelTest extends CalendarAdminE2ETest {
             assertThat(json).containsText("\"status\": \"inProgress\"");
             Locator cancel = cancelButton(app.main());
             cancel.click();
-            assertThat(app.dialog()).containsText("Cancel task \"" + running + "\" (reindex-calendar-events)?");
+            assertThat(app.dialog()).containsText("Cancel \"Calendar event reindexing\"? (task " + running + ")");
             app.confirm();
             app.expectToast("Task cancelled");
             assertThat(deletes).hasSize(2);

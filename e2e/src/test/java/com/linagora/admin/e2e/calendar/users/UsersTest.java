@@ -255,14 +255,14 @@ class UsersTest extends CalendarAdminE2ETest {
         UsersListPage list = new UsersListPage(app).open().searchFor(prefix);
 
         assertThat(list.rows()).hasText(numbered(users, 0, 50, 1));
-        assertThat(list.pageLabel()).hasText("Page 1");
+        assertThat(list.pageLabel()).hasText("Users 1–50");
         assertThat(list.first()).isDisabled();
         assertThat(list.previous()).isDisabled();
         assertThat(list.next()).isEnabled();
         List<String> firstPage = list.userLinks().allInnerTexts();
 
         list.next().click();
-        assertThat(list.pageLabel()).hasText("Page 2");
+        assertThat(list.pageLabel()).hasText("Users 51–55");
         assertThat(list.rows()).hasText(numbered(users, 50, 55, 51));
         assertThat(list.next()).isDisabled();
         assertThat(list.previous()).isEnabled();
@@ -273,40 +273,40 @@ class UsersTest extends CalendarAdminE2ETest {
         assertThat(new HashSet<>(all)).hasSize(55);
 
         list.previous().click();
-        assertThat(list.pageLabel()).hasText("Page 1");
+        assertThat(list.pageLabel()).hasText("Users 1–50");
         assertThat(list.rows()).hasText(numbered(users, 0, 50, 1));
 
         list.next().click();
-        assertThat(list.pageLabel()).hasText("Page 2");
+        assertThat(list.pageLabel()).hasText("Users 51–55");
         list.first().click();
-        assertThat(list.pageLabel()).hasText("Page 1");
-        assertThat(list.row(1)).hasText("1/" + users.get(0));
+        assertThat(list.pageLabel()).hasText("Users 1–50");
+        assertThat(list.row(1)).hasText("1." + users.get(0));
 
         // Typing from page 2 restarts from page 1, everything fits on it: no paging controls
         list.next().click();
-        assertThat(list.pageLabel()).hasText("Page 2");
+        assertThat(list.pageLabel()).hasText("Users 51–55");
         list.searchFor(prefix + "-5");
         assertThat(list.rows()).hasText(numbered(users, 50, 55, 1));
-        assertThat(list.pageLabel()).hasCount(0);
+        assertThat(list.pageLabel()).hasText("5 users");
         assertThat(list.next()).hasCount(0);
         assertThat(list.previous()).hasCount(0);
 
         // Changing the domain from page 2 restarts from page 1 too
         list.searchFor(prefix);
-        assertThat(list.pageLabel()).hasText("Page 1");
+        assertThat(list.pageLabel()).hasText("Users 1–50");
         list.next().click();
-        assertThat(list.pageLabel()).hasText("Page 2");
+        assertThat(list.pageLabel()).hasText("Users 51–55");
         list.domainSelector().selectOption(new SelectOption().setLabel(otherDomain));
         assertThat(list.noMatch(prefix)).isVisible();
         assertThat(list.rows()).hasCount(0);
         assertThat(list.pageLabel()).hasCount(0);
         list.domainSelector().selectOption(new SelectOption().setLabel(CalendarFixtures.DOMAIN));
-        assertThat(list.pageLabel()).hasText("Page 1");
+        assertThat(list.pageLabel()).hasText("Users 1–50");
         assertThat(list.rows()).hasText(numbered(users, 0, 50, 1));
 
         // A user of page 2 opens its page
         list.next().click();
-        assertThat(list.pageLabel()).hasText("Page 2");
+        assertThat(list.pageLabel()).hasText("Users 51–55");
         String last = users.get(54);
         list.userLink(last).click();
         assertThat(page).hasURL(Pattern.compile("/users/user/" + JsRegex.quote(WebAdmin.encode(last)) + "$"));
@@ -315,6 +315,6 @@ class UsersTest extends CalendarAdminE2ETest {
 
     /** {@code "n/username"} for {@code users[from..to)}, numbered from {@code firstNumber}. */
     private static String[] numbered(List<String> users, int from, int to, int firstNumber) {
-        return IntStream.range(from, to).mapToObj(i -> (firstNumber + i - from) + "/" + users.get(i)).toArray(String[]::new);
+        return IntStream.range(from, to).mapToObj(i -> (firstNumber + i - from) + "." + users.get(i)).toArray(String[]::new);
     }
 }

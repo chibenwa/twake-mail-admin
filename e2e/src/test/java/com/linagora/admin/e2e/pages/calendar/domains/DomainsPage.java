@@ -85,13 +85,13 @@ public class DomainsPage {
         return app.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(domain).setExact(true));
     }
 
-    /** The row of a domain: its "n/" index, its link and its delete button. */
+    /** The row of a domain: its "n." index, its link and its delete button. */
     public Locator row(String domain) {
-        return domainLink(domain).locator("xpath=ancestor::div[2]");
+        return domainLink(domain).locator("xpath=ancestor::li[1]");
     }
 
     public Locator deleteButton(String domain) {
-        return row(domain).getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete Domain"));
+        return row(domain).getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete domain " + domain).setExact(true));
     }
 
     /**

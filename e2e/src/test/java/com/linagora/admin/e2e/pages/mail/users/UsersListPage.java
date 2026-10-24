@@ -48,9 +48,9 @@ public class UsersListPage {
         return this;
     }
 
-    /** One row per user: {@code "12/alice@example.com"}. */
+    /** One list item per user: {@code "12.alice@example.com"}. */
     public Locator rows() {
-        return app.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setLevel(4));
+        return app.main().getByRole(AriaRole.LISTITEM);
     }
 
     /** The links of the listed users, whose text is the username. */
@@ -64,15 +64,16 @@ public class UsersListPage {
 
     /** The row numbered {@code index} (1 based, across pages). */
     public Locator row(int index) {
-        return rows().filter(new Locator.FilterOptions().setHasText(Pattern.compile("^" + index + "\\/")));
+        return rows().filter(new Locator.FilterOptions().setHasText(Pattern.compile("^" + index + "\\.")));
     }
 
     public List<String> listedUsernames() {
         return userLinks().allInnerTexts();
     }
 
+    /** "8 users", or "Users 51–55" when there are several pages. */
     public Locator pageLabel() {
-        return app.main().getByText(Pattern.compile("^Page \\d+$"));
+        return app.main().getByText(Pattern.compile("^(\\d+ users?|Users \\d+–\\d+)$"));
     }
 
     public Locator first() {

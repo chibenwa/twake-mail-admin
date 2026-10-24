@@ -39,13 +39,13 @@ class DomainsListTest extends CalendarAdminE2ETest {
 
         domains.search("paas");
         assertThat(domains.domainLink(CalendarFixtures.DOMAIN)).isVisible();
-        assertThat(domains.row(CalendarFixtures.DOMAIN)).hasText(Pattern.compile("^\\d+/open-paas\\.org$"));
+        assertThat(domains.row(CalendarFixtures.DOMAIN)).hasText(Pattern.compile("^\\d+\\.open-paas\\.org$"));
         assertThat(domains.deleteButton(CalendarFixtures.DOMAIN)).isVisible();
         assertThat(domains.domainLink(mine)).hasCount(0);
 
         domains.search(mine.substring(0, mine.indexOf('.')));
         assertThat(domains.domainLinks()).hasText(new String[] {mine});
-        assertThat(domains.row(mine)).hasText("1/" + mine);
+        assertThat(domains.row(mine)).hasText("1." + mine);
         // Everything fits on one page: only the total, no page buttons
         assertThat(domains.pagination()).hasText("Total: 1");
         assertThat(domains.pageButton("Next")).hasCount(0);
@@ -107,10 +107,9 @@ class DomainsListTest extends CalendarAdminE2ETest {
 
         domains.deleteButton(domain).click();
         // A domain created for the test holds no user and no alias: a plain confirmation, without typing its name.
-        // Fails on the side service of the stack, which ignores the domain filter of GET /users: the console then
-        // counts the users of open-paas.org as users of the domain (see the report of the e2e update).
+        // The side service ignores the domain filter of GET /users: the console filters the users itself.
         Locator dialog = app.dialog();
-        assertThat(dialog.getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Delete Domain"))).isVisible();
+        assertThat(dialog.getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions().setName("Delete domain " + domain))).isVisible();
         assertThat(dialog).containsText("Delete \"" + domain
             + "\"? It holds no user and no domain alias; it can be re-created afterwards.");
         assertThat(dialog.getByRole(AriaRole.TEXTBOX)).hasCount(0);
