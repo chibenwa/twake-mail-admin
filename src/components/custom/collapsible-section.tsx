@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useCallback, useContext, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -14,33 +14,42 @@ const memory = new Map<string, boolean>();
 
 const storageKey = (page: string, id: string) => `section:${page}:${id}`;
 
+/** The remembered open state of one section of one page type, and who listens to it. */
+interface StoredFlag {
+  read(): boolean | undefined;
+  write(open: boolean): void;
+  subscribe(listener: Listener): () => void;
+}
+
 // The storage can be unavailable (private window, blocked site data): the state then lives in memory
-const readStored = (key: string): boolean | undefined => {
-  if (memory.has(key)) return memory.get(key);
-  try {
-    const value = window.localStorage.getItem(key);
-    return value === null ? undefined : value === "true";
-  } catch {
-    return undefined;
-  }
-};
+const storedFlag = (key: string): StoredFlag => ({
+  read() {
+    if (memory.has(key)) return memory.get(key);
+    try {
+      const value = window.localStorage.getItem(key);
+      return value === null ? undefined : value === "true";
+    } catch {
+      return undefined;
+    }
+  },
+  write(open) {
+    memory.set(key, open);
+    try {
+      window.localStorage.setItem(key, String(open));
+    } catch {
+      // kept in memory only
+    }
+    listeners.get(key)?.forEach((listener) => listener());
+  },
+  subscribe(listener) {
+    const set = listeners.get(key) ?? new Set();
+    set.add(listener);
+    listeners.set(key, set);
+    return () => set.delete(listener);
+  },
+});
 
-const writeStored = (key: string, open: boolean) => {
-  memory.set(key, open);
-  try {
-    window.localStorage.setItem(key, String(open));
-  } catch {
-    // kept in memory only
-  }
-  listeners.get(key)?.forEach((listener) => listener());
-};
-
-const subscribe = (key: string, listener: Listener) => {
-  const set = listeners.get(key) ?? new Set();
-  set.add(listener);
-  listeners.set(key, set);
-  return () => set.delete(listener);
-};
+const sectionFlag = (page: string, id: string) => storedFlag(storageKey(page, id));
 
 interface SectionsContextValue {
   page: string;
@@ -82,7 +91,18 @@ export function SectionsProvider({ page, children }: { page: string; children: R
 
 const SectionIdsContext = createContext<React.MutableRefObject<Map<string, number>> | null>(null);
 
-type SetOpen = (open: boolean | ((open: boolean) => boolean)) => void;
+type NextOpen = boolean | ((open: boolean) => boolean);
+type SetOpen = (open: NextOpen) => void;
+
+const resolveOpen = (next: NextOpen, current: boolean) => (typeof next === "function" ? next(current) : next);
+const NO_FLAG: StoredFlag = { read: () => undefined, write: () => {}, subscribe: () => () => {} };
+
+// The open state kept in a flag, `defaultOpen` until the section was opened or closed once
+function useRememberedOpen(flag: StoredFlag, defaultOpen: boolean): [boolean, SetOpen] {
+  const stored = useSyncExternalStore(flag.subscribe, flag.read);
+  const setOpen = useCallback((next: NextOpen) => flag.write(resolveOpen(next, flag.read() ?? defaultOpen)), [flag, defaultOpen]);
+  return [stored ?? defaultOpen, setOpen];
+}
 
 /**
  * Open state of a section: [open, setOpen, contentId]. Inside a SectionsProvider it is
@@ -91,27 +111,15 @@ type SetOpen = (open: boolean | ((open: boolean) => boolean)) => void;
 export function useSectionOpen(id: string, defaultOpen = false): [boolean, SetOpen, string] {
   const context = useContext(SectionsContext);
   const generatedId = useId();
-  // Known in advance inside a page, so that its summary strip can scroll to the section
-  const contentId = context ? contentIdOf(id) : generatedId;
   const [local, setLocal] = useState(defaultOpen);
-  const key = context ? storageKey(context.page, id) : "";
-  const stored = useSyncExternalStore(
-    (listener) => (key ? subscribe(key, listener) : () => {}),
-    () => (key ? readStored(key) : undefined),
-  );
+  const page = context?.page;
+  const flag = useMemo(() => (page ? sectionFlag(page, id) : NO_FLAG), [page, id]);
+  const [remembered, setRemembered] = useRememberedOpen(flag, defaultOpen);
   const register = context?.register;
   useEffect(() => register?.(id, defaultOpen), [register, id, defaultOpen]);
 
-  const open = context ? stored ?? defaultOpen : local;
-  const setOpen: SetOpen = useCallback((next) => {
-    if (!key) {
-      setLocal(next);
-      return;
-    }
-    const current = readStored(key) ?? defaultOpen;
-    writeStored(key, typeof next === "function" ? next(current) : next);
-  }, [key, defaultOpen]);
-  return [open, setOpen, contentId];
+  // Inside a page the content id is known in advance, so that its summary strip can scroll to the section
+  return context ? [remembered, setRemembered, contentIdOf(id)] : [local, setLocal, generatedId];
 }
 
 interface SectionToggleProps {
@@ -145,7 +153,7 @@ export function ExpandCollapseAll() {
   const sections = useContext(SectionIdsContext);
   if (!context || !sections) return null;
   const setAll = (open: boolean) => {
-    for (const id of sections.current.keys()) writeStored(storageKey(context.page, id), open);
+    for (const id of sections.current.keys()) sectionFlag(context.page, id).write(open);
   };
   return (
     <div className="flex gap-3 text-sm">
@@ -171,7 +179,7 @@ export function useSectionFacts(): Facts {
 export function useRevealSection(): (id: string) => void {
   const context = useContext(SectionsContext);
   return useCallback((id: string) => {
-    if (context) writeStored(storageKey(context.page, id), true);
+    if (context) sectionFlag(context.page, id).write(true);
     requestAnimationFrame(() => {
       const content = document.getElementById(contentIdOf(id));
       const toggle = document.querySelector<HTMLElement>(`[aria-controls="${contentIdOf(id)}"]`);
