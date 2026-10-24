@@ -10,7 +10,8 @@ export type UserExistsStatus = "idle" | "checking" | "exists" | "not_found" | "i
 export const isSubmittableUserStatus = (status: UserExistsStatus): boolean =>
   status !== "checking" && status !== "invalid";
 
-export function useCheckUserExists(username: string): UserExistsStatus {
+// checkSyntax false for an address field, e.g. a mapping source: the server's refusal says what is wrong
+export function useCheckUserExists(username: string, { checkSyntax = true }: { checkSyntax?: boolean } = {}): UserExistsStatus {
   const [status, setStatus] = useState<UserExistsStatus>("idle");
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -29,7 +30,7 @@ export function useCheckUserExists(username: string): UserExistsStatus {
     setStatus("checking");
 
     timerRef.current = setTimeout(async () => {
-      if (!USERNAME_PATTERN.test(trimmed)) {
+      if (checkSyntax && !USERNAME_PATTERN.test(trimmed)) {
         setStatus("invalid");
         return;
       }
@@ -53,7 +54,7 @@ export function useCheckUserExists(username: string): UserExistsStatus {
         clearTimeout(timerRef.current);
       }
     };
-  }, [username]);
+  }, [username, checkSyntax]);
 
   return status;
 }

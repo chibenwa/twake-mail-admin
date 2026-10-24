@@ -26,6 +26,14 @@ describe("useCheckUserExists", () => {
     expect(head).toHaveBeenCalledWith("/users/ghost%40example.com");
   });
 
+  it("leaves the syntax of an address field to the server", async () => {
+    head.mockRejectedValue({ response: { status: 404 } });
+    const { result } = renderHook(() => useCheckUserExists("bad source", { checkSyntax: false }));
+
+    await waitFor(() => expect(result.current).toBe("not_found"));
+    expect(head).toHaveBeenCalledWith("/users/bad%20source");
+  });
+
   it("reports an existing user", async () => {
     head.mockResolvedValue({});
     const { result } = renderHook(() => useCheckUserExists("bob"));

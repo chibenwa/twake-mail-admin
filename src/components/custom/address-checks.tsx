@@ -7,7 +7,7 @@ import { useCheckUserExists, UserExistsStatus } from "@/hooks/use-check-user-exi
  * so such a source, or one still being checked or invalid, blocks the creation.
  */
 export function useSourceCheck(source: string): { status: UserExistsStatus; blocking: boolean } {
-  const status = useCheckUserExists(source);
+  const status = useCheckUserExists(source, { checkSyntax: false });
   return { status, blocking: status === "checking" || status === "exists" || status === "invalid" };
 }
 
