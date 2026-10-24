@@ -1166,7 +1166,7 @@
     "detailKind": "Người dùng",
     "summary": {
       "quota": "Hạn mức: {{used}} / {{limit}} ({{percent}})",
-      "quotaUnlimited": "Hạn mức: {{used}}, không giới hạn",
+      "quotaUnlimited": "Hạn mức: {{used}}, Không giới hạn",
       "mailboxes": "Hộp thư: {{count}}",
       "aliases": "Bí danh: {{count}}",
       "forwards": "Chuyển tiếp: {{count}}",
@@ -2093,5 +2093,14 @@
     "removeSpecific": "Xóa giới hạn riêng",
     "removeDomain": "Xóa giới hạn của miền",
     "removeGlobal": "Xóa giới hạn toàn cục"
+  },
+  "quota": {
+    "fromUser": "(người dùng)",
+    "fromTeamMailbox": "(hộp thư nhóm)",
+    "fromDomain": "(miền {{domain}})",
+    "fromGlobal": "(toàn cục)",
+    "noLimitSet": "Không giới hạn (chưa đặt giới hạn)",
+    "noLimit": "Không giới hạn",
+    "domainLevel": "Miền {{domain}}"
   }
 }

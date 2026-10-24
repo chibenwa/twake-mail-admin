@@ -1168,7 +1168,7 @@
     "detailKind": "Benutzer",
     "summary": {
       "quota": "Quota: {{used}} / {{limit}} ({{percent}})",
-      "quotaUnlimited": "Quota: {{used}}, unbegrenzt",
+      "quotaUnlimited": "Quota: {{used}}, Unbegrenzt",
       "mailboxes": "Postfächer: {{count}}",
       "aliases": "Aliasse: {{count}}",
       "forwards": "Weiterleitungen: {{count}}",
@@ -2096,5 +2096,14 @@
     "removeSpecific": "Spezifische Limits entfernen",
     "removeDomain": "Domain-Limits entfernen",
     "removeGlobal": "Globale Limits entfernen"
+  },
+  "quota": {
+    "fromUser": "(Benutzer)",
+    "fromTeamMailbox": "(Team-Postfach)",
+    "fromDomain": "(Domain {{domain}})",
+    "fromGlobal": "(global)",
+    "noLimitSet": "Unbegrenzt (kein Limit gesetzt)",
+    "noLimit": "Kein Limit",
+    "domainLevel": "Domain {{domain}}"
   }
 }

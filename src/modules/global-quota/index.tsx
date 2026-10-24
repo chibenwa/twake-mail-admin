@@ -17,14 +17,14 @@ import { formatByteSize } from "@/i18n/format-size";
 const docuUrl = "https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_administrating_quotas";
 
 function formatSize(bytes: number | null): string {
-  if (bytes === null) return i18n.t("common.notSet");
-  if (bytes === -1) return i18n.t("common.unlimited");
+  if (bytes === null) return i18n.t("quota.noLimit");
+  if (bytes === -1) return i18n.t("quotaLimits.unlimited");
   return formatByteSize(bytes);
 }
 
 function formatCount(count: number | null): string {
-  if (count === null) return i18n.t("common.notSet");
-  if (count === -1) return i18n.t("common.unlimited");
+  if (count === null) return i18n.t("quota.noLimit");
+  if (count === -1) return i18n.t("quotaLimits.unlimited");
   return count.toLocaleString(currentLocale());
 }
 

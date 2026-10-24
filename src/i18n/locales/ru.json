@@ -1172,7 +1172,7 @@
     "detailKind": "Пользователь",
     "summary": {
       "quota": "Квота: {{used}} / {{limit}} ({{percent}})",
-      "quotaUnlimited": "Квота: {{used}}, без ограничений",
+      "quotaUnlimited": "Квота: {{used}}, Без ограничений",
       "mailboxes": "Почтовые ящики: {{count}}",
       "aliases": "Псевдонимы: {{count}}",
       "forwards": "Пересылки: {{count}}",
@@ -2099,5 +2099,14 @@
     "removeSpecific": "Удалить отдельные ограничения",
     "removeDomain": "Удалить ограничения домена",
     "removeGlobal": "Удалить глобальные ограничения"
+  },
+  "quota": {
+    "fromUser": "(пользователь)",
+    "fromTeamMailbox": "(общий ящик)",
+    "fromDomain": "(домен {{domain}})",
+    "fromGlobal": "(глобально)",
+    "noLimitSet": "Без ограничений (лимит не задан)",
+    "noLimit": "Без лимита",
+    "domainLevel": "Домен {{domain}}"
   }
 }

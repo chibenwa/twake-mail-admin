@@ -1168,7 +1168,7 @@
     "detailKind": "Хэрэглэгч",
     "summary": {
       "quota": "Квот: {{used}} / {{limit}} ({{percent}})",
-      "quotaUnlimited": "Квот: {{used}}, хязгааргүй",
+      "quotaUnlimited": "Квот: {{used}}, Хязгааргүй",
       "mailboxes": "Шуудангийн хайрцгууд: {{count}}",
       "aliases": "Өөр нэрс: {{count}}",
       "forwards": "Дамжуулалт: {{count}}",
@@ -2095,5 +2095,14 @@
     "removeSpecific": "Тусгай хязгаарыг устгах",
     "removeDomain": "Домэйны хязгаарыг устгах",
     "removeGlobal": "Глобал хязгаарыг устгах"
+  },
+  "quota": {
+    "fromUser": "(хэрэглэгч)",
+    "fromTeamMailbox": "(багийн шуудангийн хайрцаг)",
+    "fromDomain": "(домэйн {{domain}})",
+    "fromGlobal": "(глобал)",
+    "noLimitSet": "Хязгааргүй (хязгаар тогтоогоогүй)",
+    "noLimit": "Хязгааргүй",
+    "domainLevel": "Домэйн {{domain}}"
   }
 }
