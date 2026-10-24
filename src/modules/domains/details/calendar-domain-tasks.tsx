@@ -47,7 +47,7 @@ export default function CalendarDomainTasks({ domain, defaultOpen = false }: Pro
     setDeleting(true);
     try {
       const { taskId } = await deleteAllUsersData(domain);
-      toastTaskCreated(taskId);
+      toastTaskCreated(taskId, undefined, t("domains.tasks.deleteAllData"));
     } catch (err) {
       toast({ title: t("domains.tasks.errorDeletingData"), description: <ErrorDisplayer error={err} /> });
     } finally {
@@ -65,7 +65,7 @@ export default function CalendarDomainTasks({ domain, defaultOpen = false }: Pro
     setSyncing(true);
     try {
       const { taskId } = await syncDomainMembers(domain);
-      toastTaskCreated(taskId);
+      toastTaskCreated(taskId, undefined, t("domains.calendarTasks.syncButton"));
     } catch (err) {
       toast({ title: t("domains.calendarTasks.errorSyncing"), description: <ErrorDisplayer error={err} /> });
     } finally {
@@ -89,7 +89,7 @@ export default function CalendarDomainTasks({ domain, defaultOpen = false }: Pro
       ),
       action: async () => {
         const { taskId } = await republishDomainContacts(domain, params);
-        toastTaskCreated(taskId);
+        toastTaskCreated(taskId, undefined, t("domains.calendarTasks.republishContactsButton"));
       },
     });
   };

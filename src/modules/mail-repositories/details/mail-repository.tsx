@@ -196,7 +196,7 @@ export default function MailRepositoryDetail() {
           queue: paramValues["queue"] || undefined,
           processor: paramValues["processor"] || undefined,
         });
-        toastTaskCreated(taskId, t("mailRepositories.reprocessScheduled"));
+        toastTaskCreated(taskId, t("mailRepositories.reprocessScheduled"), t("mailRepositories.reprocessMailTooltip"));
       },
     });
   };

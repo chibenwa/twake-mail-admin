@@ -84,7 +84,7 @@ export default function DomainTasks({ domain, defaultOpen }: Props) {
           prune: values.prune,
           usersPerSecond: values.usersPerSecond.trim() || undefined,
         });
-        toastTaskCreated(taskId);
+        toastTaskCreated(taskId, undefined, t("domains.tasks.provisionTemplates"));
       },
     });
   };
@@ -108,7 +108,7 @@ export default function DomainTasks({ domain, defaultOpen }: Props) {
     setDeleting(true);
     try {
       const { taskId } = await deleteAllUsersData(domain);
-      toastTaskCreated(taskId);
+      toastTaskCreated(taskId, undefined, t("domains.tasks.deleteAllData"));
     } catch (err) {
       toast({
         title: t("domains.tasks.errorDeletingData"),

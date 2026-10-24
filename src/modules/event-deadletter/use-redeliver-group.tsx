@@ -50,7 +50,7 @@ export function useRedeliverGroup() {
           limit: toOptionalNumber(paramValues.limit),
           maxRetries: toOptionalNumber(paramValues.maxRetries),
         });
-        toastTaskCreated(taskId);
+        toastTaskCreated(taskId, undefined, t("eventDeadletter.redeliverGroupAction"));
       },
     });
   };

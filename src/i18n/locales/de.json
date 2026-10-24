@@ -100,7 +100,8 @@
     "copied": "In die Zwischenablage kopiert",
     "viewJson": "JSON anzeigen",
     "sourceIsAccount": "{{source}} ist ein bestehendes Konto: Ein Alias würde seine E-Mails an {{destination}} umleiten.",
-    "sourceIsAccountNoDestination": "{{source}} ist ein bestehendes Konto: Ein Alias würde seine E-Mails umleiten."
+    "sourceIsAccountNoDestination": "{{source}} ist ein bestehendes Konto: Ein Alias würde seine E-Mails umleiten.",
+    "taskCreatedNamed": "{{name}} — Aufgabe {{taskId}}"
   },
   "sidebar": {
     "healthCheck": "Systemzustand",
@@ -901,7 +902,7 @@
     "tasks": {
       "title": "Aufgaben",
       "reindexAll": "Alle Postfächer neu indizieren",
-      "reindexTitle": "Postfächer des Benutzers neu indizieren",
+      "reindexTitle": "Alle Postfächer neu indizieren",
       "reindexDesc": "Alle Postfächer von {{username}} neu indizieren.",
       "errorReindex": "Fehler beim Ausführen der Neuindizierung",
       "subscribeAll": "Alle Postfächer abonnieren",
@@ -1191,7 +1192,7 @@
     },
     "unmanagedDomain": "Domain nicht verwaltet",
     "unmanagedDomainHint": "Die Domain dieses Benutzers existiert auf dem Server nicht mehr: E-Mails an diese Adresse werden nicht lokal zugestellt.",
-    "countSingle": "{{count}} Benutzer",
+    "countSingle_other": "{{count}} Benutzer",
     "countSingle_one": "{{count}} Benutzer",
     "countRange": "Benutzer {{from}}–{{to}}"
   },
@@ -1259,14 +1260,14 @@
     "cancelRequested": "Abbruch angefordert",
     "cancelled": "Abgebrochen",
     "failed": "Fehlgeschlagen",
-    "idType": "Aufgaben-ID / Typ",
+    "idType": "Aufgabe",
     "actions": "Aktionen",
     "cancelTitle": "Aufgabe abbrechen",
-    "cancelConfirm": "Aufgabe „{{taskId}}“ ({{type}}) abbrechen?",
+    "cancelConfirm": "„{{name}}“{{target}} abbrechen? (Aufgabe {{taskId}})",
     "taskCancelled": "Aufgabe abgebrochen",
     "errorCancelling": "Fehler beim Abbrechen der Aufgabe",
     "empty": "Keine Aufgaben entsprechen den aktuellen Filtern.",
-    "detailTitle": "Aufgabe — {{taskId}}",
+    "detailTitle": "{{name}}",
     "executedOn": "Ausgeführt auf",
     "submittedFrom": "Übermittelt von",
     "cancelledAt": "Abgebrochen",
@@ -1294,8 +1295,14 @@
       "failedUsers": "Fehlgeschlagene Benutzer",
       "username": "Benutzer",
       "mailboxId": "Postfach",
-      "domain": "Domäne"
-    }
+      "domain": "Domäne",
+      "processedMailboxes": "Verarbeitete Postfächer",
+      "failedMailboxes": "Fehlgeschlagene Postfächer",
+      "processedMessageCount": "Verarbeitete Nachrichten",
+      "failedMessageCount": "Fehlgeschlagene Nachrichten",
+      "timestamp": "Erfasst am"
+    },
+    "cancelTarget": " für {{target}}"
   },
   "commonTasks": {
     "title": "Allgemeine Aufgaben",
@@ -2112,5 +2119,13 @@
     "noLimitSet": "Unbegrenzt (kein Limit gesetzt)",
     "noLimit": "Kein Limit",
     "domainLevel": "Domain {{domain}}"
+  },
+  "taskTypes": {
+    "fullReindexing": "Alle Daten in OpenSearch neu indizieren",
+    "mailboxReindexing": "Ein Postfach neu indizieren",
+    "expireMailbox": "Alte Nachrichten eines Ordners bereinigen",
+    "redeliverOneEvent": "Ein Ereignis erneut zustellen",
+    "domainAddressBookClear": "Kontakte leeren",
+    "bookingLinkEventDeletion": "Die Termine eines Buchungslinks löschen"
   }
 }

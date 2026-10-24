@@ -68,7 +68,7 @@ export default function CalendarUserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await deleteUserData(username, currentFromStep || undefined);
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t("users.tasks.deleteData"));
       },
     });
   };
@@ -90,7 +90,7 @@ export default function CalendarUserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await archiveUserCalendarEvents(username, additionalParams);
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t("users.calendarTasks.archiveButton"));
       },
     });
   };
@@ -111,7 +111,7 @@ export default function CalendarUserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await republishUserContacts(username, params);
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t("users.calendarTasks.republishContactsButton"));
       },
     });
   };

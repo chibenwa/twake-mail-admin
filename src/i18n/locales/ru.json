@@ -102,7 +102,8 @@
     "copied": "Скопировано в буфер обмена",
     "viewJson": "Показать JSON",
     "sourceIsAccount": "{{source}} — существующая учётная запись: псевдоним перенаправит её почту на {{destination}}.",
-    "sourceIsAccountNoDestination": "{{source}} — существующая учётная запись: псевдоним перенаправит её почту."
+    "sourceIsAccountNoDestination": "{{source}} — существующая учётная запись: псевдоним перенаправит её почту.",
+    "taskCreatedNamed": "{{name}} — Задача {{taskId}}"
   },
   "sidebar": {
     "healthCheck": "Проверка состояния",
@@ -903,7 +904,7 @@
     "tasks": {
       "title": "Задачи",
       "reindexAll": "Переиндексировать все почтовые ящики",
-      "reindexTitle": "Переиндексировать почтовые ящики пользователя",
+      "reindexTitle": "Переиндексировать все почтовые ящики",
       "reindexDesc": "Переиндексировать все почтовые ящики для {{username}}.",
       "errorReindex": "Ошибка при выполнении задачи переиндексации",
       "subscribeAll": "Подписаться на все почтовые ящики",
@@ -1262,14 +1263,14 @@
     "cancelRequested": "Запрошена отмена",
     "cancelled": "Отменено",
     "failed": "Сбой",
-    "idType": "ID задачи / Тип",
+    "idType": "Задача",
     "actions": "Действия",
     "cancelTitle": "Отменить задачу",
-    "cancelConfirm": "Отменить задачу «{{taskId}}» ({{type}})?",
+    "cancelConfirm": "Отменить «{{name}}»{{target}}? (задача {{taskId}})",
     "taskCancelled": "Задача отменена",
     "errorCancelling": "Ошибка при отмене задачи",
     "empty": "Нет задач, соответствующих текущим фильтрам.",
-    "detailTitle": "Задача — {{taskId}}",
+    "detailTitle": "{{name}}",
     "executedOn": "Выполнено на",
     "submittedFrom": "Отправлено с",
     "cancelledAt": "Отменено",
@@ -1297,8 +1298,14 @@
       "failedUsers": "Пользователи с ошибкой",
       "username": "Пользователь",
       "mailboxId": "Ящик",
-      "domain": "Домен"
-    }
+      "domain": "Домен",
+      "processedMailboxes": "Обработано ящиков",
+      "failedMailboxes": "Ящики с ошибкой",
+      "processedMessageCount": "Обработано сообщений",
+      "failedMessageCount": "Сообщения с ошибкой",
+      "timestamp": "Записано"
+    },
+    "cancelTarget": " для {{target}}"
   },
   "commonTasks": {
     "title": "Общие задачи",
@@ -2115,5 +2122,13 @@
     "noLimitSet": "Без ограничений (лимит не задан)",
     "noLimit": "Без лимита",
     "domainLevel": "Домен {{domain}}"
+  },
+  "taskTypes": {
+    "fullReindexing": "Переиндексировать все данные в OpenSearch",
+    "mailboxReindexing": "Переиндексировать ящик",
+    "expireMailbox": "Очистить старые сообщения папки",
+    "redeliverOneEvent": "Повторно доставить событие",
+    "domainAddressBookClear": "Очистить контакты",
+    "bookingLinkEventDeletion": "Удалить события ссылки бронирования"
   }
 }

@@ -100,7 +100,8 @@
     "copied": "Copiado al portapapeles",
     "viewJson": "Ver el JSON",
     "sourceIsAccount": "{{source}} es una cuenta existente: un alias desviaría su correo a {{destination}}.",
-    "sourceIsAccountNoDestination": "{{source}} es una cuenta existente: un alias desviaría su correo."
+    "sourceIsAccountNoDestination": "{{source}} es una cuenta existente: un alias desviaría su correo.",
+    "taskCreatedNamed": "{{name}} — Tarea {{taskId}}"
   },
   "sidebar": {
     "healthCheck": "Estado del sistema",
@@ -901,7 +902,7 @@
     "tasks": {
       "title": "Tareas",
       "reindexAll": "Reindexar todos los buzones",
-      "reindexTitle": "Reindexar los buzones del usuario",
+      "reindexTitle": "Reindexar todos los buzones",
       "reindexDesc": "Reindexar todos los buzones de {{username}}.",
       "errorReindex": "Error al ejecutar la tarea de reindexación",
       "subscribeAll": "Suscribirse a todos los buzones",
@@ -1191,7 +1192,7 @@
     },
     "unmanagedDomain": "dominio no gestionado",
     "unmanagedDomainHint": "El dominio de este usuario ya no existe en el servidor: el correo dirigido a esta dirección no se entrega localmente.",
-    "countSingle": "{{count}} usuarios",
+    "countSingle_other": "{{count}} usuarios",
     "countSingle_one": "{{count}} usuario",
     "countRange": "Usuarios {{from}}–{{to}}"
   },
@@ -1259,14 +1260,14 @@
     "cancelRequested": "Cancelación solicitada",
     "cancelled": "Cancelada",
     "failed": "Fallida",
-    "idType": "ID / Tipo de tarea",
+    "idType": "Tarea",
     "actions": "Acciones",
     "cancelTitle": "Cancelar tarea",
-    "cancelConfirm": "¿Cancelar la tarea «{{taskId}}» ({{type}})?",
+    "cancelConfirm": "¿Cancelar «{{name}}»{{target}}? (tarea {{taskId}})",
     "taskCancelled": "Tarea cancelada",
     "errorCancelling": "Error al cancelar la tarea",
     "empty": "Ninguna tarea coincide con los filtros actuales.",
-    "detailTitle": "Tarea — {{taskId}}",
+    "detailTitle": "{{name}}",
     "executedOn": "Ejecutada en",
     "submittedFrom": "Enviada desde",
     "cancelledAt": "Cancelada",
@@ -1294,8 +1295,14 @@
       "failedUsers": "Usuarios con error",
       "username": "Usuario",
       "mailboxId": "Buzón",
-      "domain": "Dominio"
-    }
+      "domain": "Dominio",
+      "processedMailboxes": "Buzones procesados",
+      "failedMailboxes": "Buzones fallidos",
+      "processedMessageCount": "Mensajes procesados",
+      "failedMessageCount": "Mensajes fallidos",
+      "timestamp": "Registrado el"
+    },
+    "cancelTarget": " para {{target}}"
   },
   "commonTasks": {
     "title": "Tareas comunes",
@@ -2112,5 +2119,13 @@
     "noLimitSet": "Ilimitado (sin límite definido)",
     "noLimit": "Sin límite",
     "domainLevel": "Dominio {{domain}}"
+  },
+  "taskTypes": {
+    "fullReindexing": "Reindexar todos los datos en OpenSearch",
+    "mailboxReindexing": "Reindexar un buzón",
+    "expireMailbox": "Limpiar los mensajes antiguos de una carpeta",
+    "redeliverOneEvent": "Volver a entregar un evento",
+    "domainAddressBookClear": "Borrar los contactos",
+    "bookingLinkEventDeletion": "Eliminar los eventos de un enlace de reserva"
   }
 }

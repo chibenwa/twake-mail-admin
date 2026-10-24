@@ -107,7 +107,7 @@ export default function UnsentMailsList() {
     if (!confirmed) return;
     try {
       const { taskId } = await resendAllUnsentMails(selection);
-      toastTaskCreated(taskId, t("unsentMails.taskSubmitted"));
+      toastTaskCreated(taskId, t("unsentMails.taskSubmitted"), t("unsentMails.resendAllTitle"));
     } catch (err) {
       toast({
         title: t("unsentMails.errorResending"),
@@ -129,7 +129,7 @@ export default function UnsentMailsList() {
     if (!confirmed) return;
     try {
       const { taskId } = await deleteAllUnsentMails(selection);
-      toastTaskCreated(taskId, t("unsentMails.deleteTaskSubmitted"));
+      toastTaskCreated(taskId, t("unsentMails.deleteTaskSubmitted"), t("unsentMails.deleteAllTitle"));
     } catch (err) {
       toast({
         title: t("unsentMails.errorDeleting"),
@@ -148,7 +148,7 @@ export default function UnsentMailsList() {
     if (!confirmed) return;
     try {
       const { taskId } = await resendUnsentMail(id);
-      toastTaskCreated(taskId, t("unsentMails.taskSubmitted"));
+      toastTaskCreated(taskId, t("unsentMails.taskSubmitted"), t("unsentMails.resendTitle"));
       refresh();
     } catch (err) {
       toast({

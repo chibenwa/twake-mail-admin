@@ -99,7 +99,8 @@
     "copied": "Đã sao chép vào bộ nhớ tạm",
     "viewJson": "Xem JSON",
     "sourceIsAccount": "{{source}} là một tài khoản hiện có: bí danh sẽ chuyển hướng thư của tài khoản này tới {{destination}}.",
-    "sourceIsAccountNoDestination": "{{source}} là một tài khoản hiện có: bí danh sẽ chuyển hướng thư của tài khoản này."
+    "sourceIsAccountNoDestination": "{{source}} là một tài khoản hiện có: bí danh sẽ chuyển hướng thư của tài khoản này.",
+    "taskCreatedNamed": "{{name}} — Tác vụ {{taskId}}"
   },
   "sidebar": {
     "healthCheck": "Kiểm tra tình trạng",
@@ -900,7 +901,7 @@
     "tasks": {
       "title": "Tác vụ",
       "reindexAll": "Lập chỉ mục lại tất cả hộp thư",
-      "reindexTitle": "Lập chỉ mục lại hộp thư người dùng",
+      "reindexTitle": "Lập chỉ mục lại tất cả hộp thư",
       "reindexDesc": "Lập chỉ mục lại tất cả hộp thư cho {{username}}.",
       "errorReindex": "Lỗi khi chạy tác vụ lập chỉ mục lại",
       "subscribeAll": "Đăng ký tất cả hộp thư",
@@ -1256,14 +1257,14 @@
     "cancelRequested": "Đã yêu cầu hủy",
     "cancelled": "Đã hủy",
     "failed": "Thất bại",
-    "idType": "ID tác vụ / Loại",
+    "idType": "Tác vụ",
     "actions": "Hành động",
     "cancelTitle": "Hủy tác vụ",
-    "cancelConfirm": "Hủy tác vụ \"{{taskId}}\" ({{type}})?",
+    "cancelConfirm": "Hủy \"{{name}}\"{{target}}? (tác vụ {{taskId}})",
     "taskCancelled": "Đã hủy tác vụ",
     "errorCancelling": "Lỗi khi hủy tác vụ",
     "empty": "Không tìm thấy tác vụ nào khớp với bộ lọc hiện tại.",
-    "detailTitle": "Tác vụ — {{taskId}}",
+    "detailTitle": "{{name}}",
     "executedOn": "Thực thi trên",
     "submittedFrom": "Gửi từ",
     "cancelledAt": "Đã hủy",
@@ -1291,8 +1292,14 @@
       "failedUsers": "Người dùng bị lỗi",
       "username": "Người dùng",
       "mailboxId": "Hộp thư",
-      "domain": "Miền"
-    }
+      "domain": "Miền",
+      "processedMailboxes": "Hộp thư đã xử lý",
+      "failedMailboxes": "Hộp thư lỗi",
+      "processedMessageCount": "Thư đã xử lý",
+      "failedMessageCount": "Thư lỗi",
+      "timestamp": "Ghi nhận lúc"
+    },
+    "cancelTarget": " cho {{target}}"
   },
   "commonTasks": {
     "title": "Tác vụ chung",
@@ -2109,5 +2116,13 @@
     "noLimitSet": "Không giới hạn (chưa đặt giới hạn)",
     "noLimit": "Không giới hạn",
     "domainLevel": "Miền {{domain}}"
+  },
+  "taskTypes": {
+    "fullReindexing": "Lập chỉ mục lại toàn bộ dữ liệu trong OpenSearch",
+    "mailboxReindexing": "Lập chỉ mục lại một hộp thư",
+    "expireMailbox": "Dọn thư cũ của một thư mục",
+    "redeliverOneEvent": "Gửi lại một sự kiện",
+    "domainAddressBookClear": "Xóa danh bạ",
+    "bookingLinkEventDeletion": "Xóa các sự kiện của một liên kết đặt lịch"
   }
 }

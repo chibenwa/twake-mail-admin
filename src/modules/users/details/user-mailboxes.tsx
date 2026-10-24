@@ -125,7 +125,7 @@ export default function UserMailboxes({ username }: Props) {
     if (!confirmed) return;
     try {
       const data = await clearMailboxContent(username, mailboxName);
-      toastTaskCreated(data.taskId);
+      toastTaskCreated(data.taskId, undefined, t("users.mailboxes.clearTooltip"));
     } catch (err) {
       toast({
         title: t("users.mailboxes.errorClearing"),

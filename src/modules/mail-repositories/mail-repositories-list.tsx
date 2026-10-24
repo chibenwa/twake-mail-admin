@@ -88,9 +88,9 @@ export default function MailRepositoriesList() {
   }, [repositoriesWithSize, search]);
 
   // A refused task (e.g. WebAdmin answering 400) is reported instead of escaping as an unhandled rejection.
-  const runTask = async (startTask: () => Promise<{ taskId: string }>) => {
+  const runTask = async (startTask: () => Promise<{ taskId: string }>, name: string) => {
     try {
-      toastTaskCreated((await startTask()).taskId);
+      toastTaskCreated((await startTask()).taskId, undefined, name);
     } catch (err) {
       toast({
         title: t("mailRepositories.runTaskError"),
@@ -123,7 +123,7 @@ export default function MailRepositoriesList() {
           }}
         />
       ),
-      action: async () => { toastTaskCreated((await reprocessMailRepository(path, paramValues)).taskId); },
+      action: async () => { toastTaskCreated((await reprocessMailRepository(path, paramValues)).taskId, undefined, t("mailRepositories.reprocessAll")); },
     });
   };
   const handleMoveAll = async (source: MailRepository) => {
@@ -182,7 +182,7 @@ export default function MailRepositoriesList() {
     if (!result) {
       return;
     }
-    await runTask(() => clearMailRepository(path));
+    await runTask(() => clearMailRepository(path), t("mailRepositories.clearAll"));
   };
   return (
     <>

@@ -100,7 +100,8 @@
     "copied": "Copiato negli appunti",
     "viewJson": "Vedi il JSON",
     "sourceIsAccount": "{{source}} è un account esistente: un alias devierebbe la sua posta verso {{destination}}.",
-    "sourceIsAccountNoDestination": "{{source}} è un account esistente: un alias devierebbe la sua posta."
+    "sourceIsAccountNoDestination": "{{source}} è un account esistente: un alias devierebbe la sua posta.",
+    "taskCreatedNamed": "{{name}} — Attività {{taskId}}"
   },
   "sidebar": {
     "healthCheck": "Stato del sistema",
@@ -901,7 +902,7 @@
     "tasks": {
       "title": "Attività",
       "reindexAll": "Reindicizza tutte le caselle di posta",
-      "reindexTitle": "Reindicizza le caselle di posta dell'utente",
+      "reindexTitle": "Reindicizza tutte le caselle di posta",
       "reindexDesc": "Reindicizza tutte le caselle di posta di {{username}}.",
       "errorReindex": "Errore durante l'esecuzione della reindicizzazione",
       "subscribeAll": "Iscriviti a tutte le caselle di posta",
@@ -1191,7 +1192,7 @@
     },
     "unmanagedDomain": "dominio non gestito",
     "unmanagedDomainHint": "Il dominio di questo utente non esiste più sul server: la posta per questo indirizzo non viene recapitata localmente.",
-    "countSingle": "{{count}} utenti",
+    "countSingle_other": "{{count}} utenti",
     "countSingle_one": "{{count}} utente",
     "countRange": "Utenti {{from}}–{{to}}"
   },
@@ -1259,14 +1260,14 @@
     "cancelRequested": "Annullamento richiesto",
     "cancelled": "Annullata",
     "failed": "Non riuscita",
-    "idType": "ID / Tipo di attività",
+    "idType": "Attività",
     "actions": "Azioni",
     "cancelTitle": "Annulla attività",
-    "cancelConfirm": "Annullare l'attività «{{taskId}}» ({{type}})?",
+    "cancelConfirm": "Annullare «{{name}}»{{target}}? (attività {{taskId}})",
     "taskCancelled": "Attività annullata",
     "errorCancelling": "Errore durante l'annullamento dell'attività",
     "empty": "Nessuna attività corrisponde ai filtri attuali.",
-    "detailTitle": "Attività — {{taskId}}",
+    "detailTitle": "{{name}}",
     "executedOn": "Eseguita su",
     "submittedFrom": "Inviata da",
     "cancelledAt": "Annullata",
@@ -1294,8 +1295,14 @@
       "failedUsers": "Utenti con errore",
       "username": "Utente",
       "mailboxId": "Casella",
-      "domain": "Dominio"
-    }
+      "domain": "Dominio",
+      "processedMailboxes": "Caselle elaborate",
+      "failedMailboxes": "Caselle non riuscite",
+      "processedMessageCount": "Messaggi elaborati",
+      "failedMessageCount": "Messaggi non riusciti",
+      "timestamp": "Registrato il"
+    },
+    "cancelTarget": " per {{target}}"
   },
   "commonTasks": {
     "title": "Attività comuni",
@@ -2112,5 +2119,13 @@
     "noLimitSet": "Illimitato (nessun limite impostato)",
     "noLimit": "Nessun limite",
     "domainLevel": "Dominio {{domain}}"
+  },
+  "taskTypes": {
+    "fullReindexing": "Reindicizza tutti i dati in OpenSearch",
+    "mailboxReindexing": "Reindicizza una casella",
+    "expireMailbox": "Pulisci i vecchi messaggi di una cartella",
+    "redeliverOneEvent": "Riconsegna un evento",
+    "domainAddressBookClear": "Cancella i contatti",
+    "bookingLinkEventDeletion": "Elimina gli eventi di un link di prenotazione"
   }
 }

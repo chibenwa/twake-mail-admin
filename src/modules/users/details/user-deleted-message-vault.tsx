@@ -85,7 +85,7 @@ export default function UserDeletedMessageVault({ label, onSearch, onRestore, ca
         ...(limit !== undefined ? { limit } : {}),
       };
       const data = await onRestore(body);
-      toastTaskCreated(data.taskId, t("users.deletedVault.restoreStarted"));
+      toastTaskCreated(data.taskId, t("users.deletedVault.restoreStarted"), t("users.tasks.restoreDeleted"));
     } catch (err) {
       toast({
         title: t("users.deletedVault.errorRestoring"),
@@ -116,7 +116,7 @@ export default function UserDeletedMessageVault({ label, onSearch, onRestore, ca
         ],
       };
       const data = await onRestore(body);
-      toastTaskCreated(data.taskId, t("users.deletedVault.restoreStarted"));
+      toastTaskCreated(data.taskId, t("users.deletedVault.restoreStarted"), t("users.tasks.restoreDeleted"));
     } catch (err) {
       toast({
         title: t("users.deletedVault.errorRestoring"),

@@ -70,7 +70,7 @@ export default function ClearAddressBookButton({ domain, addressBookId, onCleare
     try {
       const { taskId } = await clearDomainAddressBook(domain, addressBookId, trimmedSourceDomain || undefined);
       close();
-      toastTaskCreated(taskId);
+      toastTaskCreated(taskId, undefined, t("domains.addressBookCounts.clear.title"));
       await waitForTask(taskId, scopedDomain, () => mounted.current);
       if (mounted.current) onCleared();
     } catch (err) {

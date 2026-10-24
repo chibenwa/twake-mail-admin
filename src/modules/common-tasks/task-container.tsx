@@ -44,7 +44,7 @@ export default function TaskContainer({ nameKey, taskKey, mode, command, doc, pa
       ),
       action: async () => {
         const taskId = await runTask(taskKey, mode, additionParams);
-        toastTaskCreated(taskId);
+        toastTaskCreated(taskId, undefined, name);
       },
     });
   };

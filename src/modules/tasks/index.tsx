@@ -15,7 +15,7 @@ import Header from "@/components/custom/header";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaginationControls } from "@/components/custom/pagination-controls";
-import { endDate, formatDate, statusLabel, STATUS_COLORS, TaskDetails, taskTarget, TaskTarget, TaskSummary } from "./task-summary";
+import { cancelConfirmMessage, endDate, formatDate, shortTaskId, statusLabel, STATUS_COLORS, TaskDetails, taskTarget, TaskTarget, TaskSummary, taskHeading, taskTypeLabel } from "./task-summary";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -115,7 +115,7 @@ export default function Tasks() {
         case "startedDate": va = a.startedDate; vb = b.startedDate; break;
         case "completedDate": va = endDate(a); vb = endDate(b); break;
         case "status": va = a.status; vb = b.status; break;
-        case "type": va = a.type; vb = b.type; break;
+        case "type": va = taskTypeLabel(t, a.type); vb = taskTypeLabel(t, b.type); break;
         default: va = a.submitDate; vb = b.submitDate;
       }
       if (!va && !vb) return 0;
@@ -124,7 +124,7 @@ export default function Tasks() {
       return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
     });
     return copy;
-  }, [tasks, sortField, sortAsc]);
+  }, [tasks, sortField, sortAsc, t]);
 
   const pageTasks = useMemo(() => sorted.slice((page - 1) * PAGE_LIMIT, page * PAGE_LIMIT), [sorted, page]);
   const hasMore = sorted.length > page * PAGE_LIMIT;
@@ -138,7 +138,7 @@ export default function Tasks() {
   const handleCancel = async (task: TaskDetailResponse) => {
     const confirmed = await confirm({
       header: t("tasks.cancelTitle"),
-      message: t("tasks.cancelConfirm", { taskId: task.taskId, type: task.type }),
+      message: cancelConfirmMessage(t, task),
     });
     if (!confirmed) return;
     try {
@@ -312,21 +312,20 @@ export default function Tasks() {
                     {/* A real button (the row itself holds the cancel button) so the detail opens from the keyboard */}
                     <button
                       type="button"
-                      className="font-mono text-xs text-left rounded-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      className="text-left rounded-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                       onClick={() => openTask(task)}
                     >
-                      {task.taskId}
+                      {taskTypeLabel(t, task.type)}
                     </button>
-                    <br />
-                    <span className="text-xs text-gray-500" title={task.type}>
-                      {task.type}
-                    </span>
                     {taskTarget(task) && (
                       // A user target links to its page, without opening the task
                       <span className="block text-xs text-gray-500 break-all" onClick={(e) => e.stopPropagation()}>
                         <TaskTarget task={task} />
                       </span>
                     )}
+                    <span className="block font-mono text-xs text-gray-500" title={task.taskId}>
+                      {task.type} · {shortTaskId(task.taskId)}
+                    </span>
                   </div>
                   {/* Below md the header is hidden: status and labelled dates stack under the ID / type */}
                   <div className="col-start-2 col-span-2 min-w-0 flex flex-col items-start gap-1 md:contents">
@@ -390,7 +389,7 @@ export default function Tasks() {
       <Dialog open={!!selectedTask} onOpenChange={(v) => !v && setSelectedTask(null)}>
         <DialogContent className="max-w-2xl" onCloseAutoFocus={restoreFocus}>
           <DialogHeader>
-            <DialogTitle>{t("tasks.detailTitle", { taskId: selectedTask?.taskId })}</DialogTitle>
+            <DialogTitle>{selectedTask && t("tasks.detailTitle", { name: taskHeading(t, selectedTask) })}</DialogTitle>
           </DialogHeader>
           {selectedTask && (
             <div className="space-y-3">

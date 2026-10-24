@@ -103,7 +103,7 @@ export default function UserTasks({ username }: Props) {
           overwriteExisting: values.overwriteExisting,
           prune: values.prune,
         });
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t("users.tasks.provisionTemplates"));
       },
     });
   };
@@ -124,7 +124,7 @@ export default function UserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await reindexUserMailboxes(username, additionalParams);
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t("users.tasks.reindexAll"));
       },
     });
   };
@@ -144,7 +144,7 @@ export default function UserTasks({ username }: Props) {
 
       setSubscribeLoading(true);
       const data = await subscribeAllUserMailboxes(username);
-      toastTaskCreated(data.taskId);
+      toastTaskCreated(data.taskId, undefined, t("users.tasks.subscribeAll"));
     } catch (err) {
       toast({
         title: t("users.tasks.errorSubscribe"),
@@ -171,7 +171,7 @@ export default function UserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await recomputeFastViewProjection(username, additionalParams);
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t("users.tasks.fastView"));
       },
     });
   };
@@ -202,7 +202,7 @@ export default function UserTasks({ username }: Props) {
       validate: () => (criteriaValid ? null : false),
       action: async () => {
         const data = await restoreDeletedMessages(username, request);
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t("users.tasks.restoreDeleted"));
       },
     });
   };
@@ -251,7 +251,7 @@ export default function UserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await cleanupUserMailbox(username, mailbox, olderThan);
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t(`users.tasks.cleanup${mailbox}`));
       },
     });
   };
@@ -275,7 +275,7 @@ export default function UserTasks({ username }: Props) {
           force: currentValues.force || undefined,
           fromStep: currentValues.fromStep || undefined,
         });
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t("users.tasks.renameUser"));
       },
     });
   };
@@ -300,7 +300,7 @@ export default function UserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await deleteUserData(username, currentFromStep || undefined);
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t("users.tasks.deleteData"));
       },
     });
   };
@@ -326,7 +326,7 @@ export default function UserTasks({ username }: Props) {
           tiering: additionalParams.tiering,
           messagesPerSecond: additionalParams.messagesPerSecond || undefined,
         });
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t("users.tasks.tierData"));
       },
     });
   };

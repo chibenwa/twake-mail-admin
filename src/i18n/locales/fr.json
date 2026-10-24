@@ -100,7 +100,8 @@
     "copied": "Copié dans le presse-papiers",
     "viewJson": "Voir le JSON",
     "sourceIsAccount": "{{source}} est un compte existant : un alias détournerait son courrier vers {{destination}}.",
-    "sourceIsAccountNoDestination": "{{source}} est un compte existant : un alias détournerait son courrier."
+    "sourceIsAccountNoDestination": "{{source}} est un compte existant : un alias détournerait son courrier.",
+    "taskCreatedNamed": "{{name}} — Tâche {{taskId}}"
   },
   "sidebar": {
     "healthCheck": "Contrôle de santé",
@@ -901,15 +902,15 @@
     "tasks": {
       "title": "Tâches",
       "reindexAll": "Réindexer toutes les boîtes",
-      "reindexTitle": "Réindexer les boîtes de l'utilisateur",
+      "reindexTitle": "Réindexer toutes les boîtes",
       "reindexDesc": "Réindexer toutes les boîtes de {{username}}.",
       "errorReindex": "Erreur lors du lancement de la tâche de réindexation",
       "subscribeAll": "S'abonner à toutes les boîtes",
-      "subscribeTitle": "Abonnement à toutes les boîtes",
+      "subscribeTitle": "S'abonner à toutes les boîtes",
       "subscribeDesc": "Abonner {{username}} à toutes ses boîtes ?",
       "errorSubscribe": "Erreur lors de l'abonnement",
       "fastView": "Recalculer la projection JMAP fast view",
-      "fastViewTitle": "Recalculer la projection JMAP Fast View",
+      "fastViewTitle": "Recalculer la projection JMAP fast view",
       "fastViewDesc": "Recalculer la projection des messages rapides pour {{username}}.",
       "errorFastView": "Erreur lors du recalcul",
       "restoreDeleted": "Restaurer les messages supprimés",
@@ -1191,7 +1192,7 @@
     },
     "unmanagedDomain": "domaine non géré",
     "unmanagedDomainHint": "Le domaine de cet utilisateur n'existe plus sur le serveur : le courrier adressé à cette adresse n'est pas distribué localement.",
-    "countSingle": "{{count}} utilisateurs",
+    "countSingle_other": "{{count}} utilisateurs",
     "countSingle_one": "{{count}} utilisateur",
     "countRange": "Utilisateurs {{from}}–{{to}}"
   },
@@ -1259,14 +1260,14 @@
     "cancelRequested": "Annulation demandée",
     "cancelled": "Annulée",
     "failed": "Échouée",
-    "idType": "ID / Type de tâche",
+    "idType": "Tâche",
     "actions": "Actions",
     "cancelTitle": "Annuler la tâche",
-    "cancelConfirm": "Annuler la tâche « {{taskId}} » ({{type}}) ?",
+    "cancelConfirm": "Annuler « {{name}} »{{target}} ? (tâche {{taskId}})",
     "taskCancelled": "Tâche annulée",
     "errorCancelling": "Erreur lors de l'annulation",
     "empty": "Aucune tâche ne correspond aux filtres.",
-    "detailTitle": "Tâche — {{taskId}}",
+    "detailTitle": "{{name}}",
     "executedOn": "Exécutée sur",
     "submittedFrom": "Soumise depuis",
     "cancelledAt": "Annulée",
@@ -1294,8 +1295,14 @@
       "failedUsers": "Utilisateurs en échec",
       "username": "Utilisateur",
       "mailboxId": "Boîte",
-      "domain": "Domaine"
-    }
+      "domain": "Domaine",
+      "processedMailboxes": "Boîtes traitées",
+      "failedMailboxes": "Boîtes en échec",
+      "processedMessageCount": "Messages traités",
+      "failedMessageCount": "Messages en échec",
+      "timestamp": "Enregistré le"
+    },
+    "cancelTarget": " pour {{target}}"
   },
   "commonTasks": {
     "title": "Tâches communes",
@@ -2112,5 +2119,13 @@
     "noLimitSet": "Illimité (aucune limite définie)",
     "noLimit": "Aucune limite",
     "domainLevel": "Domaine {{domain}}"
+  },
+  "taskTypes": {
+    "fullReindexing": "Réindexer toutes les données dans OpenSearch",
+    "mailboxReindexing": "Réindexer une boîte",
+    "expireMailbox": "Nettoyer les anciens messages d'un dossier",
+    "redeliverOneEvent": "Relivrer un événement",
+    "domainAddressBookClear": "Effacer les contacts",
+    "bookingLinkEventDeletion": "Supprimer les événements d'un lien de réservation"
   }
 }

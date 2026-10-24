@@ -100,7 +100,8 @@
     "copied": "Санах ойд хуулсан",
     "viewJson": "JSON харах",
     "sourceIsAccount": "{{source}} нь одоо байгаа бүртгэл: хоч нэр түүний шууданг {{destination}} руу шилжүүлнэ.",
-    "sourceIsAccountNoDestination": "{{source}} нь одоо байгаа бүртгэл: хоч нэр түүний шууданг шилжүүлнэ."
+    "sourceIsAccountNoDestination": "{{source}} нь одоо байгаа бүртгэл: хоч нэр түүний шууданг шилжүүлнэ.",
+    "taskCreatedNamed": "{{name}} — Даалгавар {{taskId}}"
   },
   "sidebar": {
     "healthCheck": "Эрүүл байдлын шалгалт",
@@ -901,7 +902,7 @@
     "tasks": {
       "title": "Даалгаврууд",
       "reindexAll": "Бүх шуудангийн хайрцгуудыг дахин индексжүүлэх",
-      "reindexTitle": "Хэрэглэгчийн шуудангийн хайрцгуудыг дахин индексжүүлэх",
+      "reindexTitle": "Бүх шуудангийн хайрцгуудыг дахин индексжүүлэх",
       "reindexDesc": "{{username}}-ийн бүх шуудангийн хайрцгуудыг дахин индексжүүлэх.",
       "errorReindex": "Дахин индексжүүлэх даалгавар ажиллуулахад алдаа гарлаа",
       "subscribeAll": "Бүх шуудангийн хайрцгуудад бүртгүүлэх",
@@ -1258,14 +1259,14 @@
     "cancelRequested": "Цуцлах хүсэлт гаргасан",
     "cancelled": "Цуцлагдсан",
     "failed": "Амжилтгүй болсон",
-    "idType": "Даалгаврын ID / Төрөл",
+    "idType": "Даалгавар",
     "actions": "Үйлдлүүд",
     "cancelTitle": "Даалгавар цуцлах",
-    "cancelConfirm": "«{{taskId}}» ({{type}}) даалгаврыг цуцлах уу?",
+    "cancelConfirm": "«{{name}}»{{target}}-г цуцлах уу? (даалгавар {{taskId}})",
     "taskCancelled": "Даалгавар цуцлагдлаа",
     "errorCancelling": "Даалгавар цуцлахад алдаа гарлаа",
     "empty": "Одоогийн шүүлтүүрт тохирох даалгавар олдсонгүй.",
-    "detailTitle": "Даалгавар — {{taskId}}",
+    "detailTitle": "{{name}}",
     "executedOn": "Гүйцэтгэсэн",
     "submittedFrom": "Илгээсэн эх",
     "cancelledAt": "Цуцлагдсан",
@@ -1293,8 +1294,14 @@
       "failedUsers": "Алдаатай хэрэглэгч",
       "username": "Хэрэглэгч",
       "mailboxId": "Шуудангийн хайрцаг",
-      "domain": "Домэйн"
-    }
+      "domain": "Домэйн",
+      "processedMailboxes": "Боловсруулсан хайрцаг",
+      "failedMailboxes": "Амжилтгүй хайрцаг",
+      "processedMessageCount": "Боловсруулсан мессеж",
+      "failedMessageCount": "Амжилтгүй мессеж",
+      "timestamp": "Бүртгэсэн"
+    },
+    "cancelTarget": " ({{target}})"
   },
   "commonTasks": {
     "title": "Нийтлэг даалгаврууд",
@@ -2111,5 +2118,13 @@
     "noLimitSet": "Хязгааргүй (хязгаар тогтоогоогүй)",
     "noLimit": "Хязгааргүй",
     "domainLevel": "Домэйн {{domain}}"
+  },
+  "taskTypes": {
+    "fullReindexing": "OpenSearch дахь бүх өгөгдлийг дахин индексжүүлэх",
+    "mailboxReindexing": "Шуудангийн хайрцгийг дахин индексжүүлэх",
+    "expireMailbox": "Хавтасны хуучин мессежийг цэвэрлэх",
+    "redeliverOneEvent": "Үйл явдлыг дахин хүргэх",
+    "domainAddressBookClear": "Харилцагчдыг цэвэрлэх",
+    "bookingLinkEventDeletion": "Захиалгын холбоосын үйл явдлуудыг устгах"
   }
 }

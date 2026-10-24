@@ -100,7 +100,8 @@
     "copied": "Copied to clipboard",
     "viewJson": "View JSON",
     "sourceIsAccount": "{{source}} is an existing account: an alias would divert its mail to {{destination}}.",
-    "sourceIsAccountNoDestination": "{{source}} is an existing account: an alias would divert its mail."
+    "sourceIsAccountNoDestination": "{{source}} is an existing account: an alias would divert its mail.",
+    "taskCreatedNamed": "{{name}} — Task {{taskId}}"
   },
   "sidebar": {
     "healthCheck": "Health Check",
@@ -901,21 +902,21 @@
     "tasks": {
       "title": "Tasks",
       "reindexAll": "Reindex all mailboxes",
-      "reindexTitle": "Reindex User Mailboxes",
+      "reindexTitle": "Reindex all mailboxes",
       "reindexDesc": "Reindex all mailboxes for {{username}}.",
       "errorReindex": "Error running reindex task",
       "subscribeAll": "Subscribe to all mailboxes",
-      "subscribeTitle": "Subscribe All Mailboxes",
+      "subscribeTitle": "Subscribe to all mailboxes",
       "subscribeDesc": "Subscribe {{username}} to all of its mailboxes?",
       "errorSubscribe": "Error running subscribe all task",
       "fastView": "Recompute JMAP fast view projection",
-      "fastViewTitle": "Recompute JMAP Fast View Projection",
+      "fastViewTitle": "Recompute JMAP fast view projection",
       "fastViewDesc": "Recompute fast message view projection for {{username}}.",
       "errorFastView": "Error running recompute task",
       "restoreDeleted": "Restore deleted messages",
       "errorRestoreDeleted": "Error restoring deleted messages",
       "deleteAllMailboxes": "Delete all mailboxes",
-      "deleteAllMailboxesTitle": "Delete All Mailboxes",
+      "deleteAllMailboxesTitle": "Delete all mailboxes",
       "deleteAllMailboxesConfirm": "Are you sure you want to delete ALL mailboxes for \"{{username}}\"? This cannot be undone.",
       "allMailboxesDeleted": "All mailboxes deleted successfully",
       "errorDeletingMailboxes": "Error deleting all mailboxes",
@@ -1191,7 +1192,7 @@
     },
     "unmanagedDomain": "domain not managed",
     "unmanagedDomainHint": "This user's domain no longer exists on the server: mail to this address is not delivered locally.",
-    "countSingle": "{{count}} users",
+    "countSingle_other": "{{count}} users",
     "countSingle_one": "{{count}} user",
     "countRange": "Users {{from}}–{{to}}"
   },
@@ -1259,14 +1260,14 @@
     "cancelRequested": "Cancel Requested",
     "cancelled": "Cancelled",
     "failed": "Failed",
-    "idType": "Task ID / Type",
+    "idType": "Task",
     "actions": "Actions",
     "cancelTitle": "Cancel Task",
-    "cancelConfirm": "Cancel task \"{{taskId}}\" ({{type}})?",
+    "cancelConfirm": "Cancel \"{{name}}\"{{target}}? (task {{taskId}})",
     "taskCancelled": "Task cancelled",
     "errorCancelling": "Error cancelling task",
     "empty": "No tasks found matching the current filters.",
-    "detailTitle": "Task — {{taskId}}",
+    "detailTitle": "{{name}}",
     "executedOn": "Executed on",
     "submittedFrom": "Submitted from",
     "cancelledAt": "Cancelled",
@@ -1294,8 +1295,14 @@
       "failedUsers": "Failed users",
       "username": "User",
       "mailboxId": "Mailbox",
-      "domain": "Domain"
-    }
+      "domain": "Domain",
+      "processedMailboxes": "Processed mailboxes",
+      "failedMailboxes": "Failed mailboxes",
+      "processedMessageCount": "Processed messages",
+      "failedMessageCount": "Failed messages",
+      "timestamp": "Recorded at"
+    },
+    "cancelTarget": " for {{target}}"
   },
   "commonTasks": {
     "title": "Common Tasks",
@@ -2112,5 +2119,13 @@
     "noLimitSet": "Unlimited (no limit set)",
     "noLimit": "No limit",
     "domainLevel": "Domain {{domain}}"
+  },
+  "taskTypes": {
+    "fullReindexing": "Reindex all data in OpenSearch",
+    "mailboxReindexing": "Reindex a mailbox",
+    "expireMailbox": "Cleanup old messages of a folder",
+    "redeliverOneEvent": "Redeliver an event",
+    "domainAddressBookClear": "Clear contacts",
+    "bookingLinkEventDeletion": "Delete the events of a booking link"
   }
 }

@@ -79,7 +79,7 @@ export default function CopyAddressBookButton({ domain, addressBookId, onCopied 
         domain, addressBookId, trimmedSourceDomain, trimmedLdapFilter || undefined
       );
       close();
-      toastTaskCreated(taskId);
+      toastTaskCreated(taskId, undefined, t("domains.addressBookCounts.copy.title"));
       await waitForTask(taskId, scopedDomain, () => mounted.current);
       if (mounted.current) onCopied();
     } catch (err) {

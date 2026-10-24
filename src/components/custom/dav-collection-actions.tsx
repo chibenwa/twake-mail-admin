@@ -147,7 +147,7 @@ export function ImportCollectionButton({
     setImporting(true);
     try {
       const { taskId } = await importCollection(owner, collectionId, await file.text());
-      toastTaskCreated(taskId);
+      toastTaskCreated(taskId, undefined, title);
       await waitForTask(taskId, domain, () => mounted.current);
       if (mounted.current) onImported();
     } catch (err) {

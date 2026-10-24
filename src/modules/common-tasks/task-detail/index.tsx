@@ -11,7 +11,7 @@ import { Tooltip } from "@radix-ui/react-tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { TaskDetailResponse, TaskStatus } from "../types";
-import { isRunning, TaskDetails, TaskSummary } from "@/modules/tasks/task-summary";
+import { cancelConfirmMessage, isRunning, TaskDetails, TaskSummary, taskHeading } from "@/modules/tasks/task-summary";
 
 // A running task is read again this often, until it is over
 const AUTO_REFRESH_MS = 2000;
@@ -54,7 +54,7 @@ export default function TaskDetail() {
   const handleCancelTask = async () => {
     const confirmed = await confirm({
       header: t("tasks.cancelTitle"),
-      message: t("tasks.cancelConfirm", { taskId: id, type: taskDetail?.type }),
+      message: taskDetail ? cancelConfirmMessage(t, taskDetail) : t("common.taskLink", { taskId: id }),
     });
     if (!confirmed) return;
     try {
@@ -73,8 +73,8 @@ export default function TaskDetail() {
     <div className="p-4 relative">
       <div className="flex items-center mb-4">
         <Header
-          headerTitle={t("common.taskLink", { taskId: id })}
-          headerSubTitle={t("tasks.detailKind")}
+          headerTitle={taskDetail ? taskHeading(t, taskDetail) : t("common.taskLink", { taskId: id })}
+          headerSubTitle={taskDetail ? t("common.taskLink", { taskId: id }) : t("tasks.detailKind")}
           docuUrl="https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_getting_a_task_details"
           breadcrumb={breadcrumbs.tasks()}
         />

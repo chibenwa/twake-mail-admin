@@ -620,7 +620,7 @@ export default function UserBookingLinks({ username, calendarsVersion }: Props) 
     if (!confirmed) return;
     try {
       const { taskId } = await deleteUserBookingLinkEvents(username, link.publicId);
-      toastTaskCreated(taskId);
+      toastTaskCreated(taskId, undefined, t("users.bookingLinks.deleteEventsTitle"));
     } catch (err) {
       toast({ title: t("users.bookingLinks.errorDeleteEvents"), description: <ErrorDisplayer error={err} /> });
     }

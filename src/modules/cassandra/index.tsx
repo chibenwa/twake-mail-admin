@@ -46,7 +46,7 @@ export default function Cassandra() {
     setUpgrading(true);
     try {
       const result = await upgradeCassandraToLatest();
-      toastTaskCreated(result.taskId, t("cassandra.upgradeScheduled"));
+      toastTaskCreated(result.taskId, t("cassandra.upgradeScheduled"), t("cassandra.upgradeTitle"));
       await refresh();
     } catch (err) {
       toast({

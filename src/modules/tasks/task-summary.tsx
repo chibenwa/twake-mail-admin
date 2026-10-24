@@ -85,13 +85,106 @@ const DETAIL_LABEL_KEYS: Record<string, string> = {
   username: "tasks.info.username",
   mailboxId: "tasks.info.mailboxId",
   domain: "tasks.info.domain",
+  processedMailboxes: "tasks.info.processedMailboxes",
+  failedMailboxes: "tasks.info.failedMailboxes",
+  processedMessageCount: "tasks.info.processedMessageCount",
+  failedMessageCount: "tasks.info.failedMessageCount",
+  timestamp: "tasks.info.timestamp",
 };
+
+/**
+ * The name of each WebAdmin task type, as the button that starts it reads: the operator finds
+ * on the Tasks list the words they clicked, not the internal key (BlobGCTask, user-reindexing).
+ */
+const TASK_TYPE_LABEL_KEYS: Record<string, string> = {
+  // Common Tasks (mail)
+  "full-reindexing": "taskTypes.fullReindexing",
+  "solve-mailbox-inconsistencies": "commonTasks.fixMailboxInconsistencies",
+  "solve-message-inconsistencies": "commonTasks.fixMessageInconsistencies",
+  "recompute-mailbox-counters": "commonTasks.recomputeMailboxCounters",
+  "recompute-current-quotas": "commonTasks.recomputeMailboxQuota",
+  "cassandra-mappings-solve-inconsistencies": "commonTasks.fixMappingDenormalization",
+  UploadRepositoryCleanupTask: "commonTasks.cleanupJmapUploads",
+  BlobGCTask: "commonTasks.blobGarbageCollection",
+  ContactIndexing: "commonTasks.reindexContacts",
+  DeletedMessageVaultDeleteExpiredMessagesTask: "commonTasks.purgeDeletedMessages",
+  "deleted-messages-delete": "commonTasks.purgeDeletedMessages",
+  PopulateEmailQueryViewTask: "commonTasks.populateEmailQueryView",
+  ExpireMailboxTask: "taskTypes.expireMailbox",
+  "tasks-cleanup": "commonTasks.cleaningUpOldTasks",
+  "cassandra-migration": "cassandra.upgradeTitle",
+  // User tasks
+  "user-reindexing": "users.tasks.reindexAll",
+  "mailbox-reindexing": "taskTypes.mailboxReindexing",
+  SubscribeAllTask: "users.tasks.subscribeAll",
+  RecomputeUserFastViewProjectionItemsTask: "users.tasks.fastView",
+  "deleted-messages-restore": "users.tasks.restoreDeleted",
+  "team-mailbox-deleted-messages-restore": "users.tasks.restoreDeleted",
+  UsernameChangeTask: "users.tasks.renameUser",
+  DeleteUserDataTask: "users.tasks.deleteData",
+  UserDataTieringTask: "users.tasks.tierData",
+  UserTemplatesProvisionTask: "users.tasks.provisionTemplates",
+  ClearMailboxContentTask: "users.mailboxes.clearTooltip",
+  // Domain tasks
+  DomainTemplatesProvisionTask: "domains.tasks.provisionTemplates",
+  DeleteUsersDataOfDomainTask: "domains.tasks.deleteAllData",
+  // Mail repositories and dead-lettered events
+  "reprocessing-all": "mailRepositories.reprocessAll",
+  "reprocessing-one": "mailRepositories.reprocessMailTooltip",
+  "clear-mail-repository": "mailRepositories.clearAll",
+  "event-dead-letters-redeliver-group": "eventDeadletter.redeliverGroupAction",
+  "event-dead-letters-redeliver-all": "eventDeadletter.redeliverAll",
+  "event-dead-letters-redeliver-one": "taskTypes.redeliverOneEvent",
+  // Calendar
+  "import-ldap-users": "commonTasks.importLdapUsers",
+  "sync-domain-members-contacts-ldap-to-dav": "commonTasks.domainMemberSync",
+  "reindex-calendar-events": "commonTasks.calendarEventReindex",
+  "calendar-archival": "commonTasks.calendarEventArchival",
+  "schedule-alarms": "commonTasks.alarmRescheduling",
+  "add-missing-fields": "commonTasks.addMissingFields",
+  "republish-common-contacts": "commonTasks.republishCommonContacts",
+  "clear-domain-members-contacts-dav": "commonTasks.clearDomainMembersContacts",
+  "calendar-import": "users.calendars.importTitle",
+  "domain-calendar-import": "users.calendars.importTitle",
+  "addressbook-import": "users.addressBooks.importTitle",
+  "domain-addressbook-import": "users.addressBooks.importTitle",
+  "domain-addressbook-copy": "domains.addressBookCounts.copy.title",
+  "domain-addressbook-clear": "taskTypes.domainAddressBookClear",
+  "booking-link-event-deletion": "taskTypes.bookingLinkEventDeletion",
+  "resend-unsent-mails": "unsentMails.resendAllTitle",
+  "delete-unsent-mails": "unsentMails.deleteAllTitle",
+};
+
+/** The name of a task type in the UI language; an unknown type as WebAdmin names it. */
+export const taskTypeLabel = (t: TFunction, type: string): string =>
+  TASK_TYPE_LABEL_KEYS[type] ? t(TASK_TYPE_LABEL_KEYS[type]) : type;
+
+/** The first characters of a task ID, enough to tell tasks apart on screen. */
+export const shortTaskId = (taskId: string) => taskId.slice(0, 8);
 
 // What a task worked on, shown under its type in the Tasks list
 export function taskTarget(task: TaskDetailResponse): string | null {
   const info = task.additionalInformation ?? {};
   const target = info.repositoryPath ?? info.username ?? info.mailboxId ?? info.domain;
   return typeof target === "string" && target ? target : null;
+}
+
+/** "Subscribe to all mailboxes — bob@example.com": the task named as the operator started it. */
+export function taskHeading(t: TFunction, task: TaskDetailResponse): string {
+  if (!task.type) return t("common.taskLink", { taskId: task.taskId });
+  const target = taskTarget(task);
+  const label = taskTypeLabel(t, task.type);
+  return target ? `${label} — ${target}` : label;
+}
+
+/** The cancel confirmation, naming the task and its target rather than an ID alone. */
+export function cancelConfirmMessage(t: TFunction, task: TaskDetailResponse): string {
+  const target = taskTarget(task);
+  return t("tasks.cancelConfirm", {
+    name: taskTypeLabel(t, task.type),
+    target: target ? t("tasks.cancelTarget", { target }) : "",
+    taskId: task.taskId,
+  });
 }
 
 /** The target of a task, a link when it is a user. */
@@ -125,7 +218,10 @@ export function TaskSummary({ task }: { task: TaskDetailResponse }) {
   return (
     <div className="grid grid-cols-[minmax(8rem,auto)_1fr] gap-x-4 gap-y-2 text-sm">
       <Row label={t("tasks.status")}><StatusPill status={task.status} /></Row>
-      <Row label={t("tasks.type")}>{task.type}</Row>
+      <Row label={t("tasks.type")}>
+        {taskTypeLabel(t, task.type)}
+        <span className="ml-2 font-mono text-xs text-gray-500">{task.type}</span>
+      </Row>
       <Row label={t("tasks.submitted")}>{formatDate(task.submitDate)}</Row>
       <Row label={t("tasks.started")}>{formatDate(task.startedDate)}</Row>
       {task.failedDate ? <Row label={t("tasks.failedAt")}>{formatDate(task.failedDate)}</Row>
@@ -151,7 +247,9 @@ export function TaskDetails({ task, raw }: { task: TaskDetailResponse; raw: unkn
             {entries.map(([key, value]) => (
               <Fragment key={key}>
                 <span className="text-gray-500 font-medium">{DETAIL_LABEL_KEYS[key] ? t(DETAIL_LABEL_KEYS[key]) : key}</span>
-                {USER_KEYS.has(key) && typeof value === "string"
+                {key === "timestamp" && typeof value === "string"
+                  ? <span className="min-w-0 break-words">{formatDate(value)}</span>
+                  : USER_KEYS.has(key) && typeof value === "string"
                   ? <span className="min-w-0"><UserLink address={value} /></span>
                   : typeof value === "object"
                   ? <pre className="text-xs bg-gray-50 p-2 rounded overflow-x-auto">{JSON.stringify(value, null, 2)}</pre>

@@ -338,7 +338,7 @@ function MailCommonTasks() {
       ),
       action: async () => {
         const data = await cleanupMailbox(mailbox, olderThan);
-        toastTaskCreated(data.taskId);
+        toastTaskCreated(data.taskId, undefined, t(`commonTasks.cleanup${mailbox}All`));
       },
     });
   };

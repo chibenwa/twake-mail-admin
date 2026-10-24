@@ -6,6 +6,8 @@ import { MemoryRouter } from "react-router";
 // Hoisted: the vi.mock factories below run before the module's top-level declarations
 const TASK_ID = vi.hoisted(() => "30dcd0fb-0000-4000-8000-000000000001");
 const api = vi.hoisted(() => ({ listTasks: vi.fn() }));
+// The button naming the task, which opens its details
+const findTaskButton = async () => within(await screen.findByTestId("task-row")).getAllByRole("button")[0];
 
 vi.mock("@/lib/proxy-resolver-context", () => ({ useIsAllowed: () => true }));
 vi.mock("@/hooks/use-confirm", () => ({ useConfirm: () => async () => false }));
@@ -47,7 +49,7 @@ describe("tasks list", () => {
     ]);
     renderTasks();
 
-    const taskButton = await screen.findByRole("button", { name: TASK_ID });
+    const taskButton = await findTaskButton();
     taskButton.focus();
     expect(document.activeElement).toBe(taskButton);
 
@@ -62,7 +64,7 @@ describe("tasks list", () => {
     ]);
     renderTasks();
 
-    const taskButton = await screen.findByRole("button", { name: TASK_ID });
+    const taskButton = await findTaskButton();
     taskButton.focus();
     fireEvent.click(taskButton);
     fireEvent.keyDown(await screen.findByRole("dialog"), { key: "Escape" });
@@ -139,7 +141,7 @@ describe("tasks: end date", () => {
     api.listTasks.mockResolvedValue([endedTask("canceled", "canceledDate")]);
     renderTasks();
 
-    fireEvent.click(await screen.findByRole("button", { name: TASK_ID }));
+    fireEvent.click(await findTaskButton());
     const dialog = await screen.findByRole("dialog");
 
     expect(within(dialog).getByText("tasks.cancelledAt")).not.toBeNull();
@@ -197,7 +199,7 @@ describe("tasks: status label", () => {
     api.listTasks.mockResolvedValue([task("inProgress")]);
     renderTasks();
 
-    fireEvent.click(await screen.findByRole("button", { name: TASK_ID }));
+    fireEvent.click(await findTaskButton());
     const dialog = await screen.findByRole("dialog");
 
     expect(within(dialog).getByText("tasks.inProgress")).not.toBeNull();
@@ -288,7 +290,8 @@ describe("tasks: sort", () => {
   });
 
   function typesOnPage(): string[] {
-    return screen.getAllByTestId("task-row").map((row) => row.querySelector("span[title]")!.getAttribute("title")!);
+    // The muted line "<type> · <short id>"
+    return screen.getAllByTestId("task-row").map((row) => row.querySelector(`span[title^="task-"]`)!.textContent!.split(" · ")[0]);
   }
 
   it("fetches every task instead of a single WebAdmin page", async () => {
