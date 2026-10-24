@@ -119,7 +119,8 @@ export interface TaskParam {
   // these override them for a dialog where the parameter means something else.
   labelKey?: string;
   helpKey?: string;
-  // Every WebAdmin task parameter has a server default: optional unless told otherwise.
+  // Almost every WebAdmin task parameter has a server default: optional unless told
+  // otherwise. A required one (optional: false) is labelled with "*".
   optional?: boolean;
   // Rarely needed: shown in a closed "Advanced options" section.
   advanced?: boolean;

@@ -27,10 +27,22 @@ describe("task parameters: field labels", () => {
     expect(screen.getByLabelText(`${key} (common.optional)`).tagName).toBe(tagName);
   });
 
-  it("does not mark a required parameter optional", () => {
+  it("marks a required parameter required, not optional", () => {
     render(<TaskParamsModifier params={[{ key: "queue", type: "input", optional: false }]} handleChangeParam={() => {}} />);
 
-    expect(screen.getByLabelText("queue").tagName).toBe("INPUT");
+    const field = screen.getByLabelText("queue *");
+    expect(field.tagName).toBe("INPUT");
+    expect(field.getAttribute("aria-required")).toBe("true");
+    expect(screen.queryByText("(common.optional)", { exact: false })).toBeNull();
+  });
+
+  it("offers neither clearing nor \"no limit\" on a required duration", () => {
+    render(<TaskParamsModifier params={[{ key: "tiering", type: "duration", defaultValue: "30d", optional: false }]} handleChangeParam={() => {}} />);
+
+    const field = screen.getByLabelText("tiering *");
+    expect(field.getAttribute("aria-required")).toBe("true");
+    expect(field.getAttribute("placeholder")).toBeNull();
+    expect(screen.queryAllByRole("button", { name: "commonTasks.clearParam" })).toEqual([]);
   });
 
   it("links each field to its help text", () => {

@@ -102,6 +102,20 @@ describe("user tasks: confirmation dialogs preview their command", () => {
     fireEvent.click(screen.getByRole("button", { name: "users.deletedVault.criteria.removeCriterion" }));
     expect(dialog.validate!()).toBeNull();
   });
+
+  it("marks the tier retention period required, not optional, and refuses it empty", async () => {
+    await openDialog("users.tasks.tierData");
+    const field = screen.getByLabelText("tiering *");
+    expect(field.getAttribute("aria-required")).toBe("true");
+    expect(screen.queryByLabelText("tiering (common.optional)")).toBeNull();
+    // Only messagesPerSecond keeps a clear button and an "(optional)" mark
+    expect(screen.getByLabelText("messagesPerSecond (common.optional)")).not.toBeNull();
+    expect(screen.queryAllByRole("button", { name: "commonTasks.clearParam" })).toEqual([]);
+    expect(dialog.validate!()).toBeNull();
+
+    fireEvent.change(field, { target: { value: "" } });
+    expect(dialog.validate!()).toBe("users.tasks.tieringRequired");
+  });
 });
 
 describe("user tasks: Run tooltips show the command run with the default parameters", () => {

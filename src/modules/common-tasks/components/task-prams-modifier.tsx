@@ -38,7 +38,8 @@ interface Props {
 }
 
 /**
- * The parameters of a task as a labelled form: translated label, "(optional)", raw query
+ * The parameters of a task as a labelled form: translated label, "(optional)" or a
+ * required "*", raw query
  * key, field, unit and help. Rarely needed parameters go into a closed "Advanced options".
  */
 const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
@@ -107,6 +108,7 @@ const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
       : undefined;
 
   const renderField = (param: TaskParam) => {
+    const required = param.optional === false;
     const helpText = help(param);
     const describedBy = helpText ? helpId(param.key) : undefined;
     const unitText = unit(param);
@@ -117,6 +119,7 @@ const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
             <Input
               id={fieldId(param.key)}
               aria-describedby={describedBy}
+              aria-required={required || undefined}
               value={formData[param.key] as string}
               placeholder={defaultPlaceholder(param)}
               onChange={e => handleChange(param.key, e.target.value)}
@@ -156,10 +159,12 @@ const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
             <Input
               id={fieldId(param.key)}
               aria-describedby={describedBy}
+              aria-required={required || undefined}
               type="number"
               min="0"
               className="flex-1 min-w-20"
-              placeholder={t("commonTasks.params.noLimit")}
+              // Empty means "no limit" only where the server accepts the parameter left out
+              placeholder={required ? undefined : t("commonTasks.params.noLimit")}
               value={durationParts[param.key]?.amount ?? ""}
               onChange={e => handleDurationChange(param.key, e.target.value, durationParts[param.key]?.unit ?? "d")}
             />
@@ -178,14 +183,17 @@ const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
                 ))}
               </SelectContent>
             </Select>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={t("commonTasks.clearParam", { key: label(param) })}
-              onClick={() => handleRemoveDuration(param.key)}
-            >
-              <X className="w-4 h-4" />
-            </Button>
+            {/* A required value cannot be left out: nothing to clear */}
+            {!required && (
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t("commonTasks.clearParam", { key: label(param) })}
+                onClick={() => handleRemoveDuration(param.key)}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         )}
         {helpText && <p id={helpId(param.key)} className="text-xs text-muted-foreground mt-1">{helpText}</p>}
@@ -200,7 +208,9 @@ const TaskParamsModifier = ({ params, handleChangeParam }: Props) => {
           <div className="pt-0 sm:pt-2 mt-2 sm:mt-0">
             <label htmlFor={fieldId(param.key)} className="text-sm font-medium">
               {label(param)}
-              {param.optional !== false && (
+              {param.optional === false ? (
+                <> <span className="text-red-500">*</span></>
+              ) : (
                 <span className="font-normal text-muted-foreground"> ({t("common.optional")})</span>
               )}
             </label>

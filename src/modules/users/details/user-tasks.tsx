@@ -42,7 +42,8 @@ const CLEANUP_PARAMS: TaskParam[] = [
 ];
 
 const TIER_PARAMS: TaskParam[] = [
-  { key: "tiering", defaultValue: "30d", type: "duration" },
+  // WebAdmin requires it (no server default): marked required, not "(optional)"
+  { key: "tiering", defaultValue: "30d", type: "duration", optional: false },
   { key: "messagesPerSecond", defaultValue: "50", type: "input" },
 ];
 
