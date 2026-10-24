@@ -71,7 +71,9 @@ class DomainsListTest extends CalendarAdminE2ETest {
         assertThat(domains.createDialog()).isVisible();
         assertThat(domains.newDomainInput()).isFocused();
         assertThat(domains.newDomainInput()).hasAttribute("placeholder", "New domain name");
-        assertThat(domains.createDialog()).containsText("Make sure this is the domain you intend to create");
+        // The calendar server delivers no mail: the hint names what it keeps for the domain
+        assertThat(domains.createDialog()).containsText("Make sure this is the domain you intend to create: its users, resources, team calendars and domain address books");
+        assertThat(domains.createDialog()).not().containsText("mail");
         assertThat(domains.createButton()).isDisabled();
         domains.newDomainInput().fill("   ");
         assertThat(domains.createButton()).isDisabled();

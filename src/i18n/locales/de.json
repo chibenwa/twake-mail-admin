@@ -559,6 +559,7 @@
     "createButton": "Domäne erstellen",
     "domainName": "Domänenname",
     "createHint": "Prüfen Sie, dass dies die gewünschte Domäne ist: Ihre Benutzer erhalten ihre Mails unter diesem Namen.",
+    "createHintCalendar": "Stellen Sie sicher, dass dies die Domain ist, die Sie anlegen möchten: Ihre Benutzer, Ressourcen, Teamkalender und Domain-Adressbücher werden ihr zugeordnet.",
     "summary": {
       "users": "Benutzer: {{count}}"
     },

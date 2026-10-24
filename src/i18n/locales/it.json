@@ -559,6 +559,7 @@
     "createButton": "Crea un dominio",
     "domainName": "Nome del dominio",
     "createHint": "Verifica che sia il dominio voluto: i suoi utenti riceveranno la posta con questo nome.",
+    "createHintCalendar": "Verifica che sia il dominio che intendi creare: i suoi utenti, risorse, calendari di team e rubriche di dominio vi saranno associati.",
     "summary": {
       "users": "Utenti: {{count}}"
     },

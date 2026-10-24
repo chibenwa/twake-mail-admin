@@ -559,6 +559,7 @@
     "createButton": "Créer un domaine",
     "domainName": "Nom du domaine",
     "createHint": "Vérifiez qu'il s'agit bien du domaine voulu : ses utilisateurs recevront leurs mails sous ce nom.",
+    "createHintCalendar": "Vérifiez qu'il s'agit bien du domaine à créer : ses utilisateurs, ressources, calendriers d'équipe et carnets d'adresses de domaine y seront rattachés.",
     "summary": {
       "users": "Utilisateurs : {{count}}"
     },

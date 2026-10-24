@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { appConfig } from "@/lib/config";
 import { createDomain } from "./api-client";
 
 /** "Create a domain", next to the search of the domain list: the name is typed in a modal. */
@@ -47,7 +48,7 @@ export default function CreateDomainButton({ onCreated }: { onCreated: () => voi
             placeholder={t("domains.newDomainPlaceholder")}
             className={FIELD_CLASS}
           />
-          <p className="text-xs text-muted-foreground mt-1">{t("domains.createHint")}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t(appConfig.application === "CALENDAR" ? "domains.createHintCalendar" : "domains.createHint")}</p>
         </div>
       </FormDialog>
     </>
