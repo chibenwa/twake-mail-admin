@@ -101,7 +101,6 @@
     "viewJson": "JSON харах"
   },
   "sidebar": {
-    "application": "Програм",
     "healthCheck": "Эрүүл байдлын шалгалт",
     "mailRepositories": "Шуудангийн агуулах",
     "eventDeadLetter": "Хүргэгдээгүй үйл явдал",
@@ -123,7 +122,10 @@
     "jmapSettingsReport": "JMAP тохиргооны тайлан",
     "toggle": "Toggle Sidebar",
     "title": "Навигаци",
-    "description": "Програмын навигацийн цэс"
+    "description": "Програмын навигацийн цэс",
+    "groupMonitoring": "Хяналт",
+    "groupDirectory": "Бүртгэл ба хаяг",
+    "groupMaintenance": "Засвар үйлчилгээ"
   },
   "domains": {
     "searchPlaceholder": "Домэйн хайх...",

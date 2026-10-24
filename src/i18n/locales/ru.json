@@ -103,7 +103,6 @@
     "viewJson": "Показать JSON"
   },
   "sidebar": {
-    "application": "Приложение",
     "healthCheck": "Проверка состояния",
     "mailRepositories": "Хранилища почты",
     "eventDeadLetter": "Очередь недоставленных событий",
@@ -125,7 +124,10 @@
     "jmapSettingsReport": "Отчёт по настройкам JMAP",
     "toggle": "Toggle Sidebar",
     "title": "Навигация",
-    "description": "Меню навигации приложения"
+    "description": "Меню навигации приложения",
+    "groupMonitoring": "Мониторинг",
+    "groupDirectory": "Учётные записи и адреса",
+    "groupMaintenance": "Обслуживание"
   },
   "domains": {
     "searchPlaceholder": "Поиск доменов...",

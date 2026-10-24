@@ -101,7 +101,6 @@
     "viewJson": "Ver el JSON"
   },
   "sidebar": {
-    "application": "Aplicación",
     "healthCheck": "Estado del sistema",
     "mailRepositories": "Repositorios de correo",
     "eventDeadLetter": "Eventos fallidos",
@@ -123,7 +122,10 @@
     "jmapSettingsReport": "Informe de ajustes JMAP",
     "toggle": "Mostrar u ocultar la barra lateral",
     "title": "Navegación",
-    "description": "Menú de navegación de la aplicación"
+    "description": "Menú de navegación de la aplicación",
+    "groupMonitoring": "Supervisión",
+    "groupDirectory": "Cuentas y direcciones",
+    "groupMaintenance": "Mantenimiento"
   },
   "domains": {
     "searchPlaceholder": "Buscar dominios...",

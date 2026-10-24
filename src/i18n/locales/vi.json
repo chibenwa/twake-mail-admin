@@ -100,7 +100,6 @@
     "viewJson": "Xem JSON"
   },
   "sidebar": {
-    "application": "Ứng dụng",
     "healthCheck": "Kiểm tra tình trạng",
     "mailRepositories": "Kho lưu trữ thư",
     "eventDeadLetter": "Sự kiện thất bại",
@@ -122,7 +121,10 @@
     "jmapSettingsReport": "Báo cáo cài đặt JMAP",
     "toggle": "Toggle Sidebar",
     "title": "Điều hướng",
-    "description": "Menu điều hướng của ứng dụng"
+    "description": "Menu điều hướng của ứng dụng",
+    "groupMonitoring": "Giám sát",
+    "groupDirectory": "Tài khoản và địa chỉ",
+    "groupMaintenance": "Bảo trì"
   },
   "domains": {
     "searchPlaceholder": "Tìm tên miền...",

@@ -1,4 +1,4 @@
-import { Heart, Mail, AlertCircle, ClipboardList, ListChecks, Users, Network, Globe, Gauge, Activity, Database, ArrowRightLeft, MapPin, UserCheck, LogOut, Languages, BarChart2, Mails, Send } from "lucide-react";
+import { Heart, Mail, AlertCircle, ClipboardList, ListChecks, Users, Network, Globe, Gauge, Activity, Database, ArrowRightLeft, MapPin, UserCheck, LogOut, Languages, BarChart2, Mails, Send, LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -22,6 +22,11 @@ import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useOIDC } from "@/components/custom/oidc-provider";
 import { supportedLanguages } from "@/i18n";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+interface NavGroup {
+  label: string;
+  items: { title: string; url: string; icon: LucideIcon }[];
+}
 
 function LanguageSelector() {
   const { i18n, t } = useTranslation();
@@ -83,32 +88,45 @@ export function AppSidebar() {
   const canLiveMetrics = useIsAllowed("GET", "/metrics");
   const canJmapReport = useIsAllowed("GET", "/jmap/settings/reports");
 
-  const MAIL_ITEMS = [
-    { title: t("sidebar.healthCheck"), url: "/health-check", icon: Heart },
-    { title: t("sidebar.mailRepositories"), url: "/mail-repositories", icon: Mail },
-    { title: t("sidebar.eventDeadLetter"), url: "/event-dead-letter", icon: AlertCircle },
-    { title: t("sidebar.domains"), url: "/domains", icon: Globe },
-    { title: t("sidebar.globalQuota"), url: "/global-quota", icon: Gauge },
-    { title: t("sidebar.users"), url: "/users", icon: Users },
-    { title: t("sidebar.mappings"), url: "/mappings", icon: ArrowRightLeft },
-    { title: t("sidebar.mailingLists"), url: "/mailing-lists", icon: Mails },
-    { title: t("sidebar.networkChannels"), url: "/network-channels", icon: Network },
-    { title: t("sidebar.cassandra"), url: "/cassandra", icon: Database },
-    { title: t("sidebar.tasks"), url: "/tasks", icon: ListChecks },
-    { title: t("sidebar.commonTasks"), url: "/common-tasks", icon: ClipboardList },
-    { title: t("sidebar.resourceLocator"), url: "/resource-locator", icon: MapPin },
-    { title: t("sidebar.jmapSettingsReport"), url: "/jmap-settings-report", icon: BarChart2 },
-    { title: t("sidebar.liveMetrics"), url: "/live-metrics", icon: Activity },
+  // Grouped by what the operator comes to do, the groups in this order
+  const MAIL_GROUPS: NavGroup[] = [
+    { label: t("sidebar.groupMonitoring"), items: [
+      { title: t("sidebar.healthCheck"), url: "/health-check", icon: Heart },
+      { title: t("sidebar.mailRepositories"), url: "/mail-repositories", icon: Mail },
+      { title: t("sidebar.eventDeadLetter"), url: "/event-dead-letter", icon: AlertCircle },
+      { title: t("sidebar.networkChannels"), url: "/network-channels", icon: Network },
+      { title: t("sidebar.liveMetrics"), url: "/live-metrics", icon: Activity },
+    ] },
+    { label: t("sidebar.groupDirectory"), items: [
+      { title: t("sidebar.users"), url: "/users", icon: Users },
+      { title: t("sidebar.domains"), url: "/domains", icon: Globe },
+      { title: t("sidebar.mappings"), url: "/mappings", icon: ArrowRightLeft },
+      { title: t("sidebar.mailingLists"), url: "/mailing-lists", icon: Mails },
+      { title: t("sidebar.globalQuota"), url: "/global-quota", icon: Gauge },
+    ] },
+    { label: t("sidebar.groupMaintenance"), items: [
+      { title: t("sidebar.tasks"), url: "/tasks", icon: ListChecks },
+      { title: t("sidebar.commonTasks"), url: "/common-tasks", icon: ClipboardList },
+      { title: t("sidebar.cassandra"), url: "/cassandra", icon: Database },
+      { title: t("sidebar.resourceLocator"), url: "/resource-locator", icon: MapPin },
+      { title: t("sidebar.jmapSettingsReport"), url: "/jmap-settings-report", icon: BarChart2 },
+    ] },
   ];
 
-  const CALENDAR_ITEMS = [
-    { title: t("sidebar.healthCheck"), url: "/health-check", icon: Heart },
-    { title: t("sidebar.domains"), url: "/domains", icon: Globe },
-    { title: t("sidebar.users"), url: "/users", icon: Users },
-    { title: t("sidebar.registeredUsers"), url: "/registered-users", icon: UserCheck },
-    { title: t("sidebar.unsentMails"), url: "/unsent-mails", icon: Send },
-    { title: t("sidebar.tasks"), url: "/tasks", icon: ListChecks },
-    { title: t("sidebar.commonTasks"), url: "/common-tasks", icon: ClipboardList },
+  const CALENDAR_GROUPS: NavGroup[] = [
+    { label: t("sidebar.groupMonitoring"), items: [
+      { title: t("sidebar.healthCheck"), url: "/health-check", icon: Heart },
+      { title: t("sidebar.unsentMails"), url: "/unsent-mails", icon: Send },
+    ] },
+    { label: t("sidebar.groupDirectory"), items: [
+      { title: t("sidebar.users"), url: "/users", icon: Users },
+      { title: t("sidebar.registeredUsers"), url: "/registered-users", icon: UserCheck },
+      { title: t("sidebar.domains"), url: "/domains", icon: Globe },
+    ] },
+    { label: t("sidebar.groupMaintenance"), items: [
+      { title: t("sidebar.tasks"), url: "/tasks", icon: ListChecks },
+      { title: t("sidebar.commonTasks"), url: "/common-tasks", icon: ClipboardList },
+    ] },
   ];
 
   const VISIBILITY: Record<string, boolean> = {
@@ -131,8 +149,10 @@ export function AppSidebar() {
     "/jmap-settings-report": canJmapReport,
   };
 
-  const allItems = appConfig.application === 'CALENDAR' ? CALENDAR_ITEMS : MAIL_ITEMS;
-  const items = allItems.filter(item => VISIBILITY[item.url] !== false);
+  // A group none of whose entries is allowed is not shown
+  const groups = (appConfig.application === 'CALENDAR' ? CALENDAR_GROUPS : MAIL_GROUPS)
+    .map((group) => ({ ...group, items: group.items.filter((item) => VISIBILITY[item.url] !== false) }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <Sidebar variant="inset">
@@ -149,16 +169,18 @@ export function AppSidebar() {
         )}
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>{t("sidebar.application")}</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarNavItem key={item.url} item={item} isActive={location.pathname.includes(item.url)} />
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {groups.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => (
+                  <SidebarNavItem key={item.url} item={item} isActive={location.pathname.includes(item.url)} />
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarSeparator />
       <SidebarFooter>
