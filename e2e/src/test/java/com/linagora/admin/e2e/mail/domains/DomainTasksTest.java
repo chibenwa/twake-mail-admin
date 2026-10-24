@@ -55,7 +55,8 @@ class DomainTasksTest extends MailAdminE2ETest {
         assertThat(usersPerSecond).hasValue("1");
         assertThat(dialog).containsText("Command: curl -XPOST /domains/" + domain
             + "/templates?action=provision&from={sourceUser}&usersPerSecond=1");
-        app.clickConfirm();
+        // A task dialog starts its task
+        detail.dialogButton("Start task").click();
         assertThat(app.dialogError()).hasText("Source user is required");
         assertThat(dialog).isVisible();
 
@@ -65,7 +66,7 @@ class DomainTasksTest extends MailAdminE2ETest {
         usersPerSecond.fill("5");
         assertThat(dialog).containsText("Command: curl -XPOST /domains/" + domain
             + "/templates?action=provision&from=" + alice + "&folderName=Templates&usersPerSecond=5");
-        app.confirm();
+        detail.confirmWith("Start task");
         String taskId = taskIdOfToast(app, "Task created");
         JsonNode task = webAdmin.awaitTask(taskId);
         assertThat(task.path("status").asText()).isEqualTo("completed");
@@ -89,8 +90,14 @@ class DomainTasksTest extends MailAdminE2ETest {
         assertThat(app.dialog()).containsText("This will delete the data of ALL users belonging to \"" + domain
             + "\". This action cannot be undone. Are you sure?");
         assertThat(app.dialog()).containsText("Command: curl -XPOST /domains/" + domain + "?action=deleteData");
+        // Irreversible: "Delete data" stays disabled until the domain is typed
+        Locator deleteData = detail.dialogButton("Delete data");
+        assertThat(deleteData).isDisabled();
+        detail.dialogField("Type " + domain + " to confirm").fill(domain.toUpperCase());
+        assertThat(deleteData).isEnabled();
         Request sent = page.waitForRequest(
-            request -> request.method().equals("POST") && request.url().contains("action=deleteData"), app::confirm);
+            request -> request.method().equals("POST") && request.url().contains("action=deleteData"),
+            () -> detail.confirmWith("Delete data"));
         assertThat(sent.url()).endsWith("/domains/" + domain + "?action=deleteData");
 
         String taskId = taskIdOfToast(app, "Task created");

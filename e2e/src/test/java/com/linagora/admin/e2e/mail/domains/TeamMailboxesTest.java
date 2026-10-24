@@ -32,10 +32,13 @@ class TeamMailboxesTest extends MailAdminE2ETest {
 
         DomainDetailPage detail = DomainDetailPage.open(app, domain).openSection("Team Mailboxes");
         assertThat(detail.text("No team mailboxes configured.")).isVisible();
+        // The "+" opens a modal
         detail.button("Add team mailbox").click();
-        detail.placeholder("mailbox name").fill(SALES);
-        detail.button("Add").click();
+        assertThat(detail.dialog()).containsText("Add team mailbox");
+        detail.dialogField("Name").fill(SALES);
+        detail.dialogButton("Add").click();
         app.expectToast("Team mailbox created");
+        assertThat(detail.dialog()).isHidden();
         assertThat(detail.sectionButton("Team Mailboxes", 1)).isVisible();
         assertThat(teamMailboxes(webAdmin, domain)).containsExactly(SALES);
 
@@ -43,19 +46,21 @@ class TeamMailboxesTest extends MailAdminE2ETest {
         assertThat(link.locator("xpath=..")).containsText(SALES + "@" + domain);
         link.click();
         assertThat(page).hasURL(Pattern.compile(Regex.quote(TeamMailboxPage.path(domain, SALES)) + "$"));
+        // Headed with its address, a "Team mailbox" subtitle, and a breadcrumb back to its domain
         TeamMailboxPage teamMailbox = TeamMailboxPage.expect(app, domain, SALES);
-        assertThat(teamMailbox.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions()
-            .setName("Team Mailbox Details").setExact(true))).isVisible();
+        assertThat(teamMailbox.text("Team mailbox")).isVisible();
+        assertThat(teamMailbox.breadcrumb()).hasText(domain);
         for (String section : List.of("Members", "Folders", "Quota", "Extra Senders", "Deleted Message Vault")) {
             assertThat(teamMailbox.sectionButton(section)).isVisible();
         }
 
-        page.goBack();
+        teamMailbox.breadcrumb().click();
+        assertThat(page).hasURL(Pattern.compile("/domains/domain/" + Regex.quote(WebAdmin.encode(domain)) + "$"));
         detail = DomainDetailPage.open(app, domain).openSection("Team Mailboxes");
         Locator row = link.locator("xpath=ancestor::div[.//button][1]");
         row.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete team mailbox").setExact(true)).click();
         assertThat(app.dialog()).containsText("Delete team mailbox \"" + SALES + "@" + domain + "\"?");
-        app.confirm();
+        detail.confirmWith("Delete");
         app.expectToast("Team mailbox deleted");
         assertThat(link).hasCount(0);
         assertThat(detail.text("No team mailboxes configured.")).isVisible();
@@ -72,44 +77,55 @@ class TeamMailboxesTest extends MailAdminE2ETest {
         String ghost = "ghost-" + bob;
         createTeamMailbox(webAdmin, domain, SALES);
 
-        TeamMailboxPage teamMailbox = TeamMailboxPage.open(app, domain, SALES).collapseExtraSenders();
+        TeamMailboxPage teamMailbox = TeamMailboxPage.open(app, domain, SALES);
         assertThat(teamMailbox.text("No members.")).isVisible();
 
-        // Existing user, role member
+        // Existing user, role member, added from the modal the "+" opens
+        teamMailbox.addMemberButton().click();
+        assertThat(teamMailbox.dialog()).containsText("Add member");
+        assertThat(teamMailbox.usernameInput()).isFocused();
         teamMailbox.usernameInput().fill(bob);
-        assertThat(teamMailbox.addButton()).isDisabled();
-        assertThat(teamMailbox.text("User exists")).isVisible();
+        assertThat(teamMailbox.dialog().getByText("User exists")).isVisible();
         assertThat(teamMailbox.addButton()).isEnabled();
         teamMailbox.addButton().click();
         app.expectToast("Member added");
+        assertThat(teamMailbox.dialog()).isHidden();
         assertThat(teamMailbox.rowHeading(bob)).hasText(Pattern.compile(Regex.quote(bob) + "\\s*\\(member\\)$"));
+        // Each member links to its user page
+        assertThat(teamMailbox.rowHeading(bob).getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(bob).setExact(true)))
+            .hasAttribute("href", "/users/user/" + WebAdmin.encode(bob));
 
-        // Manager, then the role select goes back to member
+        // Manager; opened again, the modal is back to an empty user and the member role
+        teamMailbox.addMemberButton().click();
         teamMailbox.usernameInput().fill(charlotte);
-        assertThat(teamMailbox.text("User exists")).isVisible();
+        assertThat(teamMailbox.dialog().getByText("User exists")).isVisible();
         teamMailbox.roleSelect().selectOption("manager");
         teamMailbox.addButton().click();
         app.expectToast("Member added");
         assertThat(teamMailbox.rowHeading(charlotte)).hasText(Pattern.compile(Regex.quote(charlotte) + "\\s*\\(manager\\)$"));
+        assertThat(members(webAdmin, domain, SALES)).containsExactlyInAnyOrder(bob + ":member", charlotte + ":manager");
+        teamMailbox.addMemberButton().click();
         assertThat(teamMailbox.roleSelect()).hasValue("member");
         assertThat(teamMailbox.usernameInput()).hasValue("");
-        assertThat(members(webAdmin, domain, SALES)).containsExactlyInAnyOrder(bob + ":member", charlotte + ":manager");
 
         // Malformed input
         teamMailbox.usernameInput().fill("a@b@c");
-        assertThat(teamMailbox.text("Invalid username")).isVisible();
+        assertThat(teamMailbox.dialog().getByText("Invalid username")).isVisible();
         assertThat(teamMailbox.addButton()).isDisabled();
 
-        // Unknown user: asks first, Cancel adds nothing, Confirm adds it
+        // Unknown user: asks first, Cancel keeps the modal and adds nothing, Confirm adds it
         teamMailbox.usernameInput().fill(ghost);
-        assertThat(teamMailbox.text("User not found")).isVisible();
+        assertThat(teamMailbox.dialog().getByText("User not found")).isVisible();
         teamMailbox.addButton().click();
         assertThat(app.dialog()).containsText("Unknown user");
         assertThat(app.dialog()).containsText("\"" + ghost + "\" does not exist. Add it anyway?");
-        app.cancel();
+        teamMailbox.dialogButton("Cancel").click();
+        assertThat(teamMailbox.dialog()).containsText("Add member");
+        assertThat(teamMailbox.usernameInput()).hasValue(ghost);
         assertThat(teamMailbox.rowHeading(ghost)).hasCount(0);
         assertThat(members(webAdmin, domain, SALES)).hasSize(2);
         teamMailbox.addButton().click();
+        assertThat(app.dialog()).containsText("Unknown user");
         app.confirm();
         app.expectToast("Member added");
         assertThat(teamMailbox.rowHeading(ghost)).isVisible();
@@ -117,7 +133,7 @@ class TeamMailboxesTest extends MailAdminE2ETest {
 
         teamMailbox.rowButton(bob, "Remove member").click();
         assertThat(app.dialog()).containsText("Remove \"" + bob + "\" from " + SALES + "@" + domain + "?");
-        app.confirm();
+        teamMailbox.confirmWith("Remove");
         app.expectToast("Member removed");
         assertThat(teamMailbox.rowHeading(bob)).hasCount(0);
         assertThat(members(webAdmin, domain, SALES)).containsExactlyInAnyOrder(charlotte + ":manager", ghost + ":member");
@@ -143,16 +159,22 @@ class TeamMailboxesTest extends MailAdminE2ETest {
         assertThat(folderLink(teamMailbox, SALES)).hasCount(0);
         assertThat(teamMailbox.sectionButton("Folders", defaults.size())).isVisible();
 
+        // The "+" opens a modal
         teamMailbox.button("Create folder").click();
-        teamMailbox.placeholder("New folder name (use . for nesting, e.g. INBOX.work)").fill("INBOX.archive");
-        teamMailbox.button("Create").click();
+        assertThat(teamMailbox.dialog()).containsText("Create folder");
+        Locator name = teamMailbox.dialogField("Folder name");
+        assertThat(name).hasAttribute("placeholder", "New folder name (use . for nesting, e.g. INBOX.work)");
+        name.fill("INBOX.archive");
+        teamMailbox.dialogButton("Create").click();
         app.expectToast("Folder created successfully");
+        assertThat(teamMailbox.dialog()).isHidden();
         assertThat(folderLink(teamMailbox, "INBOX.archive")).isVisible();
         assertThat(folders(webAdmin, domain, SALES)).contains("INBOX.archive");
 
         teamMailbox.rowButton("INBOX.archive", "Delete folder").click();
         assertThat(app.dialog()).containsText("Are you sure you want to delete folder \"INBOX.archive\"?");
-        app.confirm();
+        assertThat(app.dialog()).containsText("\"INBOX.archive\", its sub-folders and all their messages are permanently deleted.");
+        teamMailbox.confirmWith("Delete");
         app.expectToast("Folder deleted successfully");
         assertThat(folderLink(teamMailbox, "INBOX.archive")).hasCount(0);
         assertThat(folders(webAdmin, domain, SALES)).doesNotContain("INBOX.archive");

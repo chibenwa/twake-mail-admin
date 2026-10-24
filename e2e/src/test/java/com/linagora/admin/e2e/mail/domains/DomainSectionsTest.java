@@ -30,10 +30,16 @@ class DomainSectionsTest extends MailAdminE2ETest {
         domains.search(domain);
         domains.domainLink(domain).click();
 
+        // Headed with the domain, a "Domain" subtitle, and a breadcrumb back to the list
         DomainDetailPage detail = DomainDetailPage.open(app, domain);
-        assertThat(detail.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions()
-            .setName("Domain Details").setExact(true))).isVisible();
-        assertThat(detail.text("Domain: " + domain)).isVisible();
+        assertThat(detail.title()).hasText(domain);
+        assertThat(detail.text("Domain")).isVisible();
+        assertThat(detail.breadcrumb()).hasText("Domains");
+        assertThat(detail.breadcrumb()).hasAttribute("href", "/domains");
+        assertThat(app.page()).hasTitle(domain + " — Twake Mail Admin");
+        // The number of its users, linking to the Users list filtered on it
+        Locator users = detail.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("Users: 0").setExact(true));
+        assertThat(users).hasAttribute("href", "/users?domain=" + WebAdmin.encode(domain));
         assertThat(detail.sectionButton("Quota")).isVisible();
         assertThat(detail.sectionButton("Domain Aliases", 0)).isVisible();
         assertThat(detail.sectionButton("Team Mailboxes", 0)).isVisible();
@@ -42,6 +48,9 @@ class DomainSectionsTest extends MailAdminE2ETest {
         assertThat(detail.sectionButton("Rate Limiting")).isVisible();
         assertThat(detail.sectionButton("JMAP Settings Report")).isVisible();
         assertThat(detail.sectionButton("Tasks")).isVisible();
+
+        detail.breadcrumb().click();
+        assertThat(app.page()).hasURL(java.util.regex.Pattern.compile("/domains$"));
     }
 
     @Test
@@ -53,18 +62,22 @@ class DomainSectionsTest extends MailAdminE2ETest {
 
         DomainDetailPage detail = DomainDetailPage.open(app, domain).openSection("Domain Aliases");
         assertThat(detail.text("No domain aliases configured.")).isVisible();
+        // The "+" opens a modal
         detail.button("Add domain alias").click();
-        detail.placeholder("source.domain.tld").fill(source);
-        detail.button("Add").click();
+        assertThat(detail.dialog()).containsText("Add domain alias");
+        assertThat(detail.dialogButton("Add")).isDisabled();
+        detail.dialogField("Domain name").fill(source);
+        detail.dialogButton("Add").click();
 
         app.expectToast("Domain alias added successfully");
+        assertThat(detail.dialog()).isHidden();
         assertThat(detail.sectionButton("Domain Aliases", 1)).isVisible();
         assertThat(detail.rowHeading(source)).isVisible();
         assertThat(aliases(webAdmin, domain)).contains(source);
 
         detail.rowButton(source, "Remove alias").click();
         assertThat(app.dialog()).containsText("Remove alias \"" + source + "\" from " + domain + "?");
-        app.confirm();
+        detail.confirmWith("Remove");
         app.expectToast("Domain alias removed successfully");
         assertThat(detail.text("No domain aliases configured.")).isVisible();
         assertThat(detail.sectionButton("Domain Aliases", 0)).isVisible();
@@ -84,12 +97,15 @@ class DomainSectionsTest extends MailAdminE2ETest {
         assertThat(detail.text("Contacts are automatically populated from LDAP. This section allows manual corrections by an administrator.")).isVisible();
         assertThat(detail.text("No domain contacts.")).isVisible();
 
+        // The "+" opens the "New Contact" modal
         detail.button("Create contact").click();
-        detail.placeholder("email@domain.tld").fill(email);
-        detail.placeholder("Firstname (optional)").fill("Qa");
-        detail.placeholder("Surname (optional)").fill("Contact");
-        detail.button("Create").click();
+        assertThat(detail.dialog()).containsText("New Contact");
+        detail.dialogField("Email").fill(email);
+        detail.dialogField("Firstname").fill("Qa");
+        detail.dialogField("Surname").fill("Contact");
+        detail.dialogButton("Create").click();
         app.expectToast("Contact created");
+        assertThat(detail.dialog()).isHidden();
         // Shown at once, although the server listing is eventually consistent
         assertThat(detail.rowHeading(email)).isVisible();
         assertThat(detail.sectionButton("Domain Contacts", 1)).isVisible();
@@ -124,7 +140,7 @@ class DomainSectionsTest extends MailAdminE2ETest {
 
         detail.rowButton(email, "Remove contact").click();
         assertThat(app.dialog()).containsText("Delete contact \"" + email + "\" from " + domain + "?");
-        app.confirm();
+        detail.confirmWith("Delete");
         app.expectToast("Contact deleted");
         assertThat(detail.rowHeading(email)).hasCount(0);
         assertThat(detail.sectionButton("Domain Contacts", 0)).isVisible();
@@ -132,9 +148,10 @@ class DomainSectionsTest extends MailAdminE2ETest {
         Awaitility.await().atMost(Duration.ofSeconds(20)).pollInterval(Duration.ofMillis(300))
             .until(() -> !webAdmin.get("/domains/" + domain + "/contacts").body().contains(email));
 
-        // A reload does not bring it back
+        // A reload does not bring it back; the section is still expanded, as it was left
         app.page().reload();
-        detail = DomainDetailPage.open(app, domain).openSection("Domain Contacts");
+        detail = DomainDetailPage.open(app, domain);
+        assertThat(detail.sectionButton("Domain Contacts")).hasAttribute("aria-expanded", "true");
         assertThat(detail.text("No domain contacts.")).isVisible();
     }
 

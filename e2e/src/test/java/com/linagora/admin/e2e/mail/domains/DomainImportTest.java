@@ -39,34 +39,19 @@ class DomainImportTest extends MailAdminE2ETest {
             "bad domain!") + "\n";
 
         DomainsPage domains = DomainsPage.open(app);
-        Locator help = domains.importHelpButton();
-        Locator tooltip = page.getByRole(AriaRole.TOOLTIP);
+        // "Import" states the expected format in a modal, before any file is picked
+        domains.importButton().click();
+        Locator dialog = app.dialog();
+        assertThat(dialog).containsText("Import domains");
+        assertThat(dialog).containsText("Text file, one domain per line (LF or CRLF line endings).");
+        assertThat(dialog).containsText("Comments start with # or //");
+        assertThat(dialog).containsText("Blank lines and comment-only lines are skipped.");
+        assertThat(dialog).containsText("Only the domains that do not exist yet are created.");
+        app.cancel();
 
-        // Tooltip on hover
-        help.hover();
-        assertThat(tooltip).containsText("one domain per line");
-        assertThat(tooltip).containsText("Comments start with # or //");
-        assertThat(tooltip).containsText("Blank lines and comment-only lines are skipped.");
-        assertThat(tooltip).containsText("Only the domains that do not exist yet are created.");
-        page.keyboard().press("Escape");
-        assertThat(tooltip).hasCount(0);
-        app.heading().hover();
-
-        // Reachable with Tab from "Import", opens on focus
-        domains.importButton().focus();
-        page.keyboard().press("Tab");
-        assertThat(help).isFocused();
-        assertThat(tooltip).containsText("one domain per line");
-        page.keyboard().press("Escape");
-        assertThat(tooltip).hasCount(0);
-
-        // And on click / tap
-        domains.searchInput().focus();
-        assertThat(tooltip).hasCount(0);
-        help.click();
-        assertThat(tooltip).containsText("one domain per line");
-
-        FileChooser chooser = page.waitForFileChooser(() -> domains.importButton().click());
+        domains.importButton().click();
+        FileChooser chooser = page.waitForFileChooser(() -> domains.chooseFileButton().click());
+        assertThat(dialog).isHidden();
         chooser.setFiles(new FilePayload("domains.txt", "text/plain", content.getBytes(StandardCharsets.UTF_8)));
 
         Locator result = app.toast("Domain import finished");

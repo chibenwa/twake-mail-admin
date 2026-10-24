@@ -32,8 +32,9 @@ class TeamMailboxFolderTest extends MailAdminE2ETest {
         TeamMailboxPage teamMailbox = TeamMailboxPage.open(app, domain, SALES);
         teamMailbox.toggleSection("Folders");
         teamMailbox.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("INBOX").setExact(true)).click();
-        TeamMailboxFolderPage folder = TeamMailboxFolderPage.expect(app);
-        assertThat(folder.text("INBOX — " + SALES + "@" + domain)).isVisible();
+        // Headed with the folder, under a breadcrumb back to its team mailbox
+        TeamMailboxFolderPage folder = TeamMailboxFolderPage.expect(app, "INBOX");
+        assertThat(folder.breadcrumb()).hasText(SALES + "@" + domain);
 
         Locator toggle = folder.subaddressingSwitch();
         assertThat(toggle).hasAttribute("aria-checked", "false");
@@ -48,6 +49,9 @@ class TeamMailboxFolderTest extends MailAdminE2ETest {
         app.expectToast("Sub-addressing disabled");
         assertThat(toggle).hasAttribute("aria-checked", "false");
         assertThat(subaddressing(webAdmin, domain)).isFalse();
+
+        folder.breadcrumb().click();
+        TeamMailboxPage.expect(app, domain, SALES);
     }
 
     @Test
@@ -64,22 +68,24 @@ class TeamMailboxFolderTest extends MailAdminE2ETest {
         folder.toggleSection("Extra ACL");
         assertThat(folder.text("No extra ACL entries.")).isVisible();
 
-        // Lookup + Read (the defaults)
+        // Lookup + Read (the defaults), in the modal the "+" opens
         folder.button("Add ACL entry").click();
+        assertThat(folder.dialog()).containsText("Add ACL entry");
         folder.usernameInput().fill(alice);
-        assertThat(folder.text("User exists")).isVisible();
+        assertThat(folder.dialog().getByText("User exists")).isVisible();
         assertThat(folder.right("l", "Lookup")).isChecked();
         assertThat(folder.right("r", "Read")).isChecked();
-        assertThat(folder.main().getByText("Rights string:")).containsText("lr");
+        assertThat(folder.dialog().getByText("Rights string:")).containsText("lr");
         folder.applyButton().click();
         app.expectToast("ACL entry set");
+        assertThat(folder.dialog()).isHidden();
         assertThat(folder.row(alice)).containsText("Lookup");
         assertThat(folder.row(alice)).containsText("Read");
         assertThat(extraAcl(webAdmin, domain).path(alice).asText()).isEqualTo("lr");
 
         folder.rowButton(alice, "Remove ACL entry").click();
         assertThat(app.dialog()).containsText("Remove all rights for \"" + alice + "\" on this folder?");
-        app.confirm();
+        folder.confirmWith("Remove");
         app.expectToast("ACL entry removed");
         assertThat(folder.text("No extra ACL entries.")).isVisible();
         assertThat(extraAcl(webAdmin, domain).size()).isZero();
@@ -88,7 +94,7 @@ class TeamMailboxFolderTest extends MailAdminE2ETest {
         for (String user : new String[] {alice, emma}) {
             folder.button("Add ACL entry").click();
             folder.usernameInput().fill(user);
-            assertThat(folder.text("User exists")).isVisible();
+            assertThat(folder.dialog().getByText("User exists")).isVisible();
             folder.applyButton().click();
             app.expectToast("ACL entry set");
             assertThat(folder.rowHeading(user)).isVisible();
@@ -96,15 +102,15 @@ class TeamMailboxFolderTest extends MailAdminE2ETest {
         assertThat(extraAcl(webAdmin, domain).size()).isEqualTo(2);
         folder.button("Clear all extra ACL entries").click();
         assertThat(app.dialog()).containsText("Remove all extra ACL entries from this folder?");
-        app.confirm();
+        folder.confirmWith("Clear");
         app.expectToast("All extra ACL entries removed");
         assertThat(folder.text("No extra ACL entries.")).isVisible();
         assertThat(extraAcl(webAdmin, domain).size()).isZero();
 
-        // Keyboard only: Tab through the chips, Space toggles Write
+        // Keyboard only: Tab through the chips, Space toggles Write, then Cancel and Add
         folder.button("Add ACL entry").click();
         folder.usernameInput().fill(emma);
-        assertThat(folder.text("User exists")).isVisible();
+        assertThat(folder.dialog().getByText("User exists")).isVisible();
         folder.usernameInput().focus();
         page.keyboard().press("Tab");
         assertThat(folder.right("l", "Lookup")).isFocused();
@@ -118,31 +124,38 @@ class TeamMailboxFolderTest extends MailAdminE2ETest {
         assertThat(write).not().isChecked();
         page.keyboard().press("Space");
         assertThat(write).isChecked();
-        assertThat(folder.main().getByText("Rights string:")).containsText("lrw");
-        for (int i = 0; i < 8; i++) {
+        assertThat(folder.dialog().getByText("Rights string:")).containsText("lrw");
+        for (int i = 0; i < 7; i++) {
             page.keyboard().press("Tab");
         }
+        assertThat(folder.right("a", "Administer")).isFocused();
+        page.keyboard().press("Tab");
+        assertThat(folder.dialogButton("Cancel")).isFocused();
+        page.keyboard().press("Tab");
         assertThat(folder.applyButton()).isFocused();
         page.keyboard().press("Enter");
         app.expectToast("ACL entry set");
+        assertThat(folder.dialog()).isHidden();
         assertThat(extraAcl(webAdmin, domain).path(emma).asText()).isEqualTo("lrw");
 
         // Invalid username: the button stays disabled
         folder.button("Add ACL entry").click();
         folder.usernameInput().fill("a@b@c");
-        assertThat(folder.text("Invalid username")).isVisible();
+        assertThat(folder.dialog().getByText("Invalid username")).isVisible();
         assertThat(folder.applyButton()).isDisabled();
 
-        // Unknown user: asks first
+        // Unknown user: asks first, Cancel keeps the modal and sets nothing, Confirm sets it
         folder.usernameInput().fill(ghost);
-        assertThat(folder.applyButton()).isDisabled();
-        assertThat(folder.text("User not found")).isVisible();
+        assertThat(folder.dialog().getByText("User not found")).isVisible();
         folder.applyButton().click();
         assertThat(app.dialog()).containsText("Unknown user");
         assertThat(app.dialog()).containsText("\"" + ghost + "\" does not exist. Add it anyway?");
-        app.cancel();
+        folder.dialogButton("Cancel").click();
+        assertThat(folder.dialog()).containsText("Add ACL entry");
+        assertThat(folder.usernameInput()).hasValue(ghost);
         assertThat(extraAcl(webAdmin, domain).has(ghost)).isFalse();
         folder.applyButton().click();
+        assertThat(app.dialog()).containsText("Unknown user");
         app.confirm();
         app.expectToast("ACL entry set");
         assertThat(folder.rowHeading(ghost)).isVisible();
@@ -163,13 +176,13 @@ class TeamMailboxFolderTest extends MailAdminE2ETest {
         folder.toggleSection("Extra ACL");
         folder.button("Add ACL entry").click();
         folder.usernameInput().fill(olivia);
-        assertThat(folder.text("User exists")).isVisible();
+        assertThat(folder.dialog().getByText("User exists")).isVisible();
         folder.applyButton().click();
 
-        app.expectToast("Error setting ACL entry");
-        // Read once: the toast goes away after a few seconds
-        String error = app.toast("Error setting ACL entry").textContent();
-        assertThat(error).doesNotContain("unexpected internal error").contains(olivia);
+        // The refusal is shown in the modal, which stays open
+        assertThat(app.dialogError()).isVisible();
+        assertThat(app.dialogError()).not().containsText("unexpected internal error");
+        assertThat(app.dialogError()).containsText(olivia);
     }
 
     private static boolean subaddressing(WebAdmin webAdmin, String domain) {

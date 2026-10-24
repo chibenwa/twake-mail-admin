@@ -18,13 +18,14 @@ public class TeamMailboxFolderPage extends DetailPage {
 
     public static TeamMailboxFolderPage open(AdminApp app, String domain, String mailbox, String folder) {
         app.open(TeamMailboxPage.path(domain, mailbox) + "/folder/" + WebAdmin.encode(folder));
-        return expect(app);
+        return expect(app, folder);
     }
 
-    public static TeamMailboxFolderPage expect(AdminApp app) {
+    /** The page of {@code folder}, headed with its name, a "Team mailbox folder" subtitle. */
+    public static TeamMailboxFolderPage expect(AdminApp app, String folder) {
         TeamMailboxFolderPage page = new TeamMailboxFolderPage(app);
-        assertThat(page.main().getByRole(AriaRole.HEADING, new Locator.GetByRoleOptions()
-            .setName("Team Mailbox Folder").setExact(true))).isVisible();
+        assertThat(page.title()).hasText(folder);
+        assertThat(page.text("Team mailbox folder")).isVisible();
         return page;
     }
 
@@ -32,17 +33,19 @@ public class TeamMailboxFolderPage extends DetailPage {
         return main().getByRole(AriaRole.SWITCH, new Locator.GetByRoleOptions().setName("Sub-addressing").setExact(true));
     }
 
+    /** The user field of the open "Add ACL entry" modal. */
     public Locator usernameInput() {
-        return placeholder("user@domain.tld");
+        return dialogField("User");
     }
 
-    /** A right chip of the "Add ACL entry" form, a checkbox named {@code "<letter> <label>"}. */
+    /** A right chip of the "Add ACL entry" modal, a checkbox named {@code "<letter> <label>"}. */
     public Locator right(String letter, String label) {
-        return main().getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions()
+        return dialog().getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions()
             .setName(Pattern.compile("^" + Regex.quote(letter) + "\\s*" + Regex.quote(label) + "$")));
     }
 
+    /** "Add" of the open "Add ACL entry" modal. */
     public Locator applyButton() {
-        return button("Add");
+        return dialogButton("Add");
     }
 }

@@ -68,7 +68,7 @@ class DomainSignatureTemplatesTest extends MailAdminE2ETest {
         app.cancel();
         assertThat(detail.button("Remove template \"en\"")).isVisible();
         detail.button("Delete all").click();
-        app.confirm();
+        detail.confirmWith("Delete");
         app.expectToast("Error deleting signature templates");
         assertThat(app.toast("Error deleting signature templates"))
             .containsText("DELETE /domains/" + domain + "/signature-templates can not be found");

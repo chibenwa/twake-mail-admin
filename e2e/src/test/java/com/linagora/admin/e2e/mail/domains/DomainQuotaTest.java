@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.DisplayName;
@@ -26,8 +27,8 @@ import com.microsoft.playwright.options.AriaRole;
 class DomainQuotaTest extends MailAdminE2ETest {
 
     @Test
-    @DisplayName("DOM-07 Domain quota: update and reset size limit")
-    void updateAndResetSizeLimit(AdminApp app, MailFixtures fixtures, Page page) {
+    @DisplayName("DOM-07 Domain quota: edit and remove the count and size limits")
+    void editAndRemoveLimits(AdminApp app, MailFixtures fixtures, Page page) {
         String domain = fixtures.domain();
         WebAdmin webAdmin = fixtures.webAdmin();
         List<String> quotaWrites = new CopyOnWriteArrayList<>();
@@ -39,51 +40,78 @@ class DomainQuotaTest extends MailAdminE2ETest {
 
         DomainDetailPage detail = DomainDetailPage.open(app, domain).openSection("Quota");
         assertThat(detail.text("Per user limit")).isVisible();
-        assertThat(detail.quotaRow("Computed (effective)")).containsText("Count: not set");
-        assertThat(detail.quotaRow("Domain")).hasText(java.util.regex.Pattern.compile("Domain\\s*Count: not set\\s*Size: not set"));
+        assertThat(detail.quotaRow("Applied limit")).containsText("Count: not set");
+        assertThat(detail.quotaRow("Domain")).hasText(Pattern.compile("Domain\\s*Count: not set\\s*Size: not set"));
         assertThat(detail.quotaRow("Global")).containsText("Count:");
-        assertThat(detail.button("Update size limit")).isVisible();
-        assertThat(detail.button("Reset to global default")).hasCount(0);
+        assertThat(detail.editLimitsButton()).isVisible();
+        assertThat(detail.button("Remove domain limits")).hasCount(0);
 
-        // 2 GB
-        detail.saveSizeLimit("2", "GB");
-        app.expectToast("Domain quota size updated");
-        assertThat(detail.quotaRow("Domain")).containsText("Size: 2.0 GB");
+        // Both limits in one modal: 1,000 messages and 2 GB
+        detail.editLimitsButton().click();
+        assertThat(detail.dialog()).containsText("Quota limits of " + domain);
+        assertThat(detail.limitInput("Message count")).hasValue("");
+        assertThat(detail.limitInput("Size")).hasValue("");
+        detail.limitInput("Message count").fill("1000");
+        detail.limitInput("Size").fill("2");
+        detail.sizeUnitSelect().selectOption("GB");
+        detail.dialogButton("Save").click();
+        app.expectToast("Quota limits updated");
+        assertThat(detail.dialog()).isHidden();
+        assertThat(detail.quotaRow("Domain")).hasText(Pattern.compile("Domain\\s*Count: 1,000\\s*Size: 2\\.0 GB"));
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").asLong()).isEqualTo(2147483648L);
-        assertThat(detail.button("Reset to global default")).isVisible();
+        assertThat(domainQuota(webAdmin, domain).path("domain").path("count").asLong()).isEqualTo(1000L);
 
-        // Reset: Cancel changes nothing, Confirm removes the domain size
-        detail.button("Reset to global default").click();
-        assertThat(app.dialog()).containsText("Reset Quota Size");
-        assertThat(app.dialog()).containsText("Remove the domain quota size limit for \"" + domain + "\"? The global limit will apply again.");
+        // Prefilled with the current limits; emptying one removes it only
+        detail.editLimitsButton().click();
+        assertThat(detail.limitInput("Message count")).hasValue("1000");
+        assertThat(detail.limitInput("Size")).hasValue("2");
+        assertThat(detail.sizeUnitSelect()).hasValue("GB");
+        detail.limitInput("Message count").fill("");
+        detail.dialogButton("Save").click();
+        app.expectToast("Quota limits updated");
+        assertThat(detail.quotaRow("Domain")).hasText(Pattern.compile("Domain\\s*Count: not set\\s*Size: 2\\.0 GB"));
+        assertThat(domainQuota(webAdmin, domain).path("domain").path("count").isNull()).isTrue();
+        assertThat(domainQuota(webAdmin, domain).path("domain").path("size").asLong()).isEqualTo(2147483648L);
+
+        // Remove: Cancel changes nothing, Confirm removes the domain limits
+        detail.button("Remove domain limits").click();
+        assertThat(app.dialog()).containsText("Remove domain limits");
+        assertThat(app.dialog()).containsText("Remove the message count and size limits of \"" + domain + "\"? The global limits will apply again.");
         app.cancel();
         assertThat(detail.quotaRow("Domain")).containsText("Size: 2.0 GB");
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").asLong()).isEqualTo(2147483648L);
-        detail.button("Reset to global default").click();
+        detail.button("Remove domain limits").click();
         app.confirm();
-        app.expectToast("Domain quota size reset to global default");
+        app.expectToast("Specific limits removed");
         assertThat(detail.quotaRow("Domain")).containsText("Size: not set");
-        assertThat(detail.button("Reset to global default")).hasCount(0);
+        assertThat(detail.button("Remove domain limits")).hasCount(0);
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").isNull()).isTrue();
 
-        // 0 and -5 are refused before any request
+        // 0 and -5 are refused in the modal, before any request
         int writes = quotaWrites.size();
         for (String invalid : List.of("0", "-5")) {
             detail.saveSizeLimit(invalid, "GB");
-            app.expectToast("Invalid size");
-            assertThat(app.toast("Invalid size")).containsText("Enter a positive number or -1 for unlimited.");
+            assertThat(app.dialogError()).hasText("A limit must be a positive number, or unlimited.");
+            assertThat(detail.dialog()).isVisible();
+            app.cancel();
         }
         assertThat(quotaWrites).hasSize(writes);
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").isNull()).isTrue();
 
-        // -1 is unlimited, and can be reset the same way
-        detail.saveSizeLimit("-1", "GB");
-        app.expectToast("Domain quota size updated");
+        // Unlimited, and removed the same way
+        detail.editLimitsButton().click();
+        detail.limitUnlimited("Size").check();
+        assertThat(detail.limitInput("Size")).isDisabled();
+        detail.dialogButton("Save").click();
+        app.expectToast("Quota limits updated");
         assertThat(detail.quotaRow("Domain")).containsText("Size: unlimited");
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").asLong()).isEqualTo(-1L);
-        detail.button("Reset to global default").click();
+        detail.editLimitsButton().click();
+        assertThat(detail.limitUnlimited("Size")).isChecked();
+        app.cancel();
+        detail.button("Remove domain limits").click();
         app.confirm();
-        app.expectToast("Domain quota size reset to global default");
+        app.expectToast("Specific limits removed");
         assertThat(detail.quotaRow("Domain")).containsText("Size: not set");
         assertThat(domainQuota(webAdmin, domain).path("domain").path("size").isNull()).isTrue();
     }
@@ -130,7 +158,8 @@ class DomainQuotaTest extends MailAdminE2ETest {
         Locator bobRow = detail.main().getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName(bob).setExact(true))
             .locator("xpath=..");
         assertThat(bobRow).containsText("50.0 MB / —");
-        assertThat(detail.text("Page 1 — 2 result(s)")).isVisible();
+        // Everything on one page: only the total
+        assertThat(detail.text("Total: 2")).isVisible();
 
         min.fill("80");
         detail.button("Search").click();

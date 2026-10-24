@@ -17,7 +17,9 @@ import com.linagora.admin.e2e.backend.MailFixtures;
 import com.linagora.admin.e2e.backend.WebAdmin;
 import com.linagora.admin.e2e.pages.AdminApp;
 import com.linagora.admin.e2e.pages.mail.domains.DomainsPage;
+import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.AriaRole;
 
 class DomainsListTest extends MailAdminE2ETest {
 
@@ -31,21 +33,28 @@ class DomainsListTest extends MailAdminE2ETest {
 
         app.open("/").navigate("Domains");
         DomainsPage domains = new DomainsPage(app);
-        assertThat(domains.createButton()).isDisabled();
-        domains.newDomainInput().fill(domain);
-        assertThat(domains.createButton()).isEnabled();
-
-        // Cancelling creates nothing
+        // Search, "Create a domain" and "Import" on one line; the name is typed in a modal
+        assertThat(domains.searchInput()).isVisible();
+        assertThat(domains.importButton()).isVisible();
         domains.createButton().click();
         assertThat(app.dialog()).containsText("Create Domain");
-        assertThat(app.dialog()).containsText("Create \"" + domain + "\"? Please make sure this is the domain you intend to create.");
+        assertThat(app.dialog()).containsText("Make sure this is the domain you intend to create: its users will receive mail under it.");
+        assertThat(domains.newDomainInput()).isFocused();
+        assertThat(domains.submitCreateButton()).isDisabled();
+        domains.newDomainInput().fill(domain);
+        assertThat(domains.submitCreateButton()).isEnabled();
+
+        // Cancelling creates nothing
         app.cancel();
         assertThat(webAdmin.get("/domains/" + domain).status()).isEqualTo(404);
 
-        domains.createButton().click();
-        app.confirm();
+        domains.create(domain);
         app.expectToast("Domain \"" + domain + "\" created");
+        assertThat(app.dialog()).isHidden();
+        // Opened again, the modal is empty
+        domains.createButton().click();
         assertThat(domains.newDomainInput()).hasValue("");
+        app.cancel();
 
         // Alphabetically sorted, "N/ domain"
         domains.search(prefix);
@@ -62,14 +71,62 @@ class DomainsListTest extends MailAdminE2ETest {
         domains.create(domain);
         app.expectToast("Domain \"" + domain + "\" created");
 
+        // An empty domain: a plain confirmation, saying it holds nothing
         domains.search(domain);
         assertThat(domains.domainLink(domain)).isVisible();
         domains.deleteButtons().click();
         assertThat(app.dialog()).containsText("Delete Domain");
         assertThat(app.dialog()).containsText("Delete \"" + domain
-            + "\"? The domain can be re-created afterwards and existing user data will not be affected.");
-        app.confirm();
+            + "\"? It holds no user and no domain alias; it can be re-created afterwards.");
+        app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete").setExact(true)).click();
+        assertThat(app.dialog()).isHidden();
 
+        app.expectToast("Domain \"" + domain + "\" deleted");
+        assertThat(domains.domainLink(domain)).hasCount(0);
+        assertThat(webAdmin.get("/domains/" + domain).status()).isEqualTo(404);
+    }
+
+    @Test
+    @DisplayName("DOM-02 Delete a domain that still has users and aliases: told what it holds, typed confirmation")
+    void deleteDomainStillHoldingUsers(AdminApp app, MailFixtures fixtures) {
+        String domain = fixtures.domain();
+        WebAdmin webAdmin = fixtures.webAdmin();
+        String alice = fixtures.newUser("alice");
+        String bob = fixtures.newUser("bob");
+        webAdmin.put("/domains/" + domain + "/aliases/" + fixtures.newDomain("alias")).expect(204);
+
+        DomainsPage domains = DomainsPage.open(app).search(domain);
+        domains.deleteButtons().click();
+        Locator dialog = app.dialog();
+        assertThat(dialog).containsText("Delete Domain");
+        assertThat(dialog).containsText(domain + " still has 2 users (e.g. ");
+        assertThat(dialog).containsText(alice);
+        assertThat(dialog).containsText(bob);
+        assertThat(dialog).containsText(") and 1 domain aliases.");
+        assertThat(dialog).containsText("Their accounts and mailboxes stay on the server, but mail to @" + domain
+            + " will no longer be delivered to them.");
+        assertThat(dialog).containsText("Delete \"" + domain + "\" anyway?");
+        assertThat(dialog.getByRole(AriaRole.LINK, new Locator.GetByRoleOptions().setName("See the users of " + domain)))
+            .hasAttribute("href", "/users?domain=" + WebAdmin.encode(domain));
+
+        // Delete stays disabled until the domain is typed (case does not matter)
+        Locator delete = dialog.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Delete").setExact(true));
+        Locator typed = dialog.getByLabel("Type " + domain + " to confirm", new Locator.GetByLabelOptions().setExact(true));
+        assertThat(typed).isFocused();
+        assertThat(delete).isDisabled();
+        typed.fill("other.e2e.test");
+        assertThat(delete).isDisabled();
+        typed.fill(domain.toUpperCase());
+        assertThat(delete).isEnabled();
+
+        // Cancelling keeps it
+        app.cancel();
+        assertThat(webAdmin.get("/domains/" + domain).status()).isNotEqualTo(404);
+
+        domains.deleteButtons().click();
+        typed.fill(domain);
+        delete.click();
+        assertThat(app.dialog()).isHidden();
         app.expectToast("Domain \"" + domain + "\" deleted");
         assertThat(domains.domainLink(domain)).hasCount(0);
         assertThat(webAdmin.get("/domains/" + domain).status()).isEqualTo(404);
@@ -81,15 +138,23 @@ class DomainsListTest extends MailAdminE2ETest {
         String existing = fixtures.domain();
         DomainsPage domains = DomainsPage.open(app);
 
+        // A refusal is shown in the modal, which stays open with the typed name
         domains.create("not a domain!");
-        app.expectToast("Error creating domain");
-        assertThat(app.toast("Error creating domain")).containsText("Domain parts ASCII chars must be a-z A-Z 0-9 - or _ in not a domain!");
-        assertThat(app.toast("Error creating domain")).not().containsText("{");
+        assertThat(app.dialogError()).containsText("Domain parts ASCII chars must be a-z A-Z 0-9 - or _ in not a domain!");
+        assertThat(app.dialogError()).not().containsText("{");
+        assertThat(domains.newDomainInput()).hasValue("not a domain!");
         assertThat(domainList(fixtures.webAdmin())).doesNotContain("not a domain!");
+        // Editing the name clears the error
+        domains.newDomainInput().fill("not a domain");
+        assertThat(app.dialogError()).hasCount(0);
+        app.cancel();
 
         // Existing domain: idempotent success or an error, but never a duplicate row
         domains.create(existing);
-        assertThat(app.toast("Domain \"" + existing + "\" created").or(app.toast("Error creating domain"))).isVisible();
+        assertThat(app.toast("Domain \"" + existing + "\" created").or(app.dialogError())).isVisible();
+        if (app.dialogError().isVisible()) {
+            app.cancel();
+        }
         domains.search(existing);
         assertThat(domains.domainLink(existing)).hasCount(1);
         assertThat(domainList(fixtures.webAdmin()).stream().filter(existing::equals)).hasSize(1);
@@ -119,7 +184,9 @@ class DomainsListTest extends MailAdminE2ETest {
 
             // A new search goes back to the first page
             domains.search(prefix + "-07");
-            assertThat(domains.paginationLabel()).hasText("Page 1 / 1 — Total: 1");
+            // Everything on one page: only the total, no page controls
+            assertThat(domains.paginationLabel()).hasText("Total: 1");
+            assertThat(domains.nextPageButton()).hasCount(0);
             assertThat(domains.rowHeadings()).hasText(new Pattern[] {DomainsPage.rowHeading(1, created.get(6))});
 
             String nothing = prefix + "-zzz";
@@ -139,32 +206,30 @@ class DomainsListTest extends MailAdminE2ETest {
     }
 
     @Test
-    @DisplayName("DOM-16 Enter in \"New domain name\" opens the confirmation")
-    void enterOpensConfirmation(AdminApp app, WebAdmin webAdmin, Page page) {
+    @DisplayName("DOM-16 Enter in \"Domain name\" creates the domain")
+    void enterCreatesDomain(AdminApp app, WebAdmin webAdmin, Page page) {
         String domain = Ids.unique("qa-enter") + ".e2e.test";
         DomainsPage domains = DomainsPage.open(app);
+        domains.createButton().click();
 
-        // A blank field opens nothing
+        // A blank field submits nothing
         domains.newDomainInput().fill("   ");
         domains.newDomainInput().press("Enter");
-        assertThat(app.dialog()).hasCount(0);
-
-        // Surrounding spaces are trimmed
-        domains.newDomainInput().fill("  " + domain + "  ");
-        domains.newDomainInput().press("Enter");
-        assertThat(app.dialog()).containsText("Create \"" + domain + "\"? Please make sure this is the domain you intend to create.");
-        // Not dismissed by the keystroke that opened it, and nothing created yet
-        assertThat(webAdmin.get("/domains/" + domain).status()).isEqualTo(404);
+        assertThat(domains.submitCreateButton()).isDisabled();
         assertThat(app.dialog()).isVisible();
 
+        // Escape closes the modal, nothing created
+        domains.newDomainInput().fill("  " + domain + "  ");
         page.keyboard().press("Escape");
         assertThat(app.dialog()).isHidden();
         assertThat(webAdmin.get("/domains/" + domain).status()).isEqualTo(404);
 
+        // Surrounding spaces are trimmed
+        domains.createButton().click();
+        domains.newDomainInput().fill("  " + domain + "  ");
         domains.newDomainInput().press("Enter");
-        assertThat(app.dialog()).containsText("Create \"" + domain + "\"?");
-        app.confirm();
         app.expectToast("Domain \"" + domain + "\" created");
+        assertThat(app.dialog()).isHidden();
         domains.search(domain);
         assertThat(domains.domainLink(domain)).isVisible();
         assertThat(domainList(webAdmin)).contains(domain);

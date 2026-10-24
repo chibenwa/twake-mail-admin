@@ -9,7 +9,7 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 
-/** The Domains list: creation field, import, search, paginated rows {@code N/ domain}. */
+/** The Domains list: search, "Create a domain" and "Import" on one line, paginated rows {@code N/ domain}. */
 public class DomainsPage {
     private final AdminApp app;
 
@@ -32,22 +32,29 @@ public class DomainsPage {
         return app.page();
     }
 
-    public Locator newDomainInput() {
-        return app.main().getByPlaceholder("New domain name", new Locator.GetByPlaceholderOptions().setExact(true));
-    }
-
+    /** "Create a domain", next to the search: opens the creation modal. */
     public Locator createButton() {
-        return mainButton("Create");
+        return mainButton("Create a domain");
     }
 
+    /** The "Domain name" field of the creation modal. */
+    public Locator newDomainInput() {
+        return app.dialog().getByLabel("Domain name", new Locator.GetByLabelOptions().setExact(true));
+    }
+
+    /** The "Create" button of the creation modal. */
+    public Locator submitCreateButton() {
+        return app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Create").setExact(true));
+    }
+
+    /** "Import", next to "Create a domain": opens a modal stating the file format. */
     public Locator importButton() {
         return mainButton("Import");
     }
 
-    /** The "?" next to Import: a button named after its help text. */
-    public Locator importHelpButton() {
-        return app.main().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions()
-            .setName(Pattern.compile("^Text file, one domain per line")));
+    /** "Choose a file…" of the import modal: opens the file chooser. */
+    public Locator chooseFileButton() {
+        return app.dialog().getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("Choose a file\u2026").setExact(true));
     }
 
     public Locator searchInput() {
@@ -75,18 +82,18 @@ public class DomainsPage {
     }
 
     public Locator paginationLabel() {
-        return app.main().getByText(Pattern.compile("^Page \\d+ / \\d+ — Total: \\d+$"));
+        return app.main().getByText(Pattern.compile("^(Page \\d+ / \\d+ — )?Total: \\d+$"));
     }
 
     public Locator nextPageButton() {
         return mainButton("Next");
     }
 
-    /** Fills the creation field, clicks Create and confirms. */
+    /** Opens the creation modal, types the name and clicks Create; the modal stays open on a refusal. */
     public DomainsPage create(String domain) {
-        newDomainInput().fill(domain);
         createButton().click();
-        app.confirm();
+        newDomainInput().fill(domain);
+        submitCreateButton().click();
         return this;
     }
 
