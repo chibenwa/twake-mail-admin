@@ -66,7 +66,8 @@ function AddressBookRow({
         <ExportCollectionButton
           owner={domain}
           collectionId={addressBookId}
-          name={`${domain}-${addressBookId}`}
+          // "example.com-Domain_address_book.vcf": named as shown, not by its id
+          name={`${domain}-${t(LABEL_KEYS[addressBookId])}`}
           extension="vcf"
           exportCollection={exportContacts}
           title={t("domains.addressBookCounts.exportTitle")}

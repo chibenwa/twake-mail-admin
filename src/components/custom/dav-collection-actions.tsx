@@ -205,7 +205,8 @@ export async function waitForTask(
 
 function fileName(name: string, extension: string): string {
   // Letters of any language kept: "Calendrier principal" -> Calendrier_principal.ics
-  return `${name.trim().replace(/[^\p{L}\p{N}._-]+/gu, "_") || "export"}.${extension}`;
+  const safe = name.replace(/[^\p{L}\p{N}._-]+/gu, "_").replace(/^_+|_+$/g, "");
+  return `${safe || "export"}.${extension}`;
 }
 
 function download(blob: Blob, name: string): void {
