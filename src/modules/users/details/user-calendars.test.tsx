@@ -251,3 +251,21 @@ describe("delegation dialog: nothing typed or staged is lost", () => {
     await waitFor(() => expect(screen.queryByPlaceholderText("users.calendars.invitees.placeholder")).toBeNull());
   });
 });
+
+describe("UserCalendars export", () => {
+  it("names the file after the calendar as shown, not the server's #default", async () => {
+    mocks.api.exportUserCalendar.mockResolvedValue(new Blob(["BEGIN:VCALENDAR"]));
+    window.URL.createObjectURL = vi.fn(() => "blob:main");
+    window.URL.revokeObjectURL = vi.fn();
+    const names: string[] = [];
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
+      names.push(this.getAttribute("download") ?? "");
+    });
+    await openCalendars();
+
+    fireEvent.click(screen.getAllByTitle("users.calendars.exportTitle")[0]);
+
+    await waitFor(() => expect(names).toEqual(["users.calendars.mainCalendar.ics"]));
+    click.mockRestore();
+  });
+});

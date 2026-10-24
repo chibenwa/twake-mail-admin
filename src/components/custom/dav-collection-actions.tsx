@@ -198,7 +198,8 @@ export async function waitForTask(
 }
 
 function fileName(name: string, extension: string): string {
-  return `${name.trim().replace(/[^\w.-]+/g, "_") || "export"}.${extension}`;
+  // Letters of any language kept: "Calendrier principal" -> Calendrier_principal.ics
+  return `${name.trim().replace(/[^\p{L}\p{N}._-]+/gu, "_") || "export"}.${extension}`;
 }
 
 function download(blob: Blob, name: string): void {

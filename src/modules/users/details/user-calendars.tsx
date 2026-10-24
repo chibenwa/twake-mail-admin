@@ -198,7 +198,8 @@ function CalendarRow({
         <ExportCollectionButton
           owner={username}
           collectionId={id}
-          name={name ?? id}
+          // "Main calendar", not the "#default" the server names it
+          name={displayName}
           extension="ics"
           exportCollection={exportUserCalendar}
           title={t("users.calendars.exportTitle")}

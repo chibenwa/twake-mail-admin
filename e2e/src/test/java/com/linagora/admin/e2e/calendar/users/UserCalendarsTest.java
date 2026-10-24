@@ -168,7 +168,7 @@ class UserCalendarsTest extends CalendarAdminE2ETest {
         assertThat(counter).hasText("1", new LocatorAssertions.HasTextOptions().setTimeout(30_000));
 
         CollectionSection.Exported exported = calendars.export(CollectionSection.button(row, "Export the calendar (ICS)"));
-        assertThat(exported.fileName()).isEqualTo("_default.ics");
+        assertThat(exported.fileName()).isEqualTo("Main_calendar.ics");
         assertThat(exported.content()).contains("UID:" + uid).contains("SUMMARY:QA event");
     }
 
