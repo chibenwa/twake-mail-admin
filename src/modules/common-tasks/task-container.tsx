@@ -23,10 +23,10 @@ export default function TaskContainer({ nameKey, taskKey, mode, command, doc, pa
     const additionParams: any = {};
     await confirm({
       header: name,
+      consequence: consequenceKey && t(consequenceKey),
       ...(risk === "destructive" && {
         destructive: true,
         confirmLabel: t("confirm.deleteData"),
-        consequence: consequenceKey && t(consequenceKey),
         typeToConfirm: typeToConfirmKey && t(typeToConfirmKey),
       }),
       message: (

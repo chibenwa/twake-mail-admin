@@ -2000,7 +2000,10 @@
       "clearRepository": "Le {{count}} email di {{path}} vengono eliminate definitivamente e non potranno più essere rielaborate.",
       "clearGroup": "Gli eventi vengono eliminati senza essere riconsegnati: ciò che dovevano aggiornare resta obsoleto.",
       "deleteCalendarUserData": "Tutti i calendari, eventi, rubriche, contatti e link di prenotazione di questo utente verranno eliminati. Operazione irreversibile.",
-      "clearDomainMembersContacts": "La rubrica «Membri del dominio» di ogni dominio, tranne quelli esclusi, viene svuotata. Operazione irreversibile."
+      "clearDomainMembersContacts": "La rubrica «Membri del dominio» di ogni dominio, tranne quelli esclusi, viene svuotata. Operazione irreversibile.",
+      "fixMailboxInconsistencies": "Arresta tutti gli altri servizi Twake Mail prima di eseguire questa attività.",
+      "blobGarbageCollection": "I blob memorizzati a cui nessun messaggio fa più riferimento vengono eliminati definitivamente dall'object storage. L'operazione è irreversibile.",
+      "purgeDeletedMessages": "I messaggi dell'archivio dei messaggi eliminati il cui periodo di conservazione è scaduto vengono eliminati definitivamente e non potranno più essere ripristinati."
     },
     "deleteData": "Elimina dati",
     "deleteWord": "ELIMINA"

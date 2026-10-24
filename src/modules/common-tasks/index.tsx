@@ -19,6 +19,8 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import { appConfig } from "@/lib/config";
 import { CALENDAR_WEBADMIN_DOC_URL, calendarWebadminDoc } from "@/lib/calendar-docs";
 
+// How a task's risk is set: safe = reads or rebuilds derived data; caution = changes stored
+// data or needs a maintenance window; destructive = permanently deletes user data or stored objects.
 const TASKS: TaskProps[] = [
   {
     nameKey: 'commonTasks.reindexFixOutdated',
@@ -55,6 +57,8 @@ const TASKS: TaskProps[] = [
     ],
     doc: 'https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_fixing_mailboxes_inconsistencies',
     allowanceCheck: { verb: 'POST', pattern: '/mailboxes' },
+    risk: 'caution',
+    consequenceKey: 'confirm.consequence.fixMailboxInconsistencies',
   },
   {
     nameKey: 'commonTasks.fixMessageInconsistencies',
@@ -66,6 +70,7 @@ const TASKS: TaskProps[] = [
     ],
     doc: 'https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_fixing_message_inconsistencies_2',
     allowanceCheck: { verb: 'POST', pattern: '/messages' },
+    risk: 'caution',
   },
   {
     nameKey: 'commonTasks.recomputeMailboxCounters',
@@ -105,6 +110,7 @@ const TASKS: TaskProps[] = [
     command: 'curl -XDELETE /jmap/uploads?scope=expired',
     doc: 'https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_cleaning_upload_repository',
     allowanceCheck: { verb: 'DELETE', pattern: '/jmap/uploads' },
+    risk: 'caution',
   },
   {
     nameKey: 'commonTasks.blobGarbageCollection',
@@ -117,6 +123,9 @@ const TASKS: TaskProps[] = [
     ],
     doc: 'https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_running_blob_garbage_collection',
     allowanceCheck: { verb: 'DELETE', pattern: '/blobs' },
+    risk: 'destructive',
+    consequenceKey: 'confirm.consequence.blobGarbageCollection',
+    typeToConfirmKey: 'confirm.deleteWord',
   },
   {
     nameKey: 'commonTasks.reindexContacts',
@@ -136,6 +145,9 @@ const TASKS: TaskProps[] = [
     command: 'curl -XDELETE /deletedMessages?scope=expired',
     doc: 'https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_purging_expired_deleted_messages',
     allowanceCheck: { verb: 'DELETE', pattern: '/deletedMessages' },
+    risk: 'destructive',
+    consequenceKey: 'confirm.consequence.purgeDeletedMessages',
+    typeToConfirmKey: 'confirm.deleteWord',
   },
   {
     nameKey: 'commonTasks.populateEmailQueryView',
