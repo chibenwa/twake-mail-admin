@@ -10,6 +10,7 @@ import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { useTranslation } from "react-i18next";
 import TaskRow from "@/components/custom/task-row";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 const REPUBLISH_CONTACTS_PARAMS: TaskParam[] = [
   { key: "contactsPerSecond", defaultValue: "100", type: "input" },
@@ -47,7 +48,7 @@ export default function CalendarDomainTasks({ domain, defaultOpen = false }: Pro
     setDeleting(true);
     try {
       const { taskId } = await deleteAllUsersData(domain);
-      toastTaskCreated(taskId, undefined, t("domains.tasks.deleteAllData"));
+      toastTaskCreated(taskId, undefined, taskTypeLabel(t, "DeleteUsersDataOfDomainTask"));
     } catch (err) {
       toast({ title: t("domains.tasks.errorDeletingData"), description: <ErrorDisplayer error={err} /> });
     } finally {
@@ -65,7 +66,7 @@ export default function CalendarDomainTasks({ domain, defaultOpen = false }: Pro
     setSyncing(true);
     try {
       const { taskId } = await syncDomainMembers(domain);
-      toastTaskCreated(taskId, undefined, t("domains.calendarTasks.syncButton"));
+      toastTaskCreated(taskId, undefined, taskTypeLabel(t, "sync-domain-members-contacts-ldap-to-dav"));
     } catch (err) {
       toast({ title: t("domains.calendarTasks.errorSyncing"), description: <ErrorDisplayer error={err} /> });
     } finally {
@@ -89,7 +90,7 @@ export default function CalendarDomainTasks({ domain, defaultOpen = false }: Pro
       ),
       action: async () => {
         const { taskId } = await republishDomainContacts(domain, params);
-        toastTaskCreated(taskId, undefined, t("domains.calendarTasks.republishContactsButton"));
+        toastTaskCreated(taskId, undefined, taskTypeLabel(t, "republish-common-contacts"));
       },
     });
   };

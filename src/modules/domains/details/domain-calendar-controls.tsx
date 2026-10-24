@@ -91,6 +91,7 @@ export default function DomainCalendarControls({
           accept=".ics,text/calendar"
           importCollection={api.importCalendar}
           title={t(`${labels}.importTitle`)}
+          taskType="domain-calendar-import"
           errorTitle={t(`${labels}.errorImport`)}
           onImported={() => setCountKey((key) => key + 1)}
         />

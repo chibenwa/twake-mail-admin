@@ -3,6 +3,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
 import ConfirmTaskContent from "../common-tasks/components/confirm-task-content";
 import { redeliverGroupEvents } from "./api-client";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 const REDELIVER_PARAM_KEYS = ["limit", "maxRetries"] as const;
 type RedeliverParamKey = (typeof REDELIVER_PARAM_KEYS)[number];
@@ -57,7 +58,7 @@ export function useRedeliverGroup() {
           limit: toOptionalNumber(paramValues.limit),
           maxRetries: toOptionalNumber(paramValues.maxRetries),
         });
-        toastTaskCreated(taskId, undefined, t("eventDeadletter.redeliverGroupAction"));
+        toastTaskCreated(taskId, undefined, taskTypeLabel(t, "event-dead-letters-redeliver-group"));
       },
     });
   };

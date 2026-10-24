@@ -20,6 +20,7 @@ import CreateMailRepositoryButton from "./create-mail-repository-button";
 import { toErrorMessage } from "@/components/custom/error-message";
 import ListToolbar from "@/components/custom/list-toolbar";
 import { cn } from "@/lib/utils";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 /**
  * What a standard repository holds, keyed by the last segment of its path (address-error,
@@ -123,7 +124,7 @@ export default function MailRepositoriesList() {
           }}
         />
       ),
-      action: async () => { toastTaskCreated((await reprocessMailRepository(path, paramValues)).taskId, undefined, t("mailRepositories.reprocessAll")); },
+      action: async () => { toastTaskCreated((await reprocessMailRepository(path, paramValues)).taskId, undefined, taskTypeLabel(t, "reprocessing-all")); },
     });
   };
   const handleMoveAll = async (source: MailRepository) => {

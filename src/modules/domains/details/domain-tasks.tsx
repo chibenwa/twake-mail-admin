@@ -13,6 +13,7 @@ import ConfirmTaskContent from "@/modules/common-tasks/components/confirm-task-c
 import FormTaskContent from "@/modules/common-tasks/components/form-task-content";
 import { deleteAllUsersDataCommand, provisionDomainTemplatesCommand } from "./domain-task-commands";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 const INITIAL_PROVISION_VALUES: ProvisionTemplatesValues = { sourceUser: "", folderName: "", overwriteExisting: false, prune: false, usersPerSecond: "1" };
 
@@ -84,7 +85,7 @@ export default function DomainTasks({ domain, defaultOpen }: Props) {
           prune: values.prune,
           usersPerSecond: values.usersPerSecond.trim() || undefined,
         });
-        toastTaskCreated(taskId, undefined, t("domains.tasks.provisionTemplates"));
+        toastTaskCreated(taskId, undefined, taskTypeLabel(t, "DomainTemplatesProvisionTask"));
       },
     });
   };
@@ -108,7 +109,7 @@ export default function DomainTasks({ domain, defaultOpen }: Props) {
     setDeleting(true);
     try {
       const { taskId } = await deleteAllUsersData(domain);
-      toastTaskCreated(taskId, undefined, t("domains.tasks.deleteAllData"));
+      toastTaskCreated(taskId, undefined, taskTypeLabel(t, "DeleteUsersDataOfDomainTask"));
     } catch (err) {
       toast({
         title: t("domains.tasks.errorDeletingData"),

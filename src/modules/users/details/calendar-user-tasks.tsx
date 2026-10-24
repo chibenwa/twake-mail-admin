@@ -9,6 +9,7 @@ import ArchivalNotice from "@/modules/common-tasks/components/archival-notice";
 import { TaskParam } from "@/modules/common-tasks/types";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import { SectionToggle, useSectionFacts, useSectionOpen } from "@/components/custom/collapsible-section";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 const ARCHIVE_CALENDAR_PARAMS: TaskParam[] = [
   { key: "createdBefore", defaultValue: "", type: "duration" },
@@ -68,7 +69,7 @@ export default function CalendarUserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await deleteUserData(username, currentFromStep || undefined);
-        toastTaskCreated(data.taskId, undefined, t("users.tasks.deleteData"));
+        toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "DeleteUserDataTask"));
       },
     });
   };
@@ -90,7 +91,7 @@ export default function CalendarUserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await archiveUserCalendarEvents(username, additionalParams);
-        toastTaskCreated(data.taskId, undefined, t("users.calendarTasks.archiveButton"));
+        toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "calendar-archival"));
       },
     });
   };
@@ -111,7 +112,7 @@ export default function CalendarUserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await republishUserContacts(username, params);
-        toastTaskCreated(data.taskId, undefined, t("users.calendarTasks.republishContactsButton"));
+        toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "republish-common-contacts"));
       },
     });
   };

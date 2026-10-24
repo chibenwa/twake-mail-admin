@@ -27,6 +27,7 @@ import {
 import { TaskParam } from "@/modules/common-tasks/types";
 import { defaultCommand } from "@/modules/common-tasks/components/command-preview";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 const REINDEX_PARAMS: TaskParam[] = [
   { key: "messagesPerSecond", defaultValue: "50", type: "input" },
@@ -117,7 +118,7 @@ export default function UserTasks({ username }: Props) {
           overwriteExisting: values.overwriteExisting,
           prune: values.prune,
         });
-        toastTaskCreated(data.taskId, undefined, t("users.tasks.provisionTemplates"));
+        toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "UserTemplatesProvisionTask"));
       },
     });
   };
@@ -138,7 +139,7 @@ export default function UserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await reindexUserMailboxes(username, additionalParams);
-        toastTaskCreated(data.taskId, undefined, t("users.tasks.reindexAll"));
+        toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "user-reindexing"));
       },
     });
   };
@@ -158,7 +159,7 @@ export default function UserTasks({ username }: Props) {
 
       setSubscribeLoading(true);
       const data = await subscribeAllUserMailboxes(username);
-      toastTaskCreated(data.taskId, undefined, t("users.tasks.subscribeAll"));
+      toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "SubscribeAllTask"));
     } catch (err) {
       toast({
         title: t("users.tasks.errorSubscribe"),
@@ -185,7 +186,7 @@ export default function UserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await recomputeFastViewProjection(username, additionalParams);
-        toastTaskCreated(data.taskId, undefined, t("users.tasks.fastView"));
+        toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "RecomputeUserFastViewProjectionItemsTask"));
       },
     });
   };
@@ -222,7 +223,7 @@ export default function UserTasks({ username }: Props) {
       },
       action: async () => {
         const data = await restoreDeletedMessages(username, request);
-        toastTaskCreated(data.taskId, undefined, t("users.tasks.restoreDeleted"));
+        toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "deleted-messages-restore"));
       },
     });
   };
@@ -271,7 +272,7 @@ export default function UserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await cleanupUserMailbox(username, mailbox, olderThan);
-        toastTaskCreated(data.taskId, undefined, t(`users.tasks.cleanup${mailbox}`));
+        toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "ExpireMailboxTask"));
       },
     });
   };
@@ -295,7 +296,7 @@ export default function UserTasks({ username }: Props) {
           force: currentValues.force || undefined,
           fromStep: currentValues.fromStep || undefined,
         });
-        toastTaskCreated(data.taskId, undefined, t("users.tasks.renameUser"));
+        toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "UsernameChangeTask"));
       },
     });
   };
@@ -320,7 +321,7 @@ export default function UserTasks({ username }: Props) {
       ),
       action: async () => {
         const data = await deleteUserData(username, currentFromStep || undefined);
-        toastTaskCreated(data.taskId, undefined, t("users.tasks.deleteData"));
+        toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "DeleteUserDataTask"));
       },
     });
   };
@@ -346,7 +347,7 @@ export default function UserTasks({ username }: Props) {
           tiering: additionalParams.tiering,
           messagesPerSecond: additionalParams.messagesPerSecond || undefined,
         });
-        toastTaskCreated(data.taskId, undefined, t("users.tasks.tierData"));
+        toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "UserDataTieringTask"));
       },
     });
   };

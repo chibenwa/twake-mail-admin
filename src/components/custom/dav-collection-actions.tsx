@@ -6,9 +6,11 @@
  */
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { Download, Loader2, Upload, type LucideIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { useToast } from "@/hooks/use-toast";
 import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { getTaskDetail } from "@/modules/common-tasks/api-client";
 import { TaskStatus, type RunTaskResponse } from "@/modules/common-tasks/types";
@@ -113,6 +115,7 @@ export function ImportCollectionButton({
   accept,
   importCollection,
   title,
+  taskType,
   errorTitle,
   onImported,
 }: CollectionProps & {
@@ -123,10 +126,13 @@ export function ImportCollectionButton({
     content: string
   ) => Promise<RunTaskResponse>;
   title: string;
+  // The WebAdmin type of the import task: its toast names it as the Tasks list does
+  taskType: string;
   errorTitle: string;
   // Called once the import task is over, so the row can re-read its counter.
   onImported: () => void;
 }) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const toastTaskCreated = useTaskCreatedToast();
   const domain = useDomain() || undefined;
@@ -147,7 +153,7 @@ export function ImportCollectionButton({
     setImporting(true);
     try {
       const { taskId } = await importCollection(owner, collectionId, await file.text());
-      toastTaskCreated(taskId, undefined, title);
+      toastTaskCreated(taskId, undefined, taskTypeLabel(t, taskType));
       await waitForTask(taskId, domain, () => mounted.current);
       if (mounted.current) onImported();
     } catch (err) {

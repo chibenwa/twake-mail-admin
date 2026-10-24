@@ -80,6 +80,7 @@ function AddressBookRow({
           accept=".vcf,text/vcard"
           importCollection={importContacts}
           title={t("domains.addressBookCounts.importTitle")}
+          taskType="domain-addressbook-import"
           errorTitle={t("domains.addressBookCounts.errorImport")}
           onImported={refreshCount}
         />

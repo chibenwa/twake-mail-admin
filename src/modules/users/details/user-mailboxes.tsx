@@ -16,6 +16,7 @@ import { currentLocale } from "@/i18n/locale";
 import { formatMailboxCreationDate } from "./mailbox-creation-date";
 import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
 import FormDialog, { FIELD_CLASS } from "@/components/custom/form-dialog";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 const PAGE_LIMIT = Number(import.meta.env.VITE_PAGE_LIMIT) || 50;
 
@@ -125,7 +126,7 @@ export default function UserMailboxes({ username }: Props) {
     if (!confirmed) return;
     try {
       const data = await clearMailboxContent(username, mailboxName);
-      toastTaskCreated(data.taskId, undefined, t("users.mailboxes.clearTooltip"));
+      toastTaskCreated(data.taskId, undefined, taskTypeLabel(t, "ClearMailboxContentTask"));
     } catch (err) {
       toast({
         title: t("users.mailboxes.errorClearing"),

@@ -207,6 +207,7 @@ function AddressBookRow({
           accept=".vcf,text/vcard"
           importCollection={importUserAddressBook}
           title={t("users.addressBooks.importTitle")}
+          taskType="addressbook-import"
           errorTitle={t("users.addressBooks.errorImport")}
           onImported={() => setCountKey((key) => key + 1)}
         />

@@ -10,6 +10,7 @@ import ErrorDisplayer from "@/components/custom/error-displayer";
 import Header from "@/components/custom/header";
 import { Button } from "@/components/ui/button";
 import { RunTaskButton } from "@/components/custom/run-task-button";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 const docuUrl = "https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_cassandra_schema_upgrades";
 
@@ -46,7 +47,7 @@ export default function Cassandra() {
     setUpgrading(true);
     try {
       const result = await upgradeCassandraToLatest();
-      toastTaskCreated(result.taskId, t("cassandra.upgradeScheduled"), t("cassandra.upgradeTitle"));
+      toastTaskCreated(result.taskId, t("cassandra.upgradeScheduled"), taskTypeLabel(t, "cassandra-migration"));
       await refresh();
     } catch (err) {
       toast({

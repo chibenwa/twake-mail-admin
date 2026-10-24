@@ -10,6 +10,7 @@ import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
 import { useDomain } from "@/modules/domain-admin/domain-context";
 import { copyIntoDomainAddressBook, DomainAddressBookId } from "../api-client";
 import { isValidDomainName } from "./domain-name";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 const INPUT_CLASS = "w-full mt-1 px-3 py-2 border rounded-md text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500";
 
@@ -79,7 +80,7 @@ export default function CopyAddressBookButton({ domain, addressBookId, onCopied 
         domain, addressBookId, trimmedSourceDomain, trimmedLdapFilter || undefined
       );
       close();
-      toastTaskCreated(taskId, undefined, t("domains.addressBookCounts.copy.title"));
+      toastTaskCreated(taskId, undefined, taskTypeLabel(t, "domain-addressbook-copy"));
       await waitForTask(taskId, scopedDomain, () => mounted.current);
       if (mounted.current) onCopied();
     } catch (err) {

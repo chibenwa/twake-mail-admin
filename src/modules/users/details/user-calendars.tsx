@@ -213,6 +213,7 @@ function CalendarRow({
           accept=".ics,text/calendar"
           importCollection={importUserCalendar}
           title={t("users.calendars.importTitle")}
+          taskType="calendar-import"
           errorTitle={t("users.calendars.errorImport")}
           onImported={() => setCountKey((key) => key + 1)}
         />

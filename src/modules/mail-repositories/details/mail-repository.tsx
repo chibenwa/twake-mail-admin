@@ -27,6 +27,7 @@ import Header from "@/components/custom/header";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 import EmptyState from "@/components/custom/empty-state";
 import { PaginationControls } from "@/components/custom/pagination-controls";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 // Define the types for the expected responses
 interface JsonMailResponse {
@@ -196,7 +197,7 @@ export default function MailRepositoryDetail() {
           queue: paramValues["queue"] || undefined,
           processor: paramValues["processor"] || undefined,
         });
-        toastTaskCreated(taskId, t("mailRepositories.reprocessScheduled"), t("mailRepositories.reprocessMailTooltip"));
+        toastTaskCreated(taskId, t("mailRepositories.reprocessScheduled"), taskTypeLabel(t, "reprocessing-one"));
       },
     });
   };

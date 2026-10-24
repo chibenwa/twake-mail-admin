@@ -13,6 +13,7 @@ import { currentLocale } from "@/i18n/locale";
 import { formatByteSize } from "@/i18n/format-size";
 import { SectionToggle, useSectionOpen } from "@/components/custom/collapsible-section";
 import { PaginationControls } from "@/components/custom/pagination-controls";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 const PAGE_SIZE = 10;
 
@@ -85,7 +86,7 @@ export default function UserDeletedMessageVault({ label, onSearch, onRestore, ca
         ...(limit !== undefined ? { limit } : {}),
       };
       const data = await onRestore(body);
-      toastTaskCreated(data.taskId, t("users.deletedVault.restoreStarted"), t("users.tasks.restoreDeleted"));
+      toastTaskCreated(data.taskId, t("users.deletedVault.restoreStarted"), taskTypeLabel(t, "deleted-messages-restore"));
     } catch (err) {
       toast({
         title: t("users.deletedVault.errorRestoring"),
@@ -116,7 +117,7 @@ export default function UserDeletedMessageVault({ label, onSearch, onRestore, ca
         ],
       };
       const data = await onRestore(body);
-      toastTaskCreated(data.taskId, t("users.deletedVault.restoreStarted"), t("users.tasks.restoreDeleted"));
+      toastTaskCreated(data.taskId, t("users.deletedVault.restoreStarted"), taskTypeLabel(t, "deleted-messages-restore"));
     } catch (err) {
       toast({
         title: t("users.deletedVault.errorRestoring"),

@@ -22,6 +22,7 @@ import { bulkSelection, matchesFilters } from "./filters";
 import type { UnsentMailId, UnsentMail } from "./types";
 import { currentLocale } from "@/i18n/locale";
 import EmptyState from "@/components/custom/empty-state";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 const PAGE_SIZE = 50;
 const BULK_HINT_ID = "unsent-mails-bulk-hint";
@@ -107,7 +108,7 @@ export default function UnsentMailsList() {
     if (!confirmed) return;
     try {
       const { taskId } = await resendAllUnsentMails(selection);
-      toastTaskCreated(taskId, t("unsentMails.taskSubmitted"), t("unsentMails.resendAllTitle"));
+      toastTaskCreated(taskId, t("unsentMails.taskSubmitted"), taskTypeLabel(t, "resend-unsent-mails"));
     } catch (err) {
       toast({
         title: t("unsentMails.errorResending"),
@@ -129,7 +130,7 @@ export default function UnsentMailsList() {
     if (!confirmed) return;
     try {
       const { taskId } = await deleteAllUnsentMails(selection);
-      toastTaskCreated(taskId, t("unsentMails.deleteTaskSubmitted"), t("unsentMails.deleteAllTitle"));
+      toastTaskCreated(taskId, t("unsentMails.deleteTaskSubmitted"), taskTypeLabel(t, "delete-unsent-mails"));
     } catch (err) {
       toast({
         title: t("unsentMails.errorDeleting"),

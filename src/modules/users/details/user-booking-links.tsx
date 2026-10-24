@@ -21,6 +21,7 @@ import { useDomain } from "@/modules/domain-admin/domain-context";
 import { getRegisteredUsers } from "@/modules/registered-users/api-client";
 import { RegisteredUser } from "@/modules/registered-users/types";
 import { SectionToggle, useSectionFact, useSectionOpen } from "@/components/custom/collapsible-section";
+import { taskTypeLabel } from "@/modules/tasks/task-summary";
 
 interface Props {
   username: string;
@@ -620,7 +621,7 @@ export default function UserBookingLinks({ username, calendarsVersion }: Props) 
     if (!confirmed) return;
     try {
       const { taskId } = await deleteUserBookingLinkEvents(username, link.publicId);
-      toastTaskCreated(taskId, undefined, t("users.bookingLinks.deleteEventsTitle"));
+      toastTaskCreated(taskId, undefined, taskTypeLabel(t, "booking-link-event-deletion"));
     } catch (err) {
       toast({ title: t("users.bookingLinks.errorDeleteEvents"), description: <ErrorDisplayer error={err} /> });
     }
