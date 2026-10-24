@@ -1809,7 +1809,16 @@
       "domain": "Domäne"
     },
     "forwardCopyKept": "Weiterleitung (Kopie behalten)",
-    "removeKeptCopyConsequence": "{{source}} erhält seine eigenen E-Mails nicht mehr: Sie werden nur noch weitergeleitet."
+    "removeKeptCopyConsequence": "{{source}} erhält seine eigenen E-Mails nicht mehr: Sie werden nur noch weitergeleitet.",
+    "typeNames": {
+      "Address": "Adresse",
+      "Alias": "Alias",
+      "Forward": "Weiterleitung",
+      "Group": "Gruppe",
+      "Domain": "Domain",
+      "DomainAlias": "Domain-Alias",
+      "Regex": "Regulärer Ausdruck"
+    }
   },
   "mailingLists": {
     "subtitle": "LDAP-basierte Mailinglisten durchsuchen und ihre Mitglieder und Eigentümer verwalten.",

@@ -1809,7 +1809,16 @@
       "domain": "Domaine"
     },
     "forwardCopyKept": "Redirection (copie conservée)",
-    "removeKeptCopyConsequence": "{{source}} ne recevra plus son propre courrier : il sera seulement redirigé."
+    "removeKeptCopyConsequence": "{{source}} ne recevra plus son propre courrier : il sera seulement redirigé.",
+    "typeNames": {
+      "Address": "Adresse",
+      "Alias": "Alias",
+      "Forward": "Redirection",
+      "Group": "Groupe",
+      "Domain": "Domaine",
+      "DomainAlias": "Alias de domaine",
+      "Regex": "Expression régulière"
+    }
   },
   "mailingLists": {
     "subtitle": "Parcourez les listes de diffusion LDAP et gérez leurs membres et propriétaires.",

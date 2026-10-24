@@ -1809,7 +1809,16 @@
       "domain": "Domain"
     },
     "forwardCopyKept": "Forward (copy kept)",
-    "removeKeptCopyConsequence": "{{source}} will no longer receive its own mail: it will only be forwarded."
+    "removeKeptCopyConsequence": "{{source}} will no longer receive its own mail: it will only be forwarded.",
+    "typeNames": {
+      "Address": "Address",
+      "Alias": "Alias",
+      "Forward": "Forward",
+      "Group": "Group",
+      "Domain": "Domain",
+      "DomainAlias": "Domain alias",
+      "Regex": "Regex"
+    }
   },
   "mailingLists": {
     "subtitle": "Browse LDAP-backed mailing lists and manage their members and owners.",

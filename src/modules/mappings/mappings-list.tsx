@@ -61,6 +61,8 @@ export default function MappingsList() {
   const [creating, setCreating] = useState(false);
   const { toast } = useToast();
   const confirm = useConfirm();
+  // WebAdmin names the types in English (Forward, DomainAlias...): shown in the UI language
+  const typeName = (type: string) => t(`mappings.typeNames.${type}`, { defaultValue: type });
 
   const deleteMapping = async (mapping: FlatMapping) => {
     switch (mapping.type) {
@@ -83,9 +85,9 @@ export default function MappingsList() {
   };
 
   const handleDelete = async (mapping: FlatMapping) => {
-    const typeLabel = mapping.type.toLowerCase();
+    const typeLabel = typeName(mapping.type).toLowerCase();
     const confirmed = await confirm({
-      header: t("mappings.removeTitle", { type: mapping.type }),
+      header: t("mappings.removeTitle", { type: typeName(mapping.type) }),
       destructive: true,
       confirmLabel: t("common.remove"),
       message: t("mappings.removeConfirm", { typeLabel, source: mapping.source, destination: mapping.destination }),
@@ -94,7 +96,7 @@ export default function MappingsList() {
     if (!confirmed) return;
     try {
       await deleteMapping(mapping);
-      toast({ title: t("mappings.removed", { type: mapping.type }) });
+      toast({ title: t("mappings.removed", { type: typeName(mapping.type) }) });
       await refresh();
     } catch (err) {
       toast({
@@ -120,7 +122,7 @@ export default function MappingsList() {
                 key={`${mapping.source}-${mapping.type}-${mapping.destination}-${index}`}
                 className="px-3 py-2 text-sm flex items-center gap-2"
               >
-                <span className="text-gray-500 shrink-0">{mapping.type}</span>
+                <span className="text-gray-500 shrink-0">{typeName(mapping.type)}</span>
                 <span className="truncate">{mapping.source}</span>
                 <span className="text-gray-400 shrink-0">→</span>
                 <span className="truncate">{mapping.destination}</span>
@@ -179,9 +181,10 @@ export default function MappingsList() {
       (m) =>
         m.source.toLowerCase().includes(lower) ||
         m.type.toLowerCase().includes(lower) ||
+        t(`mappings.typeNames.${m.type}`, { defaultValue: m.type }).toLowerCase().includes(lower) ||
         m.destination.toLowerCase().includes(lower)
     );
-  }, [flatMappings, search]);
+  }, [flatMappings, search, t]);
 
   const totalPages = Math.max(1, Math.ceil(filteredMappings.length / PAGE_LIMIT));
   const paginatedMappings = filteredMappings.slice(
@@ -273,14 +276,14 @@ export default function MappingsList() {
                   {(page - 1) * PAGE_LIMIT + index + 1}
                 </td>
                 <td className="px-4 py-2 text-sm">{ADDRESS_TYPES.includes(mapping.type) ? <UserLink address={mapping.source} /> : mapping.source}</td>
-                <td className="px-4 py-2 text-sm">{isKeptCopy(mapping) ? t("mappings.forwardCopyKept") : mapping.type}</td>
+                <td className="px-4 py-2 text-sm">{isKeptCopy(mapping) ? t("mappings.forwardCopyKept") : typeName(mapping.type)}</td>
                 <td className="px-4 py-2 text-sm">{ADDRESS_TYPES.includes(mapping.type) ? <UserLink address={mapping.destination} /> : mapping.destination}</td>
                 <td className="px-4 py-2 text-sm">
                   {canDeleteMapping(mapping.type) && (
                     <button
                       onClick={() => handleDelete(mapping)}
                       className="p-1 rounded-md hover:bg-red-100 text-red-500 transition"
-                      title={t("mappings.removeTitle", { type: mapping.type })}
+                      title={t("mappings.removeTitle", { type: typeName(mapping.type) })}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

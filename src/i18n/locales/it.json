@@ -1809,7 +1809,16 @@
       "domain": "Dominio"
     },
     "forwardCopyKept": "Inoltro (copia conservata)",
-    "removeKeptCopyConsequence": "{{source}} non riceverà più la propria posta: verrà solo inoltrata."
+    "removeKeptCopyConsequence": "{{source}} non riceverà più la propria posta: verrà solo inoltrata.",
+    "typeNames": {
+      "Address": "Indirizzo",
+      "Alias": "Alias",
+      "Forward": "Inoltro",
+      "Group": "Gruppo",
+      "Domain": "Dominio",
+      "DomainAlias": "Alias di dominio",
+      "Regex": "Espressione regolare"
+    }
   },
   "mailingLists": {
     "subtitle": "Sfoglia le liste di distribuzione basate su LDAP e gestisci i loro membri e proprietari.",

@@ -1807,7 +1807,16 @@
       "domain": "Miền"
     },
     "forwardCopyKept": "Chuyển tiếp (giữ bản sao)",
-    "removeKeptCopyConsequence": "{{source}} sẽ không nhận thư của chính mình nữa: thư chỉ được chuyển tiếp."
+    "removeKeptCopyConsequence": "{{source}} sẽ không nhận thư của chính mình nữa: thư chỉ được chuyển tiếp.",
+    "typeNames": {
+      "Address": "Địa chỉ",
+      "Alias": "Bí danh",
+      "Forward": "Chuyển tiếp",
+      "Group": "Nhóm",
+      "Domain": "Miền",
+      "DomainAlias": "Bí danh miền",
+      "Regex": "Biểu thức chính quy"
+    }
   },
   "mailingLists": {
     "subtitle": "Duyệt và quản lý các danh sách gửi thư LDAP cùng thành viên và chủ sở hữu.",

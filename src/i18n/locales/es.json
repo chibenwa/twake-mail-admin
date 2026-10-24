@@ -1809,7 +1809,16 @@
       "domain": "Dominio"
     },
     "forwardCopyKept": "Reenvío (copia conservada)",
-    "removeKeptCopyConsequence": "{{source}} dejará de recibir su propio correo: solo se reenviará."
+    "removeKeptCopyConsequence": "{{source}} dejará de recibir su propio correo: solo se reenviará.",
+    "typeNames": {
+      "Address": "Dirección",
+      "Alias": "Alias",
+      "Forward": "Reenvío",
+      "Group": "Grupo",
+      "Domain": "Dominio",
+      "DomainAlias": "Alias de dominio",
+      "Regex": "Expresión regular"
+    }
   },
   "mailingLists": {
     "subtitle": "Explore las listas de distribución basadas en LDAP y gestione sus miembros y propietarios.",

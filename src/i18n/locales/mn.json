@@ -1809,7 +1809,16 @@
       "domain": "Домэйн"
     },
     "forwardCopyKept": "Дамжуулалт (хуулбар хадгалсан)",
-    "removeKeptCopyConsequence": "{{source}} өөрийн захидлыг хүлээн авахаа болино: зөвхөн дамжуулагдана."
+    "removeKeptCopyConsequence": "{{source}} өөрийн захидлыг хүлээн авахаа болино: зөвхөн дамжуулагдана.",
+    "typeNames": {
+      "Address": "Хаяг",
+      "Alias": "Алиас",
+      "Forward": "Дамжуулалт",
+      "Group": "Бүлэг",
+      "Domain": "Домэйн",
+      "DomainAlias": "Домэйн алиас",
+      "Regex": "Регуляр илэрхийлэл"
+    }
   },
   "mailingLists": {
     "subtitle": "LDAP мэйл жагсаалтыг үзэж, гишүүд болон эзэмшигчдийг удирдах.",
