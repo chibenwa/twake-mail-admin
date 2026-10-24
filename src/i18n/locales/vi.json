@@ -94,7 +94,10 @@
     "discard": "Bỏ",
     "keepEditing": "Tiếp tục chỉnh sửa",
     "totalOnly": "Tổng: {{count}}",
-    "serverMessage": "Thông báo của máy chủ:"
+    "serverMessage": "Thông báo của máy chủ:",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép vào bộ nhớ tạm",
+    "viewJson": "Xem JSON"
   },
   "sidebar": {
     "application": "Ứng dụng",
@@ -1645,7 +1648,7 @@
     "deleteEventConfirm": "Xóa sự kiện {{insertionId}} trong nhóm {{group}}?",
     "deleteEventSuccess": "Đã xóa sự kiện thành công",
     "errorDeletingEvent": "Lỗi khi xóa sự kiện",
-    "fetchEventError": "Lỗi khi lấy JSON của sự kiện thất bại",
+    "fetchEventError": "Lỗi khi lấy JSON của sự kiện",
     "groupDetails": "Chi tiết nhóm sự kiện",
     "loadingEvents": "Đang tải các sự kiện thất bại...",
     "pageInfo": "Trang {{page}} — {{limit}} sự kiện mỗi trang — Tổng: {{size}}",
@@ -1666,7 +1669,14 @@
     "deleteEventAction": "Xóa sự kiện",
     "invalidPositiveInteger": "{{key}} phải là số nguyên dương hoặc để trống.",
     "emptyTitle": "Không có sự kiện lỗi",
-    "emptyText": "Mọi bộ lắng nghe đã xử lý sự kiện của mình. Các sự kiện lỗi được giữ ở đây để có thể gửi lại."
+    "emptyText": "Mọi bộ lắng nghe đã xử lý sự kiện của mình. Các sự kiện lỗi được giữ ở đây để có thể gửi lại.",
+    "groupsTitle": "Nhóm có sự kiện lỗi",
+    "allGroups": "Tất cả các nhóm",
+    "copyGroupName": "Sao chép tên nhóm",
+    "copyEventId": "Sao chép ID sự kiện",
+    "redeliverAll": "Gửi lại tất cả sự kiện",
+    "eventLoadFailed": "Không thể tải sự kiện này",
+    "clearError": "Lỗi khi xóa nhóm"
   },
   "mailRepositories": {
     "pathLabel": "Đường dẫn kho",
@@ -1756,7 +1766,8 @@
       "too-much-mails": "Thư bị từ chối vì người gửi đã vượt giới hạn gửi.",
       "too-much-mails-for-recipient": "Thư bị từ chối vì người nhận đã vượt giới hạn nhận.",
       "virus": "Thư mà trình diệt virus phát hiện có virus."
-    }
+    },
+    "fetchMailError": "Lỗi khi lấy thư"
   },
   "mappings": {
     "sourcePlaceholder": "Nguồn (vd. user@domain.com)",

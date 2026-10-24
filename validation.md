@@ -682,7 +682,7 @@ against what the proxy actually declares.
 | Detail load | GET | `/events/deadLetter/groups/{group}` | MUST |
 | "Redeliver group" button | POST | `/events/deadLetter/groups/{group}?action=reDeliver` | MAY (do not show the button if missing) |
 | "Delete all group events" button | DELETE | `/events/deadLetter/groups/{group}` | MAY (do not show the button if missing) |
-| Event detail load | GET | `/events/deadLetter/groups/{group}/{insertionId}` | MUST - disable link if not supported|
+| Event rows of the page (type, user, mailbox) and "View JSON" | GET | `/events/deadLetter/groups/{group}/{insertionId}` | MAY (rows show the bare ID, no "View JSON") |
 | "Delete event" button | DELETE | `/events/deadLetter/groups/{group}/{insertionId}` | MAY (do not show the button if missing) |
 
 ### Search by event ID

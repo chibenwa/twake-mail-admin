@@ -95,7 +95,10 @@
     "discard": "Descartar",
     "keepEditing": "Seguir editando",
     "totalOnly": "Total: {{count}}",
-    "serverMessage": "Mensaje del servidor:"
+    "serverMessage": "Mensaje del servidor:",
+    "copy": "Copiar",
+    "copied": "Copiado al portapapeles",
+    "viewJson": "Ver el JSON"
   },
   "sidebar": {
     "application": "Aplicación",
@@ -1647,7 +1650,7 @@
     "deleteEventConfirm": "¿Eliminar el evento {{insertionId}} del grupo {{group}}?",
     "deleteEventSuccess": "Evento eliminado correctamente",
     "errorDeletingEvent": "Error al eliminar el evento",
-    "fetchEventError": "Error al obtener el JSON del evento fallido",
+    "fetchEventError": "Error al obtener el JSON del evento",
     "groupDetails": "Detalles del grupo de eventos",
     "loadingEvents": "Cargando los eventos fallidos...",
     "pageInfo": "Página {{page}} — {{limit}} eventos por página — Total: {{size}}",
@@ -1668,7 +1671,14 @@
     "deleteEventAction": "Eliminar el evento",
     "invalidPositiveInteger": "{{key}} debe ser un número entero positivo, o dejarse vacío.",
     "emptyTitle": "Ningún evento fallido",
-    "emptyText": "Todos los listeners han procesado sus eventos. Los eventos fallidos se guardan aquí para poder reenviarlos."
+    "emptyText": "Todos los listeners han procesado sus eventos. Los eventos fallidos se guardan aquí para poder reenviarlos.",
+    "groupsTitle": "Grupos con eventos fallidos",
+    "allGroups": "Todos los grupos",
+    "copyGroupName": "Copiar el nombre del grupo",
+    "copyEventId": "Copiar el ID del evento",
+    "redeliverAll": "Volver a entregar todos los eventos",
+    "eventLoadFailed": "No se pudo cargar este evento",
+    "clearError": "Error al vaciar el grupo"
   },
   "mailRepositories": {
     "pathLabel": "Ruta del repositorio",
@@ -1758,7 +1768,8 @@
       "too-much-mails": "Correos rechazados porque el remitente superó su límite de envío.",
       "too-much-mails-for-recipient": "Correos rechazados porque el destinatario superó su límite de recepción.",
       "virus": "Correos en los que el antivirus detectó un virus."
-    }
+    },
+    "fetchMailError": "Error al obtener el correo"
   },
   "mappings": {
     "sourcePlaceholder": "Origen (p. ej. user@domain.com)",

@@ -1,4 +1,7 @@
 import { useParams, useSearchParams } from "react-router";
+import { Button } from "@/components/ui/button";
+import i18n from "i18next";
+import { useJsonDialog } from "@/components/custom/json-dialog";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import {
   getMailRepositories,
@@ -42,7 +45,9 @@ type MailResponse = JsonMailResponse | Blob;
 const fetchMailData = async (
   repo: string,
   mailKey: string,
-  acceptType: "application/json" | "message/rfc822"
+  acceptType: "application/json" | "message/rfc822",
+  // Shows the JSON of the mail in the console
+  showJson: (json: unknown) => void
 ): Promise<void> => {
   const repositoryPath = encodeURIComponent(repo);
   const endpoint = `/mailRepositories/${repositoryPath}/mails/${mailKey}`;
@@ -54,16 +59,7 @@ const fetchMailData = async (
     })) as any;
 
     if (acceptType === "application/json") {
-      const jsonWindow = window.open("", "_blank");
-      if (jsonWindow) {
-        // Build the DOM via the API so the (untrusted) mail data is treated as
-        // text, never parsed as HTML. Concatenating into document.write would
-        // be an XSS sink: JSON.stringify does not escape <, > or &.
-        const pre = jsonWindow.document.createElement("pre");
-        pre.textContent = JSON.stringify(response, null, 2);
-        jsonWindow.document.body.appendChild(pre);
-        jsonWindow.document.close();
-      }
+      showJson(response);
     } else if (acceptType === "message/rfc822") {
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
@@ -74,9 +70,8 @@ const fetchMailData = async (
       link.remove();
     }
   } catch (error) {
-    // error toast handled by caller with translated message
     toast({
-      title: "Error fetching failed event JSON",
+      title: i18n.t("mailRepositories.fetchMailError"),
       description: <ErrorDisplayer error={error} />,
     });
   }
@@ -84,6 +79,7 @@ const fetchMailData = async (
 
 export default function MailRepositoryDetail() {
   const { t } = useTranslation();
+  const jsonDialog = useJsonDialog();
   const { toast } = useToast();
   const toastTaskCreated = useTaskCreatedToast();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -280,6 +276,7 @@ export default function MailRepositoryDetail() {
   return (
     <>
     <Header headerTitle={id} headerSubTitle={t("mailRepositories.detailKind")} breadcrumb={breadcrumbs.mailRepositories()} />
+    {jsonDialog.dialog}
     <div className="mt-4 p-4 bg-white rounded-2">
       <div className="flex items-center justify-end mb-4">
         <a
@@ -339,23 +336,20 @@ export default function MailRepositoryDetail() {
 
                 <span className="flex items-center space-x-2 text-sm text-gray-500">
                   {canViewMail && (
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        fetchMailData(id!, mailKey, "application/json");
-                      }}
-                      className="hover:text-blue-500 hover:underline transition"
+                    <Button
+                      variant="link"
+                      className="px-1 h-auto"
+                      onClick={() => fetchMailData(id!, mailKey, "application/json", (json) => jsonDialog.show(mailKey, json))}
                     >
-                      (JSON)
-                    </a>
+                      {t("common.viewJson")}
+                    </Button>
                   )}
                   {canViewMail && (
                     <a
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        fetchMailData(id!, mailKey, "message/rfc822");
+                        fetchMailData(id!, mailKey, "message/rfc822", () => {});
                       }}
                       className="hover:text-blue-500 hover:underline transition"
                     >

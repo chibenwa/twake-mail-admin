@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,28 +13,13 @@ import { useFetchData } from "@/hooks/use-fetch-data";
 import { useTranslation } from "react-i18next";
 import { appConfig } from "@/lib/config";
 import { CALENDAR_WEBADMIN_DOC_URL } from "@/lib/calendar-docs";
+import CamelCaseName from "@/components/custom/camel-case-name";
 import { AlertTriangle, CheckCircle2, Loader2, RefreshCcw, XCircle } from "lucide-react";
 
 const DOCU_URL_MAIL =
   "https://james.staged.apache.org/james-project/3.10.0/servers/distributed/operate/webadmin.html#_healthcheck";
 
 const isCalendar = appConfig.application === "CALENDAR";
-
-// James names its health checks in CamelCase, without spaces: offer a line break between the
-// words (EventDeadLetters|HealthCheck, RabbitMQ|DeadLetter...) rather than at an arbitrary letter
-function ComponentName({ name }: { name: string }) {
-  const words = name.split(/(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])/);
-  return (
-    <>
-      {words.map((word, index) => (
-        <Fragment key={index}>
-          {index > 0 && <wbr />}
-          {word}
-        </Fragment>
-      ))}
-    </>
-  );
-}
 
 const STATUS_ICONS = {
   [HealthStatuses.HEALTHY]: CheckCircle2,
@@ -52,7 +37,7 @@ function HealthCheckCard({ result }: { result: HealthCheckType }) {
   const card = (
     <Card className={`${statusStyle(result.status)} h-full ${screen ? "transition hover:shadow-md" : ""}`}>
       <CardContent className="py-4 text-center break-words flex flex-col h-full">
-        <p><ComponentName name={result.componentName} /></p>
+        <p><CamelCaseName name={result.componentName} /></p>
         <p className="mt-1 text-xs font-medium inline-flex items-center justify-center gap-1">
           {StatusIcon && <StatusIcon className="h-3.5 w-3.5" aria-hidden="true" />}
           {t(`healthCheck.status.${result.status}`)}

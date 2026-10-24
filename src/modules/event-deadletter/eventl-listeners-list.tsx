@@ -1,40 +1,53 @@
 import { Link } from "react-router";
-import { RefreshCw, Trash2 } from "lucide-react";
+import { Copy, RefreshCw, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ListenerGroupsResponseType } from "./types";
 import {
   getMailboxListenerGroups,
   deleteAllEventsForGroup,
-  redeliverGroupEvents,
-  getFailedEvents, // Import the existing function
+  getFailedEvents,
 } from "./api-client";
 import SearchByEventId from "./search-by-event-id";
 import { useFetchData } from "@/hooks/use-fetch-data";
 import { useState, useEffect } from "react";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useToast } from "@/hooks/use-toast";
-import { useTaskCreatedToast } from "@/hooks/use-task-created-toast";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
-import ConfirmTaskContent from "../common-tasks/components/confirm-task-content";
 import EmptyState from "@/components/custom/empty-state";
+import CamelCaseName from "@/components/custom/camel-case-name";
+import { groupDisplayName } from "./group-name";
+import { useRedeliverGroup } from "./use-redeliver-group";
 
-const REDELIVER_PARAM_KEYS = ["limit", "maxRetries"] as const;
-type RedeliverParamKey = (typeof REDELIVER_PARAM_KEYS)[number];
-
-const POSITIVE_INTEGER = /^[1-9]\d*$/;
-
-// WebAdmin only accepts positive integers: anything else is rejected before being sent.
-const isEmptyOrPositiveInteger = (value?: string): boolean =>
-  !value?.trim() || POSITIVE_INTEGER.test(value.trim());
-
-const toOptionalNumber = (value?: string): number | undefined =>
-  value?.trim() ? Number(value.trim()) : undefined;
+/** The full class name of a listener group, under its readable name, with a copy button. */
+export function GroupClassName({ group }: { group: string }) {
+  const { t } = useTranslation();
+  const { toast } = useToast();
+  const copy = () => {
+    navigator.clipboard?.writeText(group)
+      .then(() => toast({ title: t("common.copied"), description: group }))
+      .catch(() => { /* the name stays selectable */ });
+  };
+  return (
+    <span className="mt-1 flex items-start gap-1 text-xs font-normal text-gray-500 font-mono break-all">
+        {group}
+        <button
+          type="button"
+          onClick={copy}
+          className="shrink-0 p-0.5 rounded hover:bg-gray-200"
+          title={t("eventDeadletter.copyGroupName")}
+          aria-label={t("eventDeadletter.copyGroupName")}
+        >
+          <Copy className="w-3 h-3" aria-hidden="true" />
+        </button>
+    </span>
+  );
+}
 
 export default function EventListenersList() {
   const { t } = useTranslation();
   const confirm = useConfirm();
   const { toast } = useToast();
-  const toastTaskCreated = useTaskCreatedToast();
+  const handleRedeliverGroup = useRedeliverGroup();
   const canRedeliver = useIsAllowed("POST", "/events/deadLetter/groups/{group}");
   const canDelete = useIsAllowed("DELETE", "/events/deadLetter/groups/{group}");
   const { data: listenerGroupsResult, isLoading } =
@@ -63,39 +76,6 @@ export default function EventListenersList() {
     }
   }, [listenerGroupsResult]);
 
-  const handleRedeliverGroup = async (path: string) => {
-    const params = REDELIVER_PARAM_KEYS.map((key) => ({ key, defaultValue: "", type: "input" as const }));
-    const paramValues: Partial<Record<RedeliverParamKey, string>> = {};
-    const findInvalidParam = (): RedeliverParamKey | undefined =>
-      REDELIVER_PARAM_KEYS.find((key) => !isEmptyOrPositiveInteger(paramValues[key]));
-    const command = `curl -XPOST /events/deadLetter/groups/${encodeURIComponent(path)}?action=reDeliver`;
-    await confirm({
-      header: t("eventDeadletter.redeliverGroupAction"),
-      message: (
-        <ConfirmTaskContent
-          message={<p>{t("eventDeadletter.redeliverGroup", { path })}</p>}
-          command={command}
-          params={params}
-          getParamValues={(key, value) => {
-            paramValues[key as RedeliverParamKey] =
-              typeof value === "boolean" ? value.toString() : value;
-          }}
-        />
-      ),
-      validate: () => {
-        const invalidParam = findInvalidParam();
-        return invalidParam ? t("eventDeadletter.invalidPositiveInteger", { key: invalidParam }) : null;
-      },
-      action: async () => {
-        const { taskId } = await redeliverGroupEvents(path, {
-          limit: toOptionalNumber(paramValues.limit),
-          maxRetries: toOptionalNumber(paramValues.maxRetries),
-        });
-        toastTaskCreated(taskId);
-      },
-    });
-  };
-
   const handleClearGroup = async (path: string) => {
     const result = await confirm({
       header: t("eventDeadletter.clearGroupTitle"),
@@ -115,7 +95,7 @@ export default function EventListenersList() {
   return (
     <>
       <div>
-        <SearchByEventId />
+        <h3 className="mt-4 text-lg font-semibold">{t("eventDeadletter.groupsTitle")}</h3>
         {isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
             <div className="h-[58px] rounded-2 animate-pulse bg-gray-200" />
@@ -135,11 +115,13 @@ export default function EventListenersList() {
               className="space-y-1 p-4 bg-white rounded-2 my-4 p-4 flex justify-between items-center gap-2 transition-colors hover:bg-gray-50"
             >
               <div className="min-w-0">
-                <h4 className="text-sm font-medium leading-none break-all">
-                  <Link to={`/event-dead-letter/group/${group}?page=1`}>
-                    {group} ({eventCounts[group] ?? t("common.loading")})
+                <h4 className="text-sm font-medium">
+                  <Link to={`/event-dead-letter/group/${group}?page=1`} className="text-blue-600 hover:underline">
+                    <CamelCaseName name={groupDisplayName(group)} />
                   </Link>
+                  <span className="ml-1 text-gray-500">({eventCounts[group] ?? t("common.loading")})</span>
                 </h4>
+                <GroupClassName group={group} />
               </div>
 
               <div className="flex shrink-0 gap-2">
@@ -168,6 +150,7 @@ export default function EventListenersList() {
             </div>
           ))}
         </div>
+        <SearchByEventId groups={listenerGroupsResult ?? []} />
       </div>
     </>
   );

@@ -7,8 +7,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsAllowed } from "@/lib/proxy-resolver-context";
 import ErrorDisplayer from "@/components/custom/error-displayer";
 import { Link } from "react-router";
+import { groupDisplayName } from "./group-name";
 
-export default function SearchByEventId() {
+interface Props {
+  // The groups listed above, offered to narrow the search
+  groups?: string[];
+}
+
+export default function SearchByEventId({ groups = [] }: Props) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const canSearch = useIsAllowed("GET", "/events/deadLetter?eventId={eventId}");
@@ -75,16 +81,19 @@ export default function SearchByEventId() {
             onChange={(e) => setEventId(e.target.value)}
             placeholder={t("eventDeadletter.searchByEventIdPlaceholder")}
             className="flex-1 min-w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-            autoFocus
           />
           {canNarrowByGroup && (
-            <input
-              type="text"
+            <select
               value={group}
               onChange={(e) => setGroup(e.target.value)}
-              placeholder={t("eventDeadletter.searchByGroupPlaceholder")}
-              className="w-64 max-w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-            />
+              aria-label={t("eventDeadletter.searchByGroupPlaceholder")}
+              className="w-64 max-w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">{t("eventDeadletter.allGroups")}</option>
+              {groups.map((g) => (
+                <option key={g} value={g}>{groupDisplayName(g)}</option>
+              ))}
+            </select>
           )}
           <button
             type="submit"

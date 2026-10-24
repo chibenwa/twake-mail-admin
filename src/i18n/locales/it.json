@@ -95,7 +95,10 @@
     "discard": "Scarta",
     "keepEditing": "Continua a modificare",
     "totalOnly": "Totale: {{count}}",
-    "serverMessage": "Messaggio del server:"
+    "serverMessage": "Messaggio del server:",
+    "copy": "Copia",
+    "copied": "Copiato negli appunti",
+    "viewJson": "Vedi il JSON"
   },
   "sidebar": {
     "application": "Applicazione",
@@ -1647,7 +1650,7 @@
     "deleteEventConfirm": "Eliminare l'evento {{insertionId}} nel gruppo {{group}}?",
     "deleteEventSuccess": "Evento eliminato correttamente",
     "errorDeletingEvent": "Errore durante l'eliminazione dell'evento",
-    "fetchEventError": "Errore durante il recupero del JSON dell'evento non riuscito",
+    "fetchEventError": "Errore nel recupero del JSON dell'evento",
     "groupDetails": "Dettagli del gruppo di eventi",
     "loadingEvents": "Caricamento degli eventi non riusciti...",
     "pageInfo": "Pagina {{page}} — {{limit}} eventi per pagina — Totale: {{size}}",
@@ -1668,7 +1671,14 @@
     "deleteEventAction": "Elimina l'evento",
     "invalidPositiveInteger": "{{key}} deve essere un numero intero positivo, oppure lasciato vuoto.",
     "emptyTitle": "Nessun evento non recapitato",
-    "emptyText": "Tutti i listener hanno elaborato i propri eventi. Gli eventi falliti sono conservati qui per poterli riconsegnare."
+    "emptyText": "Tutti i listener hanno elaborato i propri eventi. Gli eventi falliti sono conservati qui per poterli riconsegnare.",
+    "groupsTitle": "Gruppi con eventi non riusciti",
+    "allGroups": "Tutti i gruppi",
+    "copyGroupName": "Copia il nome del gruppo",
+    "copyEventId": "Copia l'ID dell'evento",
+    "redeliverAll": "Riconsegna tutti gli eventi",
+    "eventLoadFailed": "Impossibile caricare questo evento",
+    "clearError": "Errore durante lo svuotamento del gruppo"
   },
   "mailRepositories": {
     "pathLabel": "Percorso del repository",
@@ -1758,7 +1768,8 @@
       "too-much-mails": "Email rifiutate perché il mittente ha superato il limite di invio.",
       "too-much-mails-for-recipient": "Email rifiutate perché il destinatario ha superato il limite di ricezione.",
       "virus": "Email in cui l'antivirus ha rilevato un virus."
-    }
+    },
+    "fetchMailError": "Errore nel recupero dell'email"
   },
   "mappings": {
     "sourcePlaceholder": "Origine (ad es. user@domain.com)",

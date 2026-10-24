@@ -95,7 +95,10 @@
     "discard": "Verwerfen",
     "keepEditing": "Weiter bearbeiten",
     "totalOnly": "Gesamt: {{count}}",
-    "serverMessage": "Meldung des Servers:"
+    "serverMessage": "Meldung des Servers:",
+    "copy": "Kopieren",
+    "copied": "In die Zwischenablage kopiert",
+    "viewJson": "JSON anzeigen"
   },
   "sidebar": {
     "application": "Anwendung",
@@ -1647,7 +1650,7 @@
     "deleteEventConfirm": "Ereignis {{insertionId}} in Gruppe {{group}} löschen?",
     "deleteEventSuccess": "Ereignis erfolgreich gelöscht",
     "errorDeletingEvent": "Fehler beim Löschen des Ereignisses",
-    "fetchEventError": "Fehler beim Abrufen des JSON des fehlgeschlagenen Ereignisses",
+    "fetchEventError": "Fehler beim Abrufen des Ereignis-JSON",
     "groupDetails": "Details der Ereignisgruppe",
     "loadingEvents": "Fehlgeschlagene Ereignisse werden geladen...",
     "pageInfo": "Seite {{page}} — {{limit}} Ereignisse pro Seite — Gesamt: {{size}}",
@@ -1668,7 +1671,14 @@
     "deleteEventAction": "Ereignis löschen",
     "invalidPositiveInteger": "{{key}} muss eine positive ganze Zahl sein oder leer bleiben.",
     "emptyTitle": "Keine fehlgeschlagenen Ereignisse",
-    "emptyText": "Alle Listener haben ihre Ereignisse verarbeitet. Fehlgeschlagene Ereignisse werden hier aufbewahrt, damit sie erneut zugestellt werden können."
+    "emptyText": "Alle Listener haben ihre Ereignisse verarbeitet. Fehlgeschlagene Ereignisse werden hier aufbewahrt, damit sie erneut zugestellt werden können.",
+    "groupsTitle": "Gruppen mit fehlgeschlagenen Ereignissen",
+    "allGroups": "Alle Gruppen",
+    "copyGroupName": "Gruppennamen kopieren",
+    "copyEventId": "Ereignis-ID kopieren",
+    "redeliverAll": "Alle Ereignisse erneut zustellen",
+    "eventLoadFailed": "Dieses Ereignis konnte nicht geladen werden",
+    "clearError": "Fehler beim Leeren der Gruppe"
   },
   "mailRepositories": {
     "pathLabel": "Repository-Pfad",
@@ -1758,7 +1768,8 @@
       "too-much-mails": "E-Mails, die abgelehnt wurden, weil der Absender sein Sendelimit überschritten hat.",
       "too-much-mails-for-recipient": "E-Mails, die abgelehnt wurden, weil der Empfänger sein Empfangslimit überschritten hat.",
       "virus": "E-Mails, in denen der Virenscanner einen Virus gefunden hat."
-    }
+    },
+    "fetchMailError": "Fehler beim Abrufen der E-Mail"
   },
   "mappings": {
     "sourcePlaceholder": "Quelle (z. B. user@domain.com)",

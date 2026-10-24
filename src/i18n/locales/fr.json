@@ -95,7 +95,10 @@
     "discard": "Abandonner",
     "keepEditing": "Continuer",
     "totalOnly": "Total : {{count}}",
-    "serverMessage": "Message du serveur :"
+    "serverMessage": "Message du serveur :",
+    "copy": "Copier",
+    "copied": "Copié dans le presse-papiers",
+    "viewJson": "Voir le JSON"
   },
   "sidebar": {
     "application": "Application",
@@ -1647,7 +1650,7 @@
     "deleteEventConfirm": "Supprimer l'événement {{insertionId}} du groupe {{group}} ?",
     "deleteEventSuccess": "Événement supprimé avec succès",
     "errorDeletingEvent": "Erreur lors de la suppression de l'événement",
-    "fetchEventError": "Erreur lors du chargement du JSON de l'événement",
+    "fetchEventError": "Impossible de récupérer le JSON de l'événement",
     "groupDetails": "Détails du groupe d'événements",
     "loadingEvents": "Chargement des événements en échec…",
     "pageInfo": "Page {{page}} — {{limit}} événements par page — Total : {{size}}",
@@ -1668,7 +1671,14 @@
     "deleteEventAction": "Supprimer l'événement",
     "invalidPositiveInteger": "{{key}} doit être un entier positif, ou laissé vide.",
     "emptyTitle": "Aucun événement en échec",
-    "emptyText": "Tous les écouteurs ont traité leurs événements. Les événements en échec sont conservés ici pour pouvoir être rejoués."
+    "emptyText": "Tous les écouteurs ont traité leurs événements. Les événements en échec sont conservés ici pour pouvoir être rejoués.",
+    "groupsTitle": "Groupes avec des événements en échec",
+    "allGroups": "Tous les groupes",
+    "copyGroupName": "Copier le nom du groupe",
+    "copyEventId": "Copier l'identifiant de l'événement",
+    "redeliverAll": "Relivrer tous les événements",
+    "eventLoadFailed": "Impossible de charger cet événement",
+    "clearError": "Erreur lors de la suppression des événements du groupe"
   },
   "mailRepositories": {
     "pathLabel": "Chemin du dépôt",
@@ -1758,7 +1768,8 @@
       "too-much-mails": "Courriers refusés car l'expéditeur a dépassé sa limite d'envoi.",
       "too-much-mails-for-recipient": "Courriers refusés car le destinataire a dépassé sa limite de réception.",
       "virus": "Courriers dans lesquels l'antivirus a détecté un virus."
-    }
+    },
+    "fetchMailError": "Impossible de récupérer le courrier"
   },
   "mappings": {
     "sourcePlaceholder": "Source (ex. utilisateur@domaine.com)",
