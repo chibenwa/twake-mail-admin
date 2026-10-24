@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * What a standard repository holds, keyed by the last segment of its path (address-error,
- * error, relay-denied, rrt-error); an unknown repository gets no description.
+ * spam, virus...); an unknown repository gets no description.
  */
 const describeKey = (repository: string) => `mailRepositories.describe.${repository.split("/").pop()}`;
 

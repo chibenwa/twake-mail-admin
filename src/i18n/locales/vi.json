@@ -1720,7 +1720,14 @@
       "address-error": "Thư gửi tới các địa chỉ nội bộ không tồn tại.",
       "error": "Thư bị lỗi xử lý ngoài dự kiến.",
       "relay-denied": "Thư bị từ chối vì người gửi không được phép chuyển tiếp (relay).",
-      "rrt-error": "Thư bị lỗi ghi lại địa chỉ (bí danh, chuyển tiếp)."
+      "rrt-error": "Thư bị lỗi ghi lại địa chỉ (bí danh, chuyển tiếp).",
+      "overquota": "Thư không được gửi vì hộp thư người nhận đã vượt hạn mức.",
+      "relay-limit-exceeded": "Thư bị từ chối vì người gửi đã vượt giới hạn chuyển tiếp (relay).",
+      "spam": "Thư bị phân loại là thư rác và không được đưa vào hộp thư.",
+      "suspicious": "Thư bị đánh dấu là đáng ngờ và bị giữ lại không gửi.",
+      "too-much-mails": "Thư bị từ chối vì người gửi đã vượt giới hạn gửi.",
+      "too-much-mails-for-recipient": "Thư bị từ chối vì người nhận đã vượt giới hạn nhận.",
+      "virus": "Thư mà trình diệt virus phát hiện có virus."
     }
   },
   "mappings": {

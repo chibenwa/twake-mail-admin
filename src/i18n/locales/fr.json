@@ -1722,7 +1722,14 @@
       "address-error": "Courriers adressés à des adresses locales inexistantes.",
       "error": "Courriers dont le traitement a échoué de façon inattendue.",
       "relay-denied": "Courriers refusés car l'expéditeur n'est pas autorisé à relayer.",
-      "rrt-error": "Courriers dont la réécriture d'adresse (alias, redirection) a échoué."
+      "rrt-error": "Courriers dont la réécriture d'adresse (alias, redirection) a échoué.",
+      "overquota": "Courriers non distribués car la boîte du destinataire a dépassé son quota.",
+      "relay-limit-exceeded": "Courriers refusés car l'expéditeur a dépassé sa limite de relais.",
+      "spam": "Courriers classés comme spam et tenus à l'écart des boîtes.",
+      "suspicious": "Courriers signalés comme suspects et retenus avant distribution.",
+      "too-much-mails": "Courriers refusés car l'expéditeur a dépassé sa limite d'envoi.",
+      "too-much-mails-for-recipient": "Courriers refusés car le destinataire a dépassé sa limite de réception.",
+      "virus": "Courriers dans lesquels l'antivirus a détecté un virus."
     }
   },
   "mappings": {

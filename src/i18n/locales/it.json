@@ -1722,7 +1722,14 @@
       "address-error": "Email indirizzate a indirizzi locali inesistenti.",
       "error": "Email la cui elaborazione non è riuscita in modo imprevisto.",
       "relay-denied": "Email rifiutate perché il mittente non è autorizzato all'inoltro (relay).",
-      "rrt-error": "Email la cui riscrittura dell'indirizzo (alias, inoltro) non è riuscita."
+      "rrt-error": "Email la cui riscrittura dell'indirizzo (alias, inoltro) non è riuscita.",
+      "overquota": "Email non recapitate perché la casella del destinatario ha superato la quota.",
+      "relay-limit-exceeded": "Email rifiutate perché il mittente ha superato il limite di inoltro (relay).",
+      "spam": "Email classificate come spam e tenute fuori dalle caselle.",
+      "suspicious": "Email segnalate come sospette e trattenute prima del recapito.",
+      "too-much-mails": "Email rifiutate perché il mittente ha superato il limite di invio.",
+      "too-much-mails-for-recipient": "Email rifiutate perché il destinatario ha superato il limite di ricezione.",
+      "virus": "Email in cui l'antivirus ha rilevato un virus."
     }
   },
   "mappings": {

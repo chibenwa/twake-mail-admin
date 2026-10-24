@@ -1722,7 +1722,14 @@
       "address-error": "E-Mails an lokale Adressen, die nicht existieren.",
       "error": "E-Mails, deren Verarbeitung unerwartet fehlgeschlagen ist.",
       "relay-denied": "E-Mails, die abgelehnt wurden, weil der Absender nicht weiterleiten darf.",
-      "rrt-error": "E-Mails, bei denen die Adressumschreibung (Alias, Weiterleitung) fehlgeschlagen ist."
+      "rrt-error": "E-Mails, bei denen die Adressumschreibung (Alias, Weiterleitung) fehlgeschlagen ist.",
+      "overquota": "E-Mails, die nicht zugestellt wurden, weil das Postfach des Empfängers sein Kontingent überschritten hat.",
+      "relay-limit-exceeded": "E-Mails, die abgelehnt wurden, weil der Absender sein Relay-Limit überschritten hat.",
+      "spam": "Als Spam eingestufte E-Mails, die von den Postfächern ferngehalten werden.",
+      "suspicious": "Als verdächtig markierte E-Mails, die von der Zustellung zurückgehalten werden.",
+      "too-much-mails": "E-Mails, die abgelehnt wurden, weil der Absender sein Sendelimit überschritten hat.",
+      "too-much-mails-for-recipient": "E-Mails, die abgelehnt wurden, weil der Empfänger sein Empfangslimit überschritten hat.",
+      "virus": "E-Mails, in denen der Virenscanner einen Virus gefunden hat."
     }
   },
   "mappings": {
